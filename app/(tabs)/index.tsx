@@ -1,11 +1,21 @@
+import { useQuery } from '@apollo/client';
+import { useEffect } from 'react';
 import { Image, StyleSheet, Platform, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { GetAllCountriesDocument } from '@/graphql/types/graphql';
 
 export default function HomeScreen() {
+  const { data: countryData } = useQuery(GetAllCountriesDocument);
+
+  useEffect(() => {
+    if (!countryData) return;
+    console.log(countryData.getAllCountries);
+  }, [countryData]);
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
