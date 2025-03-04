@@ -12,7 +12,7 @@ export default function HomeScreen() {
         {error && <Text className="text-center text-red-400">{error.message}</Text>}
         {loading && <Text className="text-center">Loading</Text>}
 
-        {countryData?.getAllCountries?.map(({ name }) => <Text>{name}</Text>)}
+        {countryData?.getAllCountries?.map(({ name, code }) => <Text key={code}>{name}</Text>)}
       </View>
     </ScrollView>
   );
