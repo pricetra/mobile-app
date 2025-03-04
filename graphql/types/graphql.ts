@@ -82,6 +82,21 @@ export type CreateAddress = {
   mapsLink: Scalars['String']['input'];
 };
 
+export type CreateProduct = {
+  brand: Scalars['String']['input'];
+  category?: InputMaybe<Scalars['String']['input']>;
+  code: Scalars['String']['input'];
+  color?: InputMaybe<Scalars['String']['input']>;
+  description: Scalars['String']['input'];
+  highestRecordedPrice?: InputMaybe<Scalars['Float']['input']>;
+  image: Scalars['String']['input'];
+  lowestRecordedPrice?: InputMaybe<Scalars['Float']['input']>;
+  model?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  url?: InputMaybe<Scalars['String']['input']>;
+  weight?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreatedByUser = {
   __typename?: 'CreatedByUser';
   active?: Maybe<Scalars['Boolean']['output']>;
@@ -128,12 +143,37 @@ export type MutationVerifyEmailArgs = {
   verificationCode: Scalars['String']['input'];
 };
 
+export type Product = {
+  __typename?: 'Product';
+  brand: Scalars['String']['output'];
+  category?: Maybe<Scalars['String']['output']>;
+  code: Scalars['String']['output'];
+  color?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['Time']['output'];
+  description: Scalars['String']['output'];
+  highestRecordedPrice?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['ID']['output'];
+  image: Scalars['String']['output'];
+  lowestRecordedPrice?: Maybe<Scalars['Float']['output']>;
+  model?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['Time']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+  weight?: Maybe<Scalars['String']['output']>;
+};
+
 export type Query = {
   __typename?: 'Query';
+  barcodeScan: Product;
   getAllCountries: Array<Country>;
   googleOAuth: Auth;
   login: Auth;
   me: User;
+};
+
+
+export type QueryBarcodeScanArgs = {
+  barcode: Scalars['String']['input'];
 };
 
 
@@ -193,5 +233,13 @@ export type GetAllCountriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllCountriesQuery = { __typename?: 'Query', getAllCountries: Array<{ __typename?: 'Country', code: string, name: string, callingCode?: string | null, language?: string | null, administrativeDivisions: Array<{ __typename?: 'AdministrativeDivision', name: string, cities: string }>, currency?: { __typename?: 'Currency', currencyCode: string, name: string, symbol: string, symbolNative: string, decimals: number, numToBasic?: number | null } | null }> };
 
+export type BarcodeScanQueryVariables = Exact<{
+  barcode: Scalars['String']['input'];
+}>;
+
+
+export type BarcodeScanQuery = { __typename?: 'Query', barcodeScan: { __typename?: 'Product', id: string, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, category?: string | null, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any } };
+
 
 export const GetAllCountriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllCountries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getAllCountries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"administrativeDivisions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"cities"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"symbolNative"}},{"kind":"Field","name":{"kind":"Name","value":"decimals"}},{"kind":"Field","name":{"kind":"Name","value":"numToBasic"}}]}},{"kind":"Field","name":{"kind":"Name","value":"callingCode"}},{"kind":"Field","name":{"kind":"Name","value":"language"}}]}}]}}]} as unknown as DocumentNode<GetAllCountriesQuery, GetAllCountriesQueryVariables>;
+export const BarcodeScanDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"barcodeScan"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"barcode"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"barcodeScan"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"barcode"},"value":{"kind":"Variable","name":{"kind":"Name","value":"barcode"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"lowestRecordedPrice"}},{"kind":"Field","name":{"kind":"Name","value":"highestRecordedPrice"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<BarcodeScanQuery, BarcodeScanQueryVariables>;

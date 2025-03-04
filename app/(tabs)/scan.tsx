@@ -1,16 +1,22 @@
-import Quagga from '@ericblade/quagga2';
-import { MaterialIcons } from '@expo/vector-icons';
+import { useLazyQuery } from '@apollo/client';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { Buffer } from 'buffer';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { BarcodeScanDocument } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
+  const [
+    barcodeScan,
+    { loading: barcodeScanLoading, data: barcodeScanData, error: barcodeScanError },
+  ] = useLazyQuery(BarcodeScanDocument);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -29,26 +35,7 @@ export default function ScanScreen() {
 
   function analyzeBase64Image(pictureBase64: string) {
     const buffer = Buffer.from(pictureBase64, 'base64');
-
-    // Quagga.decodeSingle(
-    //   {
-    //     src: buffer,
-    //     numOfWorkers: 0,
-    //     inputStream: {
-    //       mime: 'image/jpeg',
-    //       size: 800,
-    //       area: {
-    //         top: '10%',
-    //         right: '5%',
-    //         left: '5%',
-    //         bottom: '10%',
-    //       },
-    //     },
-    //   },
-    //   function (result) {
-    //     console.log(result);
-    //   }
-    // ).catch((err) => console.error(err));
+    // TODO: read barcode
   }
 
   async function pickImage() {
@@ -73,16 +60,8 @@ export default function ScanScreen() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
-  async function captureImage() {
-    if (!camera) return;
-
-    const picture = await camera.takePictureAsync({
-      base64: true,
-      quality: 0,
-    });
-    if (!picture || !picture.base64) throw new Error('could not process image');
-
-    analyzeBase64Image(picture.base64);
+  function handleBarcodeScan(barcode: string) {
+    barcodeScan({ variables: { barcode } });
   }
 
   return (
@@ -111,12 +90,42 @@ export default function ScanScreen() {
         }}>
         <View className="bottom-safe-or-24 absolute w-full p-3">
           {scannedCode && (
-            <View className="mb-10 w-full bg-black/70 p-10">
+            <View className="mb-10 flex w-full flex-col items-center gap-2 bg-black/70 p-10">
               <Text
                 style={{ fontFamily: 'monospace' }}
-                className="text-center text-3xl color-white">
+                className="text-3xl color-white"
+                onPress={() => handleBarcodeScan(scannedCode)}>
                 {scannedCode}
               </Text>
+
+              {barcodeScanData && (
+                <View className="flex flex-row gap-2">
+                  {barcodeScanData.barcodeScan.image && (
+                    <Image
+                      style={{ width: 60, height: 70 }}
+                      source={{
+                        uri: barcodeScanData.barcodeScan.image,
+                      }}
+                    />
+                  )}
+                  <Text className="flex-1 text-sm color-white">
+                    {barcodeScanData.barcodeScan.name}
+                  </Text>
+                </View>
+              )}
+
+              {barcodeScanError && (
+                <Text className="color-red-400">{barcodeScanError.message}</Text>
+              )}
+
+              {barcodeScanLoading && (
+                <AntDesign
+                  name="loading1"
+                  className="size-[30px] animate-spin text-center"
+                  color="white"
+                  size={30}
+                />
+              )}
             </View>
           )}
 
@@ -128,9 +137,9 @@ export default function ScanScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={captureImage}
+              onPress={() => handleBarcodeScan(scannedCode ?? '')}
               className="flex flex-col items-center gap-1 rounded-[200px] bg-black/50 p-5">
-              <MaterialIcons name="photo-camera" size={40} color="white" />
+              <MaterialIcons name="search" size={40} color="white" />
             </TouchableOpacity>
 
             <TouchableOpacity

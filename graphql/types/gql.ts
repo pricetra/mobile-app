@@ -15,9 +15,11 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 type Documents = {
     "\n  query GetAllCountries {\n    getAllCountries {\n      code\n      name\n      administrativeDivisions {\n        name\n        cities\n      }\n      currency {\n        currencyCode\n        name\n        symbol\n        symbolNative\n        decimals\n        numToBasic\n      }\n      callingCode\n      language\n    }\n  }\n": typeof types.GetAllCountriesDocument,
+    "\n  query barcodeScan($barcode: String!) {\n    barcodeScan(barcode: $barcode) {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.BarcodeScanDocument,
 };
 const documents: Documents = {
     "\n  query GetAllCountries {\n    getAllCountries {\n      code\n      name\n      administrativeDivisions {\n        name\n        cities\n      }\n      currency {\n        currencyCode\n        name\n        symbol\n        symbolNative\n        decimals\n        numToBasic\n      }\n      callingCode\n      language\n    }\n  }\n": types.GetAllCountriesDocument,
+    "\n  query barcodeScan($barcode: String!) {\n    barcodeScan(barcode: $barcode) {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": types.BarcodeScanDocument,
 };
 
 /**
@@ -38,6 +40,10 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetAllCountries {\n    getAllCountries {\n      code\n      name\n      administrativeDivisions {\n        name\n        cities\n      }\n      currency {\n        currencyCode\n        name\n        symbol\n        symbolNative\n        decimals\n        numToBasic\n      }\n      callingCode\n      language\n    }\n  }\n"): (typeof documents)["\n  query GetAllCountries {\n    getAllCountries {\n      code\n      name\n      administrativeDivisions {\n        name\n        cities\n      }\n      currency {\n        currencyCode\n        name\n        symbol\n        symbolNative\n        decimals\n        numToBasic\n      }\n      callingCode\n      language\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query barcodeScan($barcode: String!) {\n    barcodeScan(barcode: $barcode) {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query barcodeScan($barcode: String!) {\n    barcodeScan(barcode: $barcode) {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

@@ -22,3 +22,25 @@ export const GET_ALL_COUNTRIES_QUERY = gql`
     }
   }
 `;
+
+export const BARCODE_SCAN_QUERY = gql`
+  query barcodeScan($barcode: String!) {
+    barcodeScan(barcode: $barcode) {
+      id
+      name
+      image
+      description
+      url
+      brand
+      code
+      color
+      model
+      category
+      weight
+      lowestRecordedPrice
+      highestRecordedPrice
+      createdAt
+      updatedAt
+    }
+  }
+`
