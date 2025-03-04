@@ -1,4 +1,6 @@
+import Quagga from '@ericblade/quagga2';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Buffer } from 'buffer';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
@@ -8,6 +10,7 @@ export default function ScanScreen() {
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [scannedCode, setScannedCode] = useState<string>();
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -24,19 +27,46 @@ export default function ScanScreen() {
     );
   }
 
+  function analyzeBase64Image(pictureBase64: string) {
+    const buffer = Buffer.from(pictureBase64, 'base64');
+
+    // Quagga.decodeSingle(
+    //   {
+    //     src: buffer,
+    //     numOfWorkers: 0,
+    //     inputStream: {
+    //       mime: 'image/jpeg',
+    //       size: 800,
+    //       area: {
+    //         top: '10%',
+    //         right: '5%',
+    //         left: '5%',
+    //         bottom: '10%',
+    //       },
+    //     },
+    //   },
+    //   function (result) {
+    //     console.log(result);
+    //   }
+    // ).catch((err) => console.error(err));
+  }
+
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0,
       base64: true,
       allowsMultipleSelection: false,
     });
 
-    console.log(result);
-    if (result.canceled) return;
-    console.log(result.assets[0]);
+    if (result.canceled || result.assets.length === 0) throw new Error('could not pick image');
+
+    const picture = result.assets[0];
+    if (!picture.base64) throw new Error('could not process image');
+
+    analyzeBase64Image(picture.base64);
   }
 
   function toggleCameraFacing() {
@@ -48,9 +78,11 @@ export default function ScanScreen() {
 
     const picture = await camera.takePictureAsync({
       base64: true,
-      quality: 1,
+      quality: 0,
     });
-    console.log(picture);
+    if (!picture || !picture.base64) throw new Error('could not process image');
+
+    analyzeBase64Image(picture.base64);
   }
 
   return (
@@ -59,24 +91,52 @@ export default function ScanScreen() {
         style={styles.camera}
         facing={facing}
         autofocus="on"
-        ref={(ref) => setCamera(ref)}>
-        <View className="bottom-safe-or-28 absolute w-full p-3">
-          <View className="flex flex-row items-center justify-between rounded-2xl bg-black/75 p-5">
-            <TouchableOpacity onPress={pickImage} className="flex flex-col items-center gap-1">
+        ref={(ref) => setCamera(ref)}
+        barcodeScannerSettings={{
+          barcodeTypes: [
+            'upc_a',
+            'upc_e',
+            'codabar',
+            'code128',
+            'code39',
+            'code93',
+            'ean13',
+            'ean8',
+            'itf14',
+          ],
+        }}
+        onBarcodeScanned={(res) => {
+          if (res.data === scannedCode) return;
+          setScannedCode(res.data);
+        }}>
+        <View className="bottom-safe-or-24 absolute w-full p-3">
+          {scannedCode && (
+            <View className="mb-10 w-full bg-black/70 p-10">
+              <Text
+                style={{ fontFamily: 'monospace' }}
+                className="text-center text-3xl color-white">
+                {scannedCode}
+              </Text>
+            </View>
+          )}
+
+          <View className="flex flex-row items-center justify-between">
+            <TouchableOpacity
+              onPress={pickImage}
+              className="flex flex-col items-center gap-1 rounded-[200px] bg-black/50 p-5">
               <MaterialIcons name="image" size={25} color="white" />
-              <Text className="text-sm text-white">Pictures</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={captureImage} className="flex flex-col items-center gap-1">
+            <TouchableOpacity
+              onPress={captureImage}
+              className="flex flex-col items-center gap-1 rounded-[200px] bg-black/50 p-5">
               <MaterialIcons name="photo-camera" size={40} color="white" />
-              <Text className="text-sm text-white">Capture</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={toggleCameraFacing}
-              className="flex flex-col items-center gap-2">
+              className="flex flex-col items-center gap-2 rounded-[200px] bg-black/50 p-5">
               <MaterialIcons name="flip-camera-android" size={25} color="white" />
-              <Text className="text-sm text-white">Flip camera</Text>
             </TouchableOpacity>
           </View>
         </View>
