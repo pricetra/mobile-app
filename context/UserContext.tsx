@@ -1,0 +1,57 @@
+import { useQuery } from '@apollo/client';
+import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import { createContext, ReactNode } from 'react';
+import { View } from 'react-native';
+
+import { MeDocument, User } from '@/graphql/types/graphql';
+
+export const JWT_KEY = 'JWT';
+
+export type UserContextType = {
+  user: User;
+  token: string;
+  logout: () => void;
+};
+
+export const UserAuthContext = createContext<UserContextType>({} as UserContextType);
+
+type UserContextProviderProps = {
+  children: ReactNode;
+  jwt: string;
+};
+
+export function UserContextProvider({ children, jwt }: UserContextProviderProps) {
+  const router = useRouter();
+  const {
+    data: userData,
+    loading: userDataLoading,
+    error: userError,
+  } = useQuery(MeDocument, {
+    context: { headers: { authorization: `Bearer ${jwt}` } },
+  });
+
+  if (userDataLoading) return <View>Loading...</View>;
+
+  if (userError) {
+    SecureStore.deleteItemAsync(JWT_KEY).finally(() => {
+      router.replace('/login');
+    });
+    return <></>;
+  }
+
+  if (!userData) throw new Error('could not load user data');
+
+  return (
+    <UserAuthContext.Provider
+      value={
+        {
+          token: jwt,
+          user: userData.me,
+          logout: () => {},
+        } as UserContextType
+      }>
+      {children}
+    </UserAuthContext.Provider>
+  );
+}

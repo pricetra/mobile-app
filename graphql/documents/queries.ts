@@ -24,7 +24,7 @@ export const GET_ALL_COUNTRIES_QUERY = gql`
 `;
 
 export const BARCODE_SCAN_QUERY = gql`
-  query barcodeScan($barcode: String!) {
+  query BarcodeScan($barcode: String!) {
     barcodeScan(barcode: $barcode) {
       id
       name
@@ -43,4 +43,73 @@ export const BARCODE_SCAN_QUERY = gql`
       updatedAt
     }
   }
-`
+`;
+
+export const UserFragment = gql`
+  fragment UserFields on User {
+    id
+    name
+    email
+    avatar
+    createdAt
+    updatedAt
+    active
+    authPlatform
+    authStateId
+  }
+`;
+
+export const LOGIN_INTERNAL_QUERY = gql`
+  query LoginInternal($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      token
+      user {
+        id
+        name
+        email
+        avatar
+        createdAt
+        updatedAt
+        active
+        authPlatform
+        authStateId
+      }
+    }
+  }
+`;
+
+export const GOOGLE_OAUTH_QUERY = gql`
+  query GoogleOAuth($accessToken: String!) {
+    googleOAuth(accessToken: $accessToken) {
+      token
+      user {
+        id
+        name
+        email
+        avatar
+        createdAt
+        updatedAt
+        active
+        authPlatform
+        authStateId
+      }
+      isNewUser
+    }
+  }
+`;
+
+export const ME_QUERY = gql`
+  query Me {
+    me {
+      id
+      name
+      email
+      avatar
+      createdAt
+      updatedAt
+      active
+      authPlatform
+      authStateId
+    }
+  }
+`;
