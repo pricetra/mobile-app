@@ -31,12 +31,16 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     context: { headers: { authorization: `Bearer ${jwt}` } },
   });
 
-  if (userDataLoading) return <View>Loading...</View>;
-
-  if (userError) {
+  function removeStoredJwtAndRedirect() {
     SecureStore.deleteItemAsync(JWT_KEY).finally(() => {
       router.replace('/login');
     });
+  }
+
+  if (userDataLoading) return <View>Loading...</View>;
+
+  if (userError) {
+    removeStoredJwtAndRedirect();
     return <></>;
   }
 
@@ -48,7 +52,9 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         {
           token: jwt,
           user: userData.me,
-          logout: () => {},
+          logout: () => {
+            removeStoredJwtAndRedirect();
+          },
         } as UserContextType
       }>
       {children}
