@@ -64,6 +64,9 @@ export default function TabLayout() {
           options={{
             title: 'Scan',
             tabBarIcon: ({ color }) => <Feather size={28} name="camera" color={color} />, // https://icons.expo.fyi/Index
+            headerShown: false,
+            tabBarShowLabel: false,
+            tabBarStyle: { display: 'none' },
           }}
         />
         <Tabs.Screen

@@ -3,9 +3,11 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { Buffer } from 'buffer';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { useEffect, useState } from 'react';
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Button, Image, StyleSheet, Text, View } from 'react-native';
 
+import ScannerButton from '@/components/ui/ScannerButton';
 import { BarcodeScanDocument } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
@@ -13,6 +15,7 @@ export default function ScanScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
+  const router = useRouter();
   const [
     barcodeScan,
     { loading: barcodeScanLoading, data: barcodeScanData, error: barcodeScanError },
@@ -88,7 +91,13 @@ export default function ScanScreen() {
           if (res.data === scannedCode) return;
           setScannedCode(res.data);
         }}>
-        <View className="bottom-safe-or-24 absolute w-full p-3">
+        <View className="top-safe-or-10 absolute p-3">
+          <ScannerButton onPress={() => router.back()}>
+            <MaterialIcons name="arrow-back" size={25} color="white" />
+          </ScannerButton>
+        </View>
+
+        <View className="bottom-safe-or-10 absolute w-full p-3">
           {scannedCode && (
             <View className="mb-10 flex w-full flex-col items-center gap-2 bg-black/70 p-10">
               <Text
@@ -130,23 +139,17 @@ export default function ScanScreen() {
           )}
 
           <View className="flex flex-row items-center justify-between">
-            <TouchableOpacity
-              onPress={pickImage}
-              className="flex flex-col items-center gap-1 rounded-[200px] bg-black/50 p-5">
+            <ScannerButton onPress={pickImage}>
               <MaterialIcons name="image" size={25} color="white" />
-            </TouchableOpacity>
+            </ScannerButton>
 
-            <TouchableOpacity
-              onPress={() => handleBarcodeScan(scannedCode ?? '')}
-              className="flex flex-col items-center gap-1 rounded-[200px] bg-black/50 p-5">
+            <ScannerButton onPress={() => handleBarcodeScan(scannedCode ?? '')}>
               <MaterialIcons name="search" size={40} color="white" />
-            </TouchableOpacity>
+            </ScannerButton>
 
-            <TouchableOpacity
-              onPress={toggleCameraFacing}
-              className="flex flex-col items-center gap-2 rounded-[200px] bg-black/50 p-5">
+            <ScannerButton onPress={toggleCameraFacing}>
               <MaterialIcons name="flip-camera-android" size={25} color="white" />
-            </TouchableOpacity>
+            </ScannerButton>
           </View>
         </View>
       </CameraView>
