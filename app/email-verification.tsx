@@ -22,9 +22,9 @@ export default function EmailVerificationScreen() {
       <TextInput
         onChangeText={setCode}
         value={code}
-        placeholder="Full name"
-        autoCapitalize="words"
-        textContentType="name"
+        placeholder="Verification code"
+        autoCapitalize="none"
+        textContentType="none"
         keyboardType="ascii-capable"
         autoCorrect={false}
         autoComplete="off"
