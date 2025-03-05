@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client';
+import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { createContext, ReactNode } from 'react';
@@ -37,7 +38,17 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     });
   }
 
-  if (userDataLoading) return <View>Loading...</View>;
+  if (userDataLoading)
+    return (
+      <View className="flex h-full w-full items-center justify-center bg-white p-10">
+        <AntDesign
+          name="loading1"
+          className="size-[50px] animate-spin text-center"
+          color="#374151"
+          size={50}
+        />
+      </View>
+    );
 
   if (userError) {
     removeStoredJwtAndRedirect();
