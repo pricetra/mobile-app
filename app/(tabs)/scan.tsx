@@ -5,12 +5,13 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useContext, useState } from 'react';
-import { Button, Platform, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
-import ScannerButton from '@/components/ui/ScannerButton';
-import { BarcodeScanDocument } from '@/graphql/types/graphql';
-import { UserAuthContext } from '@/context/UserContext';
 import ProductItem from '@/components/ProductItem';
+import BarcodeText from '@/components/ui/BarcodeText';
+import ScannerButton from '@/components/ui/ScannerButton';
+import { UserAuthContext } from '@/context/UserContext';
+import { BarcodeScanDocument } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
   const { token } = useContext(UserAuthContext);
@@ -104,16 +105,11 @@ export default function ScanScreen() {
 
           {scannedCode && (
             <View className="rounded-xl bg-black/70 px-7 py-5">
-              <Text
-                style={{
-                  fontVariant: ['tabular-nums'],
-                  fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-                  letterSpacing: 2,
-                }}
+              <BarcodeText
                 className="text-xl color-white"
                 onPress={() => handleBarcodeScan(scannedCode)}>
                 {scannedCode}
-              </Text>
+              </BarcodeText>
             </View>
           )}
         </View>
@@ -122,7 +118,7 @@ export default function ScanScreen() {
           <View className="mb-10">
             {barcodeScanData && (
               <View className="w-full rounded-lg bg-white p-5 shadow-xl shadow-black/50">
-                <ProductItem {...barcodeScanData.barcodeScan} />
+                <ProductItem product={barcodeScanData.barcodeScan} />
               </View>
             )}
 

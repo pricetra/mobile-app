@@ -20,7 +20,6 @@ export default function HomeScreen() {
   }
 
   useEffect(() => {
-    console.log('fetching...');
     fetchAllProducts();
   }, []);
 
@@ -36,12 +35,12 @@ export default function HomeScreen() {
         {productsLoading &&
           Array(10)
             .fill(0)
-            .map((i) => <ProductLoadingItem key={i} />)}
+            .map((_, i) => <ProductLoadingItem key={i} />)}
 
         <View className="max-w-full">
           {productsData &&
             productsData.allProducts.map((product) => (
-              <ProductItem {...product} key={product.code} />
+              <ProductItem product={product} key={product.code} />
             ))}
         </View>
       </View>
