@@ -4,13 +4,16 @@ import { Buffer } from 'buffer';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Button, Image, StyleSheet, Text, View } from 'react-native';
+import { useContext, useState } from 'react';
+import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 
 import ScannerButton from '@/components/ui/ScannerButton';
 import { BarcodeScanDocument } from '@/graphql/types/graphql';
+import { UserAuthContext } from '@/context/UserContext';
+import ProductItem from '@/components/ProductItem';
 
 export default function ScanScreen() {
+  const { token } = useContext(UserAuthContext);
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
@@ -64,7 +67,10 @@ export default function ScanScreen() {
   }
 
   function handleBarcodeScan(barcode: string) {
-    barcodeScan({ variables: { barcode } });
+    barcodeScan({
+      variables: { barcode },
+      context: { headers: { authorization: `Bearer ${token}` } },
+    });
   }
 
   return (
@@ -91,52 +97,37 @@ export default function ScanScreen() {
           if (res.data === scannedCode) return;
           setScannedCode(res.data);
         }}>
-        <View className="top-safe-or-10 absolute p-3">
+        <View className="top-safe-or-10 absolute flex w-full flex-row items-center justify-between p-3">
           <ScannerButton onPress={() => router.back()}>
             <MaterialIcons name="arrow-back" size={25} color="white" />
           </ScannerButton>
-        </View>
 
-        <View className="bottom-safe-or-10 absolute w-full p-3">
           {scannedCode && (
-            <View className="mb-10 flex w-full flex-col items-center gap-2 bg-black/70 p-10">
+            <View className="rounded-xl bg-black/70 px-7 py-5">
               <Text
-                style={{ fontFamily: 'monospace' }}
-                className="text-3xl color-white"
+                style={{
+                  fontVariant: ['tabular-nums'],
+                  fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+                  letterSpacing: 2,
+                }}
+                className="text-xl color-white"
                 onPress={() => handleBarcodeScan(scannedCode)}>
                 {scannedCode}
               </Text>
-
-              {barcodeScanData && (
-                <View className="flex flex-row gap-2">
-                  {barcodeScanData.barcodeScan.image && (
-                    <Image
-                      style={{ width: 60, height: 70 }}
-                      source={{
-                        uri: barcodeScanData.barcodeScan.image,
-                      }}
-                    />
-                  )}
-                  <Text className="flex-1 text-sm color-white">
-                    {barcodeScanData.barcodeScan.name}
-                  </Text>
-                </View>
-              )}
-
-              {barcodeScanError && (
-                <Text className="color-red-400">{barcodeScanError.message}</Text>
-              )}
-
-              {barcodeScanLoading && (
-                <AntDesign
-                  name="loading1"
-                  className="size-[30px] animate-spin text-center"
-                  color="white"
-                  size={30}
-                />
-              )}
             </View>
           )}
+        </View>
+
+        <View className="bottom-safe-or-10 absolute w-full p-3">
+          <View className="mb-10">
+            {barcodeScanData && (
+              <View className="w-full rounded-lg bg-white p-5 shadow-xl shadow-black/50">
+                <ProductItem {...barcodeScanData.barcodeScan} />
+              </View>
+            )}
+
+            {barcodeScanError && <Text className="color-red-400">{barcodeScanError.message}</Text>}
+          </View>
 
           <View className="flex flex-row items-center justify-between">
             <ScannerButton onPress={pickImage}>
@@ -144,7 +135,16 @@ export default function ScanScreen() {
             </ScannerButton>
 
             <ScannerButton onPress={() => handleBarcodeScan(scannedCode ?? '')}>
-              <MaterialIcons name="search" size={40} color="white" />
+              {barcodeScanLoading ? (
+                <AntDesign
+                  name="loading1"
+                  className="size-[40px] animate-spin text-center"
+                  color="white"
+                  size={40}
+                />
+              ) : (
+                <MaterialIcons name="search" size={40} color="white" />
+              )}
             </ScannerButton>
 
             <ScannerButton onPress={toggleCameraFacing}>
