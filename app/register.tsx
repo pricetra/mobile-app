@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
 
-import AuthFormContainer from '@/components/AuthFormContainer';
+import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
 import Button from '@/components/ui/Button';
 import { CreateAccountDocument } from '@/graphql/types/graphql';
 
@@ -14,7 +14,8 @@ export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
-  const searchParams = useLocalSearchParams<{ email?: string }>();
+  const searchParams = useLocalSearchParams<AuthFormSearchParams>();
+
   useEffect(() => {
     if (!searchParams.email) return;
     setEmail(searchParams.email);
@@ -30,7 +31,7 @@ export default function RegisterScreen() {
       title="Create Account"
       optionalContent={
         <>
-          <Text className="text-center font-extrabold text-gray-600">OR</Text>
+          <Text className="mt-5 text-center text-gray-600">Already have an account?</Text>
 
           <View>
             <Button

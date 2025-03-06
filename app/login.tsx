@@ -4,10 +4,10 @@ import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
 
+import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
 import Button from '@/components/ui/Button';
 import { JWT_KEY } from '@/context/UserContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
-import AuthFormContainer from '@/components/AuthFormContainer';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const searchParams = useLocalSearchParams<{ email?: string }>();
+  const searchParams = useLocalSearchParams<AuthFormSearchParams>();
 
   useEffect(() => {
     if (!searchParams.email) return;
@@ -25,7 +25,13 @@ export default function LoginScreen() {
   useEffect(() => {
     if (!data) return;
 
-    SecureStore.setItemAsync(JWT_KEY, data.login.token).then(() => router.replace('/(tabs)/'));
+    console.log(data);
+    const { token, user } = data.login;
+    if (!user.active) {
+      router.push(`/email-verification?email=${user.email}&name=${user.name}`);
+      return;
+    }
+    SecureStore.setItemAsync(JWT_KEY, token).then(() => router.replace('/(tabs)/'));
   }, [data]);
 
   return (
@@ -33,16 +39,14 @@ export default function LoginScreen() {
       title="Login"
       optionalContent={
         <>
-          <Text className="text-center font-extrabold text-gray-600">OR</Text>
+          <Text className="mt-5 text-center text-gray-600">Don't have an account?</Text>
 
-          <View>
-            <Button
-              onPress={() => {
-                router.push(`/register?email=${email}`);
-              }}>
-              Create new account
-            </Button>
-          </View>
+          <Button
+            onPress={() => {
+              router.push(`/register?email=${email}`);
+            }}>
+            Create new account
+          </Button>
         </>
       }>
       <TextInput
@@ -75,6 +79,7 @@ export default function LoginScreen() {
 
       <Button
         onPress={() => {
+          console.log('login button pressed');
           login({ variables: { email, password } });
         }}
         loading={loading}

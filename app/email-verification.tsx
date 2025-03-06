@@ -1,16 +1,32 @@
 import { useMutation } from '@apollo/client';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, TextInput } from 'react-native';
 
-import AuthFormContainer from '@/components/AuthFormContainer';
+import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
+import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
 import Button from '@/components/ui/Button';
-import { VerifyEmailDocument } from '@/graphql/types/graphql';
 
 export default function EmailVerificationScreen() {
   const router = useRouter();
   const [verifyEmail, { data, loading, error }] = useMutation(VerifyEmailDocument);
+  const [
+    resendVerification,
+    {
+      data: resendVerificationData,
+      loading: resendVerificationLoading,
+      error: resendVerificationError,
+    },
+  ] = useMutation(ResendVerificationDocument);
   const [code, setCode] = useState('');
+  const [email, setEmail] = useState('');
+
+  const searchParams = useLocalSearchParams<AuthFormSearchParams>();
+
+  useEffect(() => {
+    if (!searchParams.email) throw new Error('no verification email provided');
+    setEmail(searchParams.email);
+  }, [searchParams.email]);
 
   useEffect(() => {
     if (!data) return;
@@ -18,7 +34,29 @@ export default function EmailVerificationScreen() {
   }, [data]);
 
   return (
-    <AuthFormContainer title="Verify email">
+    <AuthFormContainer
+      title="Verify your email"
+      optionalContent={
+        <>
+          <Text className="mt-5 text-center text-gray-600">
+            Didn't receive a verification code?
+          </Text>
+
+          <Button
+            onPress={() => {
+              resendVerification({ variables: { email } });
+            }}
+            loading={resendVerificationLoading}>
+            Resend code
+          </Button>
+        </>
+      }>
+      {searchParams.email && (
+        <Text className="text-base color-gray-600">
+          A verification code was sent to <Text className="font-bold italic">{email}</Text>
+        </Text>
+      )}
+
       <TextInput
         onChangeText={setCode}
         value={code}
@@ -30,6 +68,7 @@ export default function EmailVerificationScreen() {
         autoComplete="off"
         editable={!loading}
         className="w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-lg placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400"
+        autoFocus
       />
 
       {error && <Text className="color-red-700">{error.message}</Text>}
@@ -39,8 +78,8 @@ export default function EmailVerificationScreen() {
           verifyEmail({ variables: { verificationCode: code } });
         }}
         loading={loading}
-        className="mt-5">
-        Submit
+        className="mt-1">
+        Verify email
       </Button>
     </AuthFormContainer>
   );

@@ -6,7 +6,7 @@ export type ButtonProps = {
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
-  className?: string
+  className?: string;
 };
 
 export default function Button({ children, onPress, disabled, loading, className }: ButtonProps) {
@@ -14,10 +14,10 @@ export default function Button({ children, onPress, disabled, loading, className
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
-      className={`rounded-md bg-slate-600 px-6 py-4 active:bg-slate-700 disabled:pointer-events-none disabled:opacity-70 ${className}`}>
+      className={`active:opacity-800 rounded-md bg-black px-6 py-4 disabled:pointer-events-none disabled:opacity-70 ${className}`}>
       <View className="flex flex-row items-center justify-center gap-3">
         {loading ? (
-          <View className="mr-3 size-5 animate-ping rounded-full bg-white opacity-75" />
+          <View className="size-5 animate-ping rounded-full bg-white opacity-75" />
         ) : (
           <Text className="text-center font-bold color-white">{children}</Text>
         )}
