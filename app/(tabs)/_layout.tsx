@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { Tabs, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
@@ -43,13 +44,13 @@ export default function TabLayout() {
             default: {},
           }),
           header: (props) => (
-            <View className="bg-slate-800 p-5 pt-16">
-              <View className="flex flex-row items-center justify-start gap-5">
+            <BlurView className="absolute left-0 top-0 w-full">
+              <View className="flex w-full flex-row items-center justify-start gap-5 bg-black/60 p-5 pt-16">
                 {props.options.tabBarIcon &&
                   props.options.tabBarIcon({ focused: true, color: '#e2e8f0', size: 30 })}
                 <Text className="text-2xl font-bold text-slate-200">{props.options.title}</Text>
               </View>
-            </View>
+            </BlurView>
           ),
         }}>
         <Tabs.Screen
