@@ -40,7 +40,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
   if (userDataLoading)
     return (
-      <View className="flex h-full w-full items-center justify-center bg-white p-10">
+      <View className="flex h-screen w-screen items-center justify-center bg-white p-10">
         <AntDesign
           name="loading1"
           className="size-[50px] animate-spin text-center"
