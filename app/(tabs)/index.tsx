@@ -1,10 +1,10 @@
 import { useLazyQuery } from '@apollo/client';
 import { AlertTriangle } from 'lucide-react-native';
 import { useContext, useEffect } from 'react';
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, ScrollView, RefreshControl } from 'react-native';
 
+import ProductItem, { ProductLoadingItem } from '@/components/ProductItem';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { UserAuthContext } from '@/context/UserContext';
 import { AllProductsDocument } from '@/graphql/types/graphql';
 
@@ -13,10 +13,15 @@ export default function HomeScreen() {
   const [getAllProducts, { data: productsData, loading: productsLoading, error: productsError }] =
     useLazyQuery(AllProductsDocument);
 
-  useEffect(() => {
+  function fetchAllProducts() {
     getAllProducts({
       context: { headers: { authorization: `Bearer ${token}` } },
     });
+  }
+
+  useEffect(() => {
+    console.log('fetching...');
+    fetchAllProducts();
   }, []);
 
   return (
@@ -31,34 +36,12 @@ export default function HomeScreen() {
         {productsLoading &&
           Array(10)
             .fill(0)
-            .map((i) => (
-              <View className="mb-10 flex flex-row items-center gap-4" key={i}>
-                <Skeleton className="size-28 rounded-lg" />
-                <View className="gap-2">
-                  <Skeleton className="h-4 max-w-[250px]" />
-                  <Skeleton className="h-4 max-w-[200px]" />
-                </View>
-              </View>
-            ))}
+            .map((i) => <ProductLoadingItem key={i} />)}
 
         <View className="max-w-full">
           {productsData &&
-            productsData.allProducts.map(({ id, name, image, code }) => (
-              <View className="mb-10 flex max-w-full flex-row gap-2" key={code}>
-                {image !== '' ? (
-                  <Image
-                    source={{
-                      uri: image,
-                    }}
-                    className="size-28 rounded-lg"
-                  />
-                ) : (
-                  <View className="size-28 rounded-lg bg-gray-300" />
-                )}
-                <View className="max-w-full flex-1 gap-2 p-2">
-                  <Text className="font-bold">{name}</Text>
-                </View>
-              </View>
+            productsData.allProducts.map((product) => (
+              <ProductItem {...product} key={product.code} />
             ))}
         </View>
       </View>
