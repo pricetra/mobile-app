@@ -21,7 +21,7 @@ export default function HomeScreen() {
 
   return (
     <ScrollView>
-      <View className="p-5 pb-24">
+      <View className="p-5 py-36">
         {productsError && (
           <Alert icon={AlertTriangle} variant="destructive" className="mb-10 max-w-xl">
             <AlertTitle>Error!</AlertTitle>
@@ -43,15 +43,17 @@ export default function HomeScreen() {
 
         <View className="max-w-full">
           {productsData &&
-            productsData.allProducts.map(({ id, name, image }) => (
-              <View className="mb-10 flex max-w-full flex-row gap-2" key={id}>
-                {image !== '' && (
+            productsData.allProducts.map(({ id, name, image, code }) => (
+              <View className="mb-10 flex max-w-full flex-row gap-2" key={code}>
+                {image !== '' ? (
                   <Image
                     source={{
                       uri: image,
                     }}
                     className="size-28 rounded-lg"
                   />
+                ) : (
+                  <View className="size-28 rounded-lg bg-gray-300" />
                 )}
                 <View className="max-w-full flex-1 gap-2 p-2">
                   <Text className="font-bold">{name}</Text>
