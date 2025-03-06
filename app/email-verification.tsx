@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, TextInput } from 'react-native';
+import { Text } from 'react-native';
 
 import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
 import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';

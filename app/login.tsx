@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { Text } from 'react-native';
 
 import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
 import Button from '@/components/ui/Button';
@@ -78,7 +78,6 @@ export default function LoginScreen() {
 
       <Button
         onPress={() => {
-          console.log('login button pressed');
           login({ variables: { email, password } });
         }}
         loading={loading}

@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text } from 'react-native';
 
 import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
 import Button from '@/components/ui/Button';
@@ -24,7 +24,7 @@ export default function RegisterScreen() {
 
   useEffect(() => {
     if (!data) return;
-    router.push('/email-verification');
+    router.push(`/email-verification?email=${email}&name=${name}`);
   }, [data]);
 
   return (
