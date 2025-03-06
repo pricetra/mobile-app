@@ -3,7 +3,7 @@ import { BlurView } from 'expo-blur';
 import { Tabs, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
-import { Platform, View, Text } from 'react-native';
+import { Platform, View, Text, SafeAreaView } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
@@ -33,7 +33,8 @@ export default function TabLayout() {
     <UserContextProvider jwt={jwt}>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+          tabBarActiveTintColor:
+            Platform.OS === 'android' ? Colors['light'].tint : Colors[colorScheme ?? 'light'].tint,
           tabBarButton: HapticTab,
           tabBarBackground: TabBarBackground,
           tabBarStyle: Platform.select({
@@ -44,13 +45,17 @@ export default function TabLayout() {
             default: {},
           }),
           header: (props) => (
-            <BlurView className="absolute left-0 top-0 w-full">
-              <View className="flex w-full flex-row items-center justify-start gap-5 bg-black/60 p-5 pt-16">
-                {props.options.tabBarIcon &&
-                  props.options.tabBarIcon({ focused: true, color: '#e2e8f0', size: 30 })}
-                <Text className="text-2xl font-bold text-slate-200">{props.options.title}</Text>
-              </View>
-            </BlurView>
+            <>
+              <SafeAreaView className="flex w-full bg-gray-900">
+                <View
+                  className="w-full flex-row items-center justify-start gap-5 px-5 py-5"
+                  style={{ marginTop: Platform.OS === 'android' ? 20 : 0 }}>
+                  {props.options.tabBarIcon &&
+                    props.options.tabBarIcon({ focused: true, color: '#e2e8f0', size: 30 })}
+                  <Text className="text-2xl font-bold text-slate-200">{props.options.title}</Text>
+                </View>
+              </SafeAreaView>
+            </>
           ),
         }}>
         <Tabs.Screen
