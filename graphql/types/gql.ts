@@ -23,6 +23,7 @@ type Documents = {
     "\n  query LoginInternal($email: String!, $password: String!) {\n    login(email: $email, password: $password) {\n      token\n      user {\n        id\n        name\n        email\n        avatar\n        createdAt\n        updatedAt\n        active\n        authPlatform\n        authStateId\n      }\n    }\n  }\n": typeof types.LoginInternalDocument,
     "\n  query GoogleOAuth($accessToken: String!) {\n    googleOAuth(accessToken: $accessToken) {\n      token\n      user {\n        id\n        name\n        email\n        avatar\n        createdAt\n        updatedAt\n        active\n        authPlatform\n        authStateId\n      }\n      isNewUser\n    }\n  }\n": typeof types.GoogleOAuthDocument,
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n": typeof types.MeDocument,
+    "\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.AllProductsDocument,
 };
 const documents: Documents = {
     "\n  mutation CreateAccount($email: String!, $name: String!, $password: String!) {\n    createAccount(input: { email: $email, name: $name, password: $password }) {\n      id\n      name\n      email\n      phoneNumber\n      createdAt\n      updatedAt\n      authPlatform\n    }\n  }\n": types.CreateAccountDocument,
@@ -34,6 +35,7 @@ const documents: Documents = {
     "\n  query LoginInternal($email: String!, $password: String!) {\n    login(email: $email, password: $password) {\n      token\n      user {\n        id\n        name\n        email\n        avatar\n        createdAt\n        updatedAt\n        active\n        authPlatform\n        authStateId\n      }\n    }\n  }\n": types.LoginInternalDocument,
     "\n  query GoogleOAuth($accessToken: String!) {\n    googleOAuth(accessToken: $accessToken) {\n      token\n      user {\n        id\n        name\n        email\n        avatar\n        createdAt\n        updatedAt\n        active\n        authPlatform\n        authStateId\n      }\n      isNewUser\n    }\n  }\n": types.GoogleOAuthDocument,
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n": types.MeDocument,
+    "\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": types.AllProductsDocument,
 };
 
 /**
@@ -86,6 +88,10 @@ export function graphql(source: "\n  query GoogleOAuth($accessToken: String!) {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query Me {\n    me {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n"): (typeof documents)["\n  query Me {\n    me {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

@@ -113,3 +113,25 @@ export const ME_QUERY = gql`
     }
   }
 `;
+
+export const ALL_PRODUCTS_QUERY = gql(`
+  query AllProducts {
+    allProducts {
+      id
+      name
+      image
+      description
+      url
+      brand
+      code
+      color
+      model
+      category
+      weight
+      lowestRecordedPrice
+      highestRecordedPrice
+      createdAt
+      updatedAt
+    }
+  }
+`)
