@@ -8,6 +8,7 @@ import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormCo
 import Button from '@/components/ui/Button';
 import { JWT_KEY } from '@/context/UserContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
+import { Input } from '@/components/ui/Input';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -49,7 +50,7 @@ export default function LoginScreen() {
           </Button>
         </>
       }>
-      <TextInput
+      <Input
         onChangeText={setEmail}
         value={email}
         placeholder="Email"
@@ -59,10 +60,9 @@ export default function LoginScreen() {
         autoCorrect
         autoComplete="email"
         editable={!loading}
-        className="w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-lg placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400"
       />
 
-      <TextInput
+      <Input
         onChangeText={setPassword}
         value={password}
         placeholder="Password"
@@ -72,7 +72,6 @@ export default function LoginScreen() {
         autoCorrect={false}
         autoComplete="password"
         editable={!loading}
-        className="w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-lg placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400"
       />
 
       {error && <Text className="color-red-700">{error.message}</Text>}

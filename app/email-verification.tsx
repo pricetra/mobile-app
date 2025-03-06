@@ -6,6 +6,7 @@ import { Text, TextInput } from 'react-native';
 import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
 import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
 import Button from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
 export default function EmailVerificationScreen() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function EmailVerificationScreen() {
         </Text>
       )}
 
-      <TextInput
+      <Input
         onChangeText={setCode}
         value={code}
         placeholder="Verification code"
@@ -67,7 +68,6 @@ export default function EmailVerificationScreen() {
         autoCorrect={false}
         autoComplete="off"
         editable={!loading}
-        className="w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-lg placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400"
         autoFocus
       />
 
