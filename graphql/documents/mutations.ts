@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const CREATE_USER_QUERY = gql`
+export const CREATE_USER_MUTATION = gql`
   mutation CreateAccount($email: String!, $name: String!, $password: String!) {
     createAccount(input: { email: $email, name: $name, password: $password }) {
       id
@@ -14,7 +14,7 @@ export const CREATE_USER_QUERY = gql`
   }
 `;
 
-export const VERIFY_EMAIL_QUERY = gql(`
+export const VERIFY_EMAIL_MUTATION = gql(`
   mutation VerifyEmail($verificationCode: String!) {
     verifyEmail(verificationCode: $verificationCode) {
       id
@@ -30,8 +30,14 @@ export const VERIFY_EMAIL_QUERY = gql(`
   }
 `);
 
-export const RESEND_VERIFICATION_QUERY = gql(`
+export const RESEND_VERIFICATION_MUTATION = gql(`
   mutation ResendVerification($email: String!) {
     resendEmailVerificationCode(email: $email)
+  }
+`);
+
+export const LOGOUT_MUTATION = gql(`
+  mutation Logout {
+    logout
   }
 `);

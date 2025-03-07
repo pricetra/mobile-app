@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -6,7 +6,7 @@ import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
 import { ApolloContext } from '@/graphql/ApolloWrapper';
-import { MeDocument, User } from '@/graphql/types/graphql';
+import { LogoutDocument, MeDocument, User } from '@/graphql/types/graphql';
 
 export const JWT_KEY = 'JWT';
 
@@ -33,6 +33,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   } = useQuery(MeDocument, {
     context: { headers: { authorization: `Bearer ${jwt}` } },
   });
+  const [logout] = useMutation(LogoutDocument);
 
   useEffect(() => {
     if (!userData) return;
@@ -71,7 +72,10 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
           token: jwt,
           user: userData.me,
           logout: () => {
-            removeStoredJwtAndRedirect();
+            logout().then(({ data, errors }) => {
+              if (errors || !data || !data.logout) return;
+              removeStoredJwtAndRedirect();
+            });
           },
         } as UserContextType
       }>
