@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
@@ -9,8 +9,10 @@ import Button from '@/components/ui/Button';
 import { JWT_KEY } from '@/context/UserContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
 import { Input } from '@/components/ui/Input';
+import { ApolloContext } from '@/graphql/ApolloWrapper';
 
 export default function LoginScreen() {
+  const apolloContext = useContext(ApolloContext);
   const router = useRouter();
   const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument);
   const [email, setEmail] = useState('');
@@ -32,7 +34,10 @@ export default function LoginScreen() {
       router.push(`/email-verification?email=${user.email}&name=${user.name}`);
       return;
     }
-    SecureStore.setItemAsync(JWT_KEY, token).then(() => router.replace('/(tabs)/'));
+    SecureStore.setItemAsync(JWT_KEY, token).then(() => {
+      apolloContext.setAuthHeader(token);
+      router.replace('/(tabs)/');
+    });
   }, [data]);
 
   return (

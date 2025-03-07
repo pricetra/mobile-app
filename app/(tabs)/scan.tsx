@@ -4,17 +4,15 @@ import { Buffer } from 'buffer';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 import ProductItem from '@/components/ProductItem';
 import BarcodeText from '@/components/ui/BarcodeText';
 import ScannerButton from '@/components/ui/ScannerButton';
-import { UserAuthContext } from '@/context/UserContext';
 import { BarcodeScanDocument } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
-  const { token } = useContext(UserAuthContext);
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
@@ -70,7 +68,6 @@ export default function ScanScreen() {
   function handleBarcodeScan(barcode: string) {
     barcodeScan({
       variables: { barcode },
-      context: { headers: { authorization: `Bearer ${token}` } },
     });
   }
 

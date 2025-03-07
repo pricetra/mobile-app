@@ -2,7 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Tabs, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Platform, View, Text, SafeAreaView } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
@@ -10,8 +10,10 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { JWT_KEY, UserContextProvider } from '@/context/UserContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { ApolloContext } from '@/graphql/ApolloWrapper';
 
 export default function TabLayout() {
+  const apolloContext = useContext(ApolloContext);
   const colorScheme = useColorScheme();
   const [jwt, setJwt] = useState<string>();
   const router = useRouter();
@@ -23,6 +25,7 @@ export default function TabLayout() {
           return router.replace('/login');
         }
         setJwt(jwt);
+        apolloContext.setAuthHeader(jwt);
       })
       .catch(() => router.replace('/login'));
   }, []);
