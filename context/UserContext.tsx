@@ -2,9 +2,10 @@ import { useQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { createContext, ReactNode } from 'react';
+import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { View } from 'react-native';
 
+import { ApolloContext } from '@/graphql/ApolloWrapper';
 import { MeDocument, User } from '@/graphql/types/graphql';
 
 export const JWT_KEY = 'JWT';
@@ -23,6 +24,7 @@ type UserContextProviderProps = {
 };
 
 export function UserContextProvider({ children, jwt }: UserContextProviderProps) {
+  const apolloContext = useContext(ApolloContext);
   const router = useRouter();
   const {
     data: userData,
@@ -31,6 +33,11 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   } = useQuery(MeDocument, {
     context: { headers: { authorization: `Bearer ${jwt}` } },
   });
+
+  useEffect(() => {
+    if (!userData) return;
+    apolloContext.setAuthHeader(jwt);
+  }, [userData]);
 
   function removeStoredJwtAndRedirect() {
     SecureStore.deleteItemAsync(JWT_KEY).finally(() => {
