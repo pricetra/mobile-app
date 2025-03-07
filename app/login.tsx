@@ -1,4 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
+import * as Network from 'expo-network';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
@@ -9,6 +10,7 @@ import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { JWT_KEY } from '@/context/UserContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
+import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -78,8 +80,12 @@ export default function LoginScreen() {
       {error && <Text className="color-red-700">{error.message}</Text>}
 
       <Button
-        onPress={() => {
-          login({ variables: { email, password } });
+        onPress={async () => {
+          const ipAddress = await Network.getIpAddressAsync();
+          const device = getAuthDeviceTypeFromPlatform();
+          login({
+            variables: { email, password, ipAddress, device },
+          });
         }}
         loading={loading}
         className="mt-5">

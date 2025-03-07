@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const GET_ALL_COUNTRIES_QUERY = gql`
   query GetAllCountries {
@@ -60,8 +60,13 @@ export const UserFragment = gql`
 `;
 
 export const LOGIN_INTERNAL_QUERY = gql`
-  query LoginInternal($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+  query LoginInternal(
+    $email: String!
+    $password: String!
+    $ipAddress: String
+    $device: AuthDeviceType
+  ) {
+    login(email: $email, password: $password, ipAddress: $ipAddress, device: $device) {
       token
       user {
         id
@@ -79,8 +84,8 @@ export const LOGIN_INTERNAL_QUERY = gql`
 `;
 
 export const GOOGLE_OAUTH_QUERY = gql`
-  query GoogleOAuth($accessToken: String!) {
-    googleOAuth(accessToken: $accessToken) {
+  query GoogleOAuth($accessToken: String!, $ipAddress: String, $device: AuthDeviceType) {
+    googleOAuth(accessToken: $accessToken, device: $device) {
       token
       user {
         id
@@ -134,4 +139,4 @@ export const ALL_PRODUCTS_QUERY = gql(`
       updatedAt
     }
   }
-`)
+`);
