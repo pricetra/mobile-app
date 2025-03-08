@@ -6,11 +6,13 @@ import {
   NormalizedCacheObject,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 
-const httpLink = createHttpLink({
-  uri: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/graphql',
-});
+const uri = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/graphql';
+
+const httpLink = createHttpLink({ uri });
+const uploadLink = createUploadLink({ uri });
 
 function createAuthLink(jwt?: string) {
   return setContext((_, { headers }) => {
@@ -20,6 +22,13 @@ function createAuthLink(jwt?: string) {
         authorization: jwt ? `Bearer ${jwt}` : undefined,
       },
     };
+  });
+}
+
+function newClient(jwt?: string) {
+  return new ApolloClient({
+    link: createAuthLink(jwt).concat(uploadLink),
+    cache: new InMemoryCache(),
   });
 }
 
@@ -33,22 +42,12 @@ type ApolloWrapperProps = { children: ReactNode };
 
 export default function ApolloWrapper({ children }: ApolloWrapperProps) {
   const [jwt, setJwt] = useState<string>();
-  const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>(
-    new ApolloClient({
-      link: createAuthLink().concat(httpLink),
-      cache: new InMemoryCache(),
-    })
-  );
+  const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>(newClient());
 
   useEffect(() => {
     if (!jwt || jwt.length === 0) return;
 
-    setClient(
-      new ApolloClient({
-        link: createAuthLink(jwt).concat(httpLink),
-        cache: new InMemoryCache(),
-      })
-    );
+    setClient(newClient(jwt));
   }, [jwt]);
 
   return (
