@@ -203,7 +203,8 @@ export type QueryLoginArgs = {
 };
 
 export type UpdateUser = {
-  avatar?: InputMaybe<Scalars['Upload']['input']>;
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  avatarFile?: InputMaybe<Scalars['Upload']['input']>;
   bio?: InputMaybe<Scalars['String']['input']>;
   birthDate?: InputMaybe<Scalars['Time']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
