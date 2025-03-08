@@ -41,3 +41,19 @@ export const LOGOUT_MUTATION = gql(`
     logout
   }
 `);
+
+export const UPDATE_PROFILE_MUTATION = gql(`
+  mutation UpdateProfile($input: UpdateUser!) {
+    updateProfile(input: $input) {
+      id
+      name
+      email
+      avatar
+      createdAt
+      updatedAt
+      active
+      authPlatform
+      authStateId
+    }
+  }
+`);
