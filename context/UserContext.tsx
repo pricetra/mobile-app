@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { ApolloContext } from '@/graphql/ApolloWrapper';
@@ -13,6 +13,7 @@ export const JWT_KEY = 'JWT';
 export type UserContextType = {
   user: User;
   token: string;
+  updateUser: (updatedUser: User) => void;
   logout: () => void;
 };
 
@@ -25,6 +26,7 @@ type UserContextProviderProps = {
 
 export function UserContextProvider({ children, jwt }: UserContextProviderProps) {
   const apolloContext = useContext(ApolloContext);
+  const [user, setUser] = useState<User>();
   const router = useRouter();
   const {
     data: userData,
@@ -37,6 +39,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
   useEffect(() => {
     if (!userData) return;
+    setUser(userData.me);
     apolloContext.setAuthHeader(jwt);
   }, [userData]);
 
@@ -70,7 +73,8 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
       value={
         {
           token: jwt,
-          user: userData.me,
+          user: user ?? userData.me,
+          updateUser: (updatedUser) => setUser(updatedUser),
           logout: () => {
             logout().then(({ data, errors }) => {
               if (errors || !data || !data.logout) return;
