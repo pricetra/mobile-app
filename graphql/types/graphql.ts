@@ -160,6 +160,8 @@ export type Product = {
   code: Scalars['String']['output'];
   color?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Time']['output'];
+  createdBy?: Maybe<CreatedByUser>;
+  createdById?: Maybe<Scalars['ID']['output']>;
   description: Scalars['String']['output'];
   highestRecordedPrice?: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
@@ -168,6 +170,8 @@ export type Product = {
   model?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   updatedAt: Scalars['Time']['output'];
+  updatedBy?: Maybe<UpdatedByUser>;
+  updatedById?: Maybe<Scalars['ID']['output']>;
   url?: Maybe<Scalars['String']['output']>;
   weight?: Maybe<Scalars['String']['output']>;
 };
