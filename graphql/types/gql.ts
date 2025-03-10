@@ -19,6 +19,7 @@ type Documents = {
     "\n  mutation ResendVerification($email: String!) {\n    resendEmailVerificationCode(email: $email)\n  }\n": typeof types.ResendVerificationDocument,
     "\n  mutation Logout {\n    logout\n  }\n": typeof types.LogoutDocument,
     "\n  mutation UpdateProfile($input: UpdateUser!) {\n    updateProfile(input: $input) {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n": typeof types.UpdateProfileDocument,
+    "\n  mutation CreateCompany($input: CreateCompany!) {\n    createCompany(input: $input) {\n      id\n      name\n      logo\n      website\n      createdById\n      updatedById\n    }\n  }\n": typeof types.CreateCompanyDocument,
     "\n  query GetAllCountries {\n    getAllCountries {\n      code\n      name\n      administrativeDivisions {\n        name\n        cities\n      }\n      currency {\n        currencyCode\n        name\n        symbol\n        symbolNative\n        decimals\n        numToBasic\n      }\n      callingCode\n      language\n    }\n  }\n": typeof types.GetAllCountriesDocument,
     "\n  query BarcodeScan($barcode: String!) {\n    barcodeScan(barcode: $barcode) {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.BarcodeScanDocument,
     "\n  fragment UserFields on User {\n    id\n    name\n    email\n    avatar\n    createdAt\n    updatedAt\n    active\n    authPlatform\n    authStateId\n  }\n": typeof types.UserFieldsFragmentDoc,
@@ -26,6 +27,7 @@ type Documents = {
     "\n  query GoogleOAuth($accessToken: String!, $ipAddress: String, $device: AuthDeviceType) {\n    googleOAuth(accessToken: $accessToken, device: $device) {\n      token\n      user {\n        id\n        name\n        email\n        avatar\n        createdAt\n        updatedAt\n        active\n        authPlatform\n        authStateId\n      }\n      isNewUser\n    }\n  }\n": typeof types.GoogleOAuthDocument,
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n": typeof types.MeDocument,
     "\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.AllProductsDocument,
+    "\n  query AllCompanies {\n    allCompanies {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n": typeof types.AllCompaniesDocument,
 };
 const documents: Documents = {
     "\n  mutation CreateAccount($email: String!, $name: String!, $password: String!) {\n    createAccount(input: { email: $email, name: $name, password: $password }) {\n      id\n      name\n      email\n      phoneNumber\n      createdAt\n      updatedAt\n      authPlatform\n    }\n  }\n": types.CreateAccountDocument,
@@ -33,6 +35,7 @@ const documents: Documents = {
     "\n  mutation ResendVerification($email: String!) {\n    resendEmailVerificationCode(email: $email)\n  }\n": types.ResendVerificationDocument,
     "\n  mutation Logout {\n    logout\n  }\n": types.LogoutDocument,
     "\n  mutation UpdateProfile($input: UpdateUser!) {\n    updateProfile(input: $input) {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n": types.UpdateProfileDocument,
+    "\n  mutation CreateCompany($input: CreateCompany!) {\n    createCompany(input: $input) {\n      id\n      name\n      logo\n      website\n      createdById\n      updatedById\n    }\n  }\n": types.CreateCompanyDocument,
     "\n  query GetAllCountries {\n    getAllCountries {\n      code\n      name\n      administrativeDivisions {\n        name\n        cities\n      }\n      currency {\n        currencyCode\n        name\n        symbol\n        symbolNative\n        decimals\n        numToBasic\n      }\n      callingCode\n      language\n    }\n  }\n": types.GetAllCountriesDocument,
     "\n  query BarcodeScan($barcode: String!) {\n    barcodeScan(barcode: $barcode) {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": types.BarcodeScanDocument,
     "\n  fragment UserFields on User {\n    id\n    name\n    email\n    avatar\n    createdAt\n    updatedAt\n    active\n    authPlatform\n    authStateId\n  }\n": types.UserFieldsFragmentDoc,
@@ -40,6 +43,7 @@ const documents: Documents = {
     "\n  query GoogleOAuth($accessToken: String!, $ipAddress: String, $device: AuthDeviceType) {\n    googleOAuth(accessToken: $accessToken, device: $device) {\n      token\n      user {\n        id\n        name\n        email\n        avatar\n        createdAt\n        updatedAt\n        active\n        authPlatform\n        authStateId\n      }\n      isNewUser\n    }\n  }\n": types.GoogleOAuthDocument,
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n": types.MeDocument,
     "\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": types.AllProductsDocument,
+    "\n  query AllCompanies {\n    allCompanies {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n": types.AllCompaniesDocument,
 };
 
 /**
@@ -79,6 +83,10 @@ export function graphql(source: "\n  mutation UpdateProfile($input: UpdateUser!)
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation CreateCompany($input: CreateCompany!) {\n    createCompany(input: $input) {\n      id\n      name\n      logo\n      website\n      createdById\n      updatedById\n    }\n  }\n"): (typeof documents)["\n  mutation CreateCompany($input: CreateCompany!) {\n    createCompany(input: $input) {\n      id\n      name\n      logo\n      website\n      createdById\n      updatedById\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query GetAllCountries {\n    getAllCountries {\n      code\n      name\n      administrativeDivisions {\n        name\n        cities\n      }\n      currency {\n        currencyCode\n        name\n        symbol\n        symbolNative\n        decimals\n        numToBasic\n      }\n      callingCode\n      language\n    }\n  }\n"): (typeof documents)["\n  query GetAllCountries {\n    getAllCountries {\n      code\n      name\n      administrativeDivisions {\n        name\n        cities\n      }\n      currency {\n        currencyCode\n        name\n        symbol\n        symbolNative\n        decimals\n        numToBasic\n      }\n      callingCode\n      language\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -104,6 +112,10 @@ export function graphql(source: "\n  query Me {\n    me {\n      id\n      name\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AllCompanies {\n    allCompanies {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n"): (typeof documents)["\n  query AllCompanies {\n    allCompanies {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

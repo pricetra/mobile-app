@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Pressable, View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
 export type ButtonProps = {
   children?: ReactNode;
@@ -11,7 +11,7 @@ export type ButtonProps = {
 
 export default function Button({ children, onPress, disabled, loading, className }: ButtonProps) {
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
       className={`active:opacity-800 rounded-md bg-black px-6 py-4 disabled:pointer-events-none disabled:opacity-70 ${className}`}>
@@ -22,6 +22,6 @@ export default function Button({ children, onPress, disabled, loading, className
           <Text className="text-center font-bold color-white">{children}</Text>
         )}
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 }

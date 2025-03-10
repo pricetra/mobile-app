@@ -140,3 +140,19 @@ export const ALL_PRODUCTS_QUERY = gql(`
     }
   }
 `);
+
+export const ALL_COMPANIES_QUERY = gql(`
+  query AllCompanies {
+    allCompanies {
+      id
+      name
+      logo
+      website
+      createdBy {
+        id
+        name
+        avatar
+      }
+    }
+  }
+`);

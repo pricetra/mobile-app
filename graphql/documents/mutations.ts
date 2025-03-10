@@ -57,3 +57,16 @@ export const UPDATE_PROFILE_MUTATION = gql(`
     }
   }
 `);
+
+export const CREATE_COMPANY_MUTATION = gql(`
+  mutation CreateCompany($input: CreateCompany!) {
+    createCompany(input: $input) {
+      id
+      name
+      logo
+      website
+      createdById
+      updatedById
+    }
+  }
+`);

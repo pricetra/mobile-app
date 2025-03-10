@@ -74,6 +74,13 @@ export default function TabLayout() {
             headerShown: false,
           }}
         />
+        <Tabs.Screen
+          name="internal/create-company"
+          options={{
+            tabBarItemStyle: { display: 'none' },
+            headerShown: false,
+          }}
+        />
       </Tabs>
     </UserContextProvider>
   );
