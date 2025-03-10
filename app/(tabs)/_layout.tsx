@@ -1,16 +1,16 @@
 import { Feather } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { Tabs, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useContext, useEffect, useState } from 'react';
-import { Platform, View, Text, SafeAreaView } from 'react-native';
+import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
+import TabHeader, { TabHeaderProps } from '@/components/ui/TabHeader';
 import { Colors } from '@/constants/Colors';
 import { JWT_KEY, UserContextProvider } from '@/context/UserContext';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { ApolloContext } from '@/graphql/ApolloWrapper';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const apolloContext = useContext(ApolloContext);
@@ -47,19 +47,7 @@ export default function TabLayout() {
             },
             default: {},
           }),
-          header: (props) => (
-            <>
-              <SafeAreaView className="flex w-full bg-gray-900">
-                <View
-                  className="w-full flex-row items-center justify-start gap-5 px-5 py-5"
-                  style={{ marginTop: Platform.OS === 'android' ? 20 : 0 }}>
-                  {props.options.tabBarIcon &&
-                    props.options.tabBarIcon({ focused: true, color: '#e2e8f0', size: 30 })}
-                  <Text className="text-2xl font-bold text-slate-200">{props.options.title}</Text>
-                </View>
-              </SafeAreaView>
-            </>
-          ),
+          header: (props) => <TabHeader {...(props as unknown as TabHeaderProps)} />,
         }}>
         <Tabs.Screen
           name="index"
