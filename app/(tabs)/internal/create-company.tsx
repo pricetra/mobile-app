@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { upload } from 'cloudinary-react-native';
 import { randomUUID } from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
@@ -7,23 +7,28 @@ import { Text, View, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'r
 
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { CreateCompanyDocument } from '@/graphql/types/graphql';
+import { AllCompaniesDocument, CreateCompanyDocument } from '@/graphql/types/graphql';
 import { cloudinary } from '@/lib/files';
 import { Pressable } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
+import CompanyItem, { CompanyItemLoading } from '@/components/CompanyItem';
 
 export default function CreateCompanyScreen() {
   const [name, setName] = useState<string>();
   const [website, setWebsite] = useState<string>();
   const [logoFileUri, setLogoFileUri] = useState<string>();
   const [uploading, setUploading] = useState(false);
-  const [createCompany, { data, error, loading: dataLoading }] = useMutation(CreateCompanyDocument);
+  const [createCompany, { data, error, loading: dataLoading }] = useMutation(
+    CreateCompanyDocument,
+    { refetchQueries: [AllCompaniesDocument] }
+  );
+  const { data: allCompaniesData, loading: allCompaniesLoading } = useQuery(AllCompaniesDocument);
 
   const loading = uploading || dataLoading;
 
   useEffect(() => {
     if (!data) return;
-    alert(`Company created: ${data.createCompany.name}`);
+
     setName(undefined);
     setWebsite(undefined);
     setLogoFileUri(undefined);
@@ -86,8 +91,8 @@ export default function CreateCompanyScreen() {
 
   return (
     <SafeAreaView>
-      <ScrollView>
-        <View className="p-5">
+      <ScrollView className="h-full p-5">
+        <View>
           <View className="flex flex-row gap-3">
             <TouchableOpacity onPress={selectLogo}>
               {logoFileUri ? (
@@ -129,6 +134,20 @@ export default function CreateCompanyScreen() {
             disabled={!name || !logoFileUri || !website}>
             Create company
           </Button>
+        </View>
+
+        <View className="my-20">
+          {allCompaniesLoading && (
+            <View>
+              {Array(10)
+                .fill(0)
+                .map((_, i) => (
+                  <CompanyItemLoading key={i} />
+                ))}
+            </View>
+          )}
+          {allCompaniesData &&
+            allCompaniesData.allCompanies.map((c) => <CompanyItem {...c} key={c.id} />)}
         </View>
       </ScrollView>
     </SafeAreaView>
