@@ -78,7 +78,6 @@ export default function TabLayout() {
           name="internal/create-company"
           options={{
             tabBarItemStyle: { display: 'none' },
-            headerShown: false,
           }}
         />
       </Tabs>

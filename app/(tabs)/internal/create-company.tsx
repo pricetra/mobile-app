@@ -3,12 +3,14 @@ import { upload } from 'cloudinary-react-native';
 import { randomUUID } from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
-import { Text, View, ScrollView, SafeAreaView, Image } from 'react-native';
+import { Text, View, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { CreateCompanyDocument } from '@/graphql/types/graphql';
 import { cloudinary } from '@/lib/files';
+import { Pressable } from 'react-native-gesture-handler';
+import { Feather } from '@expo/vector-icons';
 
 export default function CreateCompanyScreen() {
   const [name, setName] = useState<string>();
@@ -24,7 +26,7 @@ export default function CreateCompanyScreen() {
     alert(`Company created: ${data.createCompany.name}`);
     setName(undefined);
     setWebsite(undefined);
-    setLogoFileUri(undefined)
+    setLogoFileUri(undefined);
   }, [data]);
 
   useEffect(() => {
@@ -86,38 +88,46 @@ export default function CreateCompanyScreen() {
     <SafeAreaView>
       <ScrollView>
         <View className="p-5">
-          <Text className="mb-10 text-2xl font-bold">Add company</Text>
+          <View className="flex flex-row gap-3">
+            <TouchableOpacity onPress={selectLogo}>
+              {logoFileUri ? (
+                <Image source={{ uri: logoFileUri }} className="size-[93px] rounded-lg" />
+              ) : (
+                <View className="flex size-[93px] items-center justify-center rounded-md bg-gray-400">
+                  <Feather name="camera" color="white" size={35} />
+                </View>
+              )}
+            </TouchableOpacity>
 
-          <View className="flex flex-col gap-3">
-            <Input
-              placeholder="Company name"
-              onChangeText={setName}
-              value={name}
-              autoCorrect
-              editable={!loading}
-            />
+            <View className="flex flex-1 flex-col gap-3">
+              <Input
+                placeholder="Company name"
+                onChangeText={setName}
+                value={name}
+                autoCorrect
+                editable={!loading}
+              />
 
-            <Input
-              placeholder="Website (https://example.com)"
-              onChangeText={setWebsite}
-              value={website}
-              autoCapitalize="none"
-              textContentType="URL"
-              keyboardType="default"
-              autoCorrect={false}
-              autoComplete="url"
-              editable={!loading}
-            />
-
-            {logoFileUri && <Image source={{ uri: logoFileUri }} className="size-28 rounded-lg" />}
-
-            <Button onPress={selectLogo} loading={loading}>
-              {logoFileUri ? 'Use another image' : 'Upload logo'}
-            </Button>
+              <Input
+                placeholder="Website (https://example.com)"
+                onChangeText={setWebsite}
+                value={website}
+                autoCapitalize="none"
+                textContentType="URL"
+                keyboardType="default"
+                autoCorrect={false}
+                autoComplete="url"
+                editable={!loading}
+              />
+            </View>
           </View>
 
-          <Button onPress={create} className="mt-10" loading={loading}>
-            Create
+          <Button
+            onPress={create}
+            className="mt-5"
+            loading={loading}
+            disabled={!name || !logoFileUri || !website}>
+            Create company
           </Button>
         </View>
       </ScrollView>
