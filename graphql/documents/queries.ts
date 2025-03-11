@@ -141,9 +141,9 @@ export const ALL_PRODUCTS_QUERY = gql(`
   }
 `);
 
-export const ALL_COMPANIES_QUERY = gql(`
-  query AllCompanies {
-    allCompanies {
+export const ALL_STORES_QUERY = gql(`
+  query AllStores {
+    allStores {
       id
       name
       logo

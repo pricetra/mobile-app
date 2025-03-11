@@ -58,9 +58,9 @@ export const UPDATE_PROFILE_MUTATION = gql(`
   }
 `);
 
-export const CREATE_COMPANY_MUTATION = gql(`
-  mutation CreateCompany($input: CreateCompany!) {
-    createCompany(input: $input) {
+export const CREATE_STORE_MUTATION = gql(`
+  mutation CreateStore($input: CreateStore!) {
+    createStore(input: $input) {
       id
       name
       logo

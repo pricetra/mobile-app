@@ -1,28 +1,26 @@
 import { useMutation, useQuery } from '@apollo/client';
+import { Feather } from '@expo/vector-icons';
 import { upload } from 'cloudinary-react-native';
 import { randomUUID } from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
-import { Text, View, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'react-native';
+import { View, ScrollView, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 
+import StoreItem, { StoreItemLoading } from '@/components/CompanyItem';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { AllCompaniesDocument, CreateCompanyDocument } from '@/graphql/types/graphql';
+import { AllStoresDocument, CreateStoreDocument } from '@/graphql/types/graphql';
 import { cloudinary } from '@/lib/files';
-import { Pressable } from 'react-native-gesture-handler';
-import { Feather } from '@expo/vector-icons';
-import CompanyItem, { CompanyItemLoading } from '@/components/CompanyItem';
 
-export default function CreateCompanyScreen() {
+export default function CreateStoreScreen() {
   const [name, setName] = useState<string>();
   const [website, setWebsite] = useState<string>();
   const [logoFileUri, setLogoFileUri] = useState<string>();
   const [uploading, setUploading] = useState(false);
-  const [createCompany, { data, error, loading: dataLoading }] = useMutation(
-    CreateCompanyDocument,
-    { refetchQueries: [AllCompaniesDocument] }
-  );
-  const { data: allCompaniesData, loading: allCompaniesLoading } = useQuery(AllCompaniesDocument);
+  const [createStore, { data, error, loading: dataLoading }] = useMutation(CreateStoreDocument, {
+    refetchQueries: [AllStoresDocument],
+  });
+  const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument);
 
   const loading = uploading || dataLoading;
 
@@ -57,7 +55,7 @@ export default function CreateCompanyScreen() {
           return;
         }
 
-        createCompany({
+        createStore({
           variables: {
             input: {
               name,
@@ -137,17 +135,16 @@ export default function CreateCompanyScreen() {
         </View>
 
         <View className="my-20">
-          {allCompaniesLoading && (
+          {allStoresLoading && (
             <View>
               {Array(10)
                 .fill(0)
                 .map((_, i) => (
-                  <CompanyItemLoading key={i} />
+                  <StoreItemLoading key={i} />
                 ))}
             </View>
           )}
-          {allCompaniesData &&
-            allCompaniesData.allCompanies.map((c) => <CompanyItem {...c} key={c.id} />)}
+          {allStoresData && allStoresData.allStores.map((c) => <StoreItem {...c} key={c.id} />)}
         </View>
       </ScrollView>
     </SafeAreaView>

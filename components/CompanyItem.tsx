@@ -2,9 +2,9 @@ import { View, Image, Text } from 'react-native';
 
 import { Skeleton } from './ui/Skeleton';
 
-import { Company } from '@/graphql/types/graphql';
+import { Store } from '@/graphql/types/graphql';
 
-export default function CompanyItem({ name, logo, website }: Company) {
+export default function StoreItem({ name, logo, website }: Store) {
   return (
     <View className="mb-5 flex flex-row gap-3">
       <View className="flex flex-row gap-3">
@@ -23,7 +23,7 @@ export default function CompanyItem({ name, logo, website }: Company) {
   );
 }
 
-export function CompanyItemLoading() {
+export function StoreItemLoading() {
   return (
     <View className="mb-5 flex flex-row gap-3">
       <View className="flex flex-row gap-3">
