@@ -106,7 +106,7 @@ export default function CreateCompanyScreen() {
 
             <View className="flex flex-1 flex-col gap-3">
               <Input
-                placeholder="Company name"
+                placeholder="Store name"
                 onChangeText={setName}
                 value={name}
                 autoCorrect
@@ -132,7 +132,7 @@ export default function CreateCompanyScreen() {
             className="mt-5"
             loading={loading}
             disabled={!name || !logoFileUri || !website}>
-            Create company
+            Create store
           </Button>
         </View>
 

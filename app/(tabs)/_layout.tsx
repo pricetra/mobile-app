@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Tabs, useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import React, { useContext, useEffect, useState } from 'react';
@@ -53,31 +53,34 @@ export default function TabLayout() {
           name="index"
           options={{
             title: 'Home',
-            tabBarIcon: ({ color }) => <Feather size={28} name="home" color={color} />, // https://icons.expo.fyi/Index
+            tabBarIcon: ({ color, size }) => <Feather size={size} name="home" color={color} />, // https://icons.expo.fyi/Index
           }}
         />
         <Tabs.Screen
           name="scan"
           options={{
             title: 'Scan',
-            tabBarIcon: ({ color }) => <Feather size={28} name="camera" color={color} />, // https://icons.expo.fyi/Index
+            tabBarIcon: ({ color, size }) => <Feather size={size} name="camera" color={color} />, // https://icons.expo.fyi/Index
             headerShown: false,
             tabBarShowLabel: false,
             tabBarStyle: { display: 'none' },
           }}
         />
         <Tabs.Screen
-          name="profile"
+          name="internal/stores"
           options={{
-            title: 'Profile',
-            tabBarIcon: ({ color }) => <Feather size={28} name="user" color={color} />,
-            headerShown: false,
+            title: 'Stores',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialIcons size={size} name="storefront" color={color} />
+            ),
           }}
         />
         <Tabs.Screen
-          name="internal/create-company"
+          name="profile"
           options={{
-            tabBarItemStyle: { display: 'none' },
+            title: 'Profile',
+            tabBarIcon: ({ color, size }) => <Feather size={size} name="user" color={color} />,
+            headerShown: false,
           }}
         />
       </Tabs>
