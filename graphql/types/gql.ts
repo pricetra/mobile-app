@@ -28,6 +28,7 @@ type Documents = {
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n": typeof types.MeDocument,
     "\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.AllProductsDocument,
     "\n  query AllStores {\n    allStores {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n": typeof types.AllStoresDocument,
+    "\n  query FindStore($id: ID!) {\n    findStore(id: $id) {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n": typeof types.FindStoreDocument,
 };
 const documents: Documents = {
     "\n  mutation CreateAccount($email: String!, $name: String!, $password: String!) {\n    createAccount(input: { email: $email, name: $name, password: $password }) {\n      id\n      name\n      email\n      phoneNumber\n      createdAt\n      updatedAt\n      authPlatform\n    }\n  }\n": types.CreateAccountDocument,
@@ -44,6 +45,7 @@ const documents: Documents = {
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      avatar\n      createdAt\n      updatedAt\n      active\n      authPlatform\n      authStateId\n    }\n  }\n": types.MeDocument,
     "\n  query AllProducts {\n    allProducts {\n      id\n      name\n      image\n      description\n      url\n      brand\n      code\n      color\n      model\n      category\n      weight\n      lowestRecordedPrice\n      highestRecordedPrice\n      createdAt\n      updatedAt\n    }\n  }\n": types.AllProductsDocument,
     "\n  query AllStores {\n    allStores {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n": types.AllStoresDocument,
+    "\n  query FindStore($id: ID!) {\n    findStore(id: $id) {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n": types.FindStoreDocument,
 };
 
 /**
@@ -116,6 +118,10 @@ export function graphql(source: "\n  query AllProducts {\n    allProducts {\n   
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query AllStores {\n    allStores {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n"): (typeof documents)["\n  query AllStores {\n    allStores {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query FindStore($id: ID!) {\n    findStore(id: $id) {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n"): (typeof documents)["\n  query FindStore($id: ID!) {\n    findStore(id: $id) {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

@@ -7,6 +7,7 @@ import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
 import CreateStoreForm from '@/components/CreateStoreForm';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { AllStoresDocument } from '@/graphql/types/graphql';
+import { router } from 'expo-router';
 
 export default function CreateStoreScreen() {
   const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument);
@@ -42,7 +43,12 @@ export default function CreateStoreScreen() {
                 ))}
             </View>
           )}
-          {allStoresData && allStoresData.allStores.map((c) => <StoreItem {...c} key={c.id} />)}
+          {allStoresData &&
+            allStoresData.allStores.map((c) => (
+              <TouchableOpacity key={c.id} onPress={() => router.push(`/(stores)/${c.id}`)}>
+                <StoreItem {...c} />
+              </TouchableOpacity>
+            ))}
         </View>
       </ScrollView>
     </SafeAreaView>

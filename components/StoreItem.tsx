@@ -20,8 +20,8 @@ export default function StoreItem({ name, logo, website }: Store) {
         <Text className="text-2xl font-bold">{name}</Text>
 
         <View className="flex flex-row items-center gap-1">
-          <MaterialCommunityIcons name="earth" />
-          <Text className="flex items-center">{website}</Text>
+          <MaterialCommunityIcons name="earth" color="#374151" />
+          <Text className="flex items-center color-gray-700">{website}</Text>
         </View>
       </View>
     </View>

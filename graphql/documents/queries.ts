@@ -156,3 +156,19 @@ export const ALL_STORES_QUERY = gql(`
     }
   }
 `);
+
+export const FIND_STORE_QUERY = gql(`
+  query FindStore($id: ID!) {
+    findStore(id: $id) {
+      id
+      name
+      logo
+      website
+      createdBy {
+        id
+        name
+        avatar
+      }
+    }
+  }
+`);
