@@ -3,7 +3,7 @@ import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import { View, ScrollView, SafeAreaView, TouchableOpacity, Platform } from 'react-native';
 
-import StoreItem, { StoreItemLoading } from '@/components/CompanyItem';
+import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
 import CreateStoreForm from '@/components/CreateStoreForm';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { AllStoresDocument } from '@/graphql/types/graphql';

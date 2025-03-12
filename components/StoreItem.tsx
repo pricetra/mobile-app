@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Image, Text } from 'react-native';
 
 import { Skeleton } from './ui/Skeleton';
@@ -15,10 +16,13 @@ export default function StoreItem({ name, logo, website }: Store) {
         />
       </View>
 
-      <View className="flex flex-1 flex-col gap-3">
+      <View className="flex flex-1 flex-col gap-2">
         <Text className="text-2xl font-bold">{name}</Text>
 
-        <Text className="">{website}</Text>
+        <View className="flex flex-row items-center gap-1">
+          <MaterialCommunityIcons name="earth" />
+          <Text className="flex items-center">{website}</Text>
+        </View>
       </View>
     </View>
   );
