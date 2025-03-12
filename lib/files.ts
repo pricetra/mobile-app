@@ -1,4 +1,6 @@
-import { Cloudinary } from "@cloudinary/url-gen";
+import { Cloudinary } from '@cloudinary/url-gen';
+import { upload } from 'cloudinary-react-native';
+import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary-react-native/lib/typescript/src/api/upload/model/params/upload-params';
 
 export async function getFileBlobFromUri(uri: string) {
   const response = await fetch(uri);
@@ -16,3 +18,31 @@ export const cloudinary = new Cloudinary({
     secure: true,
   },
 });
+
+export type UploadToCloudinaryProps = {
+  file: any;
+  public_id: string;
+  tags: string[];
+  onSuccess: (res: UploadApiResponse) => void;
+  onError: (err: UploadApiErrorResponse) => void;
+};
+
+export function uploadToCloudinary({
+  file,
+  public_id,
+  tags,
+  onSuccess,
+  onError,
+}: UploadToCloudinaryProps) {
+  upload(cloudinary, {
+    file,
+    options: {
+      public_id,
+      tags,
+    },
+    callback: async (err, res) => {
+      if (err) return onError(err);
+      if (res) return onSuccess(res);
+    },
+  });
+}
