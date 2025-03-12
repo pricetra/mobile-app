@@ -12,7 +12,6 @@ export default function SelectedStoreScreen() {
   const { id } = useLocalSearchParams();
   const [findStore, { data: storeData, loading: storeLoading, error: storeError }] =
     useLazyQuery(FindStoreDocument);
-  const navigation = useNavigation();
 
   useEffect(() => {
     if (!id || typeof id !== 'string') return router.back();

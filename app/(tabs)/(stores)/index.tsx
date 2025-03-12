@@ -1,13 +1,14 @@
 import { useQuery } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { View, ScrollView, SafeAreaView, TouchableOpacity, Platform } from 'react-native';
+import { View, ScrollView, SafeAreaView, TouchableOpacity, Text } from 'react-native';
 
-import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
 import CreateStoreForm from '@/components/CreateStoreForm';
+import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
+import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { AllStoresDocument } from '@/graphql/types/graphql';
-import { router } from 'expo-router';
 
 export default function CreateStoreScreen() {
   const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument);
@@ -15,15 +16,10 @@ export default function CreateStoreScreen() {
 
   return (
     <SafeAreaView>
-      <View
-        className="absolute right-0 z-10 p-10"
-        style={{ bottom: Platform.OS === 'android' ? 0 : 75 }}>
-        <TouchableOpacity
-          onPress={() => setOpenModal(true)}
-          className="flex size-16 items-center justify-center rounded-full bg-gray-900 p-3 shadow-lg">
-          <Feather name="plus" size={25} color="white" />
-        </TouchableOpacity>
-      </View>
+      <FloatingActionButton onPress={() => setOpenModal(true)}>
+        <Feather name="plus" size={20} color="white" />
+        <Text className="text-md font-bold color-white">Store</Text>
+      </FloatingActionButton>
 
       <ScrollView className="h-full p-5">
         <ModalFormMini
