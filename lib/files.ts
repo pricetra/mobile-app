@@ -1,6 +1,9 @@
 import { Cloudinary } from '@cloudinary/url-gen';
 import { upload } from 'cloudinary-react-native';
-import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary-react-native/lib/typescript/src/api/upload/model/params/upload-params';
+import {
+  UploadApiErrorResponse,
+  UploadApiResponse,
+} from 'cloudinary-react-native/lib/typescript/src/api/upload/model/params/upload-params';
 
 export async function getFileBlobFromUri(uri: string) {
   const response = await fetch(uri);
@@ -45,4 +48,16 @@ export function uploadToCloudinary({
       if (res) return onSuccess(res);
     },
   });
+}
+
+export const CLOUDINARY_UPLOAD_BASE = 'https://res.cloudinary.com/pricetra-api/image/upload';
+
+export function createCloudinaryUrl(public_id: string, width?: number, height?: number) {
+  let url = CLOUDINARY_UPLOAD_BASE;
+  const transformations: string[] = [];
+  if (width) transformations.push(`w_${width}`);
+  if (height) transformations.push(`h_${height}`);
+  if (transformations.length > 0) url += `/${transformations.join(',')}`;
+  url += `/${public_id}`;
+  return url;
 }

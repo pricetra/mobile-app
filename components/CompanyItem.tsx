@@ -3,13 +3,14 @@ import { View, Image, Text } from 'react-native';
 import { Skeleton } from './ui/Skeleton';
 
 import { Store } from '@/graphql/types/graphql';
+import { createCloudinaryUrl } from '@/lib/files';
 
 export default function StoreItem({ name, logo, website }: Store) {
   return (
     <View className="mb-5 flex flex-row gap-3">
       <View className="flex flex-row gap-3">
         <Image
-          source={{ uri: `https://res.cloudinary.com/pricetra-api/image/upload/${logo}` }}
+          source={{ uri: createCloudinaryUrl(logo, 120, 120) }}
           className="size-[93px] rounded-lg"
         />
       </View>

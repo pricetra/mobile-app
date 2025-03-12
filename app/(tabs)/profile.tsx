@@ -12,6 +12,7 @@ import Button from '@/components/ui/Button';
 import { UserAuthContext } from '@/context/UserContext';
 import { UpdateProfileDocument } from '@/graphql/types/graphql';
 import { getFileBlobFromUri, cloudinary } from '@/lib/files';
+import { createCloudinaryUrl } from '../../lib/files';
 
 export default function ProfileScreen() {
   const { user, updateUser, logout } = useContext(UserAuthContext);
@@ -77,7 +78,7 @@ export default function ProfileScreen() {
             {user.avatar ? (
               <Image
                 source={{
-                  uri: `https://res.cloudinary.com/pricetra-api/image/upload/${user.avatar}`,
+                  uri: createCloudinaryUrl(user.avatar, 100, 100),
                 }}
                 className="size-20 rounded-full"
               />
