@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { View, Image, Text } from 'react-native';
+import { View, Text } from 'react-native';
 
 import BarcodeText from './ui/BarcodeText';
 import { Skeleton } from './ui/Skeleton';
 
+import Image from '@/components/ui/Image';
 import { Product } from '@/graphql/types/graphql';
 
 export type ProductItemProps = {
@@ -11,24 +11,9 @@ export type ProductItemProps = {
 };
 
 export default function ProductItem({ product }: ProductItemProps) {
-  const loadingImage = require('../assets/images/loading_img.jpg');
-  const noImage = require('../assets/images/no_img.jpg');
-  const [image, setImage] = useState(product.image);
-
   return (
     <View className="mb-10 flex max-w-full flex-row gap-2">
-      <Image
-        defaultSource={loadingImage}
-        onError={() => setImage('')}
-        source={
-          image !== ''
-            ? {
-                uri: image,
-              }
-            : noImage
-        }
-        className="size-28 rounded-lg"
-      />
+      <Image src={product.image} className="size-28 rounded-lg" />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
           <BarcodeText className="text-sm color-gray-600">{product.code}</BarcodeText>
