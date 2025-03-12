@@ -67,12 +67,18 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="internal/stores"
+          name="(stores)/index"
           options={{
             title: 'Stores',
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons size={size} name="storefront" color={color} />
             ),
+          }}
+        />
+        <Tabs.Screen
+          name="(stores)/[id]"
+          options={{
+            href: null,
           }}
         />
         <Tabs.Screen

@@ -107,6 +107,7 @@ export default function CreateStoreForm({ onSuccess, onError }: CreateStoreFormP
             value={name}
             autoCorrect
             editable={!loading}
+            autoFocus
           />
 
           <Input
