@@ -37,7 +37,7 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           tabBarActiveTintColor:
-            Platform.OS === 'android' ? Colors['light'].tint : Colors[colorScheme ?? 'light'].tint,
+            Platform.OS === 'android' ? '#111827' : Colors[colorScheme ?? 'light'].tint,
           tabBarButton: HapticTab,
           tabBarBackground: TabBarBackground,
           tabBarStyle: Platform.select({

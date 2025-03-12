@@ -5,8 +5,8 @@ import { View, ScrollView, SafeAreaView, TouchableOpacity, Platform } from 'reac
 
 import StoreItem, { StoreItemLoading } from '@/components/CompanyItem';
 import CreateStoreForm from '@/components/CreateStoreForm';
-import { AllStoresDocument } from '@/graphql/types/graphql';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import { AllStoresDocument } from '@/graphql/types/graphql';
 
 export default function CreateStoreScreen() {
   const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument);

@@ -26,7 +26,7 @@ export default function ModalFormMini({
   title,
 }: ModalFormMiniProps) {
   return (
-    <Modal animationType="slide" visible={visible} onRequestClose={onRequestClose} transparent>
+    <Modal animationType="fade" visible={visible} onRequestClose={onRequestClose} transparent>
       <Pressable
         className="h-full"
         onPress={onRequestClose}
