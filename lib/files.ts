@@ -50,7 +50,7 @@ export function uploadToCloudinary({
   });
 }
 
-export const CLOUDINARY_UPLOAD_BASE = 'https://res.cloudinary.com/pricetra-api/image/upload';
+export const CLOUDINARY_UPLOAD_BASE = 'https://res.cloudinary.com/pricetra-cdn/image/upload';
 
 export function createCloudinaryUrl(public_id: string, width?: number, height?: number) {
   let url = CLOUDINARY_UPLOAD_BASE;
