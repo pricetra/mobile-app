@@ -34,7 +34,7 @@ export default function ModalFormMini({
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           className="absolute bottom-0 left-0 z-50 h-fit w-full rounded-t-2xl bg-white px-7 py-10 shadow-2xl">
-          <View className="mb-10 flex flex-row items-center justify-between gap-4">
+          <View className="mb-10 flex flex-row items-center justify-between gap-6">
             <Text className="flex flex-row items-center gap-2 text-2xl font-bold">{title}</Text>
 
             <TouchableOpacity

@@ -11,19 +11,21 @@ export default function CreateBranchForm() {
   const [mapsSearch, setMapsSearch] = useState('');
 
   function search() {
+    const key = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
     mapsApiClient
       .placeAutocomplete({
         params: {
           input: mapsSearch,
-          key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
+          // query: mapsSearch,
+          key,
         },
       })
-      .then((res) => console.log(res.data))
+      .then((res) => console.log(res))
       .catch((err) => console.error(err));
   }
 
   return (
-    <View className="flex flex-col gap-3">
+    <View className="flex flex-col gap-6">
       <Input
         placeholder="Search locations"
         onChangeText={setMapsSearch}
