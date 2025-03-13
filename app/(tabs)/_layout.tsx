@@ -35,6 +35,7 @@ export default function TabLayout() {
   return (
     <UserContextProvider jwt={jwt}>
       <Tabs
+        backBehavior="history"
         screenOptions={{
           tabBarActiveTintColor:
             Platform.OS === 'android' ? '#111827' : Colors[colorScheme ?? 'light'].tint,
