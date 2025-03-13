@@ -27,12 +27,18 @@ export default function SelectedStoreScreen() {
 
   return (
     <SafeAreaView className="h-full">
-      <ModalFormMini
-        visible={openModal}
-        onRequestClose={() => setOpenModal(false)}
-        title="Add Branch">
-        <CreateBranchForm />
-      </ModalFormMini>
+      {storeData && (
+        <ModalFormMini
+          visible={openModal}
+          onRequestClose={() => setOpenModal(false)}
+          title="Add Branch">
+          <CreateBranchForm
+            store={storeData.findStore}
+            onSuccess={(_data) => setOpenModal(false)}
+            onError={(e) => alert(e.message)}
+          />
+        </ModalFormMini>
+      )}
 
       <FloatingActionButton onPress={() => setOpenModal(true)}>
         <Feather name="plus" size={20} color="white" />
@@ -65,7 +71,7 @@ export default function SelectedStoreScreen() {
             {storeData &&
               (storeData.allBranches.length > 0 ? (
                 storeData.allBranches.map((b) => (
-                  <View className="mb-10">
+                  <View className="mb-10" key={b.id}>
                     <Text className="text-lg font-bold">{b.name}</Text>
                     <Text>{b.address?.fullAddress}</Text>
                   </View>
