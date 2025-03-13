@@ -1,9 +1,9 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useFocusEffect, usePathname, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import ProductItem from '@/components/ProductItem';
 import BarcodeText from '@/components/ui/BarcodeText';
@@ -12,12 +12,12 @@ import ScannerButton from '@/components/ui/ScannerButton';
 import { BarcodeScanDocument } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
+  const [isCameraActive, setIsCameraActive] = useState(false);
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
   const router = useRouter();
-  const pathname = usePathname();
   const [
     barcodeScan,
     { loading: barcodeScanLoading, data: barcodeScanData, error: barcodeScanError },
@@ -25,11 +25,10 @@ export default function ScanScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (camera) camera.resumePreview();
+      setIsCameraActive(true);
 
       return () => {
-        camera?.pausePreview();
-        if (Platform.OS === 'ios') setCamera(null);
+        setIsCameraActive(false);
       };
     }, [camera])
   );
@@ -59,9 +58,10 @@ export default function ScanScreen() {
     });
   }
 
+  if (!isCameraActive) return <></>;
+
   return (
     <CameraView
-      key={Platform.OS === 'ios' ? pathname : null}
       ratio="1:1"
       style={{
         flex: 1,
