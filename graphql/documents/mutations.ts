@@ -70,3 +70,24 @@ export const CREATE_STORE_MUTATION = gql(`
     }
   }
 `);
+
+export const CREATE_BRANCH_MUTATION = gql(`
+  mutation CreateBranch($input: CreateBranch!) {
+    createBranch(input: $input) {
+      id
+      name
+      addressId
+      storeId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        countryCode
+        country
+        zipCode
+      }
+    }
+  }
+`);

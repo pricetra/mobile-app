@@ -170,5 +170,64 @@ export const FIND_STORE_QUERY = gql(`
         avatar
       }
     }
+
+    allBranches(storeId: $id) {
+      id
+      name
+      addressId
+      storeId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        countryCode
+        country
+        zipCode
+      }
+    }
+  }
+`);
+
+export const ALL_BRANCHES_QUERY = gql(`
+  query AllBranches($storeId: ID!) {
+    allBranches(storeId: $storeId) {
+      id
+      name
+      addressId
+      storeId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        countryCode
+        country
+        zipCode
+      }
+    }
+  }
+`);
+
+export const FIND_BRANCH_QUERY = gql(`
+  query FindBranch($id: ID!, $storeId: ID!) {
+    findBranch(id: $id, storeId: $storeId) {
+      id
+      name
+      addressId
+      storeId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        countryCode
+        country
+        zipCode
+      }
+    }
   }
 `);
