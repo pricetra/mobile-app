@@ -12,7 +12,7 @@ export type ProductItemProps = {
 
 export default function ProductItem({ product }: ProductItemProps) {
   return (
-    <View className="mb-10 flex max-w-full flex-row gap-2">
+    <View className="flex max-w-full flex-row gap-2">
       <Image src={product.image} className="size-28 rounded-lg" />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
@@ -28,7 +28,7 @@ export default function ProductItem({ product }: ProductItemProps) {
 
 export function ProductLoadingItem() {
   return (
-    <View className="mb-10 flex max-w-full flex-row gap-2">
+    <View className="flex max-w-full flex-row gap-2">
       <Skeleton className="size-28 rounded-lg" />
       <View className="max-w-full flex-1 gap-2 p-2">
         <Skeleton className="h-6 w-full" />

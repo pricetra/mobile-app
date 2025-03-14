@@ -37,7 +37,9 @@ export default function HomeScreen() {
           {Array(10)
             .fill(0)
             .map((_, i) => (
-              <ProductLoadingItem key={i} />
+              <View className="mb-10" key={i}>
+                <ProductLoadingItem />
+              </View>
             ))}
         </View>
       )}
@@ -45,7 +47,11 @@ export default function HomeScreen() {
       <FlatList
         data={productsData?.allProducts ?? []}
         keyExtractor={({ id }) => id}
-        renderItem={({ item }) => <ProductItem product={item} />}
+        renderItem={({ item }) => (
+          <View className="mb-10">
+            <ProductItem product={item} />
+          </View>
+        )}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
