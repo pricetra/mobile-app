@@ -58,85 +58,89 @@ export default function ScanScreen() {
     });
   }
 
-  if (!isCameraActive) return <></>;
-
   return (
-    <CameraView
-      ratio="1:1"
-      style={{
-        flex: 1,
-      }}
-      facing={facing}
-      autofocus="on"
-      ref={(ref) => setCamera(ref)}
-      barcodeScannerSettings={{
-        barcodeTypes: [
-          'upc_a',
-          'upc_e',
-          'codabar',
-          'code128',
-          'code39',
-          'code93',
-          'ean13',
-          'ean8',
-          'itf14',
-        ],
-      }}
-      onMountError={(e) => console.error('Camera mount error:', e)}
-      onBarcodeScanned={(res) => {
-        if (res.data === scannedCode) return;
-        setScannedCode(res.data);
-      }}>
-      <View className="top-safe-or-10 absolute flex w-full flex-row items-center justify-between p-3">
-        <ScannerButton onPress={() => router.back()}>
-          <MaterialIcons name="arrow-back" size={25} color="white" />
-        </ScannerButton>
+    <View style={{ flex: 1 }}>
+      {isCameraActive && (
+        <CameraView
+          ratio="1:1"
+          style={{
+            flex: 1,
+          }}
+          facing={facing}
+          autofocus="on"
+          ref={(ref) => setCamera(ref)}
+          barcodeScannerSettings={{
+            barcodeTypes: [
+              'upc_a',
+              'upc_e',
+              'codabar',
+              'code128',
+              'code39',
+              'code93',
+              'ean13',
+              'ean8',
+              'itf14',
+            ],
+          }}
+          onMountError={(e) => console.error('Camera mount error:', e)}
+          onBarcodeScanned={(res) => {
+            if (res.data === scannedCode) return;
+            setScannedCode(res.data);
+          }}>
+          <View className="top-safe-or-10 absolute flex w-full flex-row items-center justify-between p-3">
+            <ScannerButton onPress={() => router.back()}>
+              <MaterialIcons name="arrow-back" size={25} color="white" />
+            </ScannerButton>
 
-        {scannedCode && (
-          <View className="rounded-xl bg-black/70 px-7 py-5">
-            <BarcodeText
-              className="text-xl color-white"
-              onPress={() => handleBarcodeScan(scannedCode)}>
-              {scannedCode}
-            </BarcodeText>
-          </View>
-        )}
-      </View>
-
-      <View className="bottom-safe-or-10 absolute w-full p-3">
-        <View className="mb-10">
-          {barcodeScanData && (
-            <View className="w-full rounded-lg bg-white p-5 shadow-xl shadow-black/50">
-              <ProductItem product={barcodeScanData.barcodeScan} />
-            </View>
-          )}
-
-          {barcodeScanError && <Text className="color-red-400">{barcodeScanError.message}</Text>}
-        </View>
-
-        <View className="flex flex-row items-center justify-between">
-          <ScannerButton onPress={() => {}}>
-            <MaterialIcons name="image" size={25} color="white" />
-          </ScannerButton>
-
-          <ScannerButton onPress={() => handleBarcodeScan(scannedCode ?? '')}>
-            {barcodeScanLoading ? (
-              <AntDesign
-                name="loading1"
-                className="size-[40px] animate-spin text-center"
-                color="white"
-                size={40}
-              />
-            ) : (
-              <MaterialIcons name="search" size={40} color="white" />
+            {scannedCode && (
+              <View className="rounded-xl bg-black/70 px-7 py-5">
+                <BarcodeText
+                  className="text-xl color-white"
+                  onPress={() => handleBarcodeScan(scannedCode)}>
+                  {scannedCode}
+                </BarcodeText>
+              </View>
             )}
-          </ScannerButton>
+          </View>
 
-          <ScannerButton onPress={toggleCameraFacing}>
-            <MaterialIcons name="flip-camera-android" size={25} color="white" />
-          </ScannerButton>
-        </View>
-      </View>
-    </CameraView>
+          <View className="bottom-safe-or-10 absolute w-full p-3">
+            <View className="mb-10">
+              {barcodeScanData && (
+                <View className="w-full rounded-lg bg-white p-5 shadow-xl shadow-black/50">
+                  <ProductItem product={barcodeScanData.barcodeScan} />
+                </View>
+              )}
+
+              {barcodeScanError && (
+                <Text className="color-red-400">{barcodeScanError.message}</Text>
+              )}
+            </View>
+
+            <View className="flex flex-row items-center justify-between">
+              <ScannerButton onPress={() => {}}>
+                <MaterialIcons name="image" size={25} color="white" />
+              </ScannerButton>
+
+              <ScannerButton onPress={() => handleBarcodeScan(scannedCode ?? '')}>
+                {barcodeScanLoading ? (
+                  <AntDesign
+                    name="loading1"
+                    className="size-[40px] animate-spin text-center"
+                    color="white"
+                    size={40}
+                  />
+                ) : (
+                  <MaterialIcons name="search" size={40} color="white" />
+                )}
+              </ScannerButton>
+
+              <ScannerButton onPress={toggleCameraFacing}>
+                <MaterialIcons name="flip-camera-android" size={25} color="white" />
+              </ScannerButton>
+            </View>
+          </View>
+        </CameraView>
+      )}
+    </View>
   );
 }
