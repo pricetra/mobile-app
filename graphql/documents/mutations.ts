@@ -91,3 +91,47 @@ export const CREATE_BRANCH_MUTATION = gql(`
     }
   }
 `);
+
+export const CREATE_PRODUCT_MUTATION = gql(`
+  mutation CreateProduct($input: CreateProduct!) {
+    createProduct(input: $input) {
+      id
+      name
+      image
+      description
+      url
+      brand
+      code
+      color
+      model
+      category
+      weight
+      lowestRecordedPrice
+      highestRecordedPrice
+      createdAt
+      updatedAt
+    }
+  }
+`);
+
+export const UPDATE_PRODUCT_MUTATION = gql(`
+  mutation UpdateProduct($id: ID!, $input: UpdateProduct!) {
+    updateProduct(id: $id, input: $input) {
+      id
+      name
+      image
+      description
+      url
+      brand
+      code
+      color
+      model
+      category
+      weight
+      lowestRecordedPrice
+      highestRecordedPrice
+      createdAt
+      updatedAt
+    }
+  }
+`);
