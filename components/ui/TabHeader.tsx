@@ -1,7 +1,8 @@
-import { Feather, Ionicons, Octicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Platform, SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
+import { Platform, SafeAreaView, View, TouchableOpacity } from 'react-native';
 
 export type TabHeaderProps = BottomTabHeaderProps;
 
@@ -9,22 +10,31 @@ export default function TabHeader(props: TabHeaderProps) {
   return (
     <SafeAreaView className="flex w-full bg-gray-900">
       <View
-        className="w-full flex-row items-center justify-between gap-2 px-5 py-4"
-        style={{ marginTop: Platform.OS === 'android' ? 20 : 0 }}>
+        className="w-full flex-row items-center justify-center gap-3 px-5 py-4"
+        style={{ marginTop: Platform.OS === 'android' ? 30 : 0 }}>
         <TouchableOpacity
-          className="flex flex-row items-center justify-center gap-3"
           onPress={() => {
             if (props.options.title || props.options.tabBarIcon) return;
             router.back();
           }}>
           {props.options.tabBarIcon ? (
-            props.options.tabBarIcon({ focused: true, color: '#e2e8f0', size: 25 })
+            props.options.tabBarIcon({ focused: true, color: '#e2e8f0', size: 20 })
           ) : (
-            <Ionicons name="chevron-back-outline" color="#e2e8f0" size={25} />
+            <Ionicons name="chevron-back-outline" color="#e2e8f0" size={20} />
           )}
-          <Text className="text-xl font-bold text-slate-200">
-            {props.options.title ? props.options.title : 'Back'}
-          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/')}
+          className="flex w-full flex-1 items-center justify-center">
+          <Image
+            source={require('../../assets/images/logotype_white_color.svg')}
+            style={{ height: 27, width: 115 }}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push('/(tabs)/')}>
+          <Ionicons name="search" color="#e2e8f0" size={20} />
         </TouchableOpacity>
 
         {/* <TouchableOpacity
