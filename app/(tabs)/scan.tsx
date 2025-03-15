@@ -2,14 +2,16 @@ import { useLazyQuery } from '@apollo/client';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import ProductItem from '@/components/ProductItem';
 import BarcodeText from '@/components/ui/BarcodeText';
 import Button from '@/components/ui/Button';
 import ScannerButton from '@/components/ui/ScannerButton';
-import { BarcodeScanDocument } from '@/graphql/types/graphql';
+import { BarcodeScanDocument, Product } from '@/graphql/types/graphql';
+import ModalFormMini from '@/components/ui/ModalFormMini';
+import ScannedProductView from '@/components/ScannedProductView';
+import ProductForm from '@/components/ProductForm';
 
 export default function ScanScreen() {
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -17,6 +19,9 @@ export default function ScanScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openPriceModal, setOpenPriceModal] = useState(false);
+  const [product, setProduct] = useState<Product>();
   const router = useRouter();
   const [
     barcodeScan,
@@ -32,6 +37,21 @@ export default function ScanScreen() {
       };
     }, [camera])
   );
+
+  useEffect(() => {
+    if (!barcodeScanData) return;
+    setProduct(barcodeScanData.barcodeScan);
+  }, [barcodeScanData]);
+
+  useEffect(() => {
+    console.log(openEditModal);
+
+    if (openEditModal) {
+      camera?.pausePreview();
+      return;
+    }
+    camera?.resumePreview();
+  }, [openEditModal]);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -60,6 +80,13 @@ export default function ScanScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <ModalFormMini
+        title="Edit"
+        visible={openEditModal}
+        onRequestClose={() => setOpenEditModal(false)}>
+        <ProductForm product={product} />
+      </ModalFormMini>
+
       {isCameraActive && (
         <CameraView
           ratio="1:1"
@@ -86,6 +113,7 @@ export default function ScanScreen() {
           onBarcodeScanned={(res) => {
             if (res.data === scannedCode) return;
             setScannedCode(res.data);
+            setProduct(undefined);
           }}>
           <View className="top-safe-or-10 absolute flex w-full flex-row items-center justify-between p-3">
             <ScannerButton onPress={() => router.back()}>
@@ -104,11 +132,13 @@ export default function ScanScreen() {
           </View>
 
           <View className="bottom-safe-or-10 absolute w-full p-3">
-            <View className="mb-10">
-              {barcodeScanData && (
-                <View className="w-full rounded-lg bg-white p-5 shadow-xl shadow-black/50">
-                  <ProductItem product={barcodeScanData.barcodeScan} />
-                </View>
+            <View className="mb-5">
+              {product && (
+                <ScannedProductView
+                  product={product}
+                  onEditModalPress={() => setOpenEditModal(true)}
+                  onAddPriceModalPress={() => setOpenPriceModal(true)}
+                />
               )}
 
               {barcodeScanError && (
@@ -121,7 +151,11 @@ export default function ScanScreen() {
                 <MaterialIcons name="image" size={25} color="white" />
               </ScannerButton>
 
-              <ScannerButton onPress={() => handleBarcodeScan(scannedCode ?? '')}>
+              <ScannerButton
+                onPress={() => {
+                  if (!scannedCode) return;
+                  handleBarcodeScan(scannedCode);
+                }}>
                 {barcodeScanLoading ? (
                   <AntDesign
                     name="loading1"
