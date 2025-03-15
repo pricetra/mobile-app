@@ -31,7 +31,7 @@ export default function ModalFormMini({
       <Pressable
         className="h-full"
         onPress={onRequestClose}
-        style={{ backgroundColor: visible ? 'rgba(0,0,0,.3)' : 'rgba(0,0,0,0)' }}
+        style={{ backgroundColor: visible ? 'rgba(0,0,0,.7)' : 'rgba(0,0,0,0)' }}
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
