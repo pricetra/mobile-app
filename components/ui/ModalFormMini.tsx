@@ -4,6 +4,7 @@ import {
   KeyboardAvoidingView,
   Modal,
   NativeSyntheticEvent,
+  Platform,
   ScrollView,
   TouchableOpacity,
   View,
@@ -32,7 +33,9 @@ export default function ModalFormMini({
         onPress={onRequestClose}
         style={{ backgroundColor: visible ? 'rgba(0,0,0,.7)' : 'rgba(0,0,0,0)' }}
       />
-      <KeyboardAvoidingView className="absolute bottom-0 left-0 z-50 h-fit max-h-full w-full rounded-t-2xl bg-white py-7 shadow-2xl">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className="absolute bottom-0 left-0 z-50 h-fit max-h-full w-full rounded-t-2xl bg-white py-7 shadow-2xl">
         <SafeAreaView>
           <View className="flex flex-row items-center justify-between gap-6 border-b-[1px] border-gray-100 px-7 pb-5">
             <Text className="flex flex-row items-center gap-2 text-2xl font-bold">{title}</Text>
