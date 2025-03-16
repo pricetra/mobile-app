@@ -5,13 +5,13 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
+import ProductForm from '@/components/ProductForm';
+import ScannedProductView from '@/components/ScannedProductView';
 import BarcodeText from '@/components/ui/BarcodeText';
 import Button from '@/components/ui/Button';
+import ModalFormMini from '@/components/ui/ModalFormMini';
 import ScannerButton from '@/components/ui/ScannerButton';
 import { BarcodeScanDocument, Product } from '@/graphql/types/graphql';
-import ModalFormMini from '@/components/ui/ModalFormMini';
-import ScannedProductView from '@/components/ScannedProductView';
-import ProductForm from '@/components/ProductForm';
 
 export default function ScanScreen() {
   const [isCameraActive, setIsCameraActive] = useState(false);

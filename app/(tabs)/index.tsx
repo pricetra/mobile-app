@@ -1,16 +1,19 @@
 import { useLazyQuery } from '@apollo/client';
 import { AlertTriangle } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { View, RefreshControl, FlatList, SafeAreaView } from 'react-native';
+import { View, RefreshControl, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
 
+import ProductForm from '@/components/ProductForm';
 import ProductItem, { ProductLoadingItem } from '@/components/ProductItem';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
-import { AllProductsDocument } from '@/graphql/types/graphql';
+import ModalFormMini from '@/components/ui/ModalFormMini';
+import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 
 export default function HomeScreen() {
   const [getAllProducts, { data: productsData, loading: productsLoading, error: productsError }] =
     useLazyQuery(AllProductsDocument);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product>();
 
   function fetchAllProducts(refresh?: boolean) {
     return getAllProducts({
@@ -44,12 +47,26 @@ export default function HomeScreen() {
         </View>
       )}
 
+      <ModalFormMini
+        title="Edit"
+        visible={selectedProduct !== undefined}
+        onRequestClose={() => setSelectedProduct(undefined)}>
+        <ProductForm
+          product={selectedProduct}
+          onCancel={() => setSelectedProduct(undefined)}
+          onSuccess={() => setSelectedProduct(undefined)}
+          onError={(e) => alert(e.message)}
+        />
+      </ModalFormMini>
+
       <FlatList
         data={productsData?.allProducts ?? []}
         keyExtractor={({ id }) => id}
         renderItem={({ item }) => (
           <View className="mb-10">
-            <ProductItem product={item} />
+            <TouchableOpacity onPress={() => setSelectedProduct(item)}>
+              <ProductItem product={item} />
+            </TouchableOpacity>
           </View>
         )}
         refreshControl={

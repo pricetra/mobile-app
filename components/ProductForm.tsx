@@ -38,7 +38,7 @@ export default function ProductForm({ product, onCancel, onSuccess, onError }: P
 
   useEffect(() => {
     if (!product) return;
-    setImageUri(product.image !== '' ? product.image : createCloudinaryUrl(product.code));
+    setImageUri(product.image !== '' ? product.image : undefined);
   }, [product]);
 
   async function selectImage() {
@@ -83,8 +83,6 @@ export default function ProductForm({ product, onCancel, onSuccess, onError }: P
             },
           })
             .then(({ data, errors }) => {
-              console.log(data, errors);
-
               if (errors) return onError(errors.at(0) as ApolloError);
               if (!data) return;
 
