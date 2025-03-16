@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { ApolloError, useLazyQuery } from '@apollo/client';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -44,8 +44,6 @@ export default function ScanScreen() {
   }, [barcodeScanData]);
 
   useEffect(() => {
-    console.log(openEditModal);
-
     if (openEditModal) {
       camera?.pausePreview();
       return;
@@ -84,7 +82,12 @@ export default function ScanScreen() {
         title="Edit"
         visible={openEditModal}
         onRequestClose={() => setOpenEditModal(false)}>
-        <ProductForm product={product} />
+        <ProductForm
+          product={product}
+          onCancel={() => setOpenEditModal(false)}
+          onSuccess={() => setOpenEditModal(false)}
+          onError={(e) => alert(e.message)}
+        />
       </ModalFormMini>
 
       {isCameraActive && (

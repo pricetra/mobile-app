@@ -5,6 +5,7 @@ import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
 import { Product } from '@/graphql/types/graphql';
+import { createCloudinaryUrl } from '@/lib/files';
 
 export type ProductItemProps = {
   product: Product;
@@ -13,7 +14,10 @@ export type ProductItemProps = {
 export default function ProductItem({ product }: ProductItemProps) {
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <Image src={product.image} className="size-28 rounded-lg" />
+      <Image
+        src={product.image !== '' ? product.image : createCloudinaryUrl(product.code)}
+        className="size-28 rounded-lg"
+      />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
           <BarcodeText className="text-sm color-gray-600">{product.code}</BarcodeText>

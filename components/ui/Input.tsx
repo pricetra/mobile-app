@@ -11,7 +11,7 @@ export type InputProps = ComponentPropsWithoutRef<typeof TextInput> & {
 const Input = forwardRef<ElementRef<typeof TextInput>, InputProps>(
   ({ className, placeholderClassName, ...props }, ref) => {
     return (
-      <View>
+      <View className="flex-1">
         {props.label && <Label className="mb-1">{props.label}</Label>}
 
         <TextInput
