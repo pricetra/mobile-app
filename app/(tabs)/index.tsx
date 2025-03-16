@@ -65,7 +65,7 @@ export default function HomeScreen() {
             progressBackgroundColor="black"
           />
         }
-        className="p-5"
+        className="mb-10 p-5"
       />
     </SafeAreaView>
   );
