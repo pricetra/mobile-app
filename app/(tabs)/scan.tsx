@@ -87,14 +87,17 @@ export default function ScanScreen() {
     <View style={{ flex: 1 }}>
       {scannedCode && (
         <ModalFormMini
-          title="Edit"
+          title={product ? 'Edit Product' : 'Add Product'}
           visible={openEditModal}
           onRequestClose={() => setOpenEditModal(false)}>
           <ProductForm
             upc={scannedCode}
             product={product}
             onCancel={() => setOpenEditModal(false)}
-            onSuccess={() => setOpenEditModal(false)}
+            onSuccess={(p) => {
+              setProduct(p);
+              setOpenEditModal(false);
+            }}
             onError={(e) => alert(e.message)}
           />
         </ModalFormMini>

@@ -48,7 +48,7 @@ export default function HomeScreen() {
       )}
 
       <ModalFormMini
-        title="Edit"
+        title={selectedProduct ? 'Edit Product' : 'Add Product'}
         visible={selectedProduct !== undefined}
         onRequestClose={() => setSelectedProduct(undefined)}>
         <ProductForm

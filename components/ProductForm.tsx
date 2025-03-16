@@ -106,6 +106,29 @@ export default function ProductForm({
               }
             })
             .catch((e) => onError(e));
+        } else {
+          createProduct({
+            variables: {
+              input: values,
+            },
+          })
+            .then(({ data, errors }) => {
+              if (errors) return onError(errors.at(0) as ApolloError);
+              if (!data) return;
+
+              if (imageUri && imageUpdated) {
+                uploadToCloudinary({
+                  file: imageUri,
+                  public_id: data.createProduct.code,
+                  tags: ['PRODUCT'],
+                  onSuccess: () => onSuccess(data.createProduct),
+                  onError: (e) => onError(e as unknown as ApolloError),
+                });
+              } else {
+                onSuccess(data.createProduct);
+              }
+            })
+            .catch((e) => onError(e));
         }
       }}>
       {({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -184,7 +207,7 @@ export default function ProductForm({
             <Button
               onPress={onCancel}
               className="flex-1 border-[1px] border-gray-500 bg-transparent"
-              textClassName="color-gray-900"
+              textClassName="color-black"
               disabled={updateLoading || createLoading}>
               Cancel
             </Button>
@@ -192,7 +215,7 @@ export default function ProductForm({
               onPress={handleSubmit}
               className="flex-1"
               loading={updateLoading || createLoading}>
-              Update
+              {product ? 'Update' : 'Create'}
             </Button>
           </View>
         </View>
