@@ -73,22 +73,32 @@ export default function ScanScreen() {
   function handleBarcodeScan(barcode: string) {
     barcodeScan({
       variables: { barcode },
-    });
+    })
+      .then(({ error }) => {
+        if (!error) return;
+        setOpenEditModal(true);
+      })
+      .catch((_err) => {
+        setOpenEditModal(true);
+      });
   }
 
   return (
     <View style={{ flex: 1 }}>
-      <ModalFormMini
-        title="Edit"
-        visible={openEditModal}
-        onRequestClose={() => setOpenEditModal(false)}>
-        <ProductForm
-          product={product}
-          onCancel={() => setOpenEditModal(false)}
-          onSuccess={() => setOpenEditModal(false)}
-          onError={(e) => alert(e.message)}
-        />
-      </ModalFormMini>
+      {scannedCode && (
+        <ModalFormMini
+          title="Edit"
+          visible={openEditModal}
+          onRequestClose={() => setOpenEditModal(false)}>
+          <ProductForm
+            upc={scannedCode}
+            product={product}
+            onCancel={() => setOpenEditModal(false)}
+            onSuccess={() => setOpenEditModal(false)}
+            onError={(e) => alert(e.message)}
+          />
+        </ModalFormMini>
+      )}
 
       {isCameraActive && (
         <CameraView
@@ -142,10 +152,6 @@ export default function ScanScreen() {
                   onEditModalPress={() => setOpenEditModal(true)}
                   onAddPriceModalPress={() => setOpenPriceModal(true)}
                 />
-              )}
-
-              {barcodeScanError && (
-                <Text className="color-red-400">{barcodeScanError.message}</Text>
               )}
             </View>
 

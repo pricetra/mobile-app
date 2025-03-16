@@ -20,13 +20,20 @@ import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
 
 export type ProductFormProps = {
+  upc?: string;
   product?: Product;
   onCancel: () => void;
   onSuccess: (product: Product) => void;
   onError: (e: ApolloError) => void;
 };
 
-export default function ProductForm({ product, onCancel, onSuccess, onError }: ProductFormProps) {
+export default function ProductForm({
+  upc,
+  product,
+  onCancel,
+  onSuccess,
+  onError,
+}: ProductFormProps) {
   const [imageUri, setImageUri] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
   const [updateProduct, { loading: updateLoading }] = useMutation(UpdateProductDocument, {
@@ -67,7 +74,7 @@ export default function ProductForm({ product, onCancel, onSuccess, onError }: P
           name: product?.name ?? '',
           description: product?.description ?? '',
           brand: product?.brand ?? '',
-          code: product?.code ?? '',
+          code: product?.code ?? upc ?? '',
           color: product?.color,
           // model: product?.model,
           category: product?.category,
