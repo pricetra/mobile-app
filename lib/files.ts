@@ -28,6 +28,7 @@ export type UploadToCloudinaryProps = {
   tags: string[];
   onSuccess: (res: UploadApiResponse) => void;
   onError: (err: UploadApiErrorResponse) => void;
+  onFinally?: () => void;
 };
 
 export function uploadToCloudinary({
@@ -36,6 +37,7 @@ export function uploadToCloudinary({
   tags,
   onSuccess,
   onError,
+  onFinally,
 }: UploadToCloudinaryProps) {
   upload(cloudinary, {
     file,
@@ -44,8 +46,10 @@ export function uploadToCloudinary({
       tags,
     },
     callback: async (err, res) => {
-      if (err) return onError(err);
-      if (res) return onSuccess(res);
+      if (err) onError(err);
+      else if (res) onSuccess(res);
+
+      if (onFinally) onFinally();
     },
   });
 }

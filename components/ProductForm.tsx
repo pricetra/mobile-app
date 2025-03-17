@@ -3,7 +3,7 @@ import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View, Image } from 'react-native';
+import { TouchableOpacity, View, Image as NativeImage } from 'react-native';
 
 import {
   AllProductsDocument,
@@ -14,6 +14,7 @@ import {
 } from '../graphql/types/graphql';
 
 import Button from '@/components/ui/Button';
+import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Product } from '@/graphql/types/graphql';
@@ -36,16 +37,21 @@ export default function ProductForm({
 }: ProductFormProps) {
   const [imageUri, setImageUri] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [updateProduct, { loading: updateLoading }] = useMutation(UpdateProductDocument, {
     refetchQueries: [BarcodeScanDocument, AllProductsDocument],
   });
   const [createProduct, { loading: createLoading }] = useMutation(CreateProductDocument, {
     refetchQueries: [AllProductsDocument],
   });
+  const loading = updateLoading || createLoading || imageUploading;
 
   useEffect(() => {
-    if (!product) return;
-    setImageUri(product.image !== '' ? product.image : undefined);
+    if (product?.image && product.image !== '') {
+      setImageUri(product.image);
+    } else {
+      setImageUri(undefined);
+    }
   }, [product]);
 
   async function selectImage() {
@@ -67,6 +73,75 @@ export default function ProductForm({
     setImageUri(picture.uri);
   }
 
+  function submit(input: CreateProduct) {
+    if (product) {
+      updateProduct({
+        variables: {
+          id: product.id,
+          input,
+        },
+      })
+        .then(({ data, errors }) => {
+          if (errors) return onError(errors.at(0) as ApolloError);
+          if (!data) return;
+
+          if (imageUri && imageUpdated) {
+            setImageUploading(true);
+            uploadToCloudinary({
+              file: imageUri,
+              public_id: data.updateProduct.code,
+              tags: ['PRODUCT'],
+              onSuccess: () => onSuccess(data.updateProduct),
+              onError: (e) => onError(e as unknown as ApolloError),
+              onFinally: () => setImageUploading(false),
+            });
+          } else {
+            onSuccess(data.updateProduct);
+          }
+        })
+        .catch((e) => onError(e));
+    } else {
+      createProduct({
+        variables: {
+          input,
+        },
+      })
+        .then(({ data, errors }) => {
+          if (errors) return onError(errors.at(0) as ApolloError);
+          if (!data) return;
+
+          if (imageUri && imageUpdated) {
+            setImageUploading(true);
+            uploadToCloudinary({
+              file: imageUri,
+              public_id: data.createProduct.code,
+              tags: ['PRODUCT'],
+              onSuccess: () => onSuccess(data.createProduct),
+              onError: (e) => onError(e as unknown as ApolloError),
+              onFinally: () => setImageUploading(false),
+            });
+          } else {
+            onSuccess(data.createProduct);
+          }
+        })
+        .catch((e) => onError(e));
+    }
+  }
+
+  function renderImageSelection() {
+    if (imageUpdated) {
+      return <NativeImage src={imageUri} className="size-[93px] rounded-lg" />;
+    }
+    if (imageUri) {
+      return <Image src={imageUri} className="size-[93px] rounded-lg" />;
+    }
+    return (
+      <View className="flex size-[93px] items-center justify-center rounded-md bg-gray-400">
+        <Feather name="camera" color="white" size={35} />
+      </View>
+    );
+  }
+
   return (
     <Formik
       initialValues={
@@ -81,66 +156,11 @@ export default function ProductForm({
           weight: product?.weight,
         } as CreateProduct
       }
-      onSubmit={(values) => {
-        if (product) {
-          updateProduct({
-            variables: {
-              id: product.id,
-              input: values,
-            },
-          })
-            .then(({ data, errors }) => {
-              if (errors) return onError(errors.at(0) as ApolloError);
-              if (!data) return;
-
-              if (imageUri && imageUpdated) {
-                uploadToCloudinary({
-                  file: imageUri,
-                  public_id: data.updateProduct.code,
-                  tags: ['PRODUCT'],
-                  onSuccess: () => onSuccess(data.updateProduct),
-                  onError: (e) => onError(e as unknown as ApolloError),
-                });
-              } else {
-                onSuccess(data.updateProduct);
-              }
-            })
-            .catch((e) => onError(e));
-        } else {
-          createProduct({
-            variables: {
-              input: values,
-            },
-          })
-            .then(({ data, errors }) => {
-              if (errors) return onError(errors.at(0) as ApolloError);
-              if (!data) return;
-
-              if (imageUri && imageUpdated) {
-                uploadToCloudinary({
-                  file: imageUri,
-                  public_id: data.createProduct.code,
-                  tags: ['PRODUCT'],
-                  onSuccess: () => onSuccess(data.createProduct),
-                  onError: (e) => onError(e as unknown as ApolloError),
-                });
-              } else {
-                onSuccess(data.createProduct);
-              }
-            })
-            .catch((e) => onError(e));
-        }
-      }}>
+      onSubmit={submit}>
       {({ handleChange, handleBlur, handleSubmit, values }) => (
         <View className="flex flex-col gap-5">
-          <TouchableOpacity onPress={selectImage}>
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} className="size-[93px] rounded-lg" />
-            ) : (
-              <View className="flex size-[93px] items-center justify-center rounded-md bg-gray-400">
-                <Feather name="camera" color="white" size={35} />
-              </View>
-            )}
+          <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
+            {renderImageSelection()}
           </TouchableOpacity>
 
           <Input
@@ -149,6 +169,7 @@ export default function ProductForm({
             value={values.code}
             label="UPC Code"
             keyboardType="numeric"
+            editable={!loading}
           />
 
           <Textarea
@@ -156,6 +177,7 @@ export default function ProductForm({
             onBlur={handleBlur('name')}
             value={values.name}
             label="Product Name"
+            editable={!loading}
           />
 
           <Input
@@ -163,6 +185,7 @@ export default function ProductForm({
             onBlur={handleBlur('brand')}
             value={values.brand}
             label="Brand"
+            editable={!loading}
           />
 
           <Input
@@ -170,6 +193,7 @@ export default function ProductForm({
             onBlur={handleBlur('category')}
             value={values.category ?? ''}
             label="Category"
+            editable={!loading}
           />
 
           <View className="flex flex-row gap-2">
@@ -179,6 +203,7 @@ export default function ProductForm({
               value={values.color ?? ''}
               label="Color"
               className="flex-1"
+              editable={!loading}
             />
 
             <Input
@@ -186,6 +211,7 @@ export default function ProductForm({
               onBlur={handleBlur('weight')}
               value={values.weight ?? ''}
               label="Weight"
+              editable={!loading}
             />
           </View>
 
@@ -194,6 +220,7 @@ export default function ProductForm({
             onBlur={handleBlur('description')}
             value={values.description}
             label="Description"
+            editable={!loading}
           />
 
           {/* <Input
@@ -206,15 +233,12 @@ export default function ProductForm({
           <View className="mt-10 flex flex-row justify-between gap-3">
             <Button
               onPress={onCancel}
-              className="flex-1 border-[1px] border-gray-500 bg-transparent"
+              className="flex-1 border-[1px] border-gray-500 bg-transparent color-black"
               textClassName="color-black"
-              disabled={updateLoading || createLoading}>
+              disabled={loading}>
               Cancel
             </Button>
-            <Button
-              onPress={handleSubmit}
-              className="flex-1"
-              loading={updateLoading || createLoading}>
+            <Button onPress={handleSubmit} className="flex-1" loading={loading}>
               {product ? 'Update' : 'Create'}
             </Button>
           </View>
