@@ -14,7 +14,7 @@ import ScannerButton from '@/components/ui/ScannerButton';
 import { BarcodeScanDocument, Product } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
-  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [renderCameraComponent, setRenderCameraComponent] = useState(false);
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
@@ -30,10 +30,10 @@ export default function ScanScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setIsCameraActive(true);
+      setRenderCameraComponent(true);
 
       return () => {
-        setIsCameraActive(false);
+        setRenderCameraComponent(false);
       };
     }, [camera])
   );
@@ -103,7 +103,7 @@ export default function ScanScreen() {
         </ModalFormMini>
       )}
 
-      {isCameraActive && (
+      {renderCameraComponent && (
         <CameraView
           ratio="1:1"
           style={{
