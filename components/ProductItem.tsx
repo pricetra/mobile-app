@@ -14,10 +14,7 @@ export type ProductItemProps = {
 export default function ProductItem({ product }: ProductItemProps) {
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <Image
-        src={product.image !== '' ? product.image : createCloudinaryUrl(product.code)}
-        className="size-28 rounded-lg"
-      />
+      <Image src={createCloudinaryUrl(product.code, 500)} className="size-28 rounded-lg" />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
           <BarcodeText className="text-sm color-gray-600">{product.code}</BarcodeText>
