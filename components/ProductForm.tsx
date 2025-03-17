@@ -3,7 +3,7 @@ import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View, Image as NativeImage } from 'react-native';
+import { TouchableOpacity, View, Image as NativeImage, Text } from 'react-native';
 
 import {
   AllProductsDocument,
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
+import { titleCase } from '@/lib/strings';
 
 export type ProductFormProps = {
   upc?: string;
@@ -130,13 +131,13 @@ export default function ProductForm({
 
   function renderImageSelection() {
     if (imageUpdated) {
-      return <NativeImage src={imageUri} className="size-[93px] rounded-lg" />;
+      return <NativeImage src={imageUri} className="size-28 rounded-lg" />;
     }
     if (imageUri) {
-      return <Image src={imageUri} className="size-[93px] rounded-lg" />;
+      return <Image src={imageUri} className="size-28 rounded-lg" />;
     }
     return (
-      <View className="flex size-[93px] items-center justify-center rounded-md bg-gray-400">
+      <View className="flex size-28 items-center justify-center rounded-md bg-gray-400">
         <Feather name="camera" color="white" size={35} />
       </View>
     );
@@ -157,7 +158,7 @@ export default function ProductForm({
         } as CreateProduct
       }
       onSubmit={submit}>
-      {({ handleChange, handleBlur, handleSubmit, values }) => (
+      {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
         <View className="flex flex-col gap-5">
           <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
             {renderImageSelection()}
@@ -179,6 +180,16 @@ export default function ProductForm({
             label="Product Name"
             editable={!loading}
           />
+
+          <TouchableOpacity
+            onPress={() => {
+              setFieldValue('name', titleCase(values.name));
+            }}
+            className="mb-5 mt-[-10px] inline-block w-fit">
+            <Text className="inline-block w-fit text-right text-sm color-blue-500">
+              Convert to Title Case
+            </Text>
+          </TouchableOpacity>
 
           <Input
             onChangeText={handleChange('brand')}
