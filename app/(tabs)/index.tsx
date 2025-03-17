@@ -1,7 +1,15 @@
 import { useLazyQuery } from '@apollo/client';
 import { AlertTriangle } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { View, RefreshControl, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  RefreshControl,
+  FlatList,
+  SafeAreaView,
+  TouchableOpacity,
+  Platform,
+  Text,
+} from 'react-native';
 
 import ProductForm from '@/components/ProductForm';
 import ProductItem, { ProductLoadingItem } from '@/components/ProductItem';
@@ -82,7 +90,8 @@ export default function HomeScreen() {
             progressBackgroundColor="black"
           />
         }
-        className="mb-10 p-5"
+        className="p-5"
+        contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 30 : undefined }}
       />
     </SafeAreaView>
   );
