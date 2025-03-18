@@ -15,6 +15,7 @@ import { BarcodeScanDocument, Product } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
   const [renderCameraComponent, setRenderCameraComponent] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
@@ -45,16 +46,13 @@ export default function ScanScreen() {
 
   useEffect(() => {
     if (openEditModal) {
-      camera?.pausePreview();
+      setCameraActive(false);
       return;
     }
-    camera?.resumePreview();
+    setCameraActive(true);
   }, [openEditModal]);
 
-  if (!permission) {
-    // Camera permissions are still loading.
-    return <View />;
-  }
+  if (!permission) return <View />; // Camera permissions are still loading
 
   if (!permission.granted) {
     // Camera permissions are not granted yet.
@@ -105,6 +103,7 @@ export default function ScanScreen() {
 
       {renderCameraComponent && (
         <CameraView
+          active={cameraActive}
           ratio="1:1"
           style={{
             flex: 1,
