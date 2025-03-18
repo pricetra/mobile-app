@@ -60,9 +60,10 @@ export default function ProductForm({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0,
-      base64: true,
+      quality: 1,
+      base64: false,
       allowsMultipleSelection: false,
+      cameraType: ImagePicker.CameraType.back,
     });
 
     if (result.canceled || result.assets.length === 0) return;
