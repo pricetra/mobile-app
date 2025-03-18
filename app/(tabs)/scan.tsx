@@ -1,9 +1,9 @@
 import { ApolloError, useLazyQuery } from '@apollo/client';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions, CameraRatio } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
 import ProductForm from '@/components/ProductForm';
 import ScannedProductView from '@/components/ScannedProductView';
@@ -16,6 +16,7 @@ import { BarcodeScanDocument, Product } from '@/graphql/types/graphql';
 export default function ScanScreen() {
   const [renderCameraComponent, setRenderCameraComponent] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
+  const [ratio, setRatio] = useState<CameraRatio>('1:1');
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
@@ -104,7 +105,7 @@ export default function ScanScreen() {
       {renderCameraComponent && (
         <CameraView
           active={cameraActive}
-          ratio="1:1"
+          ratio={ratio}
           style={{
             flex: 1,
           }}
@@ -126,6 +127,8 @@ export default function ScanScreen() {
           }}
           onMountError={(e) => console.error('Camera mount error:', e)}
           onBarcodeScanned={(res) => {
+            if (Platform.OS === 'android') setRatio('16:9');
+
             if (res.data === scannedCode) return;
             setScannedCode(res.data);
             setProduct(undefined);
