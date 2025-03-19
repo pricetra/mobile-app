@@ -22,16 +22,23 @@ export default function HomeScreen() {
     useLazyQuery(AllProductsDocument);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
+  const [page, setPage] = useState(1);
 
   function fetchAllProducts(refresh?: boolean) {
     return getAllProducts({
+      variables: {
+        paginator: {
+          limit: 10,
+          page,
+        },
+      },
       fetchPolicy: refresh ? 'network-only' : undefined,
     });
   }
 
   useEffect(() => {
     fetchAllProducts();
-  }, []);
+  }, [page]);
 
   return (
     <SafeAreaView>
@@ -68,7 +75,7 @@ export default function HomeScreen() {
       </ModalFormMini>
 
       <FlatList
-        data={productsData?.allProducts ?? []}
+        data={productsData?.allProducts?.products ?? []}
         keyExtractor={({ id }) => id}
         renderItem={({ item }) => (
           <View className="mb-10">

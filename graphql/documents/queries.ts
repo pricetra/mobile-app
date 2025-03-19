@@ -120,23 +120,38 @@ export const ME_QUERY = gql`
 `;
 
 export const ALL_PRODUCTS_QUERY = gql(`
-  query AllProducts {
-    allProducts {
-      id
-      name
-      image
-      description
-      url
-      brand
-      code
-      color
-      model
-      category
-      weight
-      lowestRecordedPrice
-      highestRecordedPrice
-      createdAt
-      updatedAt
+  query AllProducts($paginator: PaginatorInput!) {
+    allProducts(paginator: $paginator) {
+      products {
+        id
+        name
+        image
+        description
+        url
+        brand
+        code
+        color
+        model
+        category
+        weight
+        lowestRecordedPrice
+        highestRecordedPrice
+        createdAt
+        updatedAt
+        createdBy {
+          id
+          name
+          avatar
+        }
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
+      }
     }
   }
 `);
