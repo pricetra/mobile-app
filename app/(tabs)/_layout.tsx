@@ -6,18 +6,13 @@ import { Platform } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import TabHeader, { TabHeaderProps } from '@/components/ui/TabHeader';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       backBehavior="history"
       screenOptions={{
-        tabBarActiveTintColor:
-          Platform.OS === 'android' ? '#111827' : Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Platform.OS === 'android' ? '#111111' : '#ffffff',
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({

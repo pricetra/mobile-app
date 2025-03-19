@@ -128,7 +128,8 @@ export default function CreateStoreForm({ onSuccess, onError }: CreateStoreFormP
         onPress={create}
         className="mt-5 w-full"
         loading={loading}
-        disabled={!name || !logoFileUri || !website}>
+        disabled={!name || !logoFileUri || !website}
+        variant="secondary">
         Create store
       </Button>
     </View>

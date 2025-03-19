@@ -3,10 +3,10 @@ import { useContext, useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 
 import AuthFormContainer from '@/components/AuthFormContainer';
-import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { CreateAccountDocument } from '@/graphql/types/graphql';
+import Button from '@/components/ui/Button';
 
 export default function RegisterScreen() {
   const { setScreen } = useContext(AuthModalContext);
@@ -28,7 +28,9 @@ export default function RegisterScreen() {
           <Text className="mt-5 text-center text-gray-600">Already have an account?</Text>
 
           <View>
-            <Button onPress={() => setScreen(AuthScreenType.LOGIN, email)}>Login</Button>
+            <Button onPress={() => setScreen(AuthScreenType.LOGIN, email)} variant="outline">
+              Login
+            </Button>
           </View>
         </>
       }>
@@ -78,7 +80,8 @@ export default function RegisterScreen() {
           createAccount({ variables: { email, password, name } });
         }}
         loading={loading}
-        className="mt-5">
+        className="mt-5"
+        variant="secondary">
         Register
       </Button>
     </AuthFormContainer>

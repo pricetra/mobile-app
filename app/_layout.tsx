@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -15,9 +15,15 @@ import JwtStoreProvider, { JwtStoreContext } from '@/context/JwtStoreContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { NAV_THEME } from '@/lib/constants';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const LIGHT_THEME: Theme = {
+  ...DefaultTheme,
+  colors: NAV_THEME.light,
+};
 
 function RootStack() {
   const { jwt, loading } = useContext(JwtStoreContext);
@@ -62,9 +68,9 @@ export default function RootLayout() {
   return (
     <JwtStoreProvider>
       <ApolloWrapper>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <ThemeProvider value={LIGHT_THEME}>
           <RootStack />
-          <StatusBar style="auto" />
+          <StatusBar style="light" />
         </ThemeProvider>
       </ApolloWrapper>
     </JwtStoreProvider>

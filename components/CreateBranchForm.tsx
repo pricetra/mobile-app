@@ -5,7 +5,6 @@ import { View } from 'react-native';
 
 import { Input } from './ui/Input';
 
-import Button from '@/components/ui/Button';
 import {
   AllBranchesDocument,
   CreateBranchDocument,
@@ -14,6 +13,7 @@ import {
   Store,
 } from '@/graphql/types/graphql';
 import { mapsApiClient } from '@/lib/maps-api';
+import Button from '@/components/ui/Button';
 
 export type CreateBranchFormProps = {
   onSuccess?: (data: CreateBranchMutation) => void;
@@ -90,7 +90,11 @@ export default function CreateBranchForm({ store, onSuccess, onError }: CreateBr
         editable={!loading && !searching}
       />
 
-      <Button onPress={search} loading={loading || searching}>
+      <Button
+        onPress={search}
+        loading={loading || searching}
+        disabled={!fullAddress}
+        variant="secondary">
         Submit
       </Button>
     </View>

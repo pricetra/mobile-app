@@ -3,10 +3,10 @@ import { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 import AuthFormContainer from '@/components/AuthFormContainer';
-import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
+import Button from '@/components/ui/Button';
 
 export default function EmailVerificationScreen() {
   const { setScreen, email } = useContext(AuthModalContext);
@@ -41,7 +41,8 @@ export default function EmailVerificationScreen() {
             onPress={() => {
               resendVerification({ variables: { email } });
             }}
-            loading={resendVerificationLoading}>
+            loading={resendVerificationLoading}
+            variant="outline">
             Resend code
           </Button>
         </>
@@ -72,7 +73,8 @@ export default function EmailVerificationScreen() {
           verifyEmail({ variables: { verificationCode: code } });
         }}
         loading={loading}
-        className="mt-1">
+        className="mt-1"
+        variant="secondary">
         Verify email
       </Button>
     </AuthFormContainer>

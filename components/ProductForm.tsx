@@ -13,13 +13,13 @@ import {
   UpdateProductDocument,
 } from '../graphql/types/graphql';
 
-import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
+import Button from '@/components/ui/Button';
 
 export type ProductFormProps = {
   upc?: string;
@@ -243,14 +243,10 @@ export default function ProductForm({
           /> */}
 
           <View className="mt-10 flex flex-row justify-between gap-3">
-            <Button
-              onPress={onCancel}
-              className="flex-1 border-[1px] border-gray-500 bg-transparent color-black"
-              textClassName="color-black"
-              disabled={loading}>
+            <Button onPress={onCancel} disabled={loading} variant="outline">
               Cancel
             </Button>
-            <Button onPress={handleSubmit} className="flex-1" loading={loading}>
+            <Button onPress={() => handleSubmit()} loading={loading} variant="secondary">
               {product ? 'Update' : 'Create'}
             </Button>
           </View>

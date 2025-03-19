@@ -1,39 +1,96 @@
-import { ReactNode } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { cva, type VariantProps } from 'class-variance-authority';
+import * as React from 'react';
+import { Pressable, View } from 'react-native';
+
+import Text, { TextClassContext } from '@/components/ui/Text';
 import { cn } from '@/lib/utils';
+import { ReactNode } from 'react';
 
-export type ButtonProps = {
-  children?: ReactNode;
-  onPress: () => void;
-  disabled?: boolean;
-  loading?: boolean;
-  className?: string;
-  textClassName?: string;
-};
+const buttonVariants = cva(
+  'group flex items-center justify-center rounded-md web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary web:hover:opacity-90 active:opacity-90',
+        destructive: 'bg-destructive web:hover:opacity-90 active:opacity-90',
+        outline:
+          'border border-secondary bg-transparent web:hover:bg-accent web:hover:text-accent-foreground active:bg-accent',
+        secondary: 'bg-secondary web:hover:opacity-80 active:opacity-80',
+        ghost: 'web:hover:bg-accent web:hover:text-accent-foreground active:bg-accent',
+        link: 'web:underline-offset-4 web:hover:underline web:focus:underline',
+      },
+      size: {
+        default: 'h-10 px-4 py-2 native:h-12 native:px-5 native:py-3',
+        sm: 'h-9 rounded-md px-3',
+        lg: 'h-11 rounded-md px-8 native:h-14',
+        icon: 'h-10 w-10',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    },
+  }
+);
 
-export default function Button({
-  children,
-  onPress,
-  disabled,
-  loading,
-  className,
-  textClassName,
-}: ButtonProps) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={disabled || loading}
-      className={cn(
-        'active:opacity-800 rounded-md bg-black px-6 py-4 disabled:pointer-events-none disabled:opacity-70',
-        className
-      )}>
-      <View className="flex flex-row items-center justify-center gap-3">
-        {loading ? (
-          <View className="size-5 animate-ping rounded-full bg-white opacity-75" />
-        ) : (
-          <Text className={cn('text-center font-bold color-white', textClassName)}>{children}</Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-}
+const buttonTextVariants = cva(
+  'web:whitespace-nowrap text-sm native:text-base font-medium text-foreground web:transition-colors',
+  {
+    variants: {
+      variant: {
+        default: 'text-primary-foreground',
+        destructive: 'text-destructive-foreground',
+        outline: 'text-secondary group-active:text-accent-foreground',
+        secondary: 'text-secondary-foreground group-active:text-secondary-foreground',
+        ghost: 'group-active:text-accent-foreground',
+        link: 'text-primary group-active:underline',
+      },
+      size: {
+        default: '',
+        sm: '',
+        lg: 'native:text-lg',
+        icon: '',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    },
+  }
+);
+
+type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
+  VariantProps<typeof buttonVariants> & {
+    loading?: boolean;
+    children?: ReactNode;
+  };
+
+const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
+  ({ className, variant, size, disabled, loading, children, ...props }, ref) => {
+    return (
+      <TextClassContext.Provider
+        value={buttonTextVariants({ variant, size, className: 'web:pointer-events-none' })}>
+        <Pressable
+          className={cn(
+            (loading || disabled) && 'opacity-50 web:pointer-events-none',
+            buttonVariants({ variant, size, className })
+          )}
+          ref={ref}
+          role="button"
+          disabled={loading || disabled}
+          {...props}>
+          {loading ? (
+            <View className="size-5 animate-ping rounded-full bg-white opacity-75" />
+          ) : (
+            <Text className="font-bold">{children}</Text>
+          )}
+        </Pressable>
+      </TextClassContext.Provider>
+    );
+  }
+);
+Button.displayName = 'Button';
+
+export default Button;
+export { buttonTextVariants, buttonVariants };
+export type { ButtonProps };

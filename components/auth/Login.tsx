@@ -4,12 +4,12 @@ import { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 import AuthFormContainer from '@/components/AuthFormContainer';
-import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
+import Button from '@/components/ui/Button';
 
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
@@ -36,7 +36,7 @@ export default function LoginScreen() {
         <>
           <Text className="mt-5 text-center text-gray-600">Don't have an account?</Text>
 
-          <Button onPress={() => setScreen(AuthScreenType.REGISTER, email)}>
+          <Button onPress={() => setScreen(AuthScreenType.REGISTER, email)} variant="outline">
             Create new account
           </Button>
         </>
@@ -78,7 +78,8 @@ export default function LoginScreen() {
           });
         }}
         loading={loading}
-        className="mt-5">
+        className="mt-5"
+        variant="secondary">
         Login
       </Button>
     </AuthFormContainer>

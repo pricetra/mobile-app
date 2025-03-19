@@ -7,12 +7,13 @@ import { AlertTriangle } from 'lucide-react-native';
 import { useContext, useState } from 'react';
 import { SafeAreaView, Text, View, Image, Pressable } from 'react-native';
 
+import { createCloudinaryUrl } from '../../lib/files';
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import { UserAuthContext } from '@/context/UserContext';
 import { UpdateProfileDocument } from '@/graphql/types/graphql';
 import { getFileBlobFromUri, cloudinary } from '@/lib/files';
-import { createCloudinaryUrl } from '../../lib/files';
 
 export default function ProfileScreen() {
   const { user, updateUser, logout } = useContext(UserAuthContext);
@@ -101,7 +102,8 @@ export default function ProfileScreen() {
               setLogoutLoading(true);
               logout();
             }}
-            loading={logoutLoading}>
+            loading={logoutLoading}
+            variant="secondary">
             Logout
           </Button>
         </View>

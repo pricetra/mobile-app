@@ -1,4 +1,4 @@
-import { ApolloError, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions, CameraRatio } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
