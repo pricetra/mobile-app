@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Platform,
-  Text,
 } from 'react-native';
 
 import ProductForm from '@/components/ProductForm';
@@ -18,39 +17,44 @@ import ModalFormMini from '@/components/ui/ModalFormMini';
 import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 
 export default function HomeScreen() {
-  const [getAllProducts, { data: productsData, loading: productsLoading, error: productsError }] =
-    useLazyQuery(AllProductsDocument);
+  const [initLoading, setInitLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [getAllProducts, { data: productsData, error: productsError }] =
+    useLazyQuery(AllProductsDocument);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [page, setPage] = useState(1);
 
-  function fetchAllProducts(refresh?: boolean) {
-    return getAllProducts({
+  function fetchProducts(force?: boolean) {
+    getAllProducts({
       variables: {
         paginator: {
-          limit: 10,
+          limit: 30,
           page,
         },
       },
-      fetchPolicy: refresh ? 'network-only' : undefined,
+      fetchPolicy: force ? 'network-only' : undefined,
+    }).finally(() => {
+      setRefreshing(false);
+      setInitLoading(false);
     });
   }
 
   useEffect(() => {
-    fetchAllProducts();
+    fetchProducts();
   }, [page]);
 
   return (
     <SafeAreaView>
       {productsError && (
         <View className="p-5">
-          <Alert icon={AlertTriangle} variant="destructive" className="mb-10 max-w-xl">
+          <Alert icon={AlertTriangle} variant="destructive" className="max-w-xl">
             <AlertTitle>Error!</AlertTitle>
             <AlertDescription>{productsError.message}</AlertDescription>
           </Alert>
         </View>
       )}
-      {(productsLoading || refreshing) && (
+
+      {initLoading && (
         <View className="p-5">
           {Array(10)
             .fill(0)
@@ -90,7 +94,7 @@ export default function HomeScreen() {
             onRefresh={() => {
               setRefreshing(true);
               setTimeout(() => {
-                fetchAllProducts(true).finally(() => setRefreshing(false));
+                fetchProducts(true);
               }, 2000);
             }}
             colors={['grey']}
@@ -99,6 +103,7 @@ export default function HomeScreen() {
         }
         className="p-5"
         contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 30 : undefined }}
+        ListFooterComponent={() => <></>}
       />
     </SafeAreaView>
   );
