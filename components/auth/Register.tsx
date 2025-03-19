@@ -1,30 +1,23 @@
 import { useMutation } from '@apollo/client';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 
-import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
+import AuthFormContainer from '@/components/AuthFormContainer';
 import Button from '@/components/ui/Button';
-import { CreateAccountDocument } from '@/graphql/types/graphql';
 import { Input } from '@/components/ui/Input';
+import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
+import { CreateAccountDocument } from '@/graphql/types/graphql';
 
 export default function RegisterScreen() {
-  const router = useRouter();
+  const { setScreen } = useContext(AuthModalContext);
   const [createAccount, { data, loading, error }] = useMutation(CreateAccountDocument);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
-  const searchParams = useLocalSearchParams<AuthFormSearchParams>();
-
-  useEffect(() => {
-    if (!searchParams.email) return;
-    setEmail(searchParams.email);
-  }, [searchParams.email]);
-
   useEffect(() => {
     if (!data) return;
-    router.push(`/email-verification?email=${email}&name=${name}`);
+    setScreen(AuthScreenType.EMAIL_VERIFICATION, email);
   }, [data]);
 
   return (
@@ -35,16 +28,12 @@ export default function RegisterScreen() {
           <Text className="mt-5 text-center text-gray-600">Already have an account?</Text>
 
           <View>
-            <Button
-              onPress={() => {
-                router.push(`/login?email=${email}`);
-              }}>
-              Login
-            </Button>
+            <Button onPress={() => setScreen(AuthScreenType.LOGIN, email)}>Login</Button>
           </View>
         </>
       }>
       <Input
+        label="Email"
         onChangeText={setEmail}
         value={email}
         placeholder="Email"
@@ -57,6 +46,7 @@ export default function RegisterScreen() {
       />
 
       <Input
+        label="Full Name"
         onChangeText={setName}
         value={name}
         placeholder="Full name"
@@ -69,6 +59,7 @@ export default function RegisterScreen() {
       />
 
       <Input
+        label="Password"
         onChangeText={setPassword}
         value={password}
         placeholder="Password"

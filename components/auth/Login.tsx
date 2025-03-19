@@ -1,41 +1,32 @@
 import { useLazyQuery } from '@apollo/client';
 import * as Network from 'expo-network';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
+import AuthFormContainer from '@/components/AuthFormContainer';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { JWT_KEY } from '@/context/UserContext';
+import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
+import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 
 export default function LoginScreen() {
-  const router = useRouter();
+  const { updateJwt } = useContext(JwtStoreContext);
+  const { setScreen } = useContext(AuthModalContext);
   const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const searchParams = useLocalSearchParams<AuthFormSearchParams>();
-
-  useEffect(() => {
-    if (!searchParams.email) return;
-    setEmail(searchParams.email);
-  }, [searchParams.email]);
 
   useEffect(() => {
     if (!data) return;
 
     const { token, user } = data.login;
     if (!user.active) {
-      router.push(`/email-verification?email=${user.email}&name=${user.name}`);
+      setScreen(AuthScreenType.EMAIL_VERIFICATION, user.email);
       return;
     }
-    SecureStore.setItemAsync(JWT_KEY, token).then(() => {
-      router.replace('/(tabs)/');
-    });
+    updateJwt(token);
   }, [data]);
 
   return (
@@ -45,10 +36,7 @@ export default function LoginScreen() {
         <>
           <Text className="mt-5 text-center text-gray-600">Don't have an account?</Text>
 
-          <Button
-            onPress={() => {
-              router.push(`/register?email=${email}`);
-            }}>
+          <Button onPress={() => setScreen(AuthScreenType.REGISTER, email)}>
             Create new account
           </Button>
         </>
@@ -63,6 +51,7 @@ export default function LoginScreen() {
         autoCorrect
         autoComplete="email"
         editable={!loading}
+        label="Email"
       />
 
       <Input
@@ -75,6 +64,7 @@ export default function LoginScreen() {
         autoCorrect={false}
         autoComplete="password"
         editable={!loading}
+        label="Password"
       />
 
       {error && <Text className="color-red-700">{error.message}</Text>}

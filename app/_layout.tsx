@@ -3,15 +3,51 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 import 'react-native-reanimated';
 import '../global.css';
+import { Modal } from 'react-native';
+
+import AuthScreens from '@/components/auth/AuthScreens';
+import AuthModalProvider from '@/context/AuthModalContext';
+import JwtStoreProvider, { JwtStoreContext } from '@/context/JwtStoreContext';
+import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+function RootStack() {
+  const { jwt, loading } = useContext(JwtStoreContext);
+
+  useEffect(() => {
+    if (loading) return;
+    SplashScreen.hideAsync();
+  }, [loading]);
+
+  if (loading) return <></>;
+
+  return (
+    <>
+      <Modal visible={!jwt} animationType="slide">
+        <AuthModalProvider>
+          <AuthScreens />
+        </AuthModalProvider>
+      </Modal>
+
+      {jwt && (
+        <UserContextProvider jwt={jwt}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </UserContextProvider>
+      )}
+    </>
+  );
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -19,28 +55,18 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
   if (!loaded) {
     return null;
   }
 
   return (
-    <ApolloWrapper>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="register" options={{ headerShown: false }} />
-          <Stack.Screen name="email-verification" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </ApolloWrapper>
+    <JwtStoreProvider>
+      <ApolloWrapper>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <RootStack />
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </ApolloWrapper>
+    </JwtStoreProvider>
   );
 }

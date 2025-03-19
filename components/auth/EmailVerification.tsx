@@ -1,15 +1,15 @@
 import { useMutation } from '@apollo/client';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-import AuthFormContainer, { AuthFormSearchParams } from '@/components/AuthFormContainer';
-import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
+import AuthFormContainer from '@/components/AuthFormContainer';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
+import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
 
 export default function EmailVerificationScreen() {
-  const router = useRouter();
+  const { setScreen, email } = useContext(AuthModalContext);
   const [verifyEmail, { data, loading, error }] = useMutation(VerifyEmailDocument);
   const [
     resendVerification,
@@ -20,19 +20,13 @@ export default function EmailVerificationScreen() {
     },
   ] = useMutation(ResendVerificationDocument);
   const [code, setCode] = useState('');
-  const [email, setEmail] = useState('');
-
-  const searchParams = useLocalSearchParams<AuthFormSearchParams>();
-
-  useEffect(() => {
-    if (!searchParams.email) throw new Error('no verification email provided');
-    setEmail(searchParams.email);
-  }, [searchParams.email]);
 
   useEffect(() => {
     if (!data) return;
-    router.push(`/login?email=${data.verifyEmail.email}`);
+    setScreen(AuthScreenType.LOGIN, data.verifyEmail.email);
   }, [data]);
+
+  if (!email) throw new Error('email param required');
 
   return (
     <AuthFormContainer
@@ -52,7 +46,7 @@ export default function EmailVerificationScreen() {
           </Button>
         </>
       }>
-      {searchParams.email && (
+      {resendVerificationData && (
         <Text className="text-base color-gray-600">
           A verification code was sent to <Text className="font-bold italic">{email}</Text>
         </Text>
