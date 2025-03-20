@@ -59,7 +59,7 @@ export default function EmailVerificationScreen() {
         placeholder="Verification code"
         autoCapitalize="none"
         textContentType="none"
-        keyboardType="ascii-capable"
+        keyboardType="numeric"
         autoCorrect={false}
         autoComplete="off"
         editable={!loading}
