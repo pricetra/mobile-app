@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import { AlertTriangle } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   View,
   RefreshControl,
@@ -14,6 +14,7 @@ import ProductForm from '@/components/ProductForm';
 import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import { SearchContext } from '@/context/SearchContext';
 import { AllProductsDocument, Paginator, Product } from '@/graphql/types/graphql';
 
 export default function HomeScreen() {
@@ -25,6 +26,7 @@ export default function HomeScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [paginator, setPaginator] = useState<Paginator>();
   const [page, setPage] = useState(1);
+  const { search } = useContext(SearchContext);
 
   function fetchProducts(force?: boolean) {
     getAllProducts({
@@ -59,6 +61,11 @@ export default function HomeScreen() {
     }
     setProducts([...products, ...productsData.allProducts.products]);
   }, [productsData?.allProducts?.products]);
+
+  useEffect(() => {
+    if (search.length === 0) return;
+    console.log(search);
+  }, [search]);
 
   return (
     <SafeAreaView>
