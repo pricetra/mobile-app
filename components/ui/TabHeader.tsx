@@ -28,8 +28,8 @@ export default function TabHeader(props: TabHeaderProps) {
           onPress={() => router.push('/(tabs)/')}
           className="flex w-full flex-1 items-center justify-center">
           <Image
-            source={require('../../assets/images/logotype_white_color.svg')}
-            style={{ height: 27, width: 115 }}
+            source={require('../../assets/images/logotype_header.svg')}
+            style={{ height: 25, width: 129.6 }}
           />
         </TouchableOpacity>
 
