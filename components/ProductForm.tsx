@@ -208,13 +208,14 @@ export default function ProductForm({
             editable={!loading}
           />
 
-          <View className="flex flex-row justify-between gap-2">
+          <View className="flex flex-row justify-between gap-3">
             <Input
               onChangeText={handleChange('color')}
               onBlur={handleBlur('color')}
               value={values.color ?? ''}
               label="Color"
               editable={!loading}
+              className="flex-1"
             />
 
             <Input
@@ -223,6 +224,7 @@ export default function ProductForm({
               value={values.weight ?? ''}
               label="Weight"
               editable={!loading}
+              className="flex-1"
             />
           </View>
 
@@ -242,10 +244,14 @@ export default function ProductForm({
           /> */}
 
           <View className="mt-10 flex flex-row justify-between gap-3">
-            <Button onPress={onCancel} disabled={loading} variant="outline">
+            <Button onPress={onCancel} disabled={loading} variant="outline" className="flex-1">
               Cancel
             </Button>
-            <Button onPress={() => handleSubmit()} loading={loading} variant="secondary">
+            <Button
+              onPress={() => handleSubmit()}
+              loading={loading}
+              variant="secondary"
+              className="flex-1">
               {product ? 'Update' : 'Create'}
             </Button>
           </View>
