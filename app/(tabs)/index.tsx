@@ -52,6 +52,11 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (!productsData) return;
+
+    if (page === 1) {
+      setProducts([...productsData.allProducts.products]);
+      return;
+    }
     setProducts([...products, ...productsData.allProducts.products]);
   }, [productsData?.allProducts?.products]);
 
@@ -75,7 +80,13 @@ export default function HomeScreen() {
         <ProductForm
           product={selectedProduct}
           onCancel={() => setSelectedProduct(undefined)}
-          onSuccess={() => setSelectedProduct(undefined)}
+          onSuccess={(product) => {
+            const idx = products.findIndex(({ id }) => id === product.id);
+            const updatedProducts = [...products];
+            updatedProducts[idx] = product;
+            setProducts(updatedProducts);
+            setSelectedProduct(undefined);
+          }}
           onError={(e) => alert(e.message)}
         />
       </ModalFormMini>
@@ -112,7 +123,7 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 30 : undefined }}
         ListFooterComponent={() => {
           if (products.length === 0 || !paginator?.next) return <></>;
-          return <RenderProductLoadingItems count={5} />;
+          return <RenderProductLoadingItems count={5} noPadding />;
         }}
       />
     </SafeAreaView>

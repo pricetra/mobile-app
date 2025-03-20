@@ -40,9 +40,14 @@ export function ProductLoadingItem() {
   );
 }
 
-export function RenderProductLoadingItems({ count = 5 }: { count?: number }) {
+export type RenderProductLoadingItemsProps = { count?: number; noPadding?: boolean };
+
+export function RenderProductLoadingItems({
+  count = 5,
+  noPadding = false,
+}: RenderProductLoadingItemsProps) {
   return (
-    <View className="p-5">
+    <View style={{ padding: noPadding ? 0 : 20 }}>
       {Array(count)
         .fill(0)
         .map((_, i) => (
