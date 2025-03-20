@@ -1,14 +1,14 @@
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react';
-import { TextInput, View } from 'react-native';
+import * as React from 'react';
+import { TextInput, View, type TextInputProps } from 'react-native';
 
+import Label from '@/components/ui/Label';
 import { cn } from '@/lib/utils';
-import { Label } from './Label';
 
-export type TextareaProps = ComponentPropsWithoutRef<typeof TextInput> & {
+export type TextareaProps = TextInputProps & {
   label?: string;
 };
 
-const Textarea = forwardRef<ElementRef<typeof TextInput>, TextareaProps>(
+const Textarea = React.forwardRef<React.ElementRef<typeof TextInput>, TextareaProps>(
   ({ className, multiline = true, numberOfLines = 4, placeholderClassName, ...props }, ref) => {
     return (
       <View>
@@ -17,7 +17,7 @@ const Textarea = forwardRef<ElementRef<typeof TextInput>, TextareaProps>(
         <TextInput
           ref={ref}
           className={cn(
-            'native:text-lg native:leading-[1.25] min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base placeholder:text-muted-foreground web:flex web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-1 web:focus-visible:ring-ring web:focus-visible:ring-offset-0 lg:text-sm',
+            'native:text-lg native:leading-[1.25] min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 placeholder:text-muted-foreground web:flex web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2 lg:text-sm',
             props.editable === false && 'opacity-50 web:cursor-not-allowed',
             className
           )}
@@ -34,4 +34,5 @@ const Textarea = forwardRef<ElementRef<typeof TextInput>, TextareaProps>(
 
 Textarea.displayName = 'Textarea';
 
+export default Textarea;
 export { Textarea };

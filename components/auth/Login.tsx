@@ -4,12 +4,12 @@ import { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 import AuthFormContainer from '@/components/AuthFormContainer';
+import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
-import Button from '@/components/ui/Button';
 
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);

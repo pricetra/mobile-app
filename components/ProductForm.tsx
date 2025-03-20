@@ -13,13 +13,13 @@ import {
   UpdateProductDocument,
 } from '../graphql/types/graphql';
 
+import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
-import Button from '@/components/ui/Button';
 
 export type ProductFormProps = {
   upc?: string;
@@ -208,13 +208,12 @@ export default function ProductForm({
             editable={!loading}
           />
 
-          <View className="flex flex-row gap-2">
+          <View className="flex flex-row justify-between gap-2">
             <Input
               onChangeText={handleChange('color')}
               onBlur={handleBlur('color')}
               value={values.color ?? ''}
               label="Color"
-              className="flex-1"
               editable={!loading}
             />
 
