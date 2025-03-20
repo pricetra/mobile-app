@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 
 import ProductForm from '@/components/ProductForm';
-import ProductItem, { ProductLoadingItem } from '@/components/ProductItem';
+import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
-import { AllProductsDocument, Product } from '@/graphql/types/graphql';
+import { AllProductsDocument, Paginator, Product } from '@/graphql/types/graphql';
 
 export default function HomeScreen() {
   const [initLoading, setInitLoading] = useState(true);
@@ -22,6 +22,8 @@ export default function HomeScreen() {
   const [getAllProducts, { data: productsData, error: productsError }] =
     useLazyQuery(AllProductsDocument);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [paginator, setPaginator] = useState<Paginator>();
   const [page, setPage] = useState(1);
 
   function fetchProducts(force?: boolean) {
@@ -43,6 +45,16 @@ export default function HomeScreen() {
     fetchProducts();
   }, [page]);
 
+  useEffect(() => {
+    if (!productsData) return;
+    setPaginator(productsData.allProducts.paginator);
+  }, [productsData?.allProducts?.paginator]);
+
+  useEffect(() => {
+    if (!productsData) return;
+    setProducts([...products, ...productsData.allProducts.products]);
+  }, [productsData?.allProducts?.products]);
+
   return (
     <SafeAreaView>
       {productsError && (
@@ -54,17 +66,7 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {initLoading && (
-        <View className="p-5">
-          {Array(10)
-            .fill(0)
-            .map((_, i) => (
-              <View className="mb-10" key={i}>
-                <ProductLoadingItem />
-              </View>
-            ))}
-        </View>
-      )}
+      {initLoading && <RenderProductLoadingItems count={10} />}
 
       <ModalFormMini
         title={selectedProduct ? 'Edit Product' : 'Add Product'}
@@ -79,8 +81,8 @@ export default function HomeScreen() {
       </ModalFormMini>
 
       <FlatList
-        data={productsData?.allProducts?.products ?? []}
-        keyExtractor={({ id }) => id}
+        data={products}
+        keyExtractor={({ id }, i) => `${id}-${i}`}
         renderItem={({ item }) => (
           <View className="mb-10">
             <TouchableOpacity onPress={() => setSelectedProduct(item)}>
@@ -101,9 +103,17 @@ export default function HomeScreen() {
             progressBackgroundColor="black"
           />
         }
+        onEndReached={() => {
+          if (!paginator || !paginator.next) return;
+          setPage(paginator.next);
+        }}
+        onEndReachedThreshold={5}
         className="p-5"
         contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 30 : undefined }}
-        ListFooterComponent={() => <></>}
+        ListFooterComponent={() => {
+          if (products.length === 0 || !paginator?.next) return <></>;
+          return <RenderProductLoadingItems count={5} />;
+        }}
       />
     </SafeAreaView>
   );

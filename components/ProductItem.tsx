@@ -39,3 +39,17 @@ export function ProductLoadingItem() {
     </View>
   );
 }
+
+export function RenderProductLoadingItems({ count = 5 }: { count?: number }) {
+  return (
+    <View className="p-5">
+      {Array(count)
+        .fill(0)
+        .map((_, i) => (
+          <View className="mb-10" key={i}>
+            <ProductLoadingItem />
+          </View>
+        ))}
+    </View>
+  );
+}
