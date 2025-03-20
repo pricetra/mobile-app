@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 
-import { JWT_KEY } from './UserContext';
+export const JWT_KEY = 'JWT';
 
 export type JwtStore = {
   jwt?: string;

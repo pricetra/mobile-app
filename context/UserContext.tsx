@@ -8,8 +8,6 @@ import { JwtStoreContext } from './JwtStoreContext';
 
 import { LogoutDocument, MeDocument, User } from '@/graphql/types/graphql';
 
-export const JWT_KEY = 'JWT';
-
 export type UserContextType = {
   user: User;
   token: string;
