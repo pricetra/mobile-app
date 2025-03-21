@@ -246,3 +246,12 @@ export const FIND_BRANCH_QUERY = gql(`
     }
   }
 `);
+
+export const ALL_BRANDS_QUERY = gql`
+  query AllBrands {
+    allBrands {
+      brand
+      products
+    }
+  }
+`;

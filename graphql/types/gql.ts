@@ -34,6 +34,7 @@ type Documents = {
     "\n  query FindStore($id: ID!) {\n    findStore(id: $id) {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n\n    allBranches(storeId: $id) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n": typeof types.FindStoreDocument,
     "\n  query AllBranches($storeId: ID!) {\n    allBranches(storeId: $storeId) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n": typeof types.AllBranchesDocument,
     "\n  query FindBranch($id: ID!, $storeId: ID!) {\n    findBranch(id: $id, storeId: $storeId) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n": typeof types.FindBranchDocument,
+    "\n  query AllBrands {\n    allBrands {\n      brand\n      products\n    }\n  }\n": typeof types.AllBrandsDocument,
 };
 const documents: Documents = {
     "\n  mutation CreateAccount($email: String!, $name: String!, $password: String!) {\n    createAccount(input: { email: $email, name: $name, password: $password }) {\n      id\n      name\n      email\n      phoneNumber\n      createdAt\n      updatedAt\n      authPlatform\n    }\n  }\n": types.CreateAccountDocument,
@@ -56,6 +57,7 @@ const documents: Documents = {
     "\n  query FindStore($id: ID!) {\n    findStore(id: $id) {\n      id\n      name\n      logo\n      website\n      createdBy {\n        id\n        name\n        avatar\n      }\n    }\n\n    allBranches(storeId: $id) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n": types.FindStoreDocument,
     "\n  query AllBranches($storeId: ID!) {\n    allBranches(storeId: $storeId) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n": types.AllBranchesDocument,
     "\n  query FindBranch($id: ID!, $storeId: ID!) {\n    findBranch(id: $id, storeId: $storeId) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n": types.FindBranchDocument,
+    "\n  query AllBrands {\n    allBrands {\n      brand\n      products\n    }\n  }\n": types.AllBrandsDocument,
 };
 
 /**
@@ -152,6 +154,10 @@ export function graphql(source: "\n  query AllBranches($storeId: ID!) {\n    all
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query FindBranch($id: ID!, $storeId: ID!) {\n    findBranch(id: $id, storeId: $storeId) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n"): (typeof documents)["\n  query FindBranch($id: ID!, $storeId: ID!) {\n    findBranch(id: $id, storeId: $storeId) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AllBrands {\n    allBrands {\n      brand\n      products\n    }\n  }\n"): (typeof documents)["\n  query AllBrands {\n    allBrands {\n      brand\n      products\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
