@@ -120,8 +120,8 @@ export const ME_QUERY = gql`
 `;
 
 export const ALL_PRODUCTS_QUERY = gql(`
-  query AllProducts($paginator: PaginatorInput!) {
-    allProducts(paginator: $paginator) {
+  query AllProducts($paginator: PaginatorInput!, $search: ProductSearch) {
+    allProducts(paginator: $paginator, search: $search) {
       products {
         id
         name

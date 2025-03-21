@@ -27,13 +27,17 @@ export default function HomeScreen() {
   const [paginator, setPaginator] = useState<Paginator>();
   const [page, setPage] = useState(1);
   const { search } = useContext(SearchContext);
+  const limit = 10;
 
-  function fetchProducts(force?: boolean) {
+  function fetchProducts(page: number, limit = 10, force = false) {
     getAllProducts({
       variables: {
         paginator: {
           limit: 30,
           page,
+        },
+        search: {
+          query: search,
         },
       },
       fetchPolicy: force ? 'network-only' : undefined,
@@ -44,8 +48,13 @@ export default function HomeScreen() {
   }
 
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(page);
   }, [page]);
+
+  useEffect(() => {
+    setPage(1);
+    fetchProducts(1);
+  }, [search]);
 
   useEffect(() => {
     if (!productsData) return;
@@ -114,7 +123,7 @@ export default function HomeScreen() {
             onRefresh={() => {
               setRefreshing(true);
               setTimeout(() => {
-                fetchProducts(true);
+                fetchProducts(1);
               }, 2000);
             }}
             colors={['grey']}

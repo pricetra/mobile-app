@@ -46,7 +46,13 @@ export default function TabHeader(props: TabHeaderProps) {
             <TextInput
               placeholder="Search..."
               autoFocus
-              style={{ flex: 1, height: logoHeight, padding: 0, fontSize: 17 }}
+              style={{
+                flex: 1,
+                height: logoHeight,
+                padding: 0,
+                fontSize: 17,
+                paddingRight: padding,
+              }}
               clearButtonMode="while-editing"
               className="color-white placeholder:color-slate-400"
               onChangeText={(t) => {
