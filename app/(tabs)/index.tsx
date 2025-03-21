@@ -15,7 +15,7 @@ import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
-import { AllProductsDocument, Paginator, Product } from '@/graphql/types/graphql';
+import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 
 export default function HomeScreen() {
   const [initLoading, setInitLoading] = useState(true);
@@ -24,16 +24,15 @@ export default function HomeScreen() {
     useLazyQuery(AllProductsDocument);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [products, setProducts] = useState<Product[]>([]);
-  const [paginator, setPaginator] = useState<Paginator>();
   const [page, setPage] = useState(1);
   const { search } = useContext(SearchContext);
-  const limit = 10;
+  const limit = 30;
 
-  function fetchProducts(page: number, limit = 10, force = false) {
+  function fetchProducts(page: number, force = false) {
     getAllProducts({
       variables: {
         paginator: {
-          limit: 30,
+          limit,
           page,
         },
         search: {
@@ -53,13 +52,9 @@ export default function HomeScreen() {
 
   useEffect(() => {
     setPage(1);
-    fetchProducts(1);
+    setInitLoading(true);
+    fetchProducts(page);
   }, [search]);
-
-  useEffect(() => {
-    if (!productsData) return;
-    setPaginator(productsData.allProducts.paginator);
-  }, [productsData?.allProducts?.paginator]);
 
   useEffect(() => {
     if (!productsData) return;
@@ -70,11 +65,6 @@ export default function HomeScreen() {
     }
     setProducts([...products, ...productsData.allProducts.products]);
   }, [productsData?.allProducts?.products]);
-
-  useEffect(() => {
-    if (search.length === 0) return;
-    console.log(search);
-  }, [search]);
 
   return (
     <SafeAreaView>
@@ -131,14 +121,15 @@ export default function HomeScreen() {
           />
         }
         onEndReached={() => {
-          if (!paginator || !paginator.next) return;
-          setPage(paginator.next);
+          if (!productsData?.allProducts?.paginator || !productsData?.allProducts?.paginator.next)
+            return;
+          setPage(productsData.allProducts.paginator.next);
         }}
         onEndReachedThreshold={5}
         className="p-5"
         contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 30 : undefined }}
         ListFooterComponent={() => {
-          if (products.length === 0 || !paginator?.next) return <></>;
+          if (products.length === 0 || !productsData?.allProducts?.paginator?.next) return <></>;
           return <RenderProductLoadingItems count={5} noPadding />;
         }}
       />
