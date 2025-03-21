@@ -12,6 +12,7 @@ import {
   Pressable,
   SafeAreaView,
 } from 'react-native';
+import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 export type ModalFormMiniProps = {
   visible: boolean;
@@ -46,9 +47,16 @@ export default function ModalFormMini({
               <Feather name="x" size={25} />
             </TouchableOpacity>
           </View>
-          <ScrollView className="px-7">
+          <ScrollView
+            className="px-7"
+            nestedScrollEnabled
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            contentInsetAdjustmentBehavior="automatic">
             <View className="h-5" />
-            <View>{children}</View>
+            <AutocompleteDropdownContextProvider>
+              <View>{children}</View>
+            </AutocompleteDropdownContextProvider>
             <View className="h-20" />
           </ScrollView>
         </SafeAreaView>

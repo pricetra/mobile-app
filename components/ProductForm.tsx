@@ -1,11 +1,13 @@
-import { ApolloError, useMutation } from '@apollo/client';
+import { ApolloError, useMutation, useQuery } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View, Image as NativeImage, Text } from 'react-native';
+import { TouchableOpacity, View, Image as NativeImage, Text, Platform } from 'react-native';
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 
 import {
+  AllBrandsDocument,
   AllProductsDocument,
   BarcodeScanDocument,
   CreateProduct,
@@ -16,9 +18,10 @@ import {
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
+import Label from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/Textarea';
 import { Product } from '@/graphql/types/graphql';
-import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
+import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
 
 export type ProductFormProps = {
@@ -39,6 +42,7 @@ export default function ProductForm({
   const [imageUri, setImageUri] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+  const { data: brandsData, loading: brandsLoading } = useQuery(AllBrandsDocument);
   const [updateProduct, { loading: updateLoading }] = useMutation(UpdateProductDocument, {
     refetchQueries: [BarcodeScanDocument, AllProductsDocument],
   });
@@ -164,7 +168,6 @@ export default function ProductForm({
           <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
             {renderImageSelection()}
           </TouchableOpacity>
-
           <Input
             onChangeText={handleChange('code')}
             onBlur={handleBlur('code')}
@@ -173,7 +176,6 @@ export default function ProductForm({
             keyboardType="numeric"
             editable={!loading}
           />
-
           <Textarea
             onChangeText={handleChange('name')}
             onBlur={handleBlur('name')}
@@ -181,7 +183,6 @@ export default function ProductForm({
             label="Product Name"
             editable={!loading}
           />
-
           <TouchableOpacity
             onPress={() => {
               setFieldValue('name', titleCase(values.name));
@@ -192,13 +193,51 @@ export default function ProductForm({
             </Text>
           </TouchableOpacity>
 
-          <Input
-            onChangeText={handleChange('brand')}
-            onBlur={handleBlur('brand')}
-            value={values.brand}
-            label="Brand"
-            editable={!loading}
-          />
+          <View style={{ position: 'relative' }}>
+            <Label className="mb-1">Brand</Label>
+            <AutocompleteDropdown
+              loading={brandsLoading}
+              showClear={false}
+              direction={Platform.select({ ios: 'down' })}
+              clearOnFocus={false}
+              onSelectItem={(data) => {
+                console.log(data);
+                handleChange('brand')(data?.title ?? '');
+              }}
+              initialValue={values.brand}
+              dataSet={
+                brandsData?.allBrands?.map(({ brand }, i) => ({
+                  id: brand,
+                  title: brand,
+                })) ?? []
+              }
+              suggestionsListContainerStyle={{
+                backgroundColor: 'white',
+                borderRadius: 6,
+                top: 25,
+                right: 25,
+                boxShadow: '0px 3px 20px 0px rgba(0,0,0,0.2)',
+              }}
+              renderItem={(item) => (
+                <Text style={{ color: 'black', padding: 15 }}>{item.title}</Text>
+              )}
+              ItemSeparatorComponent={() => <View className="h-[1px] w-full bg-gray-100" />}
+              inputContainerStyle={{
+                backgroundColor: 'white',
+                borderRadius: 6,
+                borderColor: '#d1d5db',
+                borderWidth: 1,
+              }}
+              textInputProps={{
+                placeholder: 'Brand',
+                autoCorrect: false,
+                autoCapitalize: 'words',
+                style: {
+                  color: 'black',
+                },
+              }}
+            />
+          </View>
 
           <Input
             onChangeText={handleChange('category')}
@@ -207,7 +246,6 @@ export default function ProductForm({
             label="Category"
             editable={!loading}
           />
-
           <View className="flex flex-row justify-between gap-3">
             <Input
               onChangeText={handleChange('color')}
@@ -227,7 +265,6 @@ export default function ProductForm({
               className="flex-1"
             />
           </View>
-
           <Textarea
             onChangeText={handleChange('description')}
             onBlur={handleBlur('description')}
@@ -235,14 +272,12 @@ export default function ProductForm({
             label="Description"
             editable={!loading}
           />
-
           {/* <Input
             onChangeText={handleChange('model')}
             onBlur={handleBlur('model')}
             value={values.model ?? ''}
             label="Model"
           /> */}
-
           <View className="mt-10 flex flex-row justify-between gap-3">
             <Button onPress={onCancel} disabled={loading} variant="outline" className="flex-1">
               Cancel
