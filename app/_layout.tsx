@@ -7,6 +7,7 @@ import { useContext, useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
 import { Modal } from 'react-native';
+import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 import AuthScreens from '@/components/auth/AuthScreens';
 import AuthModalProvider from '@/context/AuthModalContext';
@@ -45,10 +46,12 @@ function RootStack() {
       {jwt && (
         <UserContextProvider jwt={jwt}>
           <SearchContextProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+            <AutocompleteDropdownContextProvider>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </AutocompleteDropdownContextProvider>
           </SearchContextProvider>
         </UserContextProvider>
       )}
