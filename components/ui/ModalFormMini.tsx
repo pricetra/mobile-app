@@ -36,7 +36,7 @@ export default function ModalFormMini({
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        className="absolute bottom-0 left-0 z-50 h-fit max-h-full w-full rounded-t-2xl bg-white py-7 shadow-2xl">
+        className="absolute bottom-0 left-0 h-fit max-h-full w-full rounded-t-2xl bg-white py-7 shadow-2xl">
         <SafeAreaView>
           <View className="flex flex-row items-center justify-between gap-6 border-b-[1px] border-gray-100 px-7 pb-5">
             <Text className="flex flex-row items-center gap-2 text-2xl font-bold">{title}</Text>
