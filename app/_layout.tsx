@@ -15,6 +15,7 @@ import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { NAV_THEME } from '@/lib/constants';
+import { PortalHost } from '@rn-primitives/portal';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -71,6 +72,7 @@ export default function RootLayout() {
         <ThemeProvider value={LIGHT_THEME}>
           <RootStack />
           <StatusBar style="light" />
+          <PortalHost />
         </ThemeProvider>
       </ApolloWrapper>
     </JwtStoreProvider>
