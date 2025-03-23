@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { TouchableOpacity, View, Image as NativeImage } from 'react-native';
 
 import BrandSelector from './BrandSelector';
+import WeightSelector from './WeightSelector';
 
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
@@ -25,7 +26,6 @@ import {
 } from '@/graphql/types/graphql';
 import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
-import WeightSelector from './WeightSelector';
 
 export type ProductFormProps = {
   upc?: string;

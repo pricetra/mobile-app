@@ -36,14 +36,16 @@ export default function ModalFormMini({
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        className="absolute bottom-0 left-0 h-fit max-h-full w-full rounded-t-2xl bg-white py-7 shadow-2xl">
+        className="absolute bottom-0 left-0 h-fit max-h-full w-full rounded-t-2xl bg-white shadow-2xl">
         <SafeAreaView>
-          <View className="flex flex-row items-center justify-between gap-6 border-b-[1px] border-gray-100 px-7 pb-5">
-            <Text className="flex flex-row items-center gap-2 text-2xl font-bold">{title}</Text>
+          <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100">
+            <Text className="flex flex-1 flex-row items-center gap-2 px-7 py-5 text-2xl font-bold">
+              {title}
+            </Text>
 
             <TouchableOpacity
               onPress={onRequestClose}
-              className="flex size-10 items-center justify-center">
+              className="flex items-center justify-center p-5">
               <Feather name="x" size={25} />
             </TouchableOpacity>
           </View>
