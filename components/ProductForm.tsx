@@ -25,6 +25,7 @@ import {
 } from '@/graphql/types/graphql';
 import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
+import WeightSelector from './WeightSelector';
 
 export type ProductFormProps = {
   upc?: string;
@@ -244,13 +245,11 @@ export default function ProductForm({
               className="flex-1"
             />
 
-            <Input
+            <WeightSelector
               onChangeText={handleChange('weight')}
               onBlur={handleBlur('weight')}
               value={values.weight ?? ''}
-              label="Weight"
               editable={!loading}
-              className="flex-1"
             />
           </View>
           <Textarea
