@@ -89,8 +89,6 @@ export default function ProductForm({
   }
 
   function submit(input: CreateProduct) {
-    console.log(input);
-
     if (product) {
       updateProduct({
         variables: {

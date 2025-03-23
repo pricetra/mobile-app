@@ -1,20 +1,10 @@
-import { PortalHost } from '@rn-primitives/portal';
-import * as SelectPrimitive from '@rn-primitives/select';
-import { Fragment, useEffect, useState } from 'react';
-import { Platform, TextInputProps, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FullWindowOverlay } from 'react-native-screens';
+import { useEffect, useState } from 'react';
+import { TextInputProps, View } from 'react-native';
+import { AutocompleteDropdown, AutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
 
 import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/Select';
+import Text from '@/components/ui/Text';
 
 export type WeightSelectorProps = {
   value: string;
@@ -43,11 +33,17 @@ const units = [
   'bag',
   'bunch',
 ];
+const defaultUnit: AutocompleteDropdownItem = { id: 'oz', title: 'oz' };
 
-const defaultUnit = { value: 'oz', label: 'oz' };
+function getMeasurement(value: string): { measurement: string; unit: AutocompleteDropdownItem } {
+  const parsedValue = value.split(' ');
+  if (parsedValue.length < 2) return { measurement: '', unit: defaultUnit };
 
-const CUSTOM_PORTAL_HOST_NAME = 'modal-example';
-const WindowOverlay = Platform.OS === 'ios' ? FullWindowOverlay : Fragment;
+  const measurement = parsedValue.at(0) ?? '';
+  const unit = parsedValue.slice(1).join(' ').toLowerCase();
+
+  return { measurement, unit: { id: unit, title: unit } };
+}
 
 export default function WeightSelector({
   value,
@@ -55,35 +51,24 @@ export default function WeightSelector({
   onBlur,
   editable,
 }: WeightSelectorProps) {
-  const [measurement, setMeasurement] = useState<string>();
-  const [unit, setUnit] = useState<SelectPrimitive.Option>(defaultUnit);
-
-  const insets = useSafeAreaInsets();
-  const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
-    left: 12,
-    right: 12,
-  };
+  const parsedValue = getMeasurement(value);
+  const [measurement, setMeasurement] = useState<string>(parsedValue.measurement);
+  const [unit, setUnit] = useState<AutocompleteDropdownItem>(parsedValue.unit);
 
   useEffect(() => {
-    const parsedValue = value.split(' ');
-    if (parsedValue.length < 2) return;
-
-    const measurement = parsedValue.at(0);
-    const unit = parsedValue.slice(1).join(' ').toLowerCase();
+    const { measurement, unit } = getMeasurement(value);
     setMeasurement(measurement);
-    setUnit({ label: unit, value: unit });
+    setUnit(unit);
   }, [value]);
 
   useEffect(() => {
     if (!measurement || !unit) return;
-    onChangeText(`${measurement} ${unit?.value}`);
+    onChangeText(`${measurement} ${unit.id}`);
   }, [measurement, unit]);
 
   return (
     <>
-      <View className="flex flex-1 flex-row items-center gap-2">
+      <View className="flex flex-1 flex-row gap-2">
         <Input
           onChangeText={setMeasurement}
           value={measurement}
@@ -94,36 +79,39 @@ export default function WeightSelector({
         />
 
         <View className="relative">
-          <Label className="mb-1">Unit</Label>
-
-          <Select
-            defaultValue={defaultUnit}
-            value={unit}
-            onValueChange={setUnit}
-            className="relative">
-            <SelectTrigger>
-              <SelectValue placeholder="Unit" />
-            </SelectTrigger>
-            <SelectContent
-              insets={contentInsets}
-              className="z-50"
-              portalHost={CUSTOM_PORTAL_HOST_NAME}>
-              <SelectGroup>
-                {units.map((v) => (
-                  <SelectItem label={v} value={v} key={v}>
-                    {v}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <Label className="mb-[1px]">Unit</Label>
+          <AutocompleteDropdown
+            editable={editable}
+            showClear={false}
+            initialValue={unit}
+            onSelectItem={(i) => setUnit(i ?? { id: 'ml' })}
+            dataSet={units.map((u) => ({ id: u, title: u }))}
+            suggestionsListContainerStyle={{
+              backgroundColor: 'white',
+              borderRadius: 6,
+              top: 25,
+              right: 25,
+              boxShadow: '0px 3px 20px 0px rgba(0,0,0,0.2)',
+              width: 90,
+            }}
+            renderItem={(item) => <Text className="px-5 py-3 color-black">{item.title}</Text>}
+            ItemSeparatorComponent={() => <View className="h-[1px] w-full bg-gray-100" />}
+            inputContainerStyle={{
+              backgroundColor: 'white',
+              borderRadius: 6,
+              borderColor: '#d1d5db',
+              borderWidth: 1,
+              width: 90,
+            }}
+            textInputProps={{
+              autoCorrect: false,
+              style: {
+                color: 'black',
+              },
+            }}
+          />
         </View>
       </View>
-
-      <WindowOverlay>
-        {/* #7 */}
-        <PortalHost name={CUSTOM_PORTAL_HOST_NAME} />
-      </WindowOverlay>
     </>
   );
 }

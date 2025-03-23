@@ -49,7 +49,6 @@ export default function BrandSelector({
         setValue(data?.title ?? '');
       }}
       onSubmit={() => {
-        console.log(brandInputRaw);
         if (!brands?.find((b) => b.brand === brandInputRaw)) {
           addNewBrand(brandInputRaw);
         }
