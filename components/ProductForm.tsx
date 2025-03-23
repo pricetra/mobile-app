@@ -1,26 +1,28 @@
 import { ApolloError, useMutation, useQuery } from '@apollo/client';
-import { Feather } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View, Image as NativeImage, Text, Platform } from 'react-native';
-import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
+import { TouchableOpacity, View, Image as NativeImage } from 'react-native';
 
-import {
-  AllBrandsDocument,
-  AllProductsDocument,
-  BarcodeScanDocument,
-  CreateProduct,
-  CreateProductDocument,
-  UpdateProductDocument,
-} from '../graphql/types/graphql';
+import BrandSelector from './BrandSelector';
 
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
+import Text from '@/components/ui/Text';
 import { Textarea } from '@/components/ui/Textarea';
-import { Product } from '@/graphql/types/graphql';
+import {
+  AllBrandsDocument,
+  AllProductsDocument,
+  BarcodeScanDocument,
+  Brand,
+  CreateProduct,
+  CreateProductDocument,
+  UpdateProductDocument,
+  Product,
+} from '@/graphql/types/graphql';
 import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
 
@@ -42,12 +44,13 @@ export default function ProductForm({
   const [imageUri, setImageUri] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+  const [brands, setBrands] = useState<Brand[]>();
   const { data: brandsData, loading: brandsLoading } = useQuery(AllBrandsDocument);
   const [updateProduct, { loading: updateLoading }] = useMutation(UpdateProductDocument, {
-    refetchQueries: [BarcodeScanDocument, AllProductsDocument],
+    refetchQueries: [BarcodeScanDocument, AllProductsDocument, AllBrandsDocument],
   });
   const [createProduct, { loading: createLoading }] = useMutation(CreateProductDocument, {
-    refetchQueries: [AllProductsDocument],
+    refetchQueries: [AllProductsDocument, AllBrandsDocument],
   });
   const loading = updateLoading || createLoading || imageUploading;
 
@@ -58,6 +61,11 @@ export default function ProductForm({
       setImageUri(undefined);
     }
   }, [product]);
+
+  useEffect(() => {
+    if (!brandsData) return;
+    setBrands(brandsData.allBrands);
+  }, [brandsData]);
 
   async function selectImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -80,6 +88,8 @@ export default function ProductForm({
   }
 
   function submit(input: CreateProduct) {
+    console.log(input);
+
     if (product) {
       updateProduct({
         variables: {
@@ -148,6 +158,18 @@ export default function ProductForm({
     );
   }
 
+  if (brandsLoading || !brands)
+    return (
+      <View className="flex h-40 items-center justify-center p-10">
+        <AntDesign
+          name="loading1"
+          className="size-[50px] animate-spin text-center"
+          color="#374151"
+          size={50}
+        />
+      </View>
+    );
+
   return (
     <Formik
       initialValues={
@@ -195,47 +217,13 @@ export default function ProductForm({
 
           <View style={{ position: 'relative' }}>
             <Label className="mb-1">Brand</Label>
-            <AutocompleteDropdown
-              loading={brandsLoading}
-              showClear={false}
-              direction={Platform.select({ ios: 'down' })}
-              clearOnFocus={false}
-              onSelectItem={(data) => {
-                console.log(data);
-                handleChange('brand')(data?.title ?? '');
-              }}
-              initialValue={values.brand}
-              dataSet={
-                brandsData?.allBrands?.map(({ brand }, i) => ({
-                  id: brand,
-                  title: brand,
-                })) ?? []
-              }
-              suggestionsListContainerStyle={{
-                backgroundColor: 'white',
-                borderRadius: 6,
-                top: 25,
-                right: 25,
-                boxShadow: '0px 3px 20px 0px rgba(0,0,0,0.2)',
-              }}
-              renderItem={(item) => (
-                <Text style={{ color: 'black', padding: 15 }}>{item.title}</Text>
-              )}
-              ItemSeparatorComponent={() => <View className="h-[1px] w-full bg-gray-100" />}
-              inputContainerStyle={{
-                backgroundColor: 'white',
-                borderRadius: 6,
-                borderColor: '#d1d5db',
-                borderWidth: 1,
-              }}
-              textInputProps={{
-                placeholder: 'Brand',
-                autoCorrect: false,
-                autoCapitalize: 'words',
-                style: {
-                  color: 'black',
-                },
-              }}
+            <BrandSelector
+              editable={!loading}
+              brandsLoading={brandsLoading}
+              brands={brands}
+              setBrands={setBrands}
+              setValue={handleChange('brand')}
+              value={values.brand}
             />
           </View>
 
