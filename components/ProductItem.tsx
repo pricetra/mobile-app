@@ -17,11 +17,12 @@ export default function ProductItem({ product }: ProductItemProps) {
       <Image src={createCloudinaryUrl(product.code, 500)} className="size-28 rounded-lg" />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
-          <BarcodeText className="text-sm color-gray-600">{product.code}</BarcodeText>
+          {product.brand && <Text className="text-sm">{product.brand}</Text>}
+          {/* <BarcodeText className="text-sm color-gray-600">{product.code}</BarcodeText> */}
           <Text className="font-bold">{product.name}</Text>
         </View>
 
-        {product.brand && <Text className="text-sm">{product.brand}</Text>}
+        {product.weight && <Text className="text-sm">{product.weight}</Text>}
       </View>
     </View>
   );

@@ -263,7 +263,7 @@ export default function ProductForm({
             value={values.model ?? ''}
             label="Model"
           /> */}
-          <View className="mt-10 flex flex-row justify-between gap-3">
+          <View className="my-10 flex flex-row justify-between gap-3">
             <Button onPress={onCancel} disabled={loading} variant="outline" className="flex-1">
               Cancel
             </Button>
