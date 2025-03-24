@@ -16,7 +16,7 @@ export default function BarcodePreview({ scannedCode }: BarcodePreviewProps) {
 
     setBarcode(scannedCode);
     setShowAlert(true);
-    setTimeout(() => setShowAlert(false), 3000);
+    setTimeout(() => setShowAlert(false), 2000);
   }, [scannedCode]);
 
   return (
@@ -29,7 +29,7 @@ export default function BarcodePreview({ scannedCode }: BarcodePreviewProps) {
         </BarcodeText>
 
         {showAlert && (
-          <Animated.View className="absolute -left-2 -top-2 z-[2] flex size-5 items-center justify-center">
+          <Animated.View className="absolute -left-3 -top-3 z-[2] flex size-7 items-center justify-center">
             <View className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
             <View className="relative inline-flex size-3 rounded-full bg-green-500" />
           </Animated.View>
