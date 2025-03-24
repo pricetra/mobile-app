@@ -2,11 +2,11 @@ import { useMutation } from '@apollo/client';
 import { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-import AuthFormContainer from '@/components/AuthFormContainer';
+import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
+import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
-import Button from '@/components/ui/Button';
 
 export default function EmailVerificationScreen() {
   const { setScreen, email } = useContext(AuthModalContext);

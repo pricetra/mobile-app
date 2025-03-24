@@ -19,7 +19,7 @@ export default function AuthFormContainer({
         <View className="flex flex-col items-center justify-center gap-1 p-10">
           <View className="mb-10">
             <Image
-              source={require('../assets/images/logotype_light.svg')}
+              source={require('@/assets/images/logotype_light.svg')}
               style={{ height: 42.426, width: 180 }}
             />
           </View>
