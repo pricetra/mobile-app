@@ -11,6 +11,7 @@ import BarcodePreview from '@/components/scanner/BarcodePreview';
 import ScannerButton from '@/components/scanner/ScannerButton';
 import Button from '@/components/ui/Button';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import { barcodeTypes } from '@/constants/barcodeTypes';
 import { BarcodeScanDocument, Product } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
@@ -113,17 +114,7 @@ export default function ScanScreen() {
           autofocus="off"
           ref={(ref) => setCamera(ref)}
           barcodeScannerSettings={{
-            barcodeTypes: [
-              'upc_a',
-              'upc_e',
-              'codabar',
-              'code128',
-              'code39',
-              'code93',
-              'ean13',
-              'ean8',
-              'itf14',
-            ],
+            barcodeTypes,
           }}
           onMountError={(e) => console.error('Camera mount error:', e)}
           onBarcodeScanned={(res) => {

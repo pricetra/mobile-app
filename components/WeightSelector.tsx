@@ -5,6 +5,7 @@ import { AutocompleteDropdown, AutocompleteDropdownItem } from 'react-native-aut
 import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
 import Text from '@/components/ui/Text';
+import { defaultMeasurementUnit, measurementUnits } from '@/constants/measurements';
 
 export type WeightSelectorProps = {
   value: string;
@@ -13,31 +14,9 @@ export type WeightSelectorProps = {
   editable: boolean;
 };
 
-const units = [
-  'fl oz',
-  'oz',
-  'lb',
-  'g',
-  'ml',
-  'kg',
-  'gal',
-  'qt',
-  'pt',
-  'cup',
-  'can',
-  'pkg',
-  'slice',
-  'pc',
-  'stick',
-  'clove',
-  'bag',
-  'bunch',
-];
-const defaultUnit: AutocompleteDropdownItem = { id: 'oz', title: 'oz' };
-
 function getMeasurement(value: string): { measurement: string; unit: AutocompleteDropdownItem } {
   const parsedValue = value.split(' ');
-  if (parsedValue.length < 2) return { measurement: '', unit: defaultUnit };
+  if (parsedValue.length < 2) return { measurement: '', unit: defaultMeasurementUnit };
 
   const measurement = parsedValue.at(0) ?? '';
   const unit = parsedValue.slice(1).join(' ').toLowerCase();
@@ -85,7 +64,7 @@ export default function WeightSelector({
             showClear={false}
             initialValue={unit}
             onSelectItem={(i) => setUnit(i ?? { id: 'ml' })}
-            dataSet={units.map((u) => ({ id: u, title: u }))}
+            dataSet={measurementUnits.map((u) => ({ id: u, title: u }))}
             suggestionsListContainerStyle={{
               backgroundColor: 'white',
               borderRadius: 6,
