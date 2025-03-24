@@ -110,7 +110,7 @@ export default function ScanScreen() {
             flex: 1,
           }}
           facing={facing}
-          autofocus="on"
+          autofocus="off"
           ref={(ref) => setCamera(ref)}
           barcodeScannerSettings={{
             barcodeTypes: [
