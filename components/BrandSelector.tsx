@@ -87,7 +87,7 @@ export default function BrandSelector({
             setTimeout(() => {
               setValue(brandInputRaw);
               setAdding(false);
-            });
+            }, 500);
           }}>
           Add "{brandInputRaw}"
         </Text>
