@@ -10,8 +10,8 @@ import {
   Platform,
 } from 'react-native';
 
-import ProductForm from '@/components/product-form/ProductForm';
 import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
+import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
@@ -113,11 +113,11 @@ export default function HomeScreen() {
             onRefresh={() => {
               setRefreshing(true);
               setTimeout(() => {
-                fetchProducts(1);
+                fetchProducts(1, true);
               }, 2000);
             }}
-            colors={['grey']}
-            progressBackgroundColor="black"
+            colors={Platform.OS === 'ios' ? ['black'] : ['white']}
+            progressBackgroundColor="#111827"
           />
         }
         onEndReached={() => {
