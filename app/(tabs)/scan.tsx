@@ -133,36 +133,27 @@ export default function ScanScreen() {
             setScannedCode(res.data);
             setProduct(undefined);
           }}>
-          <View className="top-safe-or-10 absolute flex w-full flex-row items-center justify-between p-3">
-            <ScannerButton onPress={() => router.back()}>
-              <MaterialIcons name="arrow-back" size={25} color="white" />
-            </ScannerButton>
-
+          <View className="bottom-safe-or-10 absolute w-full gap-5 p-3">
             {scannedCode && (
-              <View className="rounded-xl bg-black/70 px-7 py-5">
-                <BarcodeText
-                  className="text-xl color-white"
-                  onPress={() => handleBarcodeScan(scannedCode)}>
-                  {scannedCode}
-                </BarcodeText>
-              </View>
+              <BarcodeText
+                className="rounded-xl bg-black/70 px-7 py-5 text-center text-xl color-white"
+                letterSpacing={7}
+                onPress={() => handleBarcodeScan(scannedCode)}>
+                {scannedCode}
+              </BarcodeText>
             )}
-          </View>
 
-          <View className="bottom-safe-or-10 absolute w-full p-3">
-            <View className="mb-5">
-              {product && (
-                <ScannedProductView
-                  product={product}
-                  onEditModalPress={() => setOpenEditModal(true)}
-                  onAddPriceModalPress={() => setOpenPriceModal(true)}
-                />
-              )}
-            </View>
+            {product && (
+              <ScannedProductView
+                product={product}
+                onEditModalPress={() => setOpenEditModal(true)}
+                onAddPriceModalPress={() => setOpenPriceModal(true)}
+              />
+            )}
 
             <View className="flex flex-row items-center justify-between">
-              <ScannerButton onPress={() => {}}>
-                <MaterialIcons name="image" size={25} color="white" />
+              <ScannerButton onPress={() => router.back()}>
+                <MaterialIcons name="arrow-back" size={25} color="white" />
               </ScannerButton>
 
               <ScannerButton
