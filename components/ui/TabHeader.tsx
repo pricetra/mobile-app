@@ -72,17 +72,8 @@ export default function TabHeader(props: TabHeaderProps) {
           </>
         ) : (
           <>
-            <TouchableOpacity
-              onPress={() => {
-                if (props.options.title || props.options.tabBarIcon) return;
-                router.back();
-              }}
-              style={iconStyles}>
-              {props.options.tabBarIcon ? (
-                props.options.tabBarIcon({ focused: true, color: '#e2e8f0', size: iconSize })
-              ) : (
-                <Ionicons name="chevron-back-outline" color="#e2e8f0" size={iconSize} />
-              )}
+            <TouchableOpacity onPress={() => {}} style={iconStyles}>
+              <Ionicons name="menu" color="#e2e8f0" size={iconSize} />
             </TouchableOpacity>
 
             <TouchableOpacity

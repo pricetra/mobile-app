@@ -1,13 +1,17 @@
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import React, { useContext } from 'react';
+import { Platform, Image } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import TabHeader, { TabHeaderProps } from '@/components/ui/TabHeader';
+import { UserAuthContext } from '@/context/UserContext';
+import { createCloudinaryUrl } from '@/lib/files';
 
 export default function TabLayout() {
+  const { user } = useContext(UserAuthContext);
+
   return (
     <Tabs
       backBehavior="history"
@@ -60,7 +64,23 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => <Feather size={size} name="user" color={color} />,
+          tabBarIcon: ({ color, size }) => {
+            if (user.avatar) {
+              return (
+                <Image
+                  source={{
+                    uri: createCloudinaryUrl(user.avatar, 2 * size, 2 * size),
+                  }}
+                  className="rounded-full"
+                  style={{
+                    width: size,
+                    height: size,
+                  }}
+                />
+              );
+            }
+            return <Feather size={size} name="user" color={color} />;
+          },
         }}
       />
     </Tabs>
