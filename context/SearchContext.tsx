@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { createContext, ReactNode, useState } from 'react';
 
 export type SearchContextType = {
-  search: string;
+  search?: string;
   setSearch: (search: string) => void;
 };
 
@@ -13,7 +13,7 @@ export type SearchContextProviderProps = {
 };
 
 export default function SearchContextProvider({ children }: SearchContextProviderProps) {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState<string>();
 
   return (
     <SearchContext.Provider

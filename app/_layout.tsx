@@ -1,4 +1,5 @@
 import { DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
+import { PortalHost } from '@rn-primitives/portal';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -15,7 +16,6 @@ import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { NAV_THEME } from '@/lib/constants';
-import { PortalHost } from '@rn-primitives/portal';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

@@ -17,6 +17,8 @@ import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
 import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 
+const limit = 30;
+
 export default function HomeScreen() {
   const [initLoading, setInitLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -26,7 +28,6 @@ export default function HomeScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const { search } = useContext(SearchContext);
-  const limit = 30;
 
   function fetchProducts(page: number, force = false) {
     getAllProducts({
@@ -39,7 +40,7 @@ export default function HomeScreen() {
           query: search,
         },
       },
-      fetchPolicy: force ? 'network-only' : undefined,
+      fetchPolicy: force ? 'no-cache' : undefined,
     }).finally(() => {
       setRefreshing(false);
       setInitLoading(false);
@@ -51,9 +52,10 @@ export default function HomeScreen() {
   }, [page]);
 
   useEffect(() => {
+    if (!search || search?.length < 2) return;
     setPage(1);
     setInitLoading(true);
-    fetchProducts(page);
+    fetchProducts(1, true);
   }, [search]);
 
   useEffect(() => {
