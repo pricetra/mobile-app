@@ -189,14 +189,18 @@ export default function ProductForm({
           <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
             {renderImageSelection()}
           </TouchableOpacity>
-          <Input
-            onChangeText={handleChange('code')}
-            onBlur={handleBlur('code')}
-            value={values.code}
-            label="UPC Code"
-            keyboardType="numeric"
-            editable={!loading}
-          />
+          {upc ? (
+            <Input
+              onChangeText={handleChange('code')}
+              onBlur={handleBlur('code')}
+              value={values.code}
+              label="UPC Code"
+              keyboardType="numeric"
+              editable={!loading}
+            />
+          ) : (
+            <Input value={values.code} label="UPC Code" editable={false} readOnly />
+          )}
           <Textarea
             onChangeText={handleChange('name')}
             onBlur={handleBlur('name')}
