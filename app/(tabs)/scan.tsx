@@ -7,10 +7,10 @@ import { Platform, Text, View } from 'react-native';
 
 import ProductForm from '@/components/ProductForm';
 import ScannedProductView from '@/components/ScannedProductView';
-import BarcodeText from '@/components/ui/BarcodeText';
+import BarcodePreview from '@/components/scanner/BarcodePreview';
+import ScannerButton from '@/components/scanner/ScannerButton';
 import Button from '@/components/ui/Button';
 import ModalFormMini from '@/components/ui/ModalFormMini';
-import ScannerButton from '@/components/ui/ScannerButton';
 import { BarcodeScanDocument, Product } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
@@ -133,16 +133,11 @@ export default function ScanScreen() {
             setScannedCode(res.data);
             setProduct(undefined);
           }}>
-          <View className="bottom-safe-or-10 absolute w-full gap-5 p-3">
-            {scannedCode && (
-              <BarcodeText
-                className="rounded-xl bg-black/70 px-7 py-5 text-center text-xl color-white"
-                letterSpacing={7}
-                onPress={() => handleBarcodeScan(scannedCode)}>
-                {scannedCode}
-              </BarcodeText>
-            )}
+          <View className="top-safe-or-10 absolute flex w-full flex-row items-center justify-end p-5">
+            {scannedCode && <BarcodePreview scannedCode={scannedCode} />}
+          </View>
 
+          <View className="bottom-safe-or-5 absolute w-full gap-5 p-3">
             {product && (
               <ScannedProductView
                 product={product}
