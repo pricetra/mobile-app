@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 
-import ProductForm from '@/components/ProductForm';
+import ProductForm from '@/components/product-form/ProductForm';
 import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';

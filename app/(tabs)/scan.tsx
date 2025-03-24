@@ -5,9 +5,9 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 
-import ProductForm from '@/components/ProductForm';
-import ScannedProductView from '@/components/ScannedProductView';
+import ProductForm from '@/components/product-form/ProductForm';
 import BarcodePreview from '@/components/scanner/BarcodePreview';
+import ScannedProductView from '@/components/scanner/ScannedProductView';
 import ScannerButton from '@/components/scanner/ScannerButton';
 import Button from '@/components/ui/Button';
 import ModalFormMini from '@/components/ui/ModalFormMini';
