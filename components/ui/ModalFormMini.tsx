@@ -4,13 +4,12 @@ import {
   KeyboardAvoidingView,
   Modal,
   NativeSyntheticEvent,
-  Platform,
-  ScrollView,
   TouchableOpacity,
   View,
   Text,
   Pressable,
   SafeAreaView,
+  FlatList,
 } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
@@ -50,18 +49,21 @@ export default function ModalFormMini({
               <Feather name="x" size={25} />
             </TouchableOpacity>
           </View>
-          <ScrollView
-            className="px-7"
-            nestedScrollEnabled
-            keyboardDismissMode="on-drag"
+          <FlatList
+            data={[{ key: 'form' }]} // Dummy data to render form
+            keyExtractor={(item) => item.key}
+            renderItem={() => (
+              <AutocompleteDropdownContextProvider>
+                <View className="relative">{children}</View>
+              </AutocompleteDropdownContextProvider>
+            )}
+            ListHeaderComponent={<View className="h-5" />}
+            ListFooterComponent={<View className="h-[110px]" />}
             keyboardShouldPersistTaps="handled"
-            contentInsetAdjustmentBehavior="automatic">
-            <View className="h-5" />
-            <AutocompleteDropdownContextProvider>
-              <View>{children}</View>
-            </AutocompleteDropdownContextProvider>
-            <View className="h-20" />
-          </ScrollView>
+            contentInsetAdjustmentBehavior="automatic"
+            className="px-5"
+            nestedScrollEnabled
+          />
         </SafeAreaView>
       </KeyboardAvoidingView>
     </Modal>
