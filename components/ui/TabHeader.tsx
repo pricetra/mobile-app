@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -23,7 +23,7 @@ const padding = 15;
 const navHeight = 2 * padding + logoHeight;
 
 export default function TabHeader(props: TabHeaderProps) {
-  const { search, setSearch } = useContext(SearchContext);
+  const { search, setSearch, searching } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
   const [openSearch, setOpenSearch] = useState(false);
 
@@ -34,7 +34,7 @@ export default function TabHeader(props: TabHeaderProps) {
 
   function updateSearch(text: string) {
     setSearchText(text);
-    setSearch(text);
+    setSearch(text, 1000);
   }
 
   return (
@@ -46,7 +46,7 @@ export default function TabHeader(props: TabHeaderProps) {
           <>
             <TouchableOpacity
               onPress={() => {
-                updateSearch('');
+                if (searchText?.trim()?.length !== 0) updateSearch('');
                 setOpenSearch(false);
               }}
               style={iconStyles}>
@@ -69,6 +69,17 @@ export default function TabHeader(props: TabHeaderProps) {
               onChangeText={updateSearch}
               value={searchText}
             />
+
+            {searching && (
+              <View style={iconStyles}>
+                <AntDesign
+                  name="loading1"
+                  color="#e2e8f0"
+                  className="size-[20px] animate-spin"
+                  size={iconSize}
+                />
+              </View>
+            )}
           </>
         ) : (
           <>

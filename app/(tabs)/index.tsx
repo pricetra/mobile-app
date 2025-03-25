@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Platform,
+  Text,
 } from 'react-native';
 
 import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
@@ -27,7 +28,7 @@ export default function HomeScreen() {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
-  const { search } = useContext(SearchContext);
+  const { search, searching, setSearching } = useContext(SearchContext);
 
   function fetchProducts(page: number, force = false) {
     getAllProducts({
@@ -41,10 +42,23 @@ export default function HomeScreen() {
         },
       },
       fetchPolicy: force ? 'no-cache' : undefined,
-    }).finally(() => {
-      setRefreshing(false);
-      setInitLoading(false);
-    });
+    })
+      .then(({ data }) => {
+        if (!data) return;
+
+        if (page === 1) {
+          setProducts([...data.allProducts.products]);
+        } else {
+          setProducts([...products, ...data.allProducts.products]);
+        }
+      })
+      .finally(() => {
+        setRefreshing(false);
+        setInitLoading(false);
+        if (searching) {
+          setSearching(false);
+        }
+      });
   }
 
   useEffect(() => {
@@ -57,29 +71,35 @@ export default function HomeScreen() {
     fetchProducts(1, true);
   }, [search]);
 
-  useEffect(() => {
-    if (!productsData) return;
-
-    if (page === 1) {
-      setProducts([...productsData.allProducts.products]);
-      return;
-    }
-    setProducts([...products, ...productsData.allProducts.products]);
-  }, [productsData?.allProducts?.products]);
-
-  return (
-    <SafeAreaView>
-      {productsError && (
+  if (productsError) {
+    return (
+      <SafeAreaView>
         <View className="p-5">
           <Alert icon={AlertTriangle} variant="destructive" className="max-w-xl">
             <AlertTitle>Error!</AlertTitle>
             <AlertDescription>{productsError.message}</AlertDescription>
           </Alert>
         </View>
-      )}
+      </SafeAreaView>
+    );
+  }
 
-      {initLoading && <RenderProductLoadingItems count={10} />}
+  if (initLoading || searching) {
+    return <RenderProductLoadingItems count={10} />;
+  }
 
+  if (!products) return;
+
+  if (products.length === 0) {
+    return (
+      <View className="flex items-center justify-center px-5 py-36">
+        <Text className="text-center">No products found</Text>
+      </View>
+    );
+  }
+
+  return (
+    <SafeAreaView>
       <ModalFormMini
         title={selectedProduct ? 'Edit Product' : 'Add Product'}
         visible={selectedProduct !== undefined}
