@@ -58,7 +58,7 @@ export default function WeightSelector({
         />
 
         <View className="relative">
-          <Label className="mb-[1px]">Unit</Label>
+          <Label className="mb-1">Unit</Label>
           <Combobox
             editable={editable}
             showClear={false}
@@ -67,6 +67,9 @@ export default function WeightSelector({
             dataSet={measurementUnits.map((u) => ({ id: u, title: u }))}
             textInputProps={{
               autoCorrect: false,
+            }}
+            inputContainerStylesExtras={{
+              minWidth: 85,
             }}
           />
         </View>

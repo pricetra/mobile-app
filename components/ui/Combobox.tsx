@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import {
   AutocompleteDropdown,
   IAutocompleteDropdownProps,
@@ -19,17 +19,29 @@ export function ComboboxItem({ value }: ComboboxItemProps) {
   );
 }
 
-export default function Combobox({ textInputProps, ...props }: IAutocompleteDropdownProps) {
+export interface ComboboxProps extends IAutocompleteDropdownProps {
+  inputContainerStylesExtras?: ViewStyle;
+}
+
+export default function Combobox({
+  textInputProps,
+  inputContainerStylesExtras,
+  ...props
+}: ComboboxProps) {
   return (
     <AutocompleteDropdown
       {...props}
       direction="down"
       suggestionsListContainerStyle={{
         backgroundColor: 'white',
+        borderColor: '#d1d5db',
+        borderWidth: 1,
         borderRadius: 6,
-        top: 25,
-        right: 25,
+        top: 0,
+        left: -18,
         boxShadow: '0px 3px 20px 0px rgba(0,0,0,0.2)',
+        maxHeight: 300,
+        overflow: 'scroll',
       }}
       renderItem={(item) => <ComboboxItem value={item.title ?? ''} />}
       ItemSeparatorComponent={() => <Separator />}
@@ -38,6 +50,9 @@ export default function Combobox({ textInputProps, ...props }: IAutocompleteDrop
         borderRadius: 6,
         borderColor: '#d1d5db',
         borderWidth: 1,
+        margin: 0,
+        padding: 0,
+        ...inputContainerStylesExtras,
       }}
       textInputProps={{
         ...textInputProps,
