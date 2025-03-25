@@ -35,9 +35,10 @@ export default function ModalFormMini({
         style={{ backgroundColor: visible ? 'rgba(0,0,0,.7)' : 'rgba(0,0,0,0)' }}
       />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        className="absolute bottom-0 left-0 h-fit max-h-full w-full rounded-t-2xl bg-white shadow-2xl">
-        <SafeAreaView>
+        behavior="position"
+        className="absolute bottom-0 left-0 h-fit max-h-full w-full">
+        <SafeAreaView
+          style={{ backgroundColor: '#fff', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
           <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100">
             <Text className="flex flex-1 flex-row items-center gap-2 px-7 py-5 text-2xl font-bold">
               {title}
