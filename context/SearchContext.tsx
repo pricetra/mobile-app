@@ -1,11 +1,11 @@
 import _ from 'lodash';
-import { createContext, ReactNode, useState } from 'react';
+import { createContext, ReactNode, useCallback, useState } from 'react';
 
 export type SearchContextType = {
   searching: boolean;
   search?: string;
   setSearching: (searching: boolean) => void;
-  setSearch: (search: string, debounce?: number) => void;
+  handleSearch: (search: string) => void;
 };
 
 export const SearchContext = createContext({} as SearchContextType);
@@ -18,18 +18,26 @@ export default function SearchContextProvider({ children }: SearchContextProvide
   const [searching, setSearching] = useState(false);
   const [search, setSearch] = useState<string>();
 
+  const debouncedSetSearch = useCallback(
+    _.debounce((search: string) => {
+      setSearch(search.trim());
+    }, 500),
+    []
+  );
+
+  const handleSearch = (search: string) => {
+    setSearching(true);
+    debouncedSetSearch.cancel();
+    debouncedSetSearch(search);
+  };
+
   return (
     <SearchContext.Provider
       value={{
         searching,
         search,
         setSearching,
-        setSearch: (search, debounce = 500) => {
-          setSearching(true);
-          _.debounce(() => {
-            setSearch(search.trim());
-          }, debounce)();
-        },
+        handleSearch,
       }}>
       {children}
     </SearchContext.Provider>

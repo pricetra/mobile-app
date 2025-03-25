@@ -66,6 +66,8 @@ export default function HomeScreen() {
   }, [page]);
 
   useEffect(() => {
+    console.log(search);
+
     setPage(1);
     setInitLoading(true);
     fetchProducts(1, true);

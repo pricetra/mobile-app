@@ -23,7 +23,7 @@ const padding = 15;
 const navHeight = 2 * padding + logoHeight;
 
 export default function TabHeader(props: TabHeaderProps) {
-  const { search, setSearch, searching } = useContext(SearchContext);
+  const { search, handleSearch, searching } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
   const [openSearch, setOpenSearch] = useState(false);
 
@@ -34,7 +34,7 @@ export default function TabHeader(props: TabHeaderProps) {
 
   function updateSearch(text: string) {
     setSearchText(text);
-    setSearch(text, 1000);
+    handleSearch(text);
   }
 
   return (
