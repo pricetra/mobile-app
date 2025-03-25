@@ -69,17 +69,6 @@ export default function TabHeader(props: TabHeaderProps) {
               onChangeText={updateSearch}
               value={searchText}
             />
-
-            {searching && (
-              <View style={iconStyles}>
-                <AntDesign
-                  name="loading1"
-                  color="#e2e8f0"
-                  className="size-[20px] animate-spin"
-                  size={iconSize}
-                />
-              </View>
-            )}
           </>
         ) : (
           <>
