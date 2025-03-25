@@ -1,8 +1,7 @@
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Platform, View } from 'react-native';
-import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
+import { TouchableOpacity } from 'react-native';
 
-import Text from '@/components/ui/Text';
+import Combobox, { ComboboxItem } from '@/components/ui/Combobox';
 import { Brand } from '@/graphql/types/graphql';
 
 export type BrandSelectorProps = {
@@ -31,10 +30,9 @@ export default function BrandSelector({
   }
 
   return (
-    <AutocompleteDropdown
+    <Combobox
       editable={editable}
       loading={brandsLoading || adding}
-      direction={Platform.select({ ios: 'down' })}
       showClear
       clearOnFocus={false}
       closeOnSubmit
@@ -54,33 +52,14 @@ export default function BrandSelector({
         }
         setValue(brandInputRaw);
       }}
-      suggestionsListContainerStyle={{
-        backgroundColor: 'white',
-        borderRadius: 6,
-        top: 25,
-        right: 25,
-        boxShadow: '0px 3px 20px 0px rgba(0,0,0,0.2)',
-      }}
-      renderItem={(item) => <Text className="px-5 py-3 color-black">{item.title}</Text>}
-      ItemSeparatorComponent={() => <View className="h-[1px] w-full bg-gray-100" />}
-      inputContainerStyle={{
-        backgroundColor: 'white',
-        borderRadius: 6,
-        borderColor: '#d1d5db',
-        borderWidth: 1,
-      }}
       textInputProps={{
         placeholder: 'Brand',
         autoCorrect: false,
         autoCapitalize: 'words',
-        style: {
-          color: 'black',
-        },
         onChange: (e) => setBrandInputRaw(e.nativeEvent.text.trim()),
       }}
       EmptyResultComponent={
-        <Text
-          className="px-5 py-3 color-black"
+        <TouchableOpacity
           onPress={() => {
             addNewBrand(brandInputRaw);
             setAdding(true);
@@ -89,8 +68,8 @@ export default function BrandSelector({
               setAdding(false);
             }, 500);
           }}>
-          Add "{brandInputRaw}"
-        </Text>
+          <ComboboxItem value={`Add "${brandInputRaw}"`} />
+        </TouchableOpacity>
       }
     />
   );
