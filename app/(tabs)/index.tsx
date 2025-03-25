@@ -52,7 +52,6 @@ export default function HomeScreen() {
   }, [page]);
 
   useEffect(() => {
-    if (!search || search?.length < 2) return;
     setPage(1);
     setInitLoading(true);
     fetchProducts(1, true);
@@ -104,7 +103,7 @@ export default function HomeScreen() {
         keyExtractor={({ id }, i) => `${id}-${i}`}
         renderItem={({ item }) => (
           <View className="mb-10">
-            <TouchableOpacity onPress={() => setSelectedProduct(item)}>
+            <TouchableOpacity onPress={() => {}} onLongPress={() => setSelectedProduct(item)}>
               <ProductItem product={item} />
             </TouchableOpacity>
           </View>
