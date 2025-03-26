@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "pricetra-mobile",
-    "slug": "pricetra-mobile",
+    "slug": "pricetra",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -16,7 +16,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -54,6 +57,15 @@
     },
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5e02d7a0-8d71-485d-aec0-90390344e35a"
+      }
+    },
+    "owner": "pricetra"
   }
 }
