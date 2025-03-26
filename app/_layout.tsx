@@ -16,6 +16,7 @@ import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { NAV_THEME } from '@/lib/constants';
+import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -46,10 +47,12 @@ function RootStack() {
       {jwt && (
         <UserContextProvider jwt={jwt}>
           <SearchContextProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+            <AutocompleteDropdownContextProvider>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </AutocompleteDropdownContextProvider>
           </SearchContextProvider>
         </UserContextProvider>
       )}

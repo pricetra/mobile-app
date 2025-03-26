@@ -37,9 +37,9 @@ export default function Combobox({
         borderColor: '#d1d5db',
         borderWidth: 1,
         borderRadius: 6,
-        top: 0,
-        left: -18,
-        boxShadow: '0px 3px 20px 0px rgba(0,0,0,0.2)',
+        top: 5,
+        left: 0,
+        boxShadow: '0 7px 6px 0px rgba(0,0,0,0.1)',
         maxHeight: 300,
         overflow: 'scroll',
       }}
