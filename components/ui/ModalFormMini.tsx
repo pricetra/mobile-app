@@ -35,7 +35,7 @@ export default function ModalFormMini({
       />
       <KeyboardAvoidingView
         behavior="position"
-        className="absolute bottom-0 left-0 h-fit max-h-full w-full">
+        className="max-h-screen-safe-offset-0 absolute bottom-0 left-0 h-fit w-full">
         <SafeAreaView
           style={{ backgroundColor: '#fff', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
           <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100">
@@ -58,7 +58,7 @@ export default function ModalFormMini({
               </AutocompleteDropdownContextProvider>
             )}
             ListHeaderComponent={<View className="h-5" />}
-            ListFooterComponent={<View className="h-[110px]" />}
+            ListFooterComponent={<View className="h-5" />}
             keyboardShouldPersistTaps="handled"
             contentInsetAdjustmentBehavior="automatic"
             className="px-5"

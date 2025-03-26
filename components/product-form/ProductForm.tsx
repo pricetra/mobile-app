@@ -279,6 +279,8 @@ export default function ProductForm({
               {product ? 'Update' : 'Create'}
             </Button>
           </View>
+
+          <View className="h-[100px]" />
         </View>
       )}
     </Formik>
