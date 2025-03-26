@@ -3,7 +3,7 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View, Image as NativeImage } from 'react-native';
+import { Linking, TouchableOpacity, View } from 'react-native';
 
 import BrandSelector from './BrandSelector';
 import WeightSelector from './WeightSelector';
@@ -144,9 +144,6 @@ export default function ProductForm({
   }
 
   function renderImageSelection() {
-    if (imageUpdated) {
-      return <NativeImage src={imageUri} className="size-28 rounded-lg" />;
-    }
     if (imageUri) {
       return <Image src={imageUri} className="size-28 rounded-lg" />;
     }
@@ -178,7 +175,6 @@ export default function ProductForm({
           brand: product?.brand ?? '',
           code: product?.code ?? upc ?? '',
           color: product?.color,
-          // model: product?.model,
           category: product?.category,
           weight: product?.weight,
         } as CreateProduct
@@ -186,9 +182,24 @@ export default function ProductForm({
       onSubmit={submit}>
       {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
         <View className="flex flex-col gap-5">
-          <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
-            {renderImageSelection()}
-          </TouchableOpacity>
+          <View className="flex flex-row items-center justify-between gap-5">
+            <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
+              {renderImageSelection()}
+            </TouchableOpacity>
+
+            <Text className="font-bold text-black">OR</Text>
+
+            <TouchableOpacity
+              onPress={() => {
+                const query = values.brand !== '' ? `${values.brand} ${values.name}` : values.name;
+                Linking.openURL(`https://www.google.com/search?udm=2&q=${encodeURI(query)}`);
+              }}>
+              <View className="flex size-28 items-center justify-center gap-2 rounded-md bg-sky-100/50">
+                <Feather name="globe" color="#3b82f6" size={35} />
+                <Text className="px-2 text-center text-xs text-blue-500">Search for Images</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
           {upc ? (
             <Input
               onChangeText={handleChange('code')}
@@ -261,12 +272,6 @@ export default function ProductForm({
             label="Description"
             editable={!loading}
           />
-          {/* <Input
-            onChangeText={handleChange('model')}
-            onBlur={handleBlur('model')}
-            value={values.model ?? ''}
-            label="Model"
-          /> */}
           <View className="my-10 flex flex-row justify-between gap-3">
             <Button onPress={onCancel} disabled={loading} variant="outline" className="flex-1">
               Cancel

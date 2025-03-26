@@ -4,9 +4,10 @@ import { Image as NativeImage } from 'react-native';
 export type ImageProps = {
   src: string;
   className?: string;
+  onError?: () => void;
 };
 
-export default function Image({ src, className }: ImageProps) {
+export default function Image({ src, className, onError }: ImageProps) {
   const loadingImage = require('../../assets/images/loading_img.jpg');
   const noImage = require('../../assets/images/no_img.jpg');
   const [image, setImage] = useState(src);
@@ -18,7 +19,10 @@ export default function Image({ src, className }: ImageProps) {
   return (
     <NativeImage
       defaultSource={loadingImage}
-      onError={() => setImage('')}
+      onError={() => {
+        setImage('');
+        if (onError) onError();
+      }}
       source={
         image !== ''
           ? {

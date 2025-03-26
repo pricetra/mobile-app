@@ -11,7 +11,7 @@ export default function StoreItem({ name, logo, website }: Store) {
   return (
     <View className="mb-5 flex flex-row gap-3">
       <View className="flex flex-row gap-3">
-        <Image src={createCloudinaryUrl(logo, 120, 120)} className="size-[93px] rounded-lg" />
+        <Image src={createCloudinaryUrl(logo, 500, 500)} className="size-[93px] rounded-lg" />
       </View>
 
       <View className="flex flex-1 flex-col gap-2">
