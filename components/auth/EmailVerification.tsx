@@ -38,7 +38,7 @@ export default function EmailVerificationScreen() {
 
   useEffect(() => {
     if (!data) return;
-    setScreen(AuthScreenType.LOGIN, data.verifyEmail.email);
+    setScreen(AuthScreenType.LOGIN, email);
   }, [data]);
 
   if (!email) throw new Error('email param required');

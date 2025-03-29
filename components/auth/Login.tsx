@@ -13,10 +13,15 @@ import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
-  const { setScreen } = useContext(AuthModalContext);
+  const { setScreen, email: screenEmail } = useContext(AuthModalContext);
   const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    if (!screenEmail) return;
+    setEmail(screenEmail);
+  }, [screenEmail]);
 
   useEffect(() => {
     if (!data) return;
