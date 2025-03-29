@@ -255,3 +255,32 @@ export const ALL_BRANDS_QUERY = gql`
     }
   }
 `;
+
+export const FIND_BRANCHES_BY_DISTANCE = gql(`
+  query FindBranchesByDistance($lat: Float!, $lon: Float!, $radiusMeters: Int!) {
+    findBranchesByDistance(lat: $lat, lon: $lon, radiusMeters: $radiusMeters) {
+      id
+      name
+      storeId
+      addressId
+      store {
+        id
+        name
+        website
+        logo
+      }
+      address {
+        id
+        distance
+        fullAddress
+        city
+        administrativeDivision
+        zipCode
+        countryCode
+        country
+        latitude
+        longitude
+      }
+    }
+  }
+`);
