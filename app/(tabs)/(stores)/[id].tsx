@@ -56,7 +56,7 @@ export default function SelectedStoreScreen() {
           )}
           {storeData && <StoreItem {...storeData.findStore} />}
         </View>
-        <ScrollView className="mt-10 w-full">
+        <ScrollView className="mt-5 w-full">
           {storeLoading && (
             <View className="flex h-40 w-full items-center justify-center px-10">
               <AntDesign
@@ -71,9 +71,9 @@ export default function SelectedStoreScreen() {
             {storeData &&
               (storeData.allBranches.length > 0 ? (
                 storeData.allBranches.map((b) => (
-                  <View className="mb-10" key={b.id}>
-                    <Text className="text-lg font-bold">{b.name}</Text>
-                    <Text>{b.address?.fullAddress}</Text>
+                  <View key={b.id} className="mb-7">
+                    <Text className="font-bold">{b.name}</Text>
+                    <Text className="text-sm color-gray-700">{b.address?.fullAddress}</Text>
                   </View>
                 ))
               ) : (

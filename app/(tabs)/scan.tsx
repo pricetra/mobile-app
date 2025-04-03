@@ -5,6 +5,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 
+import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
 import BarcodePreview from '@/components/scanner/BarcodePreview';
 import ScannedProductView from '@/components/scanner/ScannedProductView';
@@ -45,6 +46,11 @@ export default function ScanScreen() {
     if (!barcodeScanData) return;
     setProduct(barcodeScanData.barcodeScan);
   }, [barcodeScanData]);
+
+  useEffect(() => {
+    if (!barcodeScanError) return;
+    alert(barcodeScanError.message);
+  }, [barcodeScanError]);
 
   useEffect(() => {
     if (openEditModal) {
@@ -99,6 +105,22 @@ export default function ScanScreen() {
               setOpenEditModal(false);
             }}
             onError={(e) => alert(e.message)}
+          />
+        </ModalFormMini>
+      )}
+
+      {scannedCode && product && (
+        <ModalFormMini
+          title="Add Product"
+          visible={openPriceModal}
+          onRequestClose={() => setOpenPriceModal(false)}>
+          <AddProductPriceForm
+            product={product}
+            onCancel={() => setOpenPriceModal(false)}
+            // onSuccess={(p) => {
+            //   setOpenPriceModal(false);
+            // }}
+            // onError={(e) => alert(e.message)}
           />
         </ModalFormMini>
       )}

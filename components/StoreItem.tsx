@@ -9,17 +9,17 @@ import { createCloudinaryUrl } from '@/lib/files';
 
 export default function StoreItem({ name, logo, website }: Store) {
   return (
-    <View className="mb-5 flex flex-row gap-3">
+    <View className="mb-10 flex flex-row gap-3">
       <View className="flex flex-row gap-3">
-        <Image src={createCloudinaryUrl(logo, 500, 500)} className="size-[93px] rounded-lg" />
+        <Image src={createCloudinaryUrl(logo, 500, 500)} className="size-[60px] rounded-lg" />
       </View>
 
       <View className="flex flex-1 flex-col gap-2">
-        <Text className="text-2xl font-bold">{name}</Text>
+        <Text className="text-xl font-bold">{name}</Text>
 
         <View className="flex flex-row items-center gap-1">
           <MaterialCommunityIcons name="earth" color="#374151" />
-          <Text className="flex items-center color-gray-700">{website}</Text>
+          <Text className="flex items-center text-sm color-gray-700">{website}</Text>
         </View>
       </View>
     </View>
@@ -28,14 +28,14 @@ export default function StoreItem({ name, logo, website }: Store) {
 
 export function StoreItemLoading() {
   return (
-    <View className="mb-5 flex flex-row gap-3">
+    <View className="mb-10 flex flex-row gap-3">
       <View className="flex flex-row gap-3">
-        <Skeleton className="size-[93px] rounded-lg" />
+        <Skeleton className="size-[60px] rounded-lg" />
       </View>
 
       <View className="flex flex-1 flex-col gap-3">
-        <Skeleton className="h-6 w-full" />
-        <Skeleton className="h-6 w-[100px]" />
+        <Skeleton className="h-4 max-w-[200px]" />
+        <Skeleton className="h-4 max-w-[100px]" />
       </View>
     </View>
   );
