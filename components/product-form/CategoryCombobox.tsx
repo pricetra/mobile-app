@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { AutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
 
 import Combobox, { ComboboxItem } from '@/components/ui/Combobox';
 import { Category, CreateCategoryDocument, GetCategoriesDocument } from '@/graphql/types/graphql';
@@ -9,7 +10,7 @@ import { postgresArrayToNumericArray } from '@/lib/strings';
 export type CategoryComboboxData = {
   depth: number;
   parentCategory?: Category;
-  selectedId?: string;
+  selection?: AutocompleteDropdownItem;
 };
 
 export type CategoryComboboxProps = CategoryComboboxData & {
@@ -17,7 +18,12 @@ export type CategoryComboboxProps = CategoryComboboxData & {
   onSelect: (category: Category) => void;
 };
 
-export default function CategoryCombobox({ parentCategory, depth, onSelect, selectedId }: CategoryComboboxProps) {
+export default function CategoryCombobox({
+  parentCategory,
+  depth,
+  onSelect,
+  selection,
+}: CategoryComboboxProps) {
   const { data, error, loading } = useQuery(GetCategoriesDocument, {
     variables: { depth, parentId: parentCategory?.id },
   });
@@ -59,7 +65,7 @@ export default function CategoryCombobox({ parentCategory, depth, onSelect, sele
         onSelect(category);
       }}
       loading={loading || adding}
-      initialValue={selectedId}
+      initialValue={selection}
       textInputProps={{
         placeholder: parentCategory ? `Subcategory of ${parentCategory.name}` : 'Select category',
         autoCorrect: false,
