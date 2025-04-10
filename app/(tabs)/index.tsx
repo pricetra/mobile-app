@@ -21,6 +21,7 @@ import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 const limit = 30;
 
 export default function HomeScreen() {
+  const bottomTabBarHeight = 45;
   const [initLoading, setInitLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [getAllProducts, { data: productsData, error: productsError }] =
@@ -121,6 +122,7 @@ export default function HomeScreen() {
       <FlatList
         data={products}
         keyExtractor={({ id }, i) => `${id}-${i}`}
+        indicatorStyle="black"
         renderItem={({ item }) => (
           <View className="mb-10">
             <TouchableOpacity onPress={() => {}} onLongPress={() => setSelectedProduct(item)}>
@@ -148,11 +150,14 @@ export default function HomeScreen() {
         }}
         onEndReachedThreshold={5}
         className="p-5"
-        contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 30 : undefined }}
-        ListFooterComponent={() => {
-          if (products.length === 0 || !productsData?.allProducts?.paginator?.next) return <></>;
-          return <RenderProductLoadingItems count={5} noPadding />;
-        }}
+        ListFooterComponent={() => (
+          <>
+            {products.length > 0 && productsData?.allProducts?.paginator?.next && (
+              <RenderProductLoadingItems count={5} noPadding />
+            )}
+          </>
+        )}
+        style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0 }}
       />
     </SafeAreaView>
   );
