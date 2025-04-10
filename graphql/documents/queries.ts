@@ -298,8 +298,8 @@ export const FIND_BRANCHES_BY_DISTANCE_QUERY = gql(`
 `);
 
 export const GET_CATEGORIES_QUERY = gql(`
-  query GetCategories($depth: Int) {
-    getCategories(depth: $depth) {
+  query GetCategories($depth: Int, $parentId: ID) {
+    getCategories(depth: $depth, parentId: $parentId) {
       id
       name
       path

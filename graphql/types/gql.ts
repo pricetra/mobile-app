@@ -37,7 +37,7 @@ type Documents = {
     "\n  query FindBranch($id: ID!, $storeId: ID!) {\n    findBranch(id: $id, storeId: $storeId) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n": typeof types.FindBranchDocument,
     "\n  query AllBrands {\n    allBrands {\n      brand\n      products\n    }\n  }\n": typeof types.AllBrandsDocument,
     "\n  query FindBranchesByDistance($lat: Float!, $lon: Float!, $radiusMeters: Int!) {\n    findBranchesByDistance(lat: $lat, lon: $lon, radiusMeters: $radiusMeters) {\n      id\n      name\n      storeId\n      addressId\n      store {\n        id\n        name\n        website\n        logo\n      }\n      address {\n        id\n        distance\n        fullAddress\n        city\n        administrativeDivision\n        zipCode\n        countryCode\n        country\n        latitude\n        longitude\n      }\n    }\n  }\n": typeof types.FindBranchesByDistanceDocument,
-    "\n  query GetCategories($depth: Int) {\n    getCategories(depth: $depth) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n      depth\n    }\n  }\n": typeof types.GetCategoriesDocument,
+    "\n  query GetCategories($depth: Int, $parentId: ID) {\n    getCategories(depth: $depth, parentId: $parentId) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n      depth\n    }\n  }\n": typeof types.GetCategoriesDocument,
 };
 const documents: Documents = {
     "\n  mutation CreateAccount($email: String!, $name: String!, $password: String!) {\n    createAccount(input: { email: $email, name: $name, password: $password }) {\n      id\n      name\n      email\n      phoneNumber\n      createdAt\n      updatedAt\n      authPlatform\n    }\n  }\n": types.CreateAccountDocument,
@@ -63,7 +63,7 @@ const documents: Documents = {
     "\n  query FindBranch($id: ID!, $storeId: ID!) {\n    findBranch(id: $id, storeId: $storeId) {\n      id\n      name\n      addressId\n      storeId\n      address {\n        id\n        latitude\n        longitude\n        mapsLink\n        fullAddress\n        countryCode\n        country\n        zipCode\n      }\n    }\n  }\n": types.FindBranchDocument,
     "\n  query AllBrands {\n    allBrands {\n      brand\n      products\n    }\n  }\n": types.AllBrandsDocument,
     "\n  query FindBranchesByDistance($lat: Float!, $lon: Float!, $radiusMeters: Int!) {\n    findBranchesByDistance(lat: $lat, lon: $lon, radiusMeters: $radiusMeters) {\n      id\n      name\n      storeId\n      addressId\n      store {\n        id\n        name\n        website\n        logo\n      }\n      address {\n        id\n        distance\n        fullAddress\n        city\n        administrativeDivision\n        zipCode\n        countryCode\n        country\n        latitude\n        longitude\n      }\n    }\n  }\n": types.FindBranchesByDistanceDocument,
-    "\n  query GetCategories($depth: Int) {\n    getCategories(depth: $depth) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n      depth\n    }\n  }\n": types.GetCategoriesDocument,
+    "\n  query GetCategories($depth: Int, $parentId: ID) {\n    getCategories(depth: $depth, parentId: $parentId) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n      depth\n    }\n  }\n": types.GetCategoriesDocument,
 };
 
 /**
@@ -175,7 +175,7 @@ export function graphql(source: "\n  query FindBranchesByDistance($lat: Float!, 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query GetCategories($depth: Int) {\n    getCategories(depth: $depth) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n      depth\n    }\n  }\n"): (typeof documents)["\n  query GetCategories($depth: Int) {\n    getCategories(depth: $depth) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n      depth\n    }\n  }\n"];
+export function graphql(source: "\n  query GetCategories($depth: Int, $parentId: ID) {\n    getCategories(depth: $depth, parentId: $parentId) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n      depth\n    }\n  }\n"): (typeof documents)["\n  query GetCategories($depth: Int, $parentId: ID) {\n    getCategories(depth: $depth, parentId: $parentId) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n      depth\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
