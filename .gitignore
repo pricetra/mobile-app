@@ -12,7 +12,8 @@ web-build/
 
 
 
-.env.development
+.env*
+.env
 
 ios
 android
