@@ -35,6 +35,10 @@ export type ProductFormProps = {
   onError: (e: ApolloError) => void;
 };
 
+type CreateCategoryInputType = CreateProduct & {
+  categoryPathname: string;
+};
+
 export default function ProductForm({
   upc,
   product,
@@ -175,9 +179,9 @@ export default function ProductForm({
           brand: product?.brand ?? '',
           code: product?.code ?? upc ?? '',
           color: product?.color,
-          category: product?.category,
+          categoryPathname: product?.category?.expandedPathname ?? '',
           weight: product?.weight,
-        } as CreateProduct
+        } as CreateCategoryInputType
       }
       onSubmit={submit}>
       {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
@@ -244,7 +248,7 @@ export default function ProductForm({
           <Input
             onChangeText={handleChange('category')}
             onBlur={handleBlur('category')}
-            value={values.category ?? ''}
+            value={values.categoryPathname ?? ''}
             label="Category"
             editable={!loading}
           />

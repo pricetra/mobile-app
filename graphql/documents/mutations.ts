@@ -104,7 +104,13 @@ export const CREATE_PRODUCT_MUTATION = gql(`
       code
       color
       model
-      category
+      categoryId
+      category {
+        id
+        name
+        expandedPathname
+        path
+      }
       weight
       lowestRecordedPrice
       highestRecordedPrice
@@ -126,7 +132,13 @@ export const UPDATE_PRODUCT_MUTATION = gql(`
       code
       color
       model
-      category
+      categoryId
+      category {
+        id
+        name
+        expandedPathname
+        path
+      }
       weight
       lowestRecordedPrice
       highestRecordedPrice

@@ -35,7 +35,13 @@ export const BARCODE_SCAN_QUERY = gql`
       code
       color
       model
-      category
+      categoryId
+      category {
+        id
+        name
+        expandedPathname
+        path
+      }
       weight
       lowestRecordedPrice
       highestRecordedPrice
@@ -132,7 +138,13 @@ export const ALL_PRODUCTS_QUERY = gql(`
         code
         color
         model
-        category
+        categoryId
+        category {
+          id
+          name
+          expandedPathname
+          path
+        }
         weight
         lowestRecordedPrice
         highestRecordedPrice
