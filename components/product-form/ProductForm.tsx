@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Linking, TouchableOpacity, View } from 'react-native';
 
 import BrandSelector from './BrandSelector';
+import CategorySelector from './CategorySelector';
 import WeightSelector from './WeightSelector';
 
 import Button from '@/components/ui/Button';
@@ -23,6 +24,7 @@ import {
   CreateProductDocument,
   UpdateProductDocument,
   Product,
+  Category,
 } from '@/graphql/types/graphql';
 import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
@@ -245,13 +247,15 @@ export default function ProductForm({
             />
           </View>
 
-          <Input
-            onChangeText={handleChange('category')}
-            onBlur={handleBlur('category')}
-            value={values.categoryPathname ?? ''}
-            label="Category"
-            editable={!loading}
-          />
+          <View className="relative">
+            <Label className="mb-1">Category</Label>
+            <CategorySelector
+              category={product?.category ?? undefined}
+              editable={!loading}
+              onChange={(c) => console.log('selected category: ', c)}
+            />
+          </View>
+
           <View className="flex flex-row justify-between gap-3">
             <Input
               onChangeText={handleChange('color')}

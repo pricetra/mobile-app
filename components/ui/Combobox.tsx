@@ -1,4 +1,4 @@
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import {
   AutocompleteDropdown,
   IAutocompleteDropdownProps,
@@ -43,7 +43,13 @@ export default function Combobox({
         maxHeight: 300,
         overflow: 'scroll',
       }}
-      renderItem={(item) => <ComboboxItem value={item.title ?? ''} />}
+      renderItem={(item, searchText) =>
+        props.renderItem ? (
+          props.renderItem(item, searchText)
+        ) : (
+          <ComboboxItem value={item.title ?? ''} />
+        )
+      }
       ItemSeparatorComponent={() => <Separator />}
       inputContainerStyle={{
         backgroundColor: 'white',
