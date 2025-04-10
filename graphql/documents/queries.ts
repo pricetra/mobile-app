@@ -268,7 +268,7 @@ export const ALL_BRANDS_QUERY = gql`
   }
 `;
 
-export const FIND_BRANCHES_BY_DISTANCE = gql(`
+export const FIND_BRANCHES_BY_DISTANCE_QUERY = gql(`
   query FindBranchesByDistance($lat: Float!, $lon: Float!, $radiusMeters: Int!) {
     findBranchesByDistance(lat: $lat, lon: $lon, radiusMeters: $radiusMeters) {
       id
@@ -293,6 +293,19 @@ export const FIND_BRANCHES_BY_DISTANCE = gql(`
         latitude
         longitude
       }
+    }
+  }
+`);
+
+export const GET_CATEGORIES_QUERY = gql(`
+  query GetCategories($depth: Int) {
+    getCategories(depth: $depth) {
+      id
+      name
+      path
+      expandedPathname
+      categoryAlias
+      depth
     }
   }
 `);

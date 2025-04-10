@@ -147,3 +147,16 @@ export const UPDATE_PRODUCT_MUTATION = gql(`
     }
   }
 `);
+
+export const CREATE_CATEGORY_MUTATION = gql(`
+  mutation CreateCategory($input: CreateCategory!) {
+    createCategory(input:$input) {
+      id
+      name
+      path
+      expandedPathname
+      categoryAlias
+      depth
+    }
+  }
+`);
