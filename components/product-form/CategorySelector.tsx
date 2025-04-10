@@ -1,5 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 
 import CategoryCombobox, { CategoryComboboxData } from './CategoryCombobox';
@@ -26,8 +25,9 @@ export default function CategorySelector({ category, onChange }: CategorySelecto
             const prevDepth = category.depth ?? i;
             setCategoryDataSet([
               ...categoryDataSet.splice(0, i + 1),
-              { parentCategory: category, depth: prevDepth + 1 },
+              { parentCategory: category, depth: prevDepth + 1, selectedId: '0' },
             ]);
+            onChange(category);
           }}
         />
       ))}

@@ -59,6 +59,7 @@ export default function ProductForm({
   const [createProduct, { loading: createLoading }] = useMutation(CreateProductDocument, {
     refetchQueries: [AllProductsDocument, AllBrandsDocument],
   });
+  const [selectedCategory, setSelectedCategory] = useState<Category>();
   const loading = updateLoading || createLoading || imageUploading;
 
   useEffect(() => {
@@ -95,6 +96,9 @@ export default function ProductForm({
   }
 
   function submit(input: CreateProduct) {
+    if (!selectedCategory) return alert('Please select a valid category');
+
+    input.categoryId = selectedCategory.id;
     if (product) {
       updateProduct({
         variables: {
@@ -252,7 +256,7 @@ export default function ProductForm({
             <CategorySelector
               category={product?.category ?? undefined}
               editable={!loading}
-              onChange={(c) => console.log('selected category: ', c)}
+              onChange={setSelectedCategory}
             />
           </View>
 
