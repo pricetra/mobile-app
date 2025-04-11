@@ -37,10 +37,6 @@ export type ProductFormProps = {
   onError: (e: ApolloError) => void;
 };
 
-type CreateCategoryInputType = CreateProduct & {
-  categoryPathname: string;
-};
-
 export default function ProductForm({
   upc,
   product,
@@ -63,11 +59,15 @@ export default function ProductForm({
   const loading = updateLoading || createLoading || imageUploading;
 
   useEffect(() => {
-    if (product?.image && product.image !== '') {
+    if (!product) return;
+
+    if (product.image && product.image !== '') {
       setImageUri(product.image);
     } else {
       setImageUri(undefined);
     }
+
+    if (product.category) setSelectedCategory(product.category);
   }, [product]);
 
   useEffect(() => {
@@ -185,9 +185,8 @@ export default function ProductForm({
           brand: product?.brand ?? '',
           code: product?.code ?? upc ?? '',
           color: product?.color,
-          categoryPathname: product?.category?.expandedPathname ?? '',
           weight: product?.weight,
-        } as CreateCategoryInputType
+        } as CreateProduct
       }
       onSubmit={submit}>
       {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (

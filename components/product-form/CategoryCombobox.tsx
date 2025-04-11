@@ -44,12 +44,17 @@ export default function CategoryCombobox({
     setCategories(data.getCategories);
   }, [data]);
 
+  useEffect(() => {
+    if (!selection || !selection.title) return;
+    setRawCategoryInput(selection.title);
+  }, [selection]);
+
   function addNewCategory(value: string) {
     const parentPath = parentCategory ? postgresArrayToNumericArray(parentCategory.path) : [];
     return createCategory({
       variables: {
         input: {
-          name: value,
+          name: value.trim(),
           parentPath,
         },
       },
@@ -62,6 +67,7 @@ export default function CategoryCombobox({
       onSelectItem={(item) => {
         const category = categories.find(({ id }) => id === item?.id);
         if (!category) return;
+        setRawCategoryInput(category.name);
         onSelect(category);
       }}
       loading={loading || adding}
@@ -70,8 +76,10 @@ export default function CategoryCombobox({
         placeholder: parentCategory ? `Subcategory of ${parentCategory.name}` : 'Select category',
         autoCorrect: false,
         autoCapitalize: 'words',
-        onChange: (e) => setRawCategoryInput(e.nativeEvent.text.trim()),
+        onChange: (e) => setRawCategoryInput(e.nativeEvent.text),
+        value: rawCategoryInput,
       }}
+      onClear={() => setRawCategoryInput('')}
       EmptyResultComponent={
         <>
           {rawCategoryInput.length > 0 ? (
