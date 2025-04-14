@@ -33,7 +33,7 @@ export default function BrandSelector({
     <Combobox
       editable={editable}
       loading={brandsLoading || adding}
-      showClear
+      showClear={false}
       clearOnFocus={false}
       closeOnSubmit
       debounce={300}

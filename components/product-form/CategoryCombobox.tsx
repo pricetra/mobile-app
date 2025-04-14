@@ -72,6 +72,7 @@ export default function CategoryCombobox({
       }}
       loading={loading || adding}
       initialValue={selection}
+      showClear={false}
       textInputProps={{
         placeholder: parentCategory ? `Subcategory of ${parentCategory.name}` : 'Select category',
         autoCorrect: false,
