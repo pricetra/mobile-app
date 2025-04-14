@@ -16,7 +16,7 @@ export default function TabLayout() {
     <Tabs
       backBehavior="history"
       screenOptions={{
-        tabBarActiveTintColor: Platform.OS === 'android' ? '#111111' : '#ffffff',
+        tabBarActiveTintColor: '#111111',
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({

@@ -22,6 +22,8 @@ const logoHeight = 23;
 const padding = 15;
 const navHeight = 2 * padding + logoHeight;
 
+const iconColor = '#333';
+
 export default function TabHeader(props: TabHeaderProps) {
   const { search, handleSearch, searching } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
@@ -38,7 +40,7 @@ export default function TabHeader(props: TabHeaderProps) {
   }
 
   return (
-    <SafeAreaView className="flex w-full bg-gray-900">
+    <SafeAreaView className="flex w-full bg-white shadow shadow-black/10">
       <View
         className="w-full flex-row items-center justify-center gap-3"
         style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
@@ -50,7 +52,7 @@ export default function TabHeader(props: TabHeaderProps) {
                 setOpenSearch(false);
               }}
               style={iconStyles}>
-              <Ionicons name="arrow-back" color="#e2e8f0" size={iconSize} />
+              <Ionicons name="arrow-back" color={iconColor} size={iconSize} />
             </TouchableOpacity>
 
             <TextInput
@@ -65,7 +67,7 @@ export default function TabHeader(props: TabHeaderProps) {
                 marginRight: padding,
               }}
               clearButtonMode="while-editing"
-              className="color-white placeholder:color-slate-400"
+              className="placeholder:color-slate-400"
               onChangeText={updateSearch}
               value={searchText}
             />
@@ -73,7 +75,7 @@ export default function TabHeader(props: TabHeaderProps) {
         ) : (
           <>
             <TouchableOpacity onPress={() => {}} style={iconStyles}>
-              <Ionicons name="menu" color="#e2e8f0" size={iconSize} />
+              <Ionicons name="menu" color={iconColor} size={iconSize} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -81,13 +83,13 @@ export default function TabHeader(props: TabHeaderProps) {
               className="flex w-full flex-1 items-center justify-center"
               style={iconStyles}>
               <Image
-                source={require('../../assets/images/logotype_header.svg')}
+                source={require('../../assets/images/logotype_header_black.svg')}
                 style={{ height: logoHeight, width: 119.21 }}
               />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setOpenSearch(true)} style={iconStyles}>
-              <Ionicons name="search" color="#e2e8f0" size={iconSize} />
+              <Ionicons name="search" color={iconColor} size={iconSize} />
             </TouchableOpacity>
           </>
         )}

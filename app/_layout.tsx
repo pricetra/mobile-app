@@ -8,6 +8,7 @@ import { useContext, useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
 import { Modal } from 'react-native';
+import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 import AuthScreens from '@/components/auth/AuthScreens';
 import AuthModalProvider from '@/context/AuthModalContext';
@@ -16,7 +17,6 @@ import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { NAV_THEME } from '@/lib/constants';
-import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -74,7 +74,7 @@ export default function RootLayout() {
       <ApolloWrapper>
         <ThemeProvider value={LIGHT_THEME}>
           <RootStack />
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
           <PortalHost />
         </ThemeProvider>
       </ApolloWrapper>
