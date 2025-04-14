@@ -10,7 +10,6 @@ import {
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
 
@@ -46,6 +45,11 @@ export default function EmailVerificationScreen() {
   useEffect(() => {
     codeComponentRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (!resendVerificationError) return;
+    alert(resendVerificationError.message);
+  }, [resendVerificationError]);
 
   return (
     <AuthFormContainer

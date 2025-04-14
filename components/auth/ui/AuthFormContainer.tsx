@@ -14,19 +14,21 @@ export default function AuthFormContainer({
   optionalContent,
 }: AuthFormContainerProps) {
   return (
-    <ScrollView className="h-screen w-screen bg-slate-200 py-10">
+    <ScrollView className="h-screen w-screen bg-white py-10">
       <SafeAreaView>
         <View className="flex flex-col items-center justify-center gap-1 p-10">
-          <View className="mb-10">
+          <View className="mb-5 flex flex-row items-center justify-center gap-5">
             <Image
-              source={require('@/assets/images/logotype_light.svg')}
-              style={{ height: 42.426, width: 180 }}
+              source={require('@/assets/images/logo_black_color.svg')}
+              style={{ height: 32.047, width: 45 }}
             />
+
+            <View className="h-[50px] w-[1px] bg-gray-200" />
+
+            <Text className="text-center text-2xl font-bold">{title}</Text>
           </View>
 
           <View className="w-full rounded-lg bg-white px-5 py-10">
-            <Text className="mb-10 text-center text-2xl font-bold">{title}</Text>
-
             <View className="flex flex-col gap-5">{children}</View>
           </View>
 

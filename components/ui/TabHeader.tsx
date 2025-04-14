@@ -1,4 +1,4 @@
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -25,7 +25,7 @@ const navHeight = 2 * padding + logoHeight;
 const iconColor = '#333';
 
 export default function TabHeader(props: TabHeaderProps) {
-  const { search, handleSearch, searching } = useContext(SearchContext);
+  const { search, handleSearch } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
   const [openSearch, setOpenSearch] = useState(false);
 
