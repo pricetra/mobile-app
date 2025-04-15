@@ -47,7 +47,7 @@ export default function WeightSelector({
 
   return (
     <>
-      <View className="flex flex-1 flex-row gap-2">
+      <View className="flex flex-1 flex-row items-center justify-center gap-2">
         <Input
           onChangeText={setMeasurement}
           value={measurement}
@@ -55,23 +55,26 @@ export default function WeightSelector({
           editable={editable}
           keyboardType="numeric"
           className="flex-1"
+          placeholder="Weight"
         />
 
         <View className="relative">
           <Label className="mb-1">Unit</Label>
-          <Combobox
-            editable={editable}
-            showClear={false}
-            initialValue={unit}
-            onSelectItem={(i) => setUnit(i ?? { id: 'ml' })}
-            dataSet={measurementUnits.map((u) => ({ id: u, title: u }))}
-            textInputProps={{
-              autoCorrect: false,
-            }}
-            inputContainerStylesExtras={{
-              minWidth: 85,
-            }}
-          />
+          <View className="mt-[-2px]">
+            <Combobox
+              editable={editable}
+              showClear={false}
+              initialValue={unit}
+              onSelectItem={(i) => setUnit(i ?? { id: 'ml' })}
+              dataSet={measurementUnits.map((u) => ({ id: u, title: u }))}
+              textInputProps={{
+                autoCorrect: false,
+              }}
+              inputContainerStylesExtras={{
+                minWidth: 85,
+              }}
+            />
+          </View>
         </View>
       </View>
     </>

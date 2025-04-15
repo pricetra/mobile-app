@@ -184,7 +184,6 @@ export default function ProductForm({
           description: product?.description ?? '',
           brand: product?.brand ?? '',
           code: product?.code ?? upc ?? '',
-          color: product?.color,
           weight: product?.weight,
         } as CreateProduct
       }
@@ -259,23 +258,13 @@ export default function ProductForm({
             />
           </View>
 
-          <View className="flex flex-row justify-between gap-3">
-            <Input
-              onChangeText={handleChange('color')}
-              onBlur={handleBlur('color')}
-              value={values.color ?? ''}
-              label="Color"
-              editable={!loading}
-              className="flex-1"
-            />
+          <WeightSelector
+            onChangeText={handleChange('weight')}
+            onBlur={handleBlur('weight')}
+            value={values.weight ?? ''}
+            editable={!loading}
+          />
 
-            <WeightSelector
-              onChangeText={handleChange('weight')}
-              onBlur={handleBlur('weight')}
-              value={values.weight ?? ''}
-              editable={!loading}
-            />
-          </View>
           <Textarea
             onChangeText={handleChange('description')}
             onBlur={handleBlur('description')}
