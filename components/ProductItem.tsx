@@ -20,7 +20,10 @@ export default function ProductItem({ product }: ProductItemProps) {
           <Text className="font-bold">{product.name}</Text>
         </View>
 
-        {product.weight && <Text className="text-sm">{product.weight}</Text>}
+        <View>
+          {product.category && <Text className="text-sm">{product.category.name}</Text>}
+          {product.weight && <Text className="text-sm">{product.weight}</Text>}
+        </View>
       </View>
     </View>
   );
