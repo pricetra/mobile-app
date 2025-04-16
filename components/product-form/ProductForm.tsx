@@ -102,6 +102,8 @@ export default function ProductForm({
     input.categoryId = selectedCategory.id;
     if (product) {
       const filteredInput = diffObjects(input, product);
+      if (Object.keys(filteredInput).length === 0) return;
+
       updateProduct({
         variables: {
           id: product.id,
