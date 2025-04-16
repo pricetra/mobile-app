@@ -309,3 +309,48 @@ export const GET_CATEGORIES_QUERY = gql(`
     }
   }
 `);
+
+export const MY_PRODUCT_BILLING_DATA_QUERY = gql(`
+  query MyProductBillingData($paginator: PaginatorInput!) {
+    myProductBillingData(paginator: $paginator) {
+      data {
+        id
+        rate
+        userId
+        user {
+          id
+          name
+          avatar
+          active
+        }
+        productId
+        product {
+          id
+          name
+          image
+          brand
+          code
+          category {
+            id
+            name
+            expandedPathname
+            path
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        paidAt
+        billingRateType
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
+      }
+    }
+  }
+`);
