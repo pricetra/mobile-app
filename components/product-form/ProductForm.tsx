@@ -28,6 +28,7 @@ import {
 } from '@/graphql/types/graphql';
 import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
+import { diffObjects } from '@/lib/utils';
 
 export type ProductFormProps = {
   upc?: string;
@@ -100,10 +101,11 @@ export default function ProductForm({
 
     input.categoryId = selectedCategory.id;
     if (product) {
+      const filteredInput = diffObjects(input, product);
       updateProduct({
         variables: {
           id: product.id,
-          input,
+          input: filteredInput,
         },
       })
         .then(({ data, errors }) => {
