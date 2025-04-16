@@ -26,7 +26,7 @@ export default function BrandSelector({
 
   function addNewBrand(brand: string) {
     if (!brands) return;
-    setBrands([...brands, { brand, products: 0 }]);
+    setBrands([...brands, { brand: brand.trim(), products: 0 }]);
   }
 
   return (
@@ -44,10 +44,13 @@ export default function BrandSelector({
         title: brand,
       }))}
       onSelectItem={(data) => {
-        setValue(data?.title ?? '');
+        const selectedBrandName = data?.title ?? '';
+        setValue(selectedBrandName);
+        setBrandInputRaw(selectedBrandName);
       }}
       onSubmit={() => {
-        if (!brands?.find((b) => b.brand === brandInputRaw)) {
+        const foundBrand = brands?.find((b) => b.brand === brandInputRaw);
+        if (!foundBrand) {
           addNewBrand(brandInputRaw);
         }
         setValue(brandInputRaw);
@@ -56,7 +59,8 @@ export default function BrandSelector({
         placeholder: 'Brand',
         autoCorrect: false,
         autoCapitalize: 'words',
-        onChange: (e) => setBrandInputRaw(e.nativeEvent.text.trim()),
+        onChange: (e) => setBrandInputRaw(e.nativeEvent.text),
+        value: brandInputRaw,
       }}
       EmptyResultComponent={
         <TouchableOpacity
