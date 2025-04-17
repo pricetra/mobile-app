@@ -65,21 +65,19 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => {
-            if (user.avatar) {
-              return (
-                <Image
-                  source={{
-                    uri: createCloudinaryUrl(user.avatar, 2 * size, 2 * size),
-                  }}
-                  className="rounded-full"
-                  style={{
-                    width: size,
-                    height: size,
-                  }}
-                />
-              );
-            }
-            return <Feather size={size} name="user" color={color} />;
+            if (!user.avatar) return <Feather size={size} name="user" color={color} />;
+            return (
+              <Image
+                source={{
+                  uri: createCloudinaryUrl(user.avatar, 2 * size, 2 * size),
+                }}
+                className="rounded-full"
+                style={{
+                  width: size,
+                  height: size,
+                }}
+              />
+            );
           },
         }}
       />
