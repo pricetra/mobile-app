@@ -88,7 +88,7 @@ export default function AllProductBillingData({}: AllProductBillingDataProps) {
         <TableBody>
           <FlashList
             data={data.myProductBillingData.data}
-            estimatedItemSize={50}
+            estimatedItemSize={1000}
             contentContainerStyle={{
               paddingBottom: insets.bottom,
             }}

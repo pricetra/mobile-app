@@ -60,14 +60,12 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollView>
-      <SafeAreaView style={{ minHeight: '100%' }}>
-        <View className="p-5">
-          <ProfileSmall user={user} selectProfileAvatar={selectProfileAvatar} />
-        </View>
+    <SafeAreaView style={{ height: '100%' }}>
+      <View className="p-5 pb-3">
+        <ProfileSmall user={user} selectProfileAvatar={selectProfileAvatar} />
+      </View>
 
-        <AllProductBillingData />
-      </SafeAreaView>
-    </ScrollView>
+      <AllProductBillingData />
+    </SafeAreaView>
   );
 }
