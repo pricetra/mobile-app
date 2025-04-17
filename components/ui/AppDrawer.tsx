@@ -1,3 +1,5 @@
+import { Feather } from '@expo/vector-icons';
+import { useContext, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,16 +11,15 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
+
+import ProfileSmall from '@/components/profile/ProfileSmall';
 import { useDrawer } from '@/context/DrawerContext';
-import { useContext, useEffect, useRef } from 'react';
-import { Feather } from '@expo/vector-icons';
-import ProfileSmall from '../profile/ProfileSmall';
 import { UserAuthContext } from '@/context/UserContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function AppDrawer() {
-  const {user, logout} = useContext(UserAuthContext)
+  const { user, logout } = useContext(UserAuthContext);
   const { isOpen, closeDrawer } = useDrawer();
 
   const slideAnim = useRef(new Animated.Value(-width)).current;
@@ -84,7 +85,7 @@ export default function AppDrawer() {
 
             <TouchableOpacity
               onPress={closeDrawer}
-              className="flex items-center justify-center p-5 bg-white">
+              className="flex items-center justify-center bg-white p-5">
               <Feather name="x" size={25} />
             </TouchableOpacity>
           </View>
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: width,
+    width,
     height: '100%',
     backgroundColor: '#fff',
     zIndex: 999,
