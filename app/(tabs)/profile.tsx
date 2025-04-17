@@ -5,14 +5,15 @@ import { randomUUID } from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
 import { AlertTriangle } from 'lucide-react-native';
 import { useContext, useState } from 'react';
-import { SafeAreaView, Text, View, Image, Pressable } from 'react-native';
+import { SafeAreaView, Text, View, Image, Pressable, ScrollView } from 'react-native';
 
 import { createCloudinaryUrl } from '../../lib/files';
 
+import AllProductBillingData from '@/components/profile/AllProductBillingData';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import Button from '@/components/ui/Button';
 import { UserAuthContext } from '@/context/UserContext';
-import { UpdateProfileDocument } from '@/graphql/types/graphql';
+import { UpdateProfileDocument, User } from '@/graphql/types/graphql';
 import { getFileBlobFromUri, cloudinary } from '@/lib/files';
 
 export default function ProfileScreen() {
@@ -58,56 +59,61 @@ export default function ProfileScreen() {
             console.error(errors);
             return;
           }
-          updateUser({ ...data.updateProfile });
+          updateUser({ ...data.updateProfile } as User);
         });
       },
     });
   }
 
   return (
-    <SafeAreaView>
-      <View className="mt-10 p-5">
-        {updateProfileError && (
-          <Alert icon={AlertTriangle} variant="destructive" className="mb-10 max-w-xl">
-            <AlertTitle>Error!</AlertTitle>
-            <AlertDescription>{updateProfileError.message}</AlertDescription>
-          </Alert>
-        )}
+    <ScrollView>
+      <SafeAreaView style={{ minHeight: '100%' }}>
+        <View className="p-5">
+          {updateProfileError && (
+            <Alert icon={AlertTriangle} variant="destructive" className="mb-10 max-w-xl">
+              <AlertTitle>Error!</AlertTitle>
+              <AlertDescription>{updateProfileError.message}</AlertDescription>
+            </Alert>
+          )}
 
-        <View className="flex flex-row items-center justify-start gap-3">
-          <Pressable onPress={selectProfileAvatar}>
-            {user.avatar ? (
-              <Image
-                source={{
-                  uri: createCloudinaryUrl(user.avatar, 100, 100),
-                }}
-                className="size-20 rounded-full"
-              />
-            ) : (
-              <View className="flex size-20 items-center justify-center rounded-full bg-gray-300">
-                <Feather name="user" size={35} />
-              </View>
-            )}
-          </Pressable>
+          <View className="flex flex-row items-center justify-start gap-3">
+            <Pressable onPress={selectProfileAvatar}>
+              {user.avatar ? (
+                <Image
+                  source={{
+                    uri: createCloudinaryUrl(user.avatar, 100, 100),
+                  }}
+                  className="size-16 rounded-full"
+                />
+              ) : (
+                <View className="flex size-16 items-center justify-center rounded-full bg-gray-300">
+                  <Feather name="user" size={35} />
+                </View>
+              )}
+            </Pressable>
 
-          <View className="flex flex-col gap-1">
-            <Text className="text-xl font-bold">{user.name}</Text>
-            <Text>{user.email}</Text>
+            <View className="flex flex-col gap-1">
+              <Text className="text-lg font-bold">{user.name}</Text>
+              <Text className="text-sm">{user.email}</Text>
+            </View>
+          </View>
+
+          <View className="mt-5">
+            <Button
+              onPress={() => {
+                setLogoutLoading(true);
+                logout();
+              }}
+              loading={logoutLoading}
+              variant="secondary"
+              size="sm">
+              Logout
+            </Button>
           </View>
         </View>
 
-        <View className="mt-10">
-          <Button
-            onPress={() => {
-              setLogoutLoading(true);
-              logout();
-            }}
-            loading={logoutLoading}
-            variant="secondary">
-            Logout
-          </Button>
-        </View>
-      </View>
-    </SafeAreaView>
+        <AllProductBillingData />
+      </SafeAreaView>
+    </ScrollView>
   );
 }
