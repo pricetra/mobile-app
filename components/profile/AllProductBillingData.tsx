@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import dayjs from 'dayjs';
@@ -17,21 +17,32 @@ import {
 } from '@/components/ui/Table';
 import { MyProductBillingDataDocument } from '@/graphql/types/graphql';
 import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 const MIN_COLUMN_WIDTHS = [70, 90, 160, 90, 65];
+const LIMIT = 100;
 
 export type AllProductBillingDataProps = object;
 
 export default function AllProductBillingData({}: AllProductBillingDataProps) {
-  const { data, loading, error } = useQuery(MyProductBillingDataDocument, {
-    variables: {
-      paginator: {
-        limit: 100,
-        page: 1,
-      },
-    },
-  });
+  const [getBillingData, { data, error }] = useLazyQuery(MyProductBillingDataDocument);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    getBillingData({
+      variables: {
+        paginator: {
+          limit: LIMIT,
+          page,
+        },
+      },
+    }).finally(() => {
+      setLoading(false);
+    });
+  }, [page]);
 
   if (loading) {
     return (
@@ -90,6 +101,21 @@ export default function AllProductBillingData({}: AllProductBillingDataProps) {
             estimatedItemSize={1000}
             contentContainerStyle={{
               paddingBottom: insets.bottom,
+            }}
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              getBillingData({
+                variables: {
+                  paginator: {
+                    limit: 100,
+                    page: 1,
+                  },
+                },
+                fetchPolicy: 'network-only',
+              }).finally(() => {
+                setRefreshing(false);
+              });
             }}
             renderItem={({ item, index }) => {
               const d = dayjs(item.createdAt);
