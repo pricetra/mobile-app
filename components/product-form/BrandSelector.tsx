@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import Combobox, { ComboboxItem } from '@/components/ui/Combobox';
@@ -23,6 +23,10 @@ export default function BrandSelector({
 }: BrandSelectorProps) {
   const [brandInputRaw, setBrandInputRaw] = useState<string>(value ?? '');
   const [adding, setAdding] = useState(false);
+
+  useEffect(() => {
+    setBrandInputRaw(value);
+  }, [value]);
 
   function addNewBrand(brand: string) {
     if (!brands) return;
