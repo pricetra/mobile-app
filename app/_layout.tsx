@@ -11,7 +11,9 @@ import { Modal } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 import AuthScreens from '@/components/auth/AuthScreens';
+import AppDrawer from '@/components/ui/AppDrawer';
 import AuthModalProvider from '@/context/AuthModalContext';
+import { DrawerProvider } from '@/context/DrawerContext';
 import JwtStoreProvider, { JwtStoreContext } from '@/context/JwtStoreContext';
 import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
@@ -46,14 +48,18 @@ function RootStack() {
 
       {jwt && (
         <UserContextProvider jwt={jwt}>
-          <SearchContextProvider>
-            <AutocompleteDropdownContextProvider>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-            </AutocompleteDropdownContextProvider>
-          </SearchContextProvider>
+          <DrawerProvider>
+            <SearchContextProvider>
+              <AutocompleteDropdownContextProvider>
+                <AppDrawer />
+
+                <Stack>
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </AutocompleteDropdownContextProvider>
+            </SearchContextProvider>
+          </DrawerProvider>
         </UserContextProvider>
       )}
     </>
