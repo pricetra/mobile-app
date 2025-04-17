@@ -2,8 +2,7 @@ import { useQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
-import { Alert, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Button from '@/components/ui/Button';
@@ -117,34 +116,32 @@ export default function AllProductBillingData({}: AllProductBillingDataProps) {
                 </TableRow>
               );
             }}
-            ListFooterComponent={() => {
-              return (
-                <TableFooter>
-                  <TableRow>
-                    <TableCell className="flex-1 justify-center">
-                      <Text className="text-foreground">Total</Text>
-                    </TableCell>
-                    <TableCell className="items-end pr-8">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onPress={() => {
-                          Alert.alert('Total Amount', `You pressed the total amount price button.`);
-                        }}>
-                        <Text>
-                          $
-                          {Math.fround(
-                            data.myProductBillingData.data
-                              .map(({ rate }) => rate)
-                              .reduce((sum, cur) => sum + cur, 0.0)
-                          )}
-                        </Text>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                </TableFooter>
-              );
-            }}
+            ListFooterComponent={() => (
+              <TableFooter>
+                <TableRow>
+                  <TableCell className="flex-1 justify-center">
+                    <Text className="text-foreground">Total</Text>
+                  </TableCell>
+                  <TableCell className="items-end pr-8">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onPress={() => {
+                        Alert.alert('Total Amount', `You pressed the total amount price button.`);
+                      }}>
+                      <Text>
+                        $
+                        {Math.fround(
+                          data.myProductBillingData.data
+                            .map(({ rate }) => rate)
+                            .reduce((sum, cur) => sum + cur, 0.0)
+                        )}
+                      </Text>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            )}
           />
         </TableBody>
       </Table>
