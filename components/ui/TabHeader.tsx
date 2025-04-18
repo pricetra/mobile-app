@@ -13,6 +13,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { useDrawer } from '@/context/DrawerContext';
 import { SearchContext } from '@/context/SearchContext';
 
 export type TabHeaderProps = BottomTabHeaderProps;
@@ -25,6 +26,7 @@ const navHeight = 2 * padding + logoHeight;
 const iconColor = '#333';
 
 export default function TabHeader(props: TabHeaderProps) {
+  const { openDrawer } = useDrawer();
   const { search, handleSearch } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
   const [openSearch, setOpenSearch] = useState(false);
@@ -74,7 +76,7 @@ export default function TabHeader(props: TabHeaderProps) {
           </>
         ) : (
           <>
-            <TouchableOpacity onPress={() => {}} style={iconStyles}>
+            <TouchableOpacity onPress={() => openDrawer()} style={iconStyles}>
               <Ionicons name="menu" color={iconColor} size={iconSize} />
             </TouchableOpacity>
 
