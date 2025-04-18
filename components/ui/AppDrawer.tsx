@@ -1,22 +1,26 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useContext, useEffect, useRef } from 'react';
 import {
   View,
-  Text,
-  Pressable,
   StyleSheet,
   Animated,
   Dimensions,
   TouchableWithoutFeedback,
   SafeAreaView,
   TouchableOpacity,
+  Platform,
+  ScrollView,
 } from 'react-native';
+
+import DrawerMenuItem from './AppDrawer/DrawerMenuItem';
 
 import ProfileSmall from '@/components/profile/ProfileSmall';
 import { useDrawer } from '@/context/DrawerContext';
 import { UserAuthContext } from '@/context/UserContext';
+import { cn } from '@/lib/utils';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function AppDrawer() {
   const { user, logout } = useContext(UserAuthContext);
@@ -55,6 +59,11 @@ export default function AppDrawer() {
     }
   }, [isOpen]);
 
+  function toRoute(cb: () => void) {
+    cb();
+    closeDrawer();
+  }
+
   return (
     <>
       <TouchableWithoutFeedback onPress={closeDrawer}>
@@ -77,25 +86,66 @@ export default function AppDrawer() {
             transform: [{ translateX: slideAnim }],
           },
         ]}>
-        <SafeAreaView>
-          <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100">
-            <View className="flex-1 p-5 text-2xl font-bold">
-              <ProfileSmall user={user} />
+        <SafeAreaView className={cn('h-full pb-10', Platform.OS === 'android' && 'pt-10')}>
+          <View className="flex h-full flex-col justify-between">
+            <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100">
+              <View className="flex-1 p-5 text-2xl font-bold">
+                <ProfileSmall user={user} />
+              </View>
+
+              <TouchableOpacity
+                onPress={closeDrawer}
+                className="flex items-center justify-center bg-white p-5">
+                <Feather name="x" size={20} />
+              </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
-              onPress={closeDrawer}
-              className="flex items-center justify-center bg-white p-5">
-              <Feather name="x" size={25} />
-            </TouchableOpacity>
-          </View>
-          <View className="mt-5 p-5">
-            <Pressable onPress={() => console.log('Navigate to Settings')}>
-              <Text style={styles.link}>Settings</Text>
-            </Pressable>
-            <Pressable onPress={() => logout()}>
-              <Text style={styles.link}>Logout</Text>
-            </Pressable>
+            <ScrollView>
+              <View className="flex w-full flex-1 flex-col gap-3 p-2">
+                <DrawerMenuItem
+                  onPress={() => toRoute(() => router.push('/(tabs)/'))}
+                  text="Home"
+                  icon={({ color, size }) => <Feather name="home" size={size} color={color} />}
+                />
+                <DrawerMenuItem
+                  onPress={() => toRoute(() => router.push('/(tabs)/scan'))}
+                  text="Scan"
+                  icon={({ color, size }) => <Feather name="camera" size={size} color={color} />}
+                />
+                <DrawerMenuItem
+                  onPress={() => toRoute(() => router.push('/(tabs)/(stores)'))}
+                  text="Stores"
+                  icon={({ color, size }) => (
+                    <MaterialIcons name="storefront" size={size} color={color} />
+                  )}
+                />
+                <DrawerMenuItem
+                  onPress={() => {}}
+                  text="My Scan Data"
+                  icon={({ color, size }) => (
+                    <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />
+                  )}
+                />
+                <DrawerMenuItem
+                  onPress={() => {}}
+                  text="Users"
+                  icon={({ color, size }) => <Feather name="users" size={size} color={color} />}
+                />
+              </View>
+            </ScrollView>
+
+            <View className="flex flex-col gap-2 border-t-[1px] border-gray-100 px-2 pt-5">
+              <DrawerMenuItem
+                onPress={() => toRoute(() => router.push('/profile'))}
+                text="Profile"
+                icon={({ color, size }) => <Feather name="user" size={size} color={color} />}
+              />
+              <DrawerMenuItem
+                onPress={logout}
+                text="Log Out"
+                icon={({ color, size }) => <Feather name="log-out" size={size} color={color} />}
+              />
+            </View>
           </View>
         </SafeAreaView>
       </Animated.View>
@@ -106,8 +156,8 @@ export default function AppDrawer() {
 const styles = StyleSheet.create({
   backdrop: {
     position: 'absolute',
-    width,
-    height,
+    width: '100%',
+    height: '100%',
     backgroundColor: 'black',
     zIndex: 998,
   },
@@ -115,7 +165,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width,
+    width: width * 0.85,
     height: '100%',
     backgroundColor: '#fff',
     zIndex: 999,
@@ -124,17 +174,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
-  },
-  menu: {
-    padding: 24,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 16,
-  },
-  link: {
-    fontSize: 16,
-    marginVertical: 10,
   },
 });
