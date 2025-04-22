@@ -5,8 +5,7 @@ import { View, ScrollView, SafeAreaView, TouchableOpacity, Text } from 'react-na
 
 import CreateStoreForm from '@/components/CreateStoreForm';
 import { StoreItemLoading } from '@/components/StoreItem';
-import ProfileSmall from '@/components/profile/ProfileSmall';
-import FloatingActionButton from '@/components/ui/FloatingActionButton';
+import ProfileLarge, { ProfileLargeLoading } from '@/components/profile/ProfileLarge';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
@@ -51,7 +50,9 @@ export default function UsersScreen() {
       case 'email':
         return setFilters({ email: term });
       case 'role':
-        return setFilters({ role: term as UserRole });
+        return setFilters({
+          role: term.split(' ').join('_').toUpperCase() as UserRole,
+        });
       default:
         return setFilters({ name: term });
     }
@@ -69,11 +70,13 @@ export default function UsersScreen() {
 
         <View className="mb-20">
           {loading && (
-            <View>
+            <View className="w-full">
               {Array(10)
                 .fill(0)
                 .map((_, i) => (
-                  <StoreItemLoading key={i} />
+                  <View className="mb-7" key={i}>
+                    <ProfileLargeLoading />
+                  </View>
                 ))}
             </View>
           )}
@@ -85,7 +88,7 @@ export default function UsersScreen() {
                   // router.push(`/(stores)/${c.id}`);
                 }}
                 className="mb-7">
-                <ProfileSmall user={u} />
+                <ProfileLarge user={u} />
               </TouchableOpacity>
             ))}
         </View>
