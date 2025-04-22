@@ -101,7 +101,7 @@ export default function AppDrawer() {
             </View>
 
             <ScrollView>
-              <View className="flex w-full flex-1 flex-col gap-3 p-2">
+              <View className="flex w-full flex-1 flex-col gap-2 p-2">
                 <DrawerMenuItem
                   onPress={() => toRoute(() => router.push('/(tabs)/'))}
                   text="Home"
@@ -127,7 +127,7 @@ export default function AppDrawer() {
                   )}
                 />
                 <DrawerMenuItem
-                  onPress={() => {}}
+                  onPress={() => toRoute(() => router.push('/(tabs)/(admin)/users'))}
                   text="Users"
                   icon={({ color, size }) => <Feather name="users" size={size} color={color} />}
                 />
