@@ -1,7 +1,8 @@
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -17,7 +18,6 @@ import {
 } from '@/components/ui/Table';
 import { MyProductBillingDataDocument } from '@/graphql/types/graphql';
 import { cn } from '@/lib/utils';
-import { useEffect, useState } from 'react';
 
 const MIN_COLUMN_WIDTHS = [70, 90, 160, 90, 65];
 const LIMIT = 100;

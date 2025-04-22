@@ -24,9 +24,9 @@ export default function ProfileSmall({ user, selectProfileAvatar }: ProfileSmall
         />
       </Pressable>
 
-      <View className="flex flex-col">
-        <Text className="text-lg font-bold">{user.name}</Text>
-        <Text className="text-sm">{user.email}</Text>
+      <View className="flex flex-col gap-1">
+        <Text className="text-[16px] font-bold">{user.name}</Text>
+        <Text className="text-[12px]">{user.email}</Text>
       </View>
     </View>
   );
