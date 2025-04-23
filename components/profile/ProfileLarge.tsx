@@ -3,6 +3,7 @@ import { Pressable, View, Image, Text } from 'react-native';
 import { User } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { Skeleton } from '../ui/Skeleton';
+import { enumToNormalizedString } from '@/lib/strings';
 
 export type ProfileLargeProps = {
   user: User;
@@ -26,8 +27,8 @@ export default function ProfileLarge({ user, selectProfileAvatar }: ProfileLarge
       </Pressable>
 
       <View className="flex flex-col gap-1">
-        <Text className="text-[10px] capitalize text-gray-600">
-          {user.role.split('_').join(' ')}
+        <Text className="text-[10px] text-gray-600">
+          {enumToNormalizedString(user.role)}
           {user.active && ' • Active'}
         </Text>
         <Text className="text-[15px] font-bold">{user.name}</Text>

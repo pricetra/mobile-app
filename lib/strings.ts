@@ -14,3 +14,7 @@ export function postgresArrayToNumericArray(rawArray: string): number[] {
   const strArray = postgresArrayToArray(rawArray);
   return strArray.map((v) => parseInt(v, 10));
 }
+
+export function enumToNormalizedString(e: any): string {
+  return titleCase(e.toString().split('_').join(' '));
+}
