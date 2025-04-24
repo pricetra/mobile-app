@@ -1,4 +1,4 @@
-import { Pressable, View, Image, Text } from 'react-native';
+import { View, Image, Text } from 'react-native';
 
 import { Skeleton } from '@/components/ui/Skeleton';
 import { User } from '@/graphql/types/graphql';
@@ -7,24 +7,21 @@ import { enumToNormalizedString } from '@/lib/strings';
 
 export type ProfileLargeProps = {
   user: User;
-  selectProfileAvatar?: () => void;
 };
 
-export default function ProfileLarge({ user, selectProfileAvatar }: ProfileLargeProps) {
+export default function ProfileLarge({ user }: ProfileLargeProps) {
   return (
     <View className="flex flex-row items-center justify-start gap-3">
-      <Pressable onPress={selectProfileAvatar}>
-        <Image
-          source={
-            user.avatar
-              ? {
-                  uri: createCloudinaryUrl(user.avatar, 100, 100),
-                }
-              : require('@/assets/images/no_avatar.jpg')
-          }
-          className="size-14 rounded-full"
-        />
-      </Pressable>
+      <Image
+        source={
+          user.avatar
+            ? {
+                uri: createCloudinaryUrl(user.avatar, 100, 100),
+              }
+            : require('@/assets/images/no_avatar.jpg')
+        }
+        className="size-14 rounded-full"
+      />
 
       <View className="flex flex-col gap-1">
         <Text className="text-[10px] text-gray-600">

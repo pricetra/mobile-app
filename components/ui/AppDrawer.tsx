@@ -15,7 +15,7 @@ import {
 
 import DrawerMenuItem from './AppDrawer/DrawerMenuItem';
 
-import ProfileSmall from '@/components/profile/ProfileSmall';
+import ProfileMini from '@/components/profile/ProfileMini';
 import { useDrawer } from '@/context/DrawerContext';
 import { UserAuthContext } from '@/context/UserContext';
 import { UserRole } from '@/graphql/types/graphql';
@@ -92,7 +92,7 @@ export default function AppDrawer() {
           <View className="flex h-full flex-col justify-between">
             <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100">
               <View className="flex-1 p-5 text-2xl font-bold">
-                <ProfileSmall user={user} />
+                <ProfileMini user={user} />
               </View>
 
               <TouchableOpacity
