@@ -1,8 +1,8 @@
 import { Pressable, View, Image, Text } from 'react-native';
 
+import { Skeleton } from '@/components/ui/Skeleton';
 import { User } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
-import { Skeleton } from '../ui/Skeleton';
 import { enumToNormalizedString } from '@/lib/strings';
 
 export type ProfileLargeProps = {
