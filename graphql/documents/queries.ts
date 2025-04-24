@@ -62,6 +62,7 @@ export const UserFragment = gql`
     active
     authPlatform
     authStateId
+    role
   }
 `;
 
@@ -84,6 +85,7 @@ export const LOGIN_INTERNAL_QUERY = gql`
         active
         authPlatform
         authStateId
+        role
       }
     }
   }
@@ -103,6 +105,7 @@ export const GOOGLE_OAUTH_QUERY = gql`
         active
         authPlatform
         authStateId
+        role
       }
       isNewUser
     }
@@ -121,6 +124,7 @@ export const ME_QUERY = gql`
       active
       authPlatform
       authStateId
+      role
     }
   }
 `;

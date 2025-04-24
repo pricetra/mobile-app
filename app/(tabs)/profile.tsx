@@ -60,7 +60,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={{ height: '100%' }}>
+    <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
       <View className="p-5 pb-3">
         <ProfileSmall user={user} selectProfileAvatar={selectProfileAvatar} />
       </View>

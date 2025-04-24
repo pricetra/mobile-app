@@ -3,14 +3,16 @@ import { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import ProductBillingDataTable from '@/components/ui/ProductBillingDataTable';
-import { MyProductBillingDataDocument, ProductBilling } from '@/graphql/types/graphql';
+import { ProductBilling, ProductBillingDataByUserIdDocument, User } from '@/graphql/types/graphql';
 
 const LIMIT = 50;
 
-export type AllProductBillingDataProps = object;
+export type AdminProductBillingProps = {
+  user: User;
+};
 
-export default function AllProductBillingData({}: AllProductBillingDataProps) {
-  const [getBillingData, { data, error }] = useLazyQuery(MyProductBillingDataDocument);
+export default function AdminProductBilling({ user }: AdminProductBillingProps) {
+  const [getBillingData, { data, error }] = useLazyQuery(ProductBillingDataByUserIdDocument);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -22,11 +24,12 @@ export default function AllProductBillingData({}: AllProductBillingDataProps) {
           limit: LIMIT,
           page,
         },
+        userId: user.id,
       },
     }).finally(() => {
       setLoading(false);
     });
-  }, [page]);
+  }, [user, page]);
 
   if (error) {
     return (
@@ -40,7 +43,7 @@ export default function AllProductBillingData({}: AllProductBillingDataProps) {
     <ScrollView horizontal>
       <ProductBillingDataTable
         loading={loading}
-        data={data?.myProductBillingData?.data as ProductBilling[]}
+        data={data?.productBillingDataByUserId?.data as ProductBilling[]}
         refreshing={refreshing}
         onRefresh={() => {
           setRefreshing(true);
@@ -50,15 +53,16 @@ export default function AllProductBillingData({}: AllProductBillingDataProps) {
                 limit: 100,
                 page: 1,
               },
+              userId: user.id,
             },
             fetchPolicy: 'network-only',
           }).finally(() => {
             setRefreshing(false);
           });
         }}
-        paginator={data?.myProductBillingData?.paginator}
+        paginator={data?.productBillingDataByUserId?.paginator}
         curPage={page}
-        onPageChange={setPage}
+        onPageChange={(p) => setPage(p)}
       />
     </ScrollView>
   );
