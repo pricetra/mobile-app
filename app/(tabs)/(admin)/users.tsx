@@ -1,14 +1,16 @@
-import { ApolloError, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { router } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
-import { View, ScrollView, SafeAreaView, TouchableOpacity, Text, Alert } from 'react-native';
+import { View, ScrollView, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 
+import AllProductBillingData from '@/components/profile/AllProductBillingData';
 import ProfileLarge, { ProfileLargeLoading } from '@/components/profile/ProfileLarge';
+import ProfileSmall from '@/components/profile/ProfileSmall';
+import UserForm from '@/components/profile/UserForm';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
 import { GetAllUsersDocument, User, UserFilter, UserRole } from '@/graphql/types/graphql';
-import UserForm from '@/components/profile/UserForm';
 import { isRoleAuthorized } from '@/lib/roles';
 
 export type SearchTypes = 'id' | 'email' | 'name' | 'role';
@@ -18,6 +20,7 @@ export default function UsersScreen() {
   const { search } = useContext(SearchContext);
   const [loadUsers, { data: users, loading, fetchMore }] = useLazyQuery(GetAllUsersDocument);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [openUserModal, setOpenUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User>();
   const limit = 50;
   const [page, setPage] = useState(1);
@@ -65,19 +68,32 @@ export default function UsersScreen() {
 
   return (
     <SafeAreaView>
-      <ScrollView className="h-full p-5">
-        <ModalFormMini
-          visible={openEditModal}
-          onRequestClose={() => setOpenEditModal(false)}
-          title="Edit User">
-          <UserForm
-            onSuccess={(_data) => setOpenEditModal(false)}
-            user={selectedUser}
-            onCancel={() => setOpenEditModal(false)}
-            onError={(e) => Alert.alert(e.name, e.message)}
-          />
-        </ModalFormMini>
+      {selectedUser && (
+        <>
+          <ModalFormMini
+            visible={openEditModal}
+            onRequestClose={() => setOpenEditModal(false)}
+            title="Edit User">
+            <UserForm
+              onSuccess={(_data) => setOpenEditModal(false)}
+              user={selectedUser}
+              onCancel={() => setOpenEditModal(false)}
+              onError={(e) => Alert.alert(e.name, e.message)}
+            />
+          </ModalFormMini>
 
+          <ModalFormMini
+            visible={openUserModal}
+            onRequestClose={() => setOpenUserModal(false)}
+            TitleComponent={<ProfileSmall user={selectedUser} />}
+            title={selectedUser.name}
+            className="px-0">
+            <AllProductBillingData />
+          </ModalFormMini>
+        </>
+      )}
+
+      <ScrollView className="h-full p-5">
         <View className="mb-20">
           {loading && (
             <View className="w-full">
@@ -95,7 +111,8 @@ export default function UsersScreen() {
               <TouchableOpacity
                 key={u.id}
                 onPress={() => {
-                  // router.push(`/(stores)/${c.id}`);
+                  setSelectedUser(u);
+                  setOpenUserModal(true);
                 }}
                 onLongPress={() => {
                   setSelectedUser(u);

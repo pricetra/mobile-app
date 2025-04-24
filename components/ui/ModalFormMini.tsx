@@ -13,11 +13,15 @@ import {
 } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
+import { cn } from '@/lib/utils';
+
 export type ModalFormMiniProps = {
   visible: boolean;
   onRequestClose: (event: NativeSyntheticEvent<any>) => void;
   children: ReactNode;
   title: string;
+  TitleComponent?: ReactNode;
+  className?: string;
 };
 
 export default function ModalFormMini({
@@ -25,6 +29,8 @@ export default function ModalFormMini({
   visible,
   onRequestClose,
   title,
+  TitleComponent,
+  className,
 }: ModalFormMiniProps) {
   return (
     <Modal animationType="fade" visible={visible} onRequestClose={onRequestClose} transparent>
@@ -40,9 +46,13 @@ export default function ModalFormMini({
           <SafeAreaView
             style={{ backgroundColor: '#fff', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
             <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100 pt-2">
-              <Text className="flex flex-1 flex-row items-center gap-2 px-7 py-5 text-2xl font-bold">
-                {title}
-              </Text>
+              {TitleComponent ? (
+                <View className="px-5 py-3">{TitleComponent}</View>
+              ) : (
+                <Text className="flex flex-1 flex-row items-center gap-2 px-7 py-5 text-2xl font-bold">
+                  {title}
+                </Text>
+              )}
 
               <TouchableOpacity
                 onPress={onRequestClose}
@@ -58,7 +68,7 @@ export default function ModalFormMini({
               ListFooterComponent={<View className="h-5" />}
               keyboardShouldPersistTaps="handled"
               contentInsetAdjustmentBehavior="automatic"
-              className="px-5"
+              className={cn('px-5', className)}
               nestedScrollEnabled
             />
           </SafeAreaView>

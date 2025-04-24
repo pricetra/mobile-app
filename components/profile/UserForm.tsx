@@ -11,7 +11,6 @@ import Combobox from '@/components/ui/Combobox';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
-import { Textarea } from '@/components/ui/Textarea';
 import {
   User,
   GetAllUsersDocument,
@@ -26,7 +25,7 @@ import { diffObjects } from '@/lib/utils';
 const roles = [UserRole.SuperAdmin, UserRole.Admin, UserRole.Contributor, UserRole.Consumer];
 
 export type ProductFormProps = {
-  user?: User;
+  user: User;
   onCancel: () => void;
   onSuccess: (user: User) => void;
   onError: (e: ApolloError) => void;
@@ -72,41 +71,36 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
   }
 
   function submit(input: UpdateUserFull) {
-    if (imageUri && imageUpdated) {
-      input.avatar = randomUUID();
-    }
-    if (user) {
-      const filteredInput = diffObjects(input, user);
-      if (Object.keys(filteredInput).length === 0) return;
+    if (imageUri && imageUpdated) input.avatar = randomUUID();
 
-      updateProfile({
-        variables: {
-          userId: user.id,
-          input: filteredInput,
-        },
+    const filteredInput = diffObjects(input, user);
+    if (Object.keys(filteredInput).length === 0) return;
+
+    updateProfile({
+      variables: {
+        userId: user.id,
+        input: filteredInput,
+      },
+    })
+      .then(({ data, errors }) => {
+        if (errors) return onError(errors.at(0) as ApolloError);
+        if (!data) return;
+
+        if (imageUri && imageUpdated) {
+          setImageUploading(true);
+          uploadToCloudinary({
+            file: imageUri,
+            public_id: input.avatar ?? randomUUID(),
+            tags: ['PRODUCT'],
+            onSuccess: () => onSuccess(data.updateUserById),
+            onError: (e) => onError(e as unknown as ApolloError),
+            onFinally: () => setImageUploading(false),
+          });
+        } else {
+          onSuccess(data.updateUserById);
+        }
       })
-        .then(({ data, errors }) => {
-          if (errors) return onError(errors.at(0) as ApolloError);
-          if (!data) return;
-
-          if (imageUri && imageUpdated) {
-            setImageUploading(true);
-            uploadToCloudinary({
-              file: imageUri,
-              public_id: input.avatar ?? randomUUID(),
-              tags: ['PRODUCT'],
-              onSuccess: () => onSuccess(data.updateUserById),
-              onError: (e) => onError(e as unknown as ApolloError),
-              onFinally: () => setImageUploading(false),
-            });
-          } else {
-            onSuccess(data.updateUserById);
-          }
-        })
-        .catch((e) => onError(e));
-    } else {
-      // TODO: Create user
-    }
+      .catch((e) => onError(e));
   }
 
   function renderImageSelection() {
@@ -176,14 +170,6 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
             onCheckedChange={(val) => setFieldValue('active', val)}
             label="Active"
           />
-
-          {/* <Textarea
-            onChangeText={handleChange('bio')}
-            onBlur={handleBlur('bio')}
-            value={values.bio ?? ''}
-            label="Bio"
-            editable={!loading}
-          /> */}
 
           <View className="my-10 flex flex-row justify-between gap-3">
             <Button onPress={onCancel} disabled={loading} variant="outline" className="flex-1">
