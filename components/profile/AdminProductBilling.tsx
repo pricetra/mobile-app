@@ -31,19 +31,6 @@ export default function AdminProductBilling({ user }: AdminProductBillingProps) 
     });
   }, [user, page]);
 
-  // if (loading) {
-  //   return (
-  //     <View className="flex h-[200px] items-center justify-center p-10">
-  //       <AntDesign
-  //         name="loading1"
-  //         className="size-[50px] animate-spin text-center"
-  //         color="#374151"
-  //         size={50}
-  //       />
-  //     </View>
-  //   );
-  // }
-
   if (error) {
     return (
       <View className="py-10">

@@ -25,7 +25,7 @@ export default function Pagination({ paginator, curPage, onPageChange }: Paginat
         <MaterialIcons name="arrow-back" size={20} color="black" />
       </Button>
 
-      <View className="flex flex-row items-center justify-center gap-2">
+      <View className="flex flex-1 flex-row flex-wrap items-center justify-center gap-2">
         {Array(paginator.numPages)
           .fill(0)
           .map((_, i) => (
