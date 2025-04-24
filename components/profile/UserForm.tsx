@@ -111,9 +111,7 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
 
   function renderImageSelection() {
     if (imageUri) {
-      return (
-        <Image src={imageUri} className="size-28 rounded-full" />
-      );
+      return <Image src={imageUri} className="size-28 rounded-full" />;
     }
     return (
       <NativeImage

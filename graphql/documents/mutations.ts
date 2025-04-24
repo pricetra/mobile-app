@@ -10,6 +10,7 @@ export const CREATE_USER_MUTATION = gql`
       createdAt
       updatedAt
       authPlatform
+      role
     }
   }
 `;
@@ -26,6 +27,7 @@ export const VERIFY_EMAIL_MUTATION = gql(`
       active
       authPlatform
       authStateId
+      role
     }
   }
 `);
@@ -54,6 +56,7 @@ export const UPDATE_PROFILE_MUTATION = gql(`
       active
       authPlatform
       authStateId
+      role
     }
   }
 `);

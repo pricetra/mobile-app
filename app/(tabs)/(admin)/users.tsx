@@ -9,6 +9,7 @@ import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
 import { GetAllUsersDocument, User, UserFilter, UserRole } from '@/graphql/types/graphql';
 import UserForm from '@/components/profile/UserForm';
+import { isRoleAuthorized } from '@/lib/roles';
 
 export type SearchTypes = 'id' | 'email' | 'name' | 'role';
 
@@ -21,6 +22,10 @@ export default function UsersScreen() {
   const limit = 50;
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<UserFilter>();
+
+  useEffect(() => {
+    if (!isRoleAuthorized(UserRole.Admin, user.role)) return router.replace('/');
+  }, [user]);
 
   useEffect(() => {
     loadUsers({

@@ -18,6 +18,8 @@ import DrawerMenuItem from './AppDrawer/DrawerMenuItem';
 import ProfileSmall from '@/components/profile/ProfileSmall';
 import { useDrawer } from '@/context/DrawerContext';
 import { UserAuthContext } from '@/context/UserContext';
+import { UserRole } from '@/graphql/types/graphql';
+import { isRoleAuthorized } from '@/lib/roles';
 import { cn } from '@/lib/utils';
 
 const { width } = Dimensions.get('window');
@@ -103,12 +105,12 @@ export default function AppDrawer() {
             <ScrollView>
               <View className="flex w-full flex-1 flex-col gap-2 p-2">
                 <DrawerMenuItem
-                  onPress={() => toRoute(() => router.push('/(tabs)/'))}
+                  onPress={() => toRoute(() => router.push('/'))}
                   text="Home"
                   icon={({ color, size }) => <Feather name="home" size={size} color={color} />}
                 />
                 <DrawerMenuItem
-                  onPress={() => toRoute(() => router.push('/(tabs)/scan'))}
+                  onPress={() => toRoute(() => router.push('/scan'))}
                   text="Scan"
                   icon={({ color, size }) => <Feather name="camera" size={size} color={color} />}
                 />
@@ -126,11 +128,13 @@ export default function AppDrawer() {
                     <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />
                   )}
                 />
-                <DrawerMenuItem
-                  onPress={() => toRoute(() => router.push('/(tabs)/(admin)/users'))}
-                  text="Users"
-                  icon={({ color, size }) => <Feather name="users" size={size} color={color} />}
-                />
+                {isRoleAuthorized(UserRole.Admin, user.role) && (
+                  <DrawerMenuItem
+                    onPress={() => toRoute(() => router.push('/(tabs)/(admin)/users'))}
+                    text="Users"
+                    icon={({ color, size }) => <Feather name="users" size={size} color={color} />}
+                  />
+                )}
               </View>
             </ScrollView>
 
