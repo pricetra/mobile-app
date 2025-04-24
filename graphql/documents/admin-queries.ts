@@ -27,3 +27,48 @@ export const GET_ALL_USERS_QUERY = gql(`
     }
   }
 `);
+
+export const PRODUCT_BILLING_DATA_BY_USER_ID_QUERY = gql(`
+  query ProductBillingDataByUserId($userId: ID!, $paginator: PaginatorInput!) {
+    productBillingDataByUserId(userId: $userId, paginator: $paginator) {
+      data {
+        id
+        rate
+        userId
+        user {
+          id
+          name
+          avatar
+          active
+        }
+        productId
+        product {
+          id
+          name
+          image
+          brand
+          code
+          category {
+            id
+            name
+            expandedPathname
+            path
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        paidAt
+        billingRateType
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
+      }
+    }
+  }
+`);
