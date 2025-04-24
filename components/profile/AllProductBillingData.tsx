@@ -61,7 +61,8 @@ export default function AllProductBillingData({}: AllProductBillingDataProps) {
   return (
     <ScrollView horizontal>
       <ProductBillingDataTable
-        data={(data.myProductBillingData.data as ProductBilling[]) ?? []}
+        loading={loading}
+        data={data.myProductBillingData.data as ProductBilling[]}
         refreshing={refreshing}
         onRefresh={() => {
           setRefreshing(true);

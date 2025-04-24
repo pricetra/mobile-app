@@ -32,18 +32,18 @@ export default function AdminProductBilling({ user }: AdminProductBillingProps) 
     });
   }, [user, page]);
 
-  if (loading) {
-    return (
-      <View className="flex h-[200px] items-center justify-center p-10">
-        <AntDesign
-          name="loading1"
-          className="size-[50px] animate-spin text-center"
-          color="#374151"
-          size={50}
-        />
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View className="flex h-[200px] items-center justify-center p-10">
+  //       <AntDesign
+  //         name="loading1"
+  //         className="size-[50px] animate-spin text-center"
+  //         color="#374151"
+  //         size={50}
+  //       />
+  //     </View>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -53,18 +53,11 @@ export default function AdminProductBilling({ user }: AdminProductBillingProps) 
     );
   }
 
-  if (!data) {
-    return (
-      <View className="py-10">
-        <Text>Could not load data</Text>
-      </View>
-    );
-  }
-
   return (
     <ScrollView horizontal>
       <ProductBillingDataTable
-        data={(data.productBillingDataByUserId.data as ProductBilling[]) ?? []}
+        loading={loading}
+        data={data?.productBillingDataByUserId?.data as ProductBilling[]}
         refreshing={refreshing}
         onRefresh={() => {
           setRefreshing(true);
