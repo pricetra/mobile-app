@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { FlatList, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import Pagination from './Pagination';
 import { Skeleton } from './Skeleton';
 
 import {
@@ -13,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/Table';
-import { ProductBilling } from '@/graphql/types/graphql';
+import { Paginator, ProductBilling } from '@/graphql/types/graphql';
 import { cn } from '@/lib/utils';
 
 const dataLoading = Array(50).fill({} as ProductBilling);
@@ -24,6 +25,9 @@ export type ProductBillingDataTableProps = {
   data?: ProductBilling[];
   onRefresh?: () => void;
   refreshing?: boolean;
+  paginator?: Paginator;
+  curPage?: number;
+  onPageChange?: (page: number) => void;
 };
 
 export default function ProductBillingDataTable({
@@ -31,6 +35,9 @@ export default function ProductBillingDataTable({
   data,
   onRefresh,
   refreshing,
+  paginator,
+  curPage,
+  onPageChange,
 }: ProductBillingDataTableProps) {
   const insets = useSafeAreaInsets();
 
@@ -113,29 +120,10 @@ export default function ProductBillingDataTable({
             );
           }}
           ListFooterComponent={() => (
-            <TableFooter className="mb-[150px]">
-              {/* <TableRow>
-                <TableCell className="flex-1 justify-center">
-                  <Text className="text-foreground">Total</Text>
-                </TableCell>
-                <TableCell className="items-end pr-8">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onPress={() => {
-                      Alert.alert('Total Amount', `You pressed the total amount price button.`);
-                    }}>
-                    <Text>
-                      $
-                      {Math.fround(
-                        data.myProductBillingData.data
-                          .map(({ rate }) => rate)
-                          .reduce((sum, cur) => sum + cur, 0.0)
-                      )}
-                    </Text>
-                  </Button>
-                </TableCell>
-              </TableRow> */}
+            <TableFooter className="mb-[150px] w-screen p-5">
+              {paginator && curPage && onPageChange && (
+                <Pagination paginator={paginator} curPage={curPage} onPageChange={onPageChange} />
+              )}
             </TableFooter>
           )}
         />

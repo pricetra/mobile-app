@@ -1,12 +1,11 @@
 import { useLazyQuery } from '@apollo/client';
-import { AntDesign } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import ProductBillingDataTable from '@/components/ui/ProductBillingDataTable';
 import { ProductBilling, ProductBillingDataByUserIdDocument, User } from '@/graphql/types/graphql';
 
-const LIMIT = 100;
+const LIMIT = 50;
 
 export type AdminProductBillingProps = {
   user: User;
@@ -74,6 +73,9 @@ export default function AdminProductBilling({ user }: AdminProductBillingProps) 
             setRefreshing(false);
           });
         }}
+        paginator={data?.productBillingDataByUserId?.paginator}
+        curPage={page}
+        onPageChange={(p) => setPage(p)}
       />
     </ScrollView>
   );

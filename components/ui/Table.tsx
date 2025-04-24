@@ -41,7 +41,7 @@ const TableFooter = React.forwardRef<TablePrimitive.FooterRef, TablePrimitive.Fo
   ({ className, ...props }, ref) => (
     <TablePrimitive.Footer
       ref={ref}
-      className={cn('bg-muted/50 font-medium [&>tr]:last:border-b-0', className)}
+      className={cn('font-medium [&>tr]:last:border-b-0', className)}
       {...props}
     />
   )

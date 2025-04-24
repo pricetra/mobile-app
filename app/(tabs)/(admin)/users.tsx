@@ -5,7 +5,7 @@ import { View, ScrollView, SafeAreaView, TouchableOpacity, Alert } from 'react-n
 
 import AdminProductBilling from '@/components/profile/AdminProductBilling';
 import ProfileLarge, { ProfileLargeLoading } from '@/components/profile/ProfileLarge';
-import ProfileSmall from '@/components/profile/ProfileSmall';
+import ProfileMini from '@/components/profile/ProfileMini';
 import UserForm from '@/components/profile/UserForm';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
@@ -85,7 +85,7 @@ export default function UsersScreen() {
           <ModalFormMini
             visible={openUserModal}
             onRequestClose={() => setOpenUserModal(false)}
-            TitleComponent={<ProfileSmall user={selectedUser} />}
+            TitleComponent={<ProfileMini user={selectedUser} />}
             title={selectedUser.name}
             className="px-0">
             <AdminProductBilling user={selectedUser} />
