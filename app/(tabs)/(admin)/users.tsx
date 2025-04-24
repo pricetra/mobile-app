@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { View, ScrollView, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
 
-import AllProductBillingData from '@/components/profile/AllProductBillingData';
+import AdminProductBilling from '@/components/profile/AdminProductBilling';
 import ProfileLarge, { ProfileLargeLoading } from '@/components/profile/ProfileLarge';
 import ProfileSmall from '@/components/profile/ProfileSmall';
 import UserForm from '@/components/profile/UserForm';
@@ -88,7 +88,7 @@ export default function UsersScreen() {
             TitleComponent={<ProfileSmall user={selectedUser} />}
             title={selectedUser.name}
             className="px-0">
-            <AllProductBillingData />
+            <AdminProductBilling user={selectedUser} />
           </ModalFormMini>
         </>
       )}
