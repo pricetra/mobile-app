@@ -4,6 +4,17 @@ import {
   UploadApiErrorResponse,
   UploadApiResponse,
 } from 'cloudinary-react-native/lib/typescript/src/api/upload/model/params/upload-params';
+import { ImagePickerAsset } from 'expo-image-picker';
+
+export function getApolloUploadObject({ uri, mimeType }: ImagePickerAsset) {
+  const parsedUri = uri.split('/');
+  const filename = parsedUri.at(parsedUri.length - 1);
+  return {
+    uri,
+    name: filename,
+    type: mimeType ?? 'image/jpeg',
+  };
+}
 
 export async function getFileBlobFromUri(uri: string) {
   const response = await fetch(uri);
