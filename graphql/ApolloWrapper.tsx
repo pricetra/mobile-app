@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  createHttpLink,
-  InMemoryCache,
-  NormalizedCacheObject,
-} from '@apollo/client';
+import { ApolloClient, ApolloProvider, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { ReactNode, useContext, useEffect, useState } from 'react';
@@ -13,7 +7,6 @@ import { JwtStoreContext } from '@/context/JwtStoreContext';
 
 const uri = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/graphql';
 
-const httpLink = createHttpLink({ uri });
 const uploadLink = createUploadLink({ uri });
 
 function createAuthLink(jwt?: string) {
