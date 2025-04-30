@@ -163,3 +163,37 @@ export const CREATE_CATEGORY_MUTATION = gql(`
     }
   }
 `);
+
+export const CREATE_PRICE_MUTATION = gql(`
+  mutation CreatePrice($input: CreatePrice!) {
+  createPrice(input: $input) {
+    id
+    amount
+    currencyCode
+    productId
+    product {
+      id
+      name
+      brand
+      category {
+        id
+        expandedPathname
+      }
+    }
+    storeId
+    store {
+      id
+      name
+    }
+    branchId
+    branch {
+      id
+      name
+      address {
+        id
+        fullAddress
+      }
+    }
+  }
+}
+`);

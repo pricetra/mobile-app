@@ -48,9 +48,9 @@ export default function HomeScreen() {
         if (!data) return;
 
         if (page === 1) {
-          setProducts([...data.allProducts.products]);
+          setProducts([...data.allProducts.products] as Product[]);
         } else {
-          setProducts([...products, ...data.allProducts.products]);
+          setProducts([...products, ...data.allProducts.products] as Product[]);
         }
       })
       .finally(() => {
@@ -109,9 +109,11 @@ export default function HomeScreen() {
           product={selectedProduct}
           onCancel={() => setSelectedProduct(undefined)}
           onSuccess={(product) => {
+            const oldProduct = products.find(({ id }) => id === product.id);
+            if (!oldProduct) return;
             const idx = products.findIndex(({ id }) => id === product.id);
             const updatedProducts = [...products];
-            updatedProducts[idx] = product;
+            updatedProducts[idx] = { ...oldProduct, ...product };
             setProducts(updatedProducts);
             setSelectedProduct(undefined);
           }}

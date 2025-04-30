@@ -1,21 +1,40 @@
-import { useLazyQuery } from '@apollo/client';
+import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
+import CurrencyInput from 'react-native-currency-input';
 
-import { FindBranchesByDistanceDocument, Product } from '@/graphql/types/graphql';
+import Button from '../ui/Button';
+import Combobox from '../ui/Combobox';
+
+import {
+  CreatePriceDocument,
+  FindBranchesByDistanceDocument,
+  Price,
+  Product,
+} from '@/graphql/types/graphql';
 
 export type AddProductPriceFormProps = {
   product: Product;
   onCancel: () => void;
+  onSuccess: (p: Price) => void;
+  onError: (e: ApolloError) => void;
 };
 
-export default function AddProductPriceForm({ product, onCancel }: AddProductPriceFormProps) {
+export default function AddProductPriceForm({
+  product,
+  onCancel,
+  onSuccess,
+  onError,
+}: AddProductPriceFormProps) {
   const [location, setLocation] = useState<Location.LocationObject>();
   const [findBranchesByDistance, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
     FindBranchesByDistanceDocument
   );
+  const [createPrice, { loading }] = useMutation(CreatePriceDocument);
+  const [amount, setAmount] = useState<number>(0);
+  const [branchId, setBranchId] = useState<string>();
 
   async function getCurrentLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -33,7 +52,6 @@ export default function AddProductPriceForm({ product, onCancel }: AddProductPri
 
   useEffect(() => {
     if (!location) return;
-    console.log(location.coords);
     findBranchesByDistance({
       variables: {
         lat: location.coords.latitude,
@@ -42,6 +60,30 @@ export default function AddProductPriceForm({ product, onCancel }: AddProductPri
       },
     });
   }, [location]);
+
+  useEffect(() => {
+    if (!branchesData) return;
+    setBranchId(branchesData.findBranchesByDistance.at(0)?.id);
+  }, [branchesData]);
+
+  function onSubmit() {
+    if (!branchId || !amount) return;
+
+    createPrice({
+      variables: {
+        input: {
+          amount,
+          productId: product.id,
+          branchId,
+        },
+      },
+    })
+      .then(({ data }) => {
+        if (!data) return;
+        onSuccess(data.createPrice as Price);
+      })
+      .catch((e) => onError(e));
+  }
 
   if (!location || branchesLoading || !branchesData)
     return (
@@ -56,13 +98,56 @@ export default function AddProductPriceForm({ product, onCancel }: AddProductPri
     );
 
   return (
-    <View>
-      {branchesData.findBranchesByDistance.map((b) => (
-        <View key={b.id} className="mb-7">
-          <Text className="text-lg font-bold">{b.name}</Text>
-          <Text className="text-sm color-gray-700">{b.address?.fullAddress}</Text>
-        </View>
-      ))}
+    <View className="mb-10 flex gap-10">
+      <Combobox
+        initialValue={branchId}
+        dataSet={branchesData.findBranchesByDistance.map((b) => ({
+          id: b.id,
+          title: b.name,
+          description: b.address?.fullAddress,
+        }))}
+        onSelectItem={(data) => {
+          if (!data) return;
+          setBranchId(data.id);
+        }}
+        textInputProps={{
+          placeholder: 'Select Branch',
+        }}
+      />
+
+      <CurrencyInput
+        value={amount}
+        onChangeValue={(v) => {
+          setAmount(v ?? 0);
+        }}
+        prefix="$"
+        delimiter=","
+        separator="."
+        precision={2}
+        minValue={0}
+        maxValue={1000}
+        renderTextInput={(props) => (
+          <TextInput
+            {...props}
+            style={{
+              fontSize: 50,
+              textAlign: 'center',
+              letterSpacing: 5,
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+            }}
+          />
+        )}
+      />
+
+      <Button
+        className="mt-5"
+        variant="secondary"
+        loading={loading}
+        onPress={onSubmit}
+        disabled={!amount || !branchId}>
+        Submit Price
+      </Button>
     </View>
   );
 }
