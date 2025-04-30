@@ -3,7 +3,7 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions, CameraRatio } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Alert, Platform, Text, View } from 'react-native';
 
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
@@ -111,16 +111,20 @@ export default function ScanScreen() {
 
       {scannedCode && product && (
         <ModalFormMini
-          title="Add Product"
+          title="Add Price"
           visible={openPriceModal}
           onRequestClose={() => setOpenPriceModal(false)}>
           <AddProductPriceForm
             product={product}
             onCancel={() => setOpenPriceModal(false)}
-            // onSuccess={(p) => {
-            //   setOpenPriceModal(false);
-            // }}
-            // onError={(e) => alert(e.message)}
+            onSuccess={(p) => {
+              setOpenPriceModal(false);
+              Alert.alert(
+                'Price added',
+                `Price set to $${p.amount} at location ${p.branch?.address?.fullAddress}`
+              );
+            }}
+            onError={(e) => alert(e.message)}
           />
         </ModalFormMini>
       )}
