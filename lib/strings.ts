@@ -18,3 +18,13 @@ export function postgresArrayToNumericArray(rawArray: string): number[] {
 export function enumToNormalizedString(e: any): string {
   return titleCase(e.toString().split('_').join(' '));
 }
+
+export function currencyFormat(v: number): string {
+  return (
+    '$' +
+    new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(v)
+  );
+}
