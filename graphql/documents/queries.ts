@@ -149,6 +149,32 @@ export const ALL_PRODUCTS_QUERY = gql(`
           expandedPathname
           path
         }
+        stock {
+          id
+          productId
+          storeId
+          store {
+            id
+            name
+            logo
+          }
+          branchId
+          branch {
+            id
+            name
+            address {
+              id
+              fullAddress
+            }
+          }
+          latestPriceId
+          latestPrice {
+            id
+            amount
+            currencyCode
+            createdAt
+          }
+        }
         weight
         lowestRecordedPrice
         highestRecordedPrice
