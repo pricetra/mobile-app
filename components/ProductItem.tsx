@@ -30,9 +30,7 @@ export default function ProductItem({ product }: ProductItemProps) {
           </View>
 
           {product.stock && product.stock.latestPrice && (
-            <Text className="font-bold" style={{ fontFamily: 'monospace' }}>
-              {currencyFormat(product.stock.latestPrice.amount)}
-            </Text>
+            <Text className="font-bold">{currencyFormat(product.stock.latestPrice.amount)}</Text>
           )}
         </View>
       </View>
