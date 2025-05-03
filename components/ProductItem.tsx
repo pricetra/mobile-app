@@ -6,6 +6,7 @@ import Image from '@/components/ui/Image';
 import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat } from '@/lib/strings';
+import { Entypo } from '@expo/vector-icons';
 
 export type ProductItemProps = {
   product: Product;
@@ -17,16 +18,32 @@ export default function ProductItem({ product }: ProductItemProps) {
       <Image src={createCloudinaryUrl(product.code, 500)} className="size-28 rounded-lg" />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
-          <View className="flex flex-row justify-between gap-2">
+          <View className="flex flex-row items-center gap-1">
             {product.brand && <Text className="text-xs">{product.brand}</Text>}
+
+            {product.category && (
+              <>
+                <Entypo name="chevron-small-right" size={10} color="black" />
+                <Text className="text-xs">{product.category.name}</Text>
+              </>
+            )}
           </View>
           <Text className="font-bold">{product.name}</Text>
         </View>
 
         <View className="flex flex-row items-center justify-between gap-2">
-          <View className="flex-1">
-            {product.category && <Text className="text-xs">{product.category.name}</Text>}
-            {product.weight && <Text className="text-xs">{product.weight}</Text>}
+          <View className="flex-1 gap-1">
+            {product.stock?.store && (
+              <View className="flex flex-row items-center gap-1">
+                <Image
+                  src={createCloudinaryUrl(product.stock.store.logo, 40, 40)}
+                  className="size-[15px] rounded-full"
+                />
+
+                <Text className="text-xs">{product.stock.store.name}</Text>
+              </View>
+            )}
+            {/* {product.weight && <Text className="text-xs">{product.weight}</Text>} */}
           </View>
 
           {product.stock && product.stock.latestPrice && (
