@@ -1,12 +1,13 @@
+import { Entypo } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 
+import ProductStockMini from './ProductStockMini';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
 import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat } from '@/lib/strings';
-import { Entypo } from '@expo/vector-icons';
 
 export type ProductItemProps = {
   product: Product;
@@ -15,10 +16,10 @@ export type ProductItemProps = {
 export default function ProductItem({ product }: ProductItemProps) {
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <Image src={createCloudinaryUrl(product.code, 500)} className="size-28 rounded-lg" />
+      <Image src={createCloudinaryUrl(product.code, 500)} className="size-32 rounded-lg" />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
-          <View className="flex flex-row items-center gap-1">
+          <View className="flex flex-row flex-wrap items-center gap-1">
             {product.brand && <Text className="text-xs">{product.brand}</Text>}
 
             {product.category && (
@@ -33,16 +34,7 @@ export default function ProductItem({ product }: ProductItemProps) {
 
         <View className="flex flex-row items-center justify-between gap-2">
           <View className="flex-1 gap-1">
-            {product.stock?.store && (
-              <View className="flex flex-row items-center gap-1">
-                <Image
-                  src={createCloudinaryUrl(product.stock.store.logo, 40, 40)}
-                  className="size-[15px] rounded-full"
-                />
-
-                <Text className="text-xs">{product.stock.store.name}</Text>
-              </View>
-            )}
+            {product.stock?.store && <ProductStockMini stock={product.stock} />}
             {/* {product.weight && <Text className="text-xs">{product.weight}</Text>} */}
           </View>
 

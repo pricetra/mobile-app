@@ -164,7 +164,14 @@ export const ALL_PRODUCTS_QUERY = gql(`
             name
             address {
               id
+              latitude
+              longitude
+              mapsLink
               fullAddress
+              city
+              administrativeDivision
+              zipCode
+              country
             }
           }
           latestPriceId
