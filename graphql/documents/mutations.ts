@@ -74,6 +74,28 @@ export const CREATE_STORE_MUTATION = gql(`
   }
 `);
 
+export const CREATE_BRANCH_WITH_FULL_ADDRESS_MUTATION = gql(`
+  mutation CreateBranchFromFullAddress($storeId: ID!, $fullAddress: String!) {
+    createBranchWithFullAddress(storeId: $storeId, fullAddress: $fullAddress) {
+      id
+      name
+      addressId
+      storeId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        countryCode
+        zipCode
+        city
+        administrativeDivision
+      }
+    }
+  }
+`);
+
 export const CREATE_BRANCH_MUTATION = gql(`
   mutation CreateBranch($input: CreateBranch!) {
     createBranch(input: $input) {
@@ -88,8 +110,9 @@ export const CREATE_BRANCH_MUTATION = gql(`
         mapsLink
         fullAddress
         countryCode
-        country
         zipCode
+        city
+        administrativeDivision
       }
     }
   }
