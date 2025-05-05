@@ -172,6 +172,7 @@ export const ALL_PRODUCTS_QUERY = gql(`
               administrativeDivision
               zipCode
               country
+              distance
             }
           }
           latestPriceId

@@ -11,12 +11,11 @@ export type ProductStockMiniProps = {
   stock: Stock;
 };
 
-export default function ProductStockMini({ stock }: ProductStockMiniProps) {
-  const [distance, setDistance] = useState<string>();
-  useEffect(() => {
-    setDistance(random(0, 20, true).toPrecision(2));
-  }, []);
+function metersToMiles(m: number) {
+  return (m / 1609).toPrecision(2);
+}
 
+export default function ProductStockMini({ stock }: ProductStockMiniProps) {
   return (
     <View className="flex flex-row items-center gap-2">
       <Image
@@ -29,7 +28,9 @@ export default function ProductStockMini({ stock }: ProductStockMiniProps) {
           <Text className="text-[9px]">{stock.branch?.address?.city}</Text>
           <>
             <Entypo name="dot-single" size={10} color="black" />
-            <Text className="text-[9px]">{distance} mi</Text>
+            <Text className="text-[9px]">
+              {metersToMiles(stock.branch?.address?.distance ?? 0)} mi
+            </Text>
           </>
         </View>
       </View>
