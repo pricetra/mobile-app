@@ -8,6 +8,7 @@ import ProductItem from '@/components/ProductItem';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import { GetProductStocksDocument, LocationInput, ProductDocument } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
+import ProductFull from '@/components/ProductFull';
 
 export default function ProductScreen() {
   const { productId } = useLocalSearchParams();
@@ -36,26 +37,25 @@ export default function ProductScreen() {
   }, [productId]);
 
   return (
-    <SafeAreaView className="h-full">
+    <SafeAreaView className="h-full bg-white">
       <FloatingActionButton onPress={() => {}}>
         <Feather name="plus" size={20} color="white" />
         <Text className="text-md font-bold color-white">Price</Text>
       </FloatingActionButton>
 
-      <ScrollView className="mt-5 w-full">
-        <View className="p-5">
-          {productLoading && (
-            <View className="flex h-40 w-full items-center justify-center px-10">
-              <AntDesign
-                name="loading1"
-                className="size-[30px] animate-spin text-center"
-                color="#555"
-                size={30}
-              />
-            </View>
-          )}
-          {productData && <ProductItem product={productData.product} />}
-        </View>
+      <ScrollView className="w-full">
+        {productLoading && (
+          <View className="flex h-40 w-full items-center justify-center px-10">
+            <AntDesign
+              name="loading1"
+              className="size-[30px] animate-spin text-center"
+              color="#555"
+              size={30}
+            />
+          </View>
+        )}
+        {productData && <ProductFull product={productData.product} />}
+        <View className="h-[100px]" />
       </ScrollView>
     </SafeAreaView>
   );
