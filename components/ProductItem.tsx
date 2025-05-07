@@ -1,5 +1,5 @@
 import { Entypo } from '@expo/vector-icons';
-import { View, Text } from 'react-native';
+import { View, Text, useWindowDimensions } from 'react-native';
 
 import ProductStockMini from './ProductStockMini';
 import { Skeleton } from './ui/Skeleton';
@@ -14,9 +14,15 @@ export type ProductItemProps = {
 };
 
 export default function ProductItem({ product }: ProductItemProps) {
+  const { width } = useWindowDimensions();
+
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <Image src={createCloudinaryUrl(product.code, 500)} className="size-40 rounded-lg" />
+      <Image
+        src={createCloudinaryUrl(product.code, 500)}
+        className="rounded-lg"
+        style={{ width: width / 3, height: width / 3 }}
+      />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
           <View className="flex flex-row flex-wrap items-center gap-1">
