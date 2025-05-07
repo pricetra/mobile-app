@@ -1,4 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
+import * as Location from 'expo-location';
 import { AlertTriangle } from 'lucide-react-native';
 import { useContext, useEffect, useState } from 'react';
 import {
@@ -10,6 +11,8 @@ import {
   Platform,
   Text,
 } from 'react-native';
+
+import { LocationInput } from '../../graphql/types/graphql';
 
 import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
 import ProductForm from '@/components/product-form/ProductForm';
@@ -30,8 +33,34 @@ export default function HomeScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const { search, searching, setSearching } = useContext(SearchContext);
+  const [location, setLocation] = useState<Location.LocationObject>();
+
+  async function getCurrentLocation() {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      return alert('Permission to access location was denied');
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+  }
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
 
   function fetchProducts(page: number, force = false) {
+    let locationInput: LocationInput | undefined = undefined;
+    if (location) {
+      locationInput = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        radiusMeters: 32187, // ~20 miles
+      };
+    }
+
+    console.log(locationInput);
+
     getAllProducts({
       variables: {
         paginator: {
@@ -40,6 +69,7 @@ export default function HomeScreen() {
         },
         search: {
           query: search,
+          location: locationInput,
         },
       },
       fetchPolicy: force ? 'no-cache' : undefined,
@@ -70,7 +100,7 @@ export default function HomeScreen() {
     setPage(1);
     setInitLoading(true);
     fetchProducts(1, true);
-  }, [search]);
+  }, [search, location]);
 
   if (productsError) {
     return (

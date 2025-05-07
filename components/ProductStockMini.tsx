@@ -1,6 +1,4 @@
 import { Entypo } from '@expo/vector-icons';
-import { random } from 'lodash';
-import { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
@@ -26,12 +24,12 @@ export default function ProductStockMini({ stock }: ProductStockMiniProps) {
         <Text className="text-xs font-semibold">{stock.store?.name}</Text>
         <View className="flex flex-row items-center gap-[1px]">
           <Text className="text-[9px]">{stock.branch?.address?.city}</Text>
-          <>
-            <Entypo name="dot-single" size={10} color="black" />
-            <Text className="text-[9px]">
-              {metersToMiles(stock.branch?.address?.distance ?? 0)} mi
-            </Text>
-          </>
+          {stock.branch?.address?.distance && (
+            <>
+              <Entypo name="dot-single" size={10} color="black" />
+              <Text className="text-[9px]">{metersToMiles(stock.branch.address.distance)} mi</Text>
+            </>
+          )}
         </View>
       </View>
     </View>
