@@ -4,14 +4,11 @@ import { View, Text } from 'react-native';
 import Image from '@/components/ui/Image';
 import { Stock } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
+import { metersToMiles } from '@/lib/utils';
 
 export type ProductStockMiniProps = {
   stock: Stock;
 };
-
-function metersToMiles(m: number) {
-  return (m / 1609).toPrecision(2);
-}
 
 export default function ProductStockMini({ stock }: ProductStockMiniProps) {
   return (
