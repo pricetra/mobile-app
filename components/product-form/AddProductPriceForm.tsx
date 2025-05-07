@@ -1,6 +1,5 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
-import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
@@ -14,6 +13,7 @@ import {
   Price,
   Product,
 } from '@/graphql/types/graphql';
+import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 export type AddProductPriceFormProps = {
   product: Product;
@@ -22,33 +22,14 @@ export type AddProductPriceFormProps = {
   onError: (e: ApolloError) => void;
 };
 
-export default function AddProductPriceForm({
-  product,
-  onCancel,
-  onSuccess,
-  onError,
-}: AddProductPriceFormProps) {
-  const [location, setLocation] = useState<Location.LocationObject>();
+export default function AddProductPriceForm({ product, onCancel, onSuccess, onError }: AddProductPriceFormProps) {
   const [findBranchesByDistance, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
     FindBranchesByDistanceDocument
   );
   const [createPrice, { loading }] = useMutation(CreatePriceDocument);
   const [amount, setAmount] = useState<number>(0);
   const [branchId, setBranchId] = useState<string>();
-
-  async function getCurrentLocation() {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      return alert('Permission to access location was denied');
-    }
-
-    const location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-  }
-
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
+  const { location } = useCurrentLocation();
 
   useEffect(() => {
     if (!location) return;

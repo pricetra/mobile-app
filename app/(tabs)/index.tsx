@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import * as Location from 'expo-location';
+import { router } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useContext, useEffect, useState } from 'react';
 import {
@@ -20,6 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
 import { AllProductsDocument, Product } from '@/graphql/types/graphql';
+import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 const limit = 30;
 
@@ -33,21 +34,7 @@ export default function HomeScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const { search, searching, setSearching } = useContext(SearchContext);
-  const [location, setLocation] = useState<Location.LocationObject>();
-
-  async function getCurrentLocation() {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      return alert('Permission to access location was denied');
-    }
-
-    const location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-  }
-
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
+  const { location } = useCurrentLocation();
 
   function fetchProducts(page: number, force = false) {
     let locationInput: LocationInput | undefined = undefined;
@@ -58,8 +45,6 @@ export default function HomeScreen() {
         radiusMeters: 32187, // ~20 miles
       };
     }
-
-    console.log(locationInput);
 
     getAllProducts({
       variables: {
@@ -157,7 +142,9 @@ export default function HomeScreen() {
         indicatorStyle="black"
         renderItem={({ item }) => (
           <View className="mb-10">
-            <TouchableOpacity onPress={() => {}} onLongPress={() => setSelectedProduct(item)}>
+            <TouchableOpacity
+              onPress={() => router.push(`/(tabs)/(products)/${item.id}`)}
+              onLongPress={() => setSelectedProduct(item)}>
               <ProductItem product={item} />
             </TouchableOpacity>
           </View>
