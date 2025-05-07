@@ -42,7 +42,7 @@ export default function TabHeader(props: TabHeaderProps) {
   }
 
   return (
-    <SafeAreaView className="flex w-full bg-white shadow shadow-black/10">
+    <SafeAreaView className="flex w-full bg-white shadow shadow-black/80">
       <View
         className="w-full flex-row items-center justify-center gap-3"
         style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
