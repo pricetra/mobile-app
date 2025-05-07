@@ -79,13 +79,13 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchProducts(page);
-  }, [page]);
+  }, [page, location]);
 
   useEffect(() => {
     setPage(1);
     setInitLoading(true);
     fetchProducts(1, true);
-  }, [search, location]);
+  }, [search]);
 
   if (productsError) {
     return (

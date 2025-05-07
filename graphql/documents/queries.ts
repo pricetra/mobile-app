@@ -275,7 +275,7 @@ export const GET_PRODUCT_STOCKS_QUERY = gql(`
       }
     }
   }
-`)
+`);
 
 export const ALL_STORES_QUERY = gql(`
   query AllStores {
