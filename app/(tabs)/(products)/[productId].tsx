@@ -1,14 +1,19 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { SafeAreaView, ScrollView, View, Text } from 'react-native';
 
-import ProductItem from '@/components/ProductItem';
-import FloatingActionButton from '@/components/ui/FloatingActionButton';
-import { GetProductStocksDocument, LocationInput, ProductDocument } from '@/graphql/types/graphql';
-import useCurrentLocation from '@/hooks/useCurrentLocation';
 import ProductFull from '@/components/ProductFull';
+import StockFull from '@/components/StockFull';
+import FloatingActionButton from '@/components/ui/FloatingActionButton';
+import {
+  GetProductStocksDocument,
+  LocationInput,
+  ProductDocument,
+  Stock,
+} from '@/graphql/types/graphql';
+import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 export default function ProductScreen() {
   const { productId } = useLocalSearchParams();
@@ -54,7 +59,20 @@ export default function ProductScreen() {
             />
           </View>
         )}
+
         {productData && <ProductFull product={productData.product} />}
+
+        {stocksData && (
+          <View className="mt-5 p-5">
+            <Text className="mb-5 text-lg font-bold">Available at</Text>
+            {stocksData.getProductStocks.map((s) => (
+              <View className="mb-2" key={s.id}>
+                <StockFull stock={s as Stock} />
+              </View>
+            ))}
+          </View>
+        )}
+
         <View className="h-[100px]" />
       </ScrollView>
     </SafeAreaView>
