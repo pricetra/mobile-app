@@ -14,7 +14,7 @@ export default function ProductStockMini({ stock }: ProductStockMiniProps) {
   return (
     <View className="flex flex-row items-center gap-2">
       <Image
-        src={createCloudinaryUrl(stock.store?.logo ?? '', 40, 40)}
+        src={createCloudinaryUrl(stock.store?.logo ?? '', 100, 100)}
         className="size-[25px] rounded-full"
       />
       <View>
