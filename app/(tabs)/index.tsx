@@ -34,18 +34,19 @@ export default function HomeScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const { search, searching, setSearching } = useContext(SearchContext);
-  const { location } = useCurrentLocation();
+  const { location, getCurrentLocation } = useCurrentLocation();
+  const [locationInput, setLocationInput] = useState<LocationInput>();
+
+  useEffect(() => {
+    if (!location) return;
+    setLocationInput({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      radiusMeters: 32187, // ~20 miles
+    });
+  }, [location]);
 
   function fetchProducts(page: number, force = false) {
-    let locationInput: LocationInput | undefined = undefined;
-    if (location) {
-      locationInput = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        radiusMeters: 32187, // ~20 miles
-      };
-    }
-
     getAllProducts({
       variables: {
         paginator: {
@@ -78,10 +79,12 @@ export default function HomeScreen() {
   }
 
   useEffect(() => {
+    if (!locationInput) return;
     fetchProducts(page);
-  }, [page, location]);
+  }, [page, locationInput]);
 
   useEffect(() => {
+    if (search === undefined) return;
     setPage(1);
     setInitLoading(true);
     fetchProducts(1, true);
@@ -115,7 +118,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: '#fff' }}>
+    <SafeAreaView>
       <ModalFormMini
         title={selectedProduct ? 'Edit Product' : 'Add Product'}
         visible={selectedProduct !== undefined}
@@ -155,6 +158,8 @@ export default function HomeScreen() {
             onRefresh={() => {
               setRefreshing(true);
               setTimeout(() => {
+                getCurrentLocation({});
+                setPage(1);
                 fetchProducts(1, true);
               }, 2000);
             }}
