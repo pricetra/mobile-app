@@ -1,7 +1,6 @@
 import { Entypo } from '@expo/vector-icons';
 import { View, Text, useWindowDimensions } from 'react-native';
 
-import BarcodeText from './ui/BarcodeText';
 import Image from './ui/Image';
 
 import { Product } from '@/graphql/types/graphql';
@@ -32,8 +31,6 @@ export default function ProductFull({ product }: ProductFullProps) {
           </View>
           <Text className="text-2xl font-bold">{product.name}</Text>
           {product.category && <Text className="text-sm">{product.category.expandedPathname}</Text>}
-
-          <BarcodeText>{product.code}</BarcodeText>
         </View>
 
         <View className="mt-10">
