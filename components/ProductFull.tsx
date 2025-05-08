@@ -14,7 +14,7 @@ export default function ProductFull({ product }: ProductFullProps) {
 
   return (
     <View className="flex flex-col gap-3">
-      <View>
+      <View className="mt-7">
         <Image src={product.image} className="bg-gray-400" style={{ width, height: width }} />
       </View>
 

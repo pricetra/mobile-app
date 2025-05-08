@@ -115,7 +115,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ backgroundColor: '#fff' }}>
       <ModalFormMini
         title={selectedProduct ? 'Edit Product' : 'Add Product'}
         visible={selectedProduct !== undefined}
