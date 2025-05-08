@@ -21,7 +21,7 @@ export default function CreateProductScreen() {
       <View className="mt-5 p-5">
         <ProductForm
           upc={upc}
-          onCancel={() => router.push('/')}
+          onCancel={() => router.push('/(tabs)/')}
           onSuccess={({ id }) => router.push(`/(tabs)/(products)/${id}`)}
           onError={(err) => Alert.alert(err.name, err.message)}
         />

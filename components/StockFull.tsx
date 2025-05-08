@@ -23,7 +23,7 @@ export default function StockFull({ stock }: StockFullProps) {
         />
         <View className="flex flex-col gap-1">
           <Text className="text-lg font-semibold">{stock.store.name}</Text>
-          <Text className="text-sm">{stock.branch.address?.fullAddress}</Text>
+          <Text className="text-wrap text-sm">{stock.branch.address?.fullAddress}</Text>
           {stock.branch.address?.distance && (
             <Text className="text-sm">{metersToMiles(stock.branch.address.distance)} mi</Text>
           )}
@@ -31,7 +31,9 @@ export default function StockFull({ stock }: StockFullProps) {
       </View>
 
       {stock.latestPrice && stock.latestPrice && (
-        <Text className="text-xl font-black">{currencyFormat(stock.latestPrice.amount)}</Text>
+        <Text className="bg-white p-2 text-xl font-black">
+          {currencyFormat(stock.latestPrice.amount)}
+        </Text>
       )}
     </View>
   );
