@@ -3,12 +3,10 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, CameraType, useCameraPermissions, CameraRatio } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Platform, Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
-import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
 import BarcodePreview from '@/components/scanner/BarcodePreview';
-import ScannedProductView from '@/components/scanner/ScannedProductView';
 import ScannerButton from '@/components/scanner/ScannerButton';
 import Button from '@/components/ui/Button';
 import ModalFormMini from '@/components/ui/ModalFormMini';
@@ -23,14 +21,10 @@ export default function ScanScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
-  const [openEditModal, setOpenEditModal] = useState(false);
-  const [openPriceModal, setOpenPriceModal] = useState(false);
-  const [product, setProduct] = useState<Product>();
+  const [openAddProductModal, setOpenAddProductModal] = useState(false);
+  const [barcodeScan, { loading: barcodeScanLoading, error: barcodeScanError }] =
+    useLazyQuery(BarcodeScanDocument);
   const router = useRouter();
-  const [
-    barcodeScan,
-    { loading: barcodeScanLoading, data: barcodeScanData, error: barcodeScanError },
-  ] = useLazyQuery(BarcodeScanDocument);
 
   useFocusEffect(
     useCallback(() => {
@@ -43,22 +37,17 @@ export default function ScanScreen() {
   );
 
   useEffect(() => {
-    if (!barcodeScanData) return;
-    setProduct(barcodeScanData.barcodeScan);
-  }, [barcodeScanData]);
-
-  useEffect(() => {
     if (!barcodeScanError) return;
     alert(barcodeScanError.message);
   }, [barcodeScanError]);
 
   useEffect(() => {
-    if (openEditModal) {
+    if (openAddProductModal) {
       setCameraActive(false);
       return;
     }
     setCameraActive(true);
-  }, [openEditModal]);
+  }, [openAddProductModal]);
 
   if (!permission) return <View />; // Camera permissions are still loading
 
@@ -76,53 +65,30 @@ export default function ScanScreen() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
-  function handleBarcodeScan(barcode: string) {
-    barcodeScan({
+  async function handleBarcodeScan(barcode: string): Promise<Product | undefined> {
+    const { error, data } = await barcodeScan({
       variables: { barcode },
-    })
-      .then(({ error }) => {
-        if (!error) return;
-        setOpenEditModal(true);
-      })
-      .catch((_err) => {
-        setOpenEditModal(true);
-      });
+    });
+    if (error || !data) {
+      setOpenAddProductModal(true);
+      return undefined;
+    }
+    return data.barcodeScan;
   }
 
   return (
     <View style={{ flex: 1 }}>
       {scannedCode && (
         <ModalFormMini
-          title={product ? 'Edit Product' : 'Add Product'}
-          visible={openEditModal}
-          onRequestClose={() => setOpenEditModal(false)}>
+          title="Add Product"
+          visible={openAddProductModal}
+          onRequestClose={() => setOpenAddProductModal(false)}>
           <ProductForm
             upc={scannedCode}
-            product={product}
-            onCancel={() => setOpenEditModal(false)}
+            onCancel={() => setOpenAddProductModal(false)}
             onSuccess={(p) => {
-              setProduct(p);
-              setOpenEditModal(false);
-            }}
-            onError={(e) => alert(e.message)}
-          />
-        </ModalFormMini>
-      )}
-
-      {scannedCode && product && (
-        <ModalFormMini
-          title="Add Price"
-          visible={openPriceModal}
-          onRequestClose={() => setOpenPriceModal(false)}>
-          <AddProductPriceForm
-            product={product}
-            onCancel={() => setOpenPriceModal(false)}
-            onSuccess={(p) => {
-              setOpenPriceModal(false);
-              Alert.alert(
-                'Price added',
-                `Price set to $${p.amount} at location ${p.branch?.address?.fullAddress}`
-              );
+              router.navigate(`/(tabs)/(products)/${p.id}`);
+              setOpenAddProductModal(false);
             }}
             onError={(e) => alert(e.message)}
           />
@@ -148,30 +114,29 @@ export default function ScanScreen() {
 
             if (res.data === scannedCode) return;
             setScannedCode(res.data);
-            setProduct(undefined);
           }}>
           <View className="top-safe-or-10 absolute flex w-full flex-row items-center justify-end p-5">
             {scannedCode && <BarcodePreview scannedCode={scannedCode} />}
           </View>
 
           <View className="bottom-safe-or-5 absolute w-full gap-5 p-3">
-            {product && (
-              <ScannedProductView
-                product={product}
-                onEditModalPress={() => setOpenEditModal(true)}
-                onAddPriceModalPress={() => setOpenPriceModal(true)}
-              />
-            )}
-
             <View className="flex flex-row items-center justify-between">
               <ScannerButton onPress={() => router.back()}>
                 <MaterialIcons name="arrow-back" size={25} color="white" />
               </ScannerButton>
 
               <ScannerButton
-                onPress={() => {
+                onPress={async () => {
                   if (!scannedCode) return;
-                  handleBarcodeScan(scannedCode);
+
+                  try {
+                    const p = await handleBarcodeScan(scannedCode);
+                    if (!p) return;
+                    console.log(`/(tabs)/(products)/${p.id}`);
+                    router.push(`/(tabs)/(products)/${p.id}`);
+                  } catch (err) {
+                    alert(err);
+                  }
                 }}>
                 {barcodeScanLoading ? (
                   <AntDesign
