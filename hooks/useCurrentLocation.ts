@@ -9,9 +9,12 @@ export default function useCurrentLocation() {
     if (status !== 'granted') {
       return alert('Permission to access location was denied');
     }
-
-    const location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
+    Location.watchPositionAsync(
+      {
+        timeInterval: 1000 * 60,
+      },
+      setLocation
+    );
   }
 
   useEffect(() => {
