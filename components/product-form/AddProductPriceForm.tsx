@@ -1,7 +1,7 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
 import Button from '../ui/Button';
@@ -10,6 +10,7 @@ import Combobox from '../ui/Combobox';
 import {
   CreatePriceDocument,
   FindBranchesByDistanceDocument,
+  GetProductStocksDocument,
   Price,
   Product,
 } from '@/graphql/types/graphql';
@@ -22,11 +23,18 @@ export type AddProductPriceFormProps = {
   onError: (e: ApolloError) => void;
 };
 
-export default function AddProductPriceForm({ product, onCancel, onSuccess, onError }: AddProductPriceFormProps) {
+export default function AddProductPriceForm({
+  product,
+  onCancel,
+  onSuccess,
+  onError,
+}: AddProductPriceFormProps) {
   const [findBranchesByDistance, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
     FindBranchesByDistanceDocument
   );
-  const [createPrice, { loading }] = useMutation(CreatePriceDocument);
+  const [createPrice, { loading }] = useMutation(CreatePriceDocument, {
+    refetchQueries: [GetProductStocksDocument],
+  });
   const [amount, setAmount] = useState<number>(0);
   const [branchId, setBranchId] = useState<string>();
   const { location } = useCurrentLocation();
