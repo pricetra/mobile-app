@@ -1,5 +1,5 @@
 import { Entypo } from '@expo/vector-icons';
-import { View, Text } from 'react-native';
+import { View, Text, useWindowDimensions } from 'react-native';
 
 import ProductStockMini from './ProductStockMini';
 import { Skeleton } from './ui/Skeleton';
@@ -14,32 +14,38 @@ export type ProductItemProps = {
 };
 
 export default function ProductItem({ product }: ProductItemProps) {
+  const { width } = useWindowDimensions();
+
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <Image src={createCloudinaryUrl(product.code, 500)} className="size-32 rounded-lg" />
+      <Image
+        src={createCloudinaryUrl(product.code, 500)}
+        className="rounded-lg"
+        style={{ width: width / 3, height: width / 3 }}
+      />
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
           <View className="flex flex-row flex-wrap items-center gap-1">
             {product.brand && <Text className="text-xs">{product.brand}</Text>}
 
-            {product.category && (
+            {product.weight && product.weight.length > 0 && (
               <>
-                <Entypo name="chevron-small-right" size={10} color="black" />
-                <Text className="text-xs">{product.category.name}</Text>
+                <Entypo name="dot-single" size={12} color="black" />
+                <Text className="text-xs">{product.weight}</Text>
               </>
             )}
           </View>
           <Text className="font-bold">{product.name}</Text>
+          {product.category && <Text className="mt-2 text-xs">{product.category.name}</Text>}
         </View>
 
         <View className="flex flex-row items-center justify-between gap-2">
           <View className="flex-1 gap-1">
             {product.stock?.store && <ProductStockMini stock={product.stock} />}
-            {/* {product.weight && <Text className="text-xs">{product.weight}</Text>} */}
           </View>
 
           {product.stock && product.stock.latestPrice && (
-            <Text className="font-bold">{currencyFormat(product.stock.latestPrice.amount)}</Text>
+            <Text className="font-black">{currencyFormat(product.stock.latestPrice.amount)}</Text>
           )}
         </View>
       </View>
@@ -50,7 +56,7 @@ export default function ProductItem({ product }: ProductItemProps) {
 export function ProductLoadingItem() {
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <Skeleton className="size-28 rounded-lg" />
+      <Skeleton className="size-40 rounded-lg" />
       <View className="max-w-full flex-1 gap-2 p-2">
         <Skeleton className="h-6 w-full" />
         <Skeleton className="h-6 w-full" />
