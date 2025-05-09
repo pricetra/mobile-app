@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, View, Text, Alert } from 'react-native';
 
-import ProductFull from '@/components/ProductFull';
+import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import StockFull from '@/components/StockFull';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
@@ -74,20 +74,11 @@ export default function ProductScreen() {
       )}
 
       <ScrollView className="w-full">
-        {productLoading && (
-          <View className="flex h-40 w-full items-center justify-center px-10">
-            <AntDesign
-              name="loading1"
-              className="size-[30px] animate-spin text-center"
-              color="#555"
-              size={30}
-            />
-          </View>
-        )}
+        {productLoading && <ProductFullLoading />}
 
         {productData && <ProductFull product={productData.product} />}
 
-        {stocksData && (
+        {stocksData && stocksData.getProductStocks.length > 0 && (
           <View className="mt-5 p-5">
             <Text className="mb-5 text-lg font-extrabold">Available at</Text>
             {stocksData.getProductStocks.map((s) => (
