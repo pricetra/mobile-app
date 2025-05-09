@@ -25,6 +25,7 @@ import {
   UpdateProductDocument,
   Product,
   Category,
+  ProductDocument,
 } from '@/graphql/types/graphql';
 import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
@@ -51,7 +52,7 @@ export default function ProductForm({
   const [brands, setBrands] = useState<Brand[]>();
   const { data: brandsData, loading: brandsLoading } = useQuery(AllBrandsDocument);
   const [updateProduct, { loading: updateLoading }] = useMutation(UpdateProductDocument, {
-    refetchQueries: [BarcodeScanDocument, AllProductsDocument, AllBrandsDocument],
+    refetchQueries: [AllProductsDocument, AllBrandsDocument, ProductDocument],
   });
   const [createProduct, { loading: createLoading }] = useMutation(CreateProductDocument, {
     refetchQueries: [AllProductsDocument, AllBrandsDocument],

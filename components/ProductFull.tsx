@@ -42,9 +42,11 @@ export default function ProductFull({ product, onEditButtonPress }: ProductFullP
           {product.category && <Text className="text-sm">{product.category.expandedPathname}</Text>}
         </View>
 
-        <View className="mt-10">
-          <Text style={{ lineHeight: 19 }}>{product.description}</Text>
-        </View>
+        {product.description.length > 0 && (
+          <View className="mt-10">
+            <Text style={{ lineHeight: 19 }}>{product.description}</Text>
+          </View>
+        )}
       </View>
     </View>
   );
