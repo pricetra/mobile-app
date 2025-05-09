@@ -206,6 +206,77 @@ export const ALL_PRODUCTS_QUERY = gql(`
   }
 `);
 
+export const PRODUCT_BY_ID_QUERY = gql(`
+  query Product($productId: ID!) {
+    product(id: $productId) {
+      id
+      name
+      image
+      description
+      url
+      brand
+      code
+      color
+      model
+      categoryId
+      category {
+        id
+        name
+        expandedPathname
+        path
+      }
+      weight
+      lowestRecordedPrice
+      highestRecordedPrice
+      createdAt
+      updatedAt
+      createdBy {
+        id
+        name
+        avatar
+      }
+    }
+  }
+`);
+
+export const GET_PRODUCT_STOCKS_QUERY = gql(`
+  query GetProductStocks($productId: ID!, $location: LocationInput) {
+    getProductStocks(productId: $productId, location: $location) {
+      id
+      productId
+      storeId
+      store {
+        id
+        name
+        logo
+      }
+      branchId
+      branch {
+        id
+        name
+        address {
+          id
+          fullAddress
+          distance
+        }
+      }
+      latestPriceId
+      latestPrice {
+        id
+        amount
+        currencyCode
+      }
+      createdAt
+      updatedAt
+      createdBy {
+        id
+        name
+        avatar
+      }
+    }
+  }
+`);
+
 export const ALL_STORES_QUERY = gql(`
   query AllStores {
     allStores {

@@ -36,13 +36,13 @@ export default function TabHeader(props: TabHeaderProps) {
     paddingHorizontal: padding + 5,
   };
 
-  function updateSearch(text: string) {
+  function updateSearch(text: string | null) {
     setSearchText(text);
     handleSearch(text);
   }
 
   return (
-    <SafeAreaView className="flex w-full bg-white shadow shadow-black/10">
+    <SafeAreaView className="flex w-full bg-white shadow shadow-black/20">
       <View
         className="w-full flex-row items-center justify-center gap-3"
         style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
@@ -50,7 +50,7 @@ export default function TabHeader(props: TabHeaderProps) {
           <>
             <TouchableOpacity
               onPress={() => {
-                if (searchText?.trim()?.length !== 0) updateSearch('');
+                updateSearch(null);
                 setOpenSearch(false);
               }}
               style={iconStyles}>
@@ -71,7 +71,7 @@ export default function TabHeader(props: TabHeaderProps) {
               clearButtonMode="while-editing"
               className="placeholder:color-slate-400"
               onChangeText={updateSearch}
-              value={searchText}
+              value={searchText ?? ''}
             />
           </>
         ) : (

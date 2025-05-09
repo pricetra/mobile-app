@@ -1,4 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
+import { router } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useContext, useEffect, useState } from 'react';
 import {
@@ -11,12 +12,15 @@ import {
   Text,
 } from 'react-native';
 
+import { LocationInput } from '../../graphql/types/graphql';
+
 import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
 import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
 import { AllProductsDocument, Product } from '@/graphql/types/graphql';
+import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 const limit = 30;
 
@@ -30,6 +34,17 @@ export default function HomeScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const { search, searching, setSearching } = useContext(SearchContext);
+  const { location, getCurrentLocation } = useCurrentLocation();
+  const [locationInput, setLocationInput] = useState<LocationInput>();
+
+  useEffect(() => {
+    if (!location) return;
+    setLocationInput({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      radiusMeters: 32187, // ~20 miles
+    });
+  }, [location]);
 
   function fetchProducts(page: number, force = false) {
     getAllProducts({
@@ -40,6 +55,7 @@ export default function HomeScreen() {
         },
         search: {
           query: search,
+          location: locationInput,
         },
       },
       fetchPolicy: force ? 'no-cache' : undefined,
@@ -63,10 +79,12 @@ export default function HomeScreen() {
   }
 
   useEffect(() => {
+    if (!locationInput) return;
     fetchProducts(page);
-  }, [page]);
+  }, [page, locationInput]);
 
   useEffect(() => {
+    if (search === undefined) return;
     setPage(1);
     setInitLoading(true);
     fetchProducts(1, true);
@@ -108,13 +126,8 @@ export default function HomeScreen() {
         <ProductForm
           product={selectedProduct}
           onCancel={() => setSelectedProduct(undefined)}
-          onSuccess={(product) => {
-            const oldProduct = products.find(({ id }) => id === product.id);
-            if (!oldProduct) return;
-            const idx = products.findIndex(({ id }) => id === product.id);
-            const updatedProducts = [...products];
-            updatedProducts[idx] = { ...oldProduct, ...product };
-            setProducts(updatedProducts);
+          onSuccess={({ id }) => {
+            router.push(`/(tabs)/(products)/${id}`);
             setSelectedProduct(undefined);
           }}
           onError={(e) => alert(e.message)}
@@ -127,7 +140,9 @@ export default function HomeScreen() {
         indicatorStyle="black"
         renderItem={({ item }) => (
           <View className="mb-10">
-            <TouchableOpacity onPress={() => {}} onLongPress={() => setSelectedProduct(item)}>
+            <TouchableOpacity
+              onPress={() => router.push(`/(tabs)/(products)/${item.id}`)}
+              onLongPress={() => setSelectedProduct(item)}>
               <ProductItem product={item} />
             </TouchableOpacity>
           </View>
@@ -138,6 +153,8 @@ export default function HomeScreen() {
             onRefresh={() => {
               setRefreshing(true);
               setTimeout(() => {
+                getCurrentLocation({});
+                setPage(1);
                 fetchProducts(1, true);
               }, 2000);
             }}

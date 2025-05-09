@@ -3,15 +3,18 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "start": "expo start",
     "start:tunnel": "expo start --tunnel",
     "prebuild": "expo prebuild",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "web": "expo start --web",
-    "gql-codegen": "graphql-codegen --config codegen.ts"
+    "gql-codegen": "graphql-codegen --config codegen.ts",
+    "eas:new-device": "eas device:create",
+    "eas:dev:build:android": "eas build -p android --profile development",
+    "eas:dev:build:ios": "eas build -p ios --profile development"
   },
   "dependencies": {
     "@apollo/client": "^3.13.1",
