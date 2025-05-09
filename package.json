@@ -14,7 +14,9 @@
     "gql-codegen": "graphql-codegen --config codegen.ts",
     "eas:new-device": "eas device:create",
     "eas:dev:build:android": "eas build -p android --profile development",
-    "eas:dev:build:ios": "eas build -p ios --profile development"
+    "eas:dev:build:ios": "eas build -p ios --profile development",
+    "doctor": "expo-doctor",
+    "install-check": "expo install --check"
   },
   "dependencies": {
     "@apollo/client": "^3.13.1",
@@ -38,6 +40,7 @@
     "dayjs": "^1.11.13",
     "expo": "^52.0.37",
     "expo-application": "~6.0.2",
+    "expo-av": "~15.0.2",
     "expo-blur": "~14.0.3",
     "expo-camera": "~16.0.17",
     "expo-constants": "~17.0.7",
