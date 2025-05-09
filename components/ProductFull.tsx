@@ -1,4 +1,5 @@
 import { Entypo } from '@expo/vector-icons';
+import { Fragment } from 'react';
 import { View, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
 
 import Image from './ui/Image';
@@ -43,12 +44,10 @@ export default function ProductFull({ product, onEditButtonPress }: ProductFullP
           {product.category && (
             <View className="flex flex-row flex-wrap items-center gap-1">
               {categoriesFromChild(product.category).map((c, i) => (
-                <>
-                  {i !== 0 && <Entypo name="chevron-right" size={10} color="black" key={i} />}
-                  <Text className="text-sm" key={c.name}>
-                    {c.name}
-                  </Text>
-                </>
+                <Fragment key={c.id}>
+                  {i !== 0 && <Entypo name="chevron-right" size={10} color="black" />}
+                  <Text className="text-sm">{c.name}</Text>
+                </Fragment>
               ))}
             </View>
           )}
