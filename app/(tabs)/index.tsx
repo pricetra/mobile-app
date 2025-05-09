@@ -126,13 +126,8 @@ export default function HomeScreen() {
         <ProductForm
           product={selectedProduct}
           onCancel={() => setSelectedProduct(undefined)}
-          onSuccess={(product) => {
-            const oldProduct = products.find(({ id }) => id === product.id);
-            if (!oldProduct) return;
-            const idx = products.findIndex(({ id }) => id === product.id);
-            const updatedProducts = [...products];
-            updatedProducts[idx] = { ...oldProduct, ...product };
-            setProducts(updatedProducts);
+          onSuccess={({ id }) => {
+            router.push(`/(tabs)/(products)/${id}`);
             setSelectedProduct(undefined);
           }}
           onError={(e) => alert(e.message)}

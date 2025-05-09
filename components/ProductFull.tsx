@@ -1,22 +1,29 @@
 import { Entypo } from '@expo/vector-icons';
-import { View, Text, useWindowDimensions } from 'react-native';
+import { View, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
 
 import Image from './ui/Image';
+import { Skeleton } from './ui/Skeleton';
 
 import { Product } from '@/graphql/types/graphql';
-import { Skeleton } from './ui/Skeleton';
-import { cn } from '@/lib/utils';
 
 export type ProductFullProps = {
   product: Product;
+  onEditButtonPress: () => void;
 };
 
-export default function ProductFull({ product }: ProductFullProps) {
+export default function ProductFull({ product, onEditButtonPress }: ProductFullProps) {
   const { width } = useWindowDimensions();
 
   return (
     <View className="flex flex-col gap-3">
-      <View className="mt-7">
+      <View className="relative mt-7">
+        <View className="absolute right-5 top-5 z-50">
+          <TouchableOpacity onPress={onEditButtonPress}>
+            <View className="rounded-full bg-black/60 px-4 py-2">
+              <Text className="text-center text-sm text-white">Edit</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
         <Image src={product.image} className="bg-gray-400" style={{ width, height: width }} />
       </View>
 
@@ -45,7 +52,6 @@ export default function ProductFull({ product }: ProductFullProps) {
 
 export function ProductFullLoading() {
   const { width } = useWindowDimensions();
-  const size = `size-[${width}px]`;
   return (
     <View className="flex flex-col gap-3">
       <View className="mt-7" style={{ width, height: width }}>

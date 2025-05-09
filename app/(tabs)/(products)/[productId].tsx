@@ -7,6 +7,7 @@ import { SafeAreaView, ScrollView, View, Text, Alert } from 'react-native';
 import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import StockFull from '@/components/StockFull';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
+import ProductForm from '@/components/product-form/ProductForm';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import {
@@ -25,6 +26,7 @@ export default function ProductScreen() {
   const [getProductStocks, { data: stocksData, loading: stocksLoading, error: stocksError }] =
     useLazyQuery(GetProductStocksDocument);
   const [openPriceModal, setOpenPriceModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   useEffect(() => {
     if (!productId || typeof productId !== 'string') return router.back();
@@ -76,7 +78,12 @@ export default function ProductScreen() {
       <ScrollView className="w-full">
         {productLoading && <ProductFullLoading />}
 
-        {productData && <ProductFull product={productData.product} />}
+        {productData && (
+          <ProductFull
+            product={productData.product}
+            onEditButtonPress={() => setOpenEditModal(true)}
+          />
+        )}
 
         {stocksData && stocksData.getProductStocks.length > 0 && (
           <View className="mt-5 p-5">
@@ -91,6 +98,20 @@ export default function ProductScreen() {
 
         <View className="h-[100px]" />
       </ScrollView>
+
+      <ModalFormMini
+        title="Edit Product"
+        visible={openEditModal}
+        onRequestClose={() => setOpenEditModal(false)}>
+        <ProductForm
+          product={productData?.product}
+          onCancel={() => setOpenEditModal(false)}
+          onSuccess={(product) => {
+            setOpenEditModal(false);
+          }}
+          onError={(e) => alert(e.message)}
+        />
+      </ModalFormMini>
     </SafeAreaView>
   );
 }
