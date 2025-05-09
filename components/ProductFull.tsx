@@ -5,6 +5,7 @@ import Image from './ui/Image';
 import { Skeleton } from './ui/Skeleton';
 
 import { Product } from '@/graphql/types/graphql';
+import { categoriesFromChild } from '@/lib/utils';
 
 export type ProductFullProps = {
   product: Product;
@@ -39,7 +40,18 @@ export default function ProductFull({ product, onEditButtonPress }: ProductFullP
             )}
           </View>
           <Text className="text-2xl font-bold">{product.name}</Text>
-          {product.category && <Text className="text-sm">{product.category.expandedPathname}</Text>}
+          {product.category && (
+            <View className="flex flex-row flex-wrap items-center gap-1">
+              {categoriesFromChild(product.category).map((c, i) => (
+                <>
+                  {i !== 0 && <Entypo name="chevron-right" size={10} color="black" key={i} />}
+                  <Text className="text-sm" key={c.name}>
+                    {c.name}
+                  </Text>
+                </>
+              ))}
+            </View>
+          )}
         </View>
 
         {product.description.length > 0 && (
