@@ -1,12 +1,12 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { View, TextInput } from 'react-native';
+import { View, TextInput, Text } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
-import Button from '../ui/Button';
-import Combobox from '../ui/Combobox';
-
+import Button from '@/components/ui/Button';
+import Combobox from '@/components/ui/Combobox';
+import Image from '@/components/ui/Image';
 import {
   CreatePriceDocument,
   FindBranchesByDistanceDocument,
@@ -15,6 +15,7 @@ import {
   Product,
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
+import { createCloudinaryUrl } from '@/lib/files';
 
 export type AddProductPriceFormProps = {
   product: Product;
@@ -95,6 +96,7 @@ export default function AddProductPriceForm({
           id: b.id,
           title: b.name,
           description: b.address?.fullAddress,
+          logo: b.store?.logo,
         }))}
         onSelectItem={(data) => {
           if (!data) return;
@@ -104,6 +106,18 @@ export default function AddProductPriceForm({
           placeholder: 'Select Branch',
           value: branchesData.findBranchesByDistance?.find(({ id }) => id === branchId)?.name,
         }}
+        renderItem={(item: any) => (
+          <View className="flex flex-row items-center gap-2 p-3">
+            <Image
+              src={createCloudinaryUrl(item.logo ?? '', 100, 100)}
+              className="size-[35px] rounded-full"
+            />
+            <View>
+              <Text className="text font-semibold">{item.title}</Text>
+              <Text className="text-xs">{item.description}</Text>
+            </View>
+          </View>
+        )}
       />
 
       <CurrencyInput
