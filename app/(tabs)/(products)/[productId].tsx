@@ -2,7 +2,15 @@ import { useLazyQuery } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, View, Text, Alert } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  Alert,
+  RefreshControl,
+  Platform,
+} from 'react-native';
 
 import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import StockFull from '@/components/StockFull';
@@ -27,6 +35,7 @@ export default function ProductScreen() {
     useLazyQuery(GetProductStocksDocument, { fetchPolicy: 'network-only' });
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (!productError) return;
@@ -38,11 +47,7 @@ export default function ProductScreen() {
     }
   }, [productError]);
 
-  useEffect(() => {
-    if (!productId || typeof productId !== 'string') return router.back();
-    getProduct({
-      variables: { productId },
-    });
+  function fetchProductStocksWithLocation(productId: string) {
     let locationInput: LocationInput | undefined = undefined;
     if (location) {
       locationInput = {
@@ -51,9 +56,17 @@ export default function ProductScreen() {
         radiusMeters: 32187, // ~20 miles
       };
     }
-    getProductStocks({
+    return getProductStocks({
       variables: { productId, location: locationInput },
     });
+  }
+
+  useEffect(() => {
+    if (!productId || typeof productId !== 'string') return router.back();
+    getProduct({
+      variables: { productId },
+    });
+    fetchProductStocksWithLocation(productId);
   }, [productId]);
 
   if (productLoading || !productData) {
@@ -93,7 +106,23 @@ export default function ProductScreen() {
         </>
       )}
 
-      <ScrollView className="w-full">
+      <ScrollView
+        className="w-full"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              setTimeout(() => {
+                fetchProductStocksWithLocation(productId as string).finally(() =>
+                  setRefreshing(false)
+                );
+              }, 2000);
+            }}
+            colors={Platform.OS === 'ios' ? ['black'] : ['white']}
+            progressBackgroundColor="#111827"
+          />
+        }>
         <ProductFull
           product={productData.product}
           onEditButtonPress={() => setOpenEditModal(true)}
