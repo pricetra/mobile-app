@@ -18,15 +18,15 @@ export default function ProductFull({ product, onEditButtonPress }: ProductFullP
 
   return (
     <View className="flex flex-col gap-3">
-      <View className="relative mt-7">
-        <View className="absolute right-5 top-5 z-50">
+      <View className="relative p-5" style={{ width, height: width }}>
+        <View className="absolute right-10 top-10 z-50">
           <TouchableOpacity onPress={onEditButtonPress}>
             <View className="rounded-full bg-black/60 px-4 py-2">
               <Text className="text-center text-sm text-white">Edit</Text>
             </View>
           </TouchableOpacity>
         </View>
-        <Image src={product.image} className="bg-gray-400" style={{ width, height: width }} />
+        <Image src={product.image} className="size-full rounded-lg bg-gray-400" />
       </View>
 
       <View className="p-5">
@@ -67,8 +67,8 @@ export function ProductFullLoading() {
   const { width } = useWindowDimensions();
   return (
     <View className="flex flex-col gap-3">
-      <View className="mt-7" style={{ width, height: width }}>
-        <Skeleton className="h-full w-full rounded-none bg-gray-400" />
+      <View className="p-5" style={{ width, height: width }}>
+        <Skeleton className="h-full w-full rounded-lg bg-gray-400" />
       </View>
 
       <View className="p-5">
