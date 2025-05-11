@@ -15,6 +15,7 @@ import {
 
 import { useDrawer } from '@/context/DrawerContext';
 import { SearchContext } from '@/context/SearchContext';
+import { cn } from '@/lib/utils';
 
 export type TabHeaderProps = BottomTabHeaderProps;
 
@@ -42,7 +43,11 @@ export default function TabHeader(props: TabHeaderProps) {
   }
 
   return (
-    <SafeAreaView className="flex w-full bg-white shadow shadow-black/20">
+    <SafeAreaView
+      className={cn(
+        'flex w-full bg-white',
+        Platform.OS === 'android' ? 'shadow shadow-black/100' : 'border-b-[1px] border-neutral-100'
+      )}>
       <View
         className="w-full flex-row items-center justify-center gap-3"
         style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
