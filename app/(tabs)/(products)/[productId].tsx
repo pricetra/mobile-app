@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, View, Text, Alert } from 'react-native';
@@ -24,9 +24,19 @@ export default function ProductScreen() {
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
     useLazyQuery(ProductDocument);
   const [getProductStocks, { data: stocksData, loading: stocksLoading, error: stocksError }] =
-    useLazyQuery(GetProductStocksDocument);
+    useLazyQuery(GetProductStocksDocument, { fetchPolicy: 'network-only' });
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+
+  useEffect(() => {
+    if (!productError) return;
+    Alert.alert('Error fetching product', productError.message);
+    try {
+      router.back();
+    } catch {
+      router.dismissAll();
+    }
+  }, [productError]);
 
   useEffect(() => {
     if (!productId || typeof productId !== 'string') return router.back();
@@ -46,8 +56,16 @@ export default function ProductScreen() {
     });
   }, [productId]);
 
+  if (productLoading || !productData) {
+    return (
+      <SafeAreaView>
+        <ProductFullLoading />
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView className="h-full bg-white">
+    <SafeAreaView>
       {productData && (
         <>
           <FloatingActionButton onPress={() => setOpenPriceModal(true)}>
@@ -76,14 +94,10 @@ export default function ProductScreen() {
       )}
 
       <ScrollView className="w-full">
-        {productLoading && <ProductFullLoading />}
-
-        {productData && (
-          <ProductFull
-            product={productData.product}
-            onEditButtonPress={() => setOpenEditModal(true)}
-          />
-        )}
+        <ProductFull
+          product={productData.product}
+          onEditButtonPress={() => setOpenEditModal(true)}
+        />
 
         {stocksData && stocksData.getProductStocks.length > 0 && (
           <View className="mt-5 p-5">

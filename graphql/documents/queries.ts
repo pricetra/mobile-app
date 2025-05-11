@@ -222,6 +222,7 @@ export const PRODUCT_BY_ID_QUERY = gql(`
       category {
         id
         name
+        categoryAlias
         expandedPathname
         path
       }
