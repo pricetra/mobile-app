@@ -103,7 +103,7 @@ export default function ProductScreen() {
           <View className="mt-5 p-5">
             <Text className="mb-5 text-lg font-extrabold">Available at</Text>
             {stocksData.getProductStocks.map((s) => (
-              <View className="mb-2" key={s.id}>
+              <View className="mb-4" key={s.id}>
                 <StockFull stock={s as Stock} />
               </View>
             ))}

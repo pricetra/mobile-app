@@ -54,9 +54,13 @@ export default function ProductItem({ product }: ProductItemProps) {
 }
 
 export function ProductLoadingItem() {
+  const { width } = useWindowDimensions();
+
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <Skeleton className="size-40 rounded-lg" />
+      <View style={{ width: width / 3, height: width / 3 }}>
+        <Skeleton className="size-full rounded-lg" />
+      </View>
       <View className="max-w-full flex-1 gap-2 p-2">
         <Skeleton className="h-6 w-full" />
         <Skeleton className="h-6 w-full" />

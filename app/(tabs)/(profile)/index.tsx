@@ -11,7 +11,7 @@ import { UpdateProfileDocument, User } from '@/graphql/types/graphql';
 import { cloudinary } from '@/lib/files';
 
 export default function ProfileScreen() {
-  const { user, updateUser, logout } = useContext(UserAuthContext);
+  const { user, updateUser } = useContext(UserAuthContext);
   const [updateProfileDocument] = useMutation(UpdateProfileDocument);
 
   async function selectProfileAvatar() {
@@ -63,6 +63,8 @@ export default function ProfileScreen() {
       <View className="p-5 pb-3">
         <ProfileSmall user={user} selectProfileAvatar={selectProfileAvatar} />
       </View>
+
+      <ScrollView />
     </SafeAreaView>
   );
 }

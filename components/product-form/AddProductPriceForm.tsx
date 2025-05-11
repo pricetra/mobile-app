@@ -30,7 +30,8 @@ export default function AddProductPriceForm({
   onError,
 }: AddProductPriceFormProps) {
   const [findBranchesByDistance, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
-    FindBranchesByDistanceDocument
+    FindBranchesByDistanceDocument,
+    { fetchPolicy: 'no-cache' }
   );
   const [createPrice, { loading }] = useMutation(CreatePriceDocument, {
     refetchQueries: [GetProductStocksDocument],
