@@ -48,9 +48,9 @@ export default function ScanScreen() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
-  function handleBarcodeScan(barcode: string) {
+  function handleBarcodeScan(barcode: string, searchMode?: boolean) {
     barcodeScan({
-      variables: { barcode },
+      variables: { barcode, searchMode },
     }).then(({ error, data }) => {
       if (error || !data) {
         router.push(`/(tabs)/(products)/create?upc=${barcode}`);
@@ -69,7 +69,7 @@ export default function ScanScreen() {
         <ManualBarcodeForm
           onSubmit={(barcode) => {
             setScannedCode(barcode);
-            handleBarcodeScan(barcode);
+            handleBarcodeScan(barcode, true);
             setOpenManualBarcodeModal(false);
           }}
         />
