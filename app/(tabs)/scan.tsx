@@ -62,6 +62,19 @@ export default function ScanScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <ModalFormMini
+        visible={openManualBarcodeModal}
+        onRequestClose={() => setOpenManualBarcodeModal(false)}
+        title="Search Barcode">
+        <ManualBarcodeForm
+          onSubmit={(barcode) => {
+            setScannedCode(barcode);
+            handleBarcodeScan(barcode);
+            setOpenManualBarcodeModal(false);
+          }}
+        />
+      </ModalFormMini>
+
       {renderCameraComponent && (
         <CameraView
           ratio="1:1"
@@ -109,22 +122,6 @@ export default function ScanScreen() {
               </ScannerButton>
             </View>
           </View>
-
-          <ModalFormMini
-            visible={openManualBarcodeModal}
-            onRequestClose={() => setOpenManualBarcodeModal(false)}
-            title="Search Barcode">
-            <ManualBarcodeForm
-              onSubmit={(barcode) => {
-                setScannedCode(barcode);
-                try {
-                  handleBarcodeScan(barcode);
-                } catch (e: any) {
-                  console.error(e);
-                }
-              }}
-            />
-          </ModalFormMini>
         </CameraView>
       )}
     </View>
