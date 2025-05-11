@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx';
+import convert from 'convert-units';
 import { twMerge } from 'tailwind-merge';
 
 import { postgresArrayToArray } from './strings';
@@ -44,5 +45,5 @@ export function diffObjects<T extends Record<string, any>>(obj1: T, obj2: T): Pa
 }
 
 export function metersToMiles(m: number) {
-  return (m / 1609).toPrecision(2);
+  return convert(m).from('m').to('mi').toPrecision(2);
 }
