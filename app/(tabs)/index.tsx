@@ -42,7 +42,7 @@ export default function HomeScreen() {
     setLocationInput({
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      radiusMeters: 32187, // ~20 miles
+      radiusMeters: 160934, // ~100 miles
     });
   }, [location]);
 
