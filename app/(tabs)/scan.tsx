@@ -1,24 +1,25 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import { CameraView, useCameraPermissions, CameraRatio, CameraType } from 'expo-camera';
+import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
-import { Alert, Platform, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { Alert, Text, View } from 'react-native';
 
+import ManualBarcodeForm from '@/components/ManualBarcodeForm';
 import ScannerButton from '@/components/scanner/ScannerButton';
 import Button from '@/components/ui/Button';
+import ModalFormMini from '@/components/ui/ModalFormMini';
 import { barcodeTypes } from '@/constants/barcodeTypes';
 import { BarcodeScanDocument } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
   const [renderCameraComponent, setRenderCameraComponent] = useState(false);
-  const [ratio, setRatio] = useState<CameraRatio>('1:1');
   const [camera, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
-  const [barcodeScan, { loading: barcodeScanLoading, error: barcodeScanError }] =
-    useLazyQuery(BarcodeScanDocument);
+  const [barcodeScan, { loading: barcodeScanLoading }] = useLazyQuery(BarcodeScanDocument);
+  const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
   const router = useRouter();
 
   useFocusEffect(
@@ -63,7 +64,7 @@ export default function ScanScreen() {
     <View style={{ flex: 1 }}>
       {renderCameraComponent && (
         <CameraView
-          ratio={ratio}
+          ratio="1:1"
           style={{
             flex: 1,
           }}
@@ -86,10 +87,11 @@ export default function ScanScreen() {
               </ScannerButton>
 
               <ScannerButton
-                onPress={async () => {
+                onPress={() => {
                   if (!scannedCode) return;
                   handleBarcodeScan(scannedCode);
-                }}>
+                }}
+                onLongPress={() => setOpenManualBarcodeModal(true)}>
                 {barcodeScanLoading ? (
                   <AntDesign
                     name="loading1"
@@ -107,6 +109,22 @@ export default function ScanScreen() {
               </ScannerButton>
             </View>
           </View>
+
+          <ModalFormMini
+            visible={openManualBarcodeModal}
+            onRequestClose={() => setOpenManualBarcodeModal(false)}
+            title="Search Barcode">
+            <ManualBarcodeForm
+              onSubmit={(barcode) => {
+                setScannedCode(barcode);
+                try {
+                  handleBarcodeScan(barcode);
+                } catch (e: any) {
+                  console.error(e);
+                }
+              }}
+            />
+          </ModalFormMini>
         </CameraView>
       )}
     </View>
