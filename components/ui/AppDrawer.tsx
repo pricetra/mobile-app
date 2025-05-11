@@ -122,7 +122,7 @@ export default function AppDrawer() {
                   )}
                 />
                 <DrawerMenuItem
-                  onPress={() => toRoute(() => router.push('/(tabs)/(profile)/myScanData'))}
+                  onPress={() => toRoute(() => router.push('/(tabs)/(profile)/my-scan-data'))}
                   text="My Scan Data"
                   icon={({ color, size }) => (
                     <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />

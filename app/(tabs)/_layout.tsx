@@ -88,7 +88,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(profile)/myScanData"
+        name="(profile)/my-scan-data"
         options={{
           href: null,
         }}
