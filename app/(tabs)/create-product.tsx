@@ -9,11 +9,7 @@ export default function CreateProductScreen() {
   const query = useGlobalSearchParams();
 
   useEffect(() => {
-    if (!query.upc) {
-      router.back();
-      return;
-    }
-    setUpc(query.upc as string);
+    setUpc((query.upc as string) ?? '');
   }, [query]);
 
   return (

@@ -53,7 +53,7 @@ export default function ScanScreen() {
       variables: { barcode, searchMode },
     }).then(({ error, data }) => {
       if (error || !data) {
-        router.push(`/(tabs)/(products)/create?upc=${barcode}`);
+        router.push(`/(tabs)/create-product?upc=${barcode}`);
         return;
       }
       router.push(`/(tabs)/(products)/${data.barcodeScan.id}`);

@@ -100,7 +100,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(products)/create"
+        name="create-product"
         options={{
           href: null,
         }}
