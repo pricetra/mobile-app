@@ -122,7 +122,7 @@ export default function AppDrawer() {
                   )}
                 />
                 <DrawerMenuItem
-                  onPress={() => {}}
+                  onPress={() => toRoute(() => router.push('/(tabs)/(profile)/myScanData'))}
                   text="My Scan Data"
                   icon={({ color, size }) => (
                     <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />
@@ -140,7 +140,7 @@ export default function AppDrawer() {
 
             <View className="flex flex-col gap-2 border-t-[1px] border-gray-100 px-2 pt-5">
               <DrawerMenuItem
-                onPress={() => toRoute(() => router.push('/profile'))}
+                onPress={() => toRoute(() => router.push('/(tabs)/(profile)'))}
                 text="Profile"
                 icon={({ color, size }) => <Feather name="user" size={size} color={color} />}
               />

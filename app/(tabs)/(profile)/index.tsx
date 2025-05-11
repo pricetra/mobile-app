@@ -5,7 +5,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useContext } from 'react';
 import { SafeAreaView, View, ScrollView, Alert } from 'react-native';
 
-import AllProductBillingData from '@/components/profile/AllProductBillingData';
 import ProfileSmall from '@/components/profile/ProfileSmall';
 import { UserAuthContext } from '@/context/UserContext';
 import { UpdateProfileDocument, User } from '@/graphql/types/graphql';
@@ -64,8 +63,6 @@ export default function ProfileScreen() {
       <View className="p-5 pb-3">
         <ProfileSmall user={user} selectProfileAvatar={selectProfileAvatar} />
       </View>
-
-      <AllProductBillingData />
     </SafeAreaView>
   );
 }

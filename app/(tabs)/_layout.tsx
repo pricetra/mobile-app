@@ -67,7 +67,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="(profile)/index"
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => {
@@ -85,6 +85,12 @@ export default function TabLayout() {
               />
             );
           },
+        }}
+      />
+      <Tabs.Screen
+        name="(profile)/myScanData"
+        options={{
+          href: null,
         }}
       />
       <Tabs.Screen
