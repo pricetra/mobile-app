@@ -102,6 +102,7 @@ export default function AddProductPriceForm({
         }}
         textInputProps={{
           placeholder: 'Select Branch',
+          value: branchesData.findBranchesByDistance?.find(({ id }) => id === branchId)?.name,
         }}
       />
 

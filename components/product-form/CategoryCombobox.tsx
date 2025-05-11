@@ -26,6 +26,7 @@ export default function CategoryCombobox({
 }: CategoryComboboxProps) {
   const { data, error, loading } = useQuery(GetCategoriesDocument, {
     variables: { depth, parentId: parentCategory?.id },
+    fetchPolicy: 'network-only',
   });
   const [createCategory] = useMutation(CreateCategoryDocument, {
     refetchQueries: [GetCategoriesDocument],
