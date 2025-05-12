@@ -1,7 +1,7 @@
 import { ApolloError, useMutation, useQuery } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { Formik } from 'formik';
+import { Formik, FormikHelpers } from 'formik';
 import { useEffect, useState } from 'react';
 import { Linking, TouchableOpacity, View } from 'react-native';
 
@@ -18,7 +18,6 @@ import { Textarea } from '@/components/ui/Textarea';
 import {
   AllBrandsDocument,
   AllProductsDocument,
-  BarcodeScanDocument,
   Brand,
   CreateProduct,
   CreateProductDocument,
@@ -34,9 +33,9 @@ import { diffObjects } from '@/lib/utils';
 export type ProductFormProps = {
   upc?: string;
   product?: Product;
-  onCancel: () => void;
-  onSuccess: (product: Product) => void;
-  onError: (e: ApolloError) => void;
+  onCancel: (formik: FormikHelpers<CreateProduct>) => void;
+  onSuccess: (product: Product, formik: FormikHelpers<CreateProduct>) => void;
+  onError: (e: ApolloError, formik: FormikHelpers<CreateProduct>) => void;
 };
 
 export default function ProductForm({
@@ -97,7 +96,7 @@ export default function ProductForm({
     setImageUri(picture.uri);
   }
 
-  function submit(input: CreateProduct) {
+  function submit(input: CreateProduct, formik: FormikHelpers<CreateProduct>) {
     if (!selectedCategory) return alert('Please select a valid category');
 
     input.categoryId = selectedCategory.id;
@@ -112,7 +111,7 @@ export default function ProductForm({
         },
       })
         .then(({ data, errors }) => {
-          if (errors) return onError(errors.at(0) as ApolloError);
+          if (errors) return onError(errors.at(0) as ApolloError, formik);
           if (!data) return;
 
           if (imageUri && imageUpdated) {
@@ -121,15 +120,15 @@ export default function ProductForm({
               file: imageUri,
               public_id: data.updateProduct.code,
               tags: ['PRODUCT'],
-              onSuccess: () => onSuccess(data.updateProduct),
-              onError: (e) => onError(e as unknown as ApolloError),
+              onSuccess: () => onSuccess(data.updateProduct, formik),
+              onError: (e) => onError(e as unknown as ApolloError, formik),
               onFinally: () => setImageUploading(false),
             });
           } else {
-            onSuccess(data.updateProduct);
+            onSuccess(data.updateProduct, formik);
           }
         })
-        .catch((e) => onError(e));
+        .catch((e) => onError(e, formik));
     } else {
       createProduct({
         variables: {
@@ -137,7 +136,7 @@ export default function ProductForm({
         },
       })
         .then(({ data, errors }) => {
-          if (errors) return onError(errors.at(0) as ApolloError);
+          if (errors) return onError(errors.at(0) as ApolloError, formik);
           if (!data) return;
 
           if (imageUri && imageUpdated) {
@@ -146,15 +145,16 @@ export default function ProductForm({
               file: imageUri,
               public_id: data.createProduct.code,
               tags: ['PRODUCT'],
-              onSuccess: () => onSuccess(data.createProduct),
-              onError: (e) => onError(e as unknown as ApolloError),
+              onSuccess: () => onSuccess(data.createProduct, formik),
+              onError: (e) => onError(e as unknown as ApolloError, formik),
               onFinally: () => setImageUploading(false),
             });
           } else {
-            onSuccess(data.createProduct);
+            formik.resetForm();
+            onSuccess(data.createProduct, formik);
           }
         })
-        .catch((e) => onError(e));
+        .catch((e) => onError(e, formik));
     }
   }
 
@@ -193,7 +193,7 @@ export default function ProductForm({
         } as CreateProduct
       }
       onSubmit={submit}>
-      {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+      {(formik) => (
         <View className="flex flex-col gap-5">
           <View className="flex flex-row items-center justify-between gap-5">
             <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
@@ -204,7 +204,10 @@ export default function ProductForm({
 
             <TouchableOpacity
               onPress={() => {
-                const query = values.brand !== '' ? `${values.brand} ${values.name}` : values.name;
+                const query =
+                  formik.values.brand !== ''
+                    ? `${formik.values.brand} ${formik.values.name}`
+                    : formik.values.name;
                 Linking.openURL(`https://www.google.com/search?udm=2&q=${encodeURI(query)}`);
               }}>
               <View className="flex size-28 items-center justify-center gap-2 rounded-md bg-sky-100/50">
@@ -213,28 +216,17 @@ export default function ProductForm({
               </View>
             </TouchableOpacity>
           </View>
-          {upc ? (
-            <Input
-              onChangeText={handleChange('code')}
-              onBlur={handleBlur('code')}
-              value={values.code}
-              label="UPC Code"
-              keyboardType="numeric"
-              editable={!loading}
-            />
-          ) : (
-            <Input value={values.code} label="UPC Code" editable={false} readOnly />
-          )}
+          <Input value={formik.values.code} label="UPC Code" editable={false} readOnly />
           <Textarea
-            onChangeText={handleChange('name')}
-            onBlur={handleBlur('name')}
-            value={values.name}
+            onChangeText={formik.handleChange('name')}
+            onBlur={formik.handleBlur('name')}
+            value={formik.values.name}
             label="Product Name"
             editable={!loading}
           />
           <TouchableOpacity
             onPress={() => {
-              setFieldValue('name', titleCase(values.name));
+              formik.setFieldValue('name', titleCase(formik.values.name));
             }}
             className="mb-5 mt-[-10px] inline-block w-fit">
             <Text className="inline-block w-fit text-right text-sm color-blue-500">
@@ -249,8 +241,8 @@ export default function ProductForm({
               brandsLoading={brandsLoading}
               brands={brands}
               setBrands={setBrands}
-              setValue={handleChange('brand')}
-              value={values.brand}
+              setValue={formik.handleChange('brand')}
+              value={formik.values.brand}
             />
           </View>
 
@@ -264,25 +256,32 @@ export default function ProductForm({
           </View>
 
           <WeightSelector
-            onChangeText={handleChange('weight')}
-            onBlur={handleBlur('weight')}
-            value={values.weight ?? ''}
+            onChangeText={formik.handleChange('weight')}
+            onBlur={formik.handleBlur('weight')}
+            value={formik.values.weight ?? ''}
             editable={!loading}
           />
 
           <Textarea
-            onChangeText={handleChange('description')}
-            onBlur={handleBlur('description')}
-            value={values.description}
+            onChangeText={formik.handleChange('description')}
+            onBlur={formik.handleBlur('description')}
+            value={formik.values.description}
             label="Description"
             editable={!loading}
           />
           <View className="my-10 flex flex-row justify-between gap-3">
-            <Button onPress={onCancel} disabled={loading} variant="outline" className="flex-1">
+            <Button
+              onPress={() => {
+                formik.resetForm();
+                onCancel(formik);
+              }}
+              disabled={loading}
+              variant="outline"
+              className="flex-1">
               Cancel
             </Button>
             <Button
-              onPress={() => handleSubmit()}
+              onPress={() => formik.handleSubmit()}
               loading={loading}
               variant="secondary"
               className="flex-1">
