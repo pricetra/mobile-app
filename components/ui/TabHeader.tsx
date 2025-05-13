@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
 import TabHeaderSearchBar from './TabHeaderSearchBar';
@@ -22,7 +22,7 @@ const navHeight = 2 * padding + logoHeight;
 const iconColor = '#333';
 
 export default function TabHeader(props: TabHeaderProps) {
-  const { leftSection, middleSection, rightSection, subHeader } = useHeader();
+  const { subHeader } = useHeader();
   const { openDrawer } = useDrawer();
   const { search, handleSearch } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
@@ -37,10 +37,6 @@ export default function TabHeader(props: TabHeaderProps) {
     setSearchText(text);
     handleSearch(text);
   }
-
-  useEffect(() => {
-    console.log('leftSection typeof:', typeof leftSection); // should be "function"
-  }, [leftSection]);
 
   return (
     <SafeAreaView
@@ -67,40 +63,27 @@ export default function TabHeader(props: TabHeaderProps) {
           />
         ) : (
           <>
-            {leftSection ? (
-              // leftSection(iconColor, iconSize, iconStyles)
-              <></>
-            ) : (
-              <TouchableOpacity onPress={() => openDrawer()} style={iconStyles}>
-                <Ionicons name="menu" color={iconColor} size={iconSize} />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity onPress={() => openDrawer()} style={iconStyles}>
+              <Ionicons name="menu" color={iconColor} size={iconSize} />
+            </TouchableOpacity>
 
-            {middleSection ? (
-              middleSection(iconColor, iconSize, iconStyles)
-            ) : (
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/')}
-                className="flex w-full flex-1 items-center justify-center"
-                style={iconStyles}>
-                <Image
-                  source={require('../../assets/images/logotype_header_black.svg')}
-                  style={{ height: logoHeight, width: 119.21 }}
-                />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/')}
+              className="flex w-full flex-1 items-center justify-center"
+              style={iconStyles}>
+              <Image
+                source={require('../../assets/images/logotype_header_black.svg')}
+                style={{ height: logoHeight, width: 119.21 }}
+              />
+            </TouchableOpacity>
 
-            {rightSection ? (
-              rightSection(iconColor, iconSize, iconStyles)
-            ) : (
-              <TouchableOpacity onPress={() => setOpenSearch(true)} style={iconStyles}>
-                <Ionicons name="search" color={iconColor} size={iconSize} />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity onPress={() => setOpenSearch(true)} style={iconStyles}>
+              <Ionicons name="search" color={iconColor} size={iconSize} />
+            </TouchableOpacity>
           </>
         )}
       </View>
-      <View>{subHeader ? subHeader(iconColor, iconSize, iconStyles) : <></>}</View>
+      <View>{subHeader ? subHeader : <></>}</View>
     </SafeAreaView>
   );
 }

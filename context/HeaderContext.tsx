@@ -8,35 +8,19 @@ export type HeaderSectionStateType = (
 ) => ReactNode;
 
 export type HeaderContextType = {
-  leftSection?: HeaderSectionStateType;
-  middleSection?: HeaderSectionStateType;
-  rightSection?: HeaderSectionStateType;
-  subHeader?: HeaderSectionStateType;
-
-  setLeftSection: (value: HeaderSectionStateType) => void;
-  setMiddleSection: (value: HeaderSectionStateType) => void;
-  setRightSection: (value: HeaderSectionStateType) => void;
-  setSubHeader: (value: HeaderSectionStateType) => void;
+  subHeader?: ReactNode;
+  setSubHeader: (elem?: ReactNode) => void;
 };
 
 const HeaderContext = createContext<HeaderContextType>({} as HeaderContextType);
 
 export const HeaderProvider = ({ children }: { children: ReactNode }) => {
-  const [leftSection, setLeftSection] = useState<HeaderSectionStateType>();
-  const [middleSection, setMiddleSection] = useState<HeaderSectionStateType>();
-  const [rightSection, setRightSection] = useState<HeaderSectionStateType>();
-  const [subHeader, setSubHeader] = useState<HeaderSectionStateType>();
+  const [subHeader, setSubHeader] = useState<ReactNode>();
 
   return (
     <HeaderContext.Provider
       value={{
-        leftSection,
-        middleSection,
-        rightSection,
         subHeader,
-        setLeftSection,
-        setMiddleSection,
-        setRightSection,
         setSubHeader,
       }}>
       {children}
