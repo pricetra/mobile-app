@@ -16,6 +16,12 @@ import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import StockFull from '@/components/StockFull';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/Accordion';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import {
@@ -125,19 +131,44 @@ export default function ProductScreen() {
         }>
         <ProductFull
           product={productData.product}
+          hideDescription
           onEditButtonPress={() => setOpenEditModal(true)}
         />
 
-        {stocksData && stocksData.getProductStocks.length > 0 && (
-          <View className="mt-5 p-5">
-            <Text className="mb-5 text-lg font-extrabold">Available at</Text>
-            {stocksData.getProductStocks.map((s) => (
-              <View className="mb-4" key={s.id}>
-                <StockFull stock={s as Stock} />
-              </View>
-            ))}
-          </View>
-        )}
+        <Accordion
+          type="multiple"
+          collapsible
+          defaultValue={['available-at']}
+          className="mt-5 w-full">
+          <AccordionItem value="available-at">
+            <AccordionTrigger>
+              <Text className="text-xl font-extrabold">Available at</Text>
+            </AccordionTrigger>
+            <AccordionContent>
+              {stocksData && stocksData.getProductStocks.length > 0 ? (
+                stocksData.getProductStocks.map((s) => (
+                  <View className="mb-5" key={s.id}>
+                    <StockFull stock={s as Stock} />
+                  </View>
+                ))
+              ) : (
+                <Text className="py-5 text-center">
+                  No stocks and prices found for this product.
+                </Text>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="description">
+            <AccordionTrigger>
+              <Text className="text-xl font-extrabold">Description</Text>
+            </AccordionTrigger>
+            <AccordionContent>
+              {productData?.product?.description?.length > 0 && (
+                <Text style={{ lineHeight: 19 }}>{productData.product.description}</Text>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <View className="h-[100px]" />
       </ScrollView>

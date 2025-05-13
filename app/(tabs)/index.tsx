@@ -1,4 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
+import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -25,7 +26,6 @@ import { SearchContext } from '@/context/SearchContext';
 import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { cn } from '@/lib/utils';
-import { Ionicons } from '@expo/vector-icons';
 
 const limit = 30;
 

@@ -11,9 +11,14 @@ import { categoriesFromChild } from '@/lib/utils';
 export type ProductFullProps = {
   product: Product;
   onEditButtonPress: () => void;
+  hideDescription?: boolean;
 };
 
-export default function ProductFull({ product, onEditButtonPress }: ProductFullProps) {
+export default function ProductFull({
+  product,
+  onEditButtonPress,
+  hideDescription,
+}: ProductFullProps) {
   const { width } = useWindowDimensions();
 
   return (
@@ -53,7 +58,7 @@ export default function ProductFull({ product, onEditButtonPress }: ProductFullP
           )}
         </View>
 
-        {product.description.length > 0 && (
+        {!hideDescription && product.description.length > 0 && (
           <View className="mt-10">
             <Text style={{ lineHeight: 19 }}>{product.description}</Text>
           </View>
