@@ -14,6 +14,7 @@ import AuthScreens from '@/components/auth/AuthScreens';
 import AppDrawer from '@/components/ui/AppDrawer';
 import AuthModalProvider from '@/context/AuthModalContext';
 import { DrawerProvider } from '@/context/DrawerContext';
+import { HeaderProvider } from '@/context/HeaderContext';
 import JwtStoreProvider, { JwtStoreContext } from '@/context/JwtStoreContext';
 import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
@@ -53,10 +54,12 @@ function RootStack() {
               <AutocompleteDropdownContextProvider>
                 <AppDrawer />
 
-                <Stack>
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
+                <HeaderProvider>
+                  <Stack>
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                </HeaderProvider>
               </AutocompleteDropdownContextProvider>
             </SearchContextProvider>
           </DrawerProvider>
