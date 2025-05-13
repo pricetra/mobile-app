@@ -2,18 +2,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useContext, useState } from 'react';
-import {
-  Platform,
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  TextInput,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+
+import TabHeaderSearchBar from './TabHeaderSearchBar';
 
 import { useDrawer } from '@/context/DrawerContext';
+import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +22,7 @@ const navHeight = 2 * padding + logoHeight;
 const iconColor = '#333';
 
 export default function TabHeader(props: TabHeaderProps) {
+  const { leftSection, middleSection, rightSection, subHeader } = useHeader();
   const { openDrawer } = useDrawer();
   const { search, handleSearch } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
@@ -42,6 +38,10 @@ export default function TabHeader(props: TabHeaderProps) {
     handleSearch(text);
   }
 
+  useEffect(() => {
+    console.log('leftSection typeof:', typeof leftSection); // should be "function"
+  }, [leftSection]);
+
   return (
     <SafeAreaView
       className={cn(
@@ -52,55 +52,55 @@ export default function TabHeader(props: TabHeaderProps) {
         className="w-full flex-row items-center justify-center gap-3"
         style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
         {openSearch ? (
-          <>
-            <TouchableOpacity
-              onPress={() => {
-                updateSearch(null);
-                setOpenSearch(false);
-              }}
-              style={iconStyles}>
-              <Ionicons name="arrow-back" color={iconColor} size={iconSize} />
-            </TouchableOpacity>
-
-            <TextInput
-              placeholder="Search..."
-              autoFocus
-              style={{
-                flex: 1,
-                height: logoHeight,
-                padding: 0,
-                fontSize: 17,
-                paddingRight: padding,
-                marginRight: padding,
-              }}
-              clearButtonMode="while-editing"
-              className="placeholder:color-slate-400"
-              onChangeText={updateSearch}
-              value={searchText ?? ''}
-            />
-          </>
+          <TabHeaderSearchBar
+            onBackPressed={() => {
+              updateSearch(null);
+              setOpenSearch(false);
+            }}
+            logoHeight={logoHeight}
+            padding={padding}
+            iconStyles={iconStyles}
+            iconColor={iconColor}
+            iconSize={iconSize}
+            updateSearch={updateSearch}
+            searchText={searchText}
+          />
         ) : (
           <>
-            <TouchableOpacity onPress={() => openDrawer()} style={iconStyles}>
-              <Ionicons name="menu" color={iconColor} size={iconSize} />
-            </TouchableOpacity>
+            {leftSection ? (
+              // leftSection(iconColor, iconSize, iconStyles)
+              <></>
+            ) : (
+              <TouchableOpacity onPress={() => openDrawer()} style={iconStyles}>
+                <Ionicons name="menu" color={iconColor} size={iconSize} />
+              </TouchableOpacity>
+            )}
 
-            <TouchableOpacity
-              onPress={() => router.push('/(tabs)/')}
-              className="flex w-full flex-1 items-center justify-center"
-              style={iconStyles}>
-              <Image
-                source={require('../../assets/images/logotype_header_black.svg')}
-                style={{ height: logoHeight, width: 119.21 }}
-              />
-            </TouchableOpacity>
+            {middleSection ? (
+              middleSection(iconColor, iconSize, iconStyles)
+            ) : (
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/')}
+                className="flex w-full flex-1 items-center justify-center"
+                style={iconStyles}>
+                <Image
+                  source={require('../../assets/images/logotype_header_black.svg')}
+                  style={{ height: logoHeight, width: 119.21 }}
+                />
+              </TouchableOpacity>
+            )}
 
-            <TouchableOpacity onPress={() => setOpenSearch(true)} style={iconStyles}>
-              <Ionicons name="search" color={iconColor} size={iconSize} />
-            </TouchableOpacity>
+            {rightSection ? (
+              rightSection(iconColor, iconSize, iconStyles)
+            ) : (
+              <TouchableOpacity onPress={() => setOpenSearch(true)} style={iconStyles}>
+                <Ionicons name="search" color={iconColor} size={iconSize} />
+              </TouchableOpacity>
+            )}
           </>
         )}
       </View>
+      <View>{subHeader ? subHeader(iconColor, iconSize, iconStyles) : <></>}</View>
     </SafeAreaView>
   );
 }

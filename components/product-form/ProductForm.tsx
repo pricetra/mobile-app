@@ -103,7 +103,6 @@ export default function ProductForm({
   }
 
   function submit(input: CreateProduct, formik: FormikHelpers<CreateProduct>) {
-    console.log(input);
     if (!selectedCategory) return alert('Please select a valid category');
 
     const imageAdded = imageUri && imageUpdated;

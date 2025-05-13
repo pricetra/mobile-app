@@ -1,4 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useContext, useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import {
   TouchableOpacity,
   Platform,
   Text,
+  ScrollView,
 } from 'react-native';
 
 import { LocationInput } from '../../graphql/types/graphql';
@@ -18,6 +20,7 @@ import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem
 import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
@@ -36,6 +39,13 @@ export default function HomeScreen() {
   const { search, searching, setSearching } = useContext(SearchContext);
   const { location, getCurrentLocation } = useCurrentLocation();
   const [locationInput, setLocationInput] = useState<LocationInput>();
+  const { setSubHeader } = useHeader();
+
+  setSubHeader(() => (
+    <ScrollView horizontal className="flex flex-row items-center justify-start p-5">
+      <Text>Filters</Text>
+    </ScrollView>
+  ));
 
   useEffect(() => {
     if (!location) return;
