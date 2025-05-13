@@ -96,13 +96,21 @@ export default function ProductForm({
     setImageUri(picture.uri);
   }
 
+  function resetImageAndCategory() {
+    setImageUri(undefined);
+    setImageUpdated(false);
+    setSelectedCategory(undefined);
+  }
+
   function submit(input: CreateProduct, formik: FormikHelpers<CreateProduct>) {
+    console.log(input);
     if (!selectedCategory) return alert('Please select a valid category');
 
+    const imageAdded = imageUri && imageUpdated;
     input.categoryId = selectedCategory.id;
     if (product) {
       const filteredInput = diffObjects(input, product);
-      if (Object.keys(filteredInput).length === 0) return;
+      if (Object.keys(filteredInput).length === 0 && !imageAdded) return;
 
       updateProduct({
         variables: {
@@ -114,17 +122,21 @@ export default function ProductForm({
           if (errors) return onError(errors.at(0) as ApolloError, formik);
           if (!data) return;
 
-          if (imageUri && imageUpdated) {
+          if (imageAdded) {
             setImageUploading(true);
             uploadToCloudinary({
               file: imageUri,
               public_id: data.updateProduct.code,
               tags: ['PRODUCT'],
-              onSuccess: () => onSuccess(data.updateProduct, formik),
+              onSuccess: () => {
+                resetImageAndCategory();
+                onSuccess(data.updateProduct, formik);
+              },
               onError: (e) => onError(e as unknown as ApolloError, formik),
               onFinally: () => setImageUploading(false),
             });
           } else {
+            resetImageAndCategory();
             onSuccess(data.updateProduct, formik);
           }
         })
@@ -139,18 +151,21 @@ export default function ProductForm({
           if (errors) return onError(errors.at(0) as ApolloError, formik);
           if (!data) return;
 
-          if (imageUri && imageUpdated) {
+          if (imageAdded) {
             setImageUploading(true);
             uploadToCloudinary({
               file: imageUri,
               public_id: data.createProduct.code,
               tags: ['PRODUCT'],
-              onSuccess: () => onSuccess(data.createProduct, formik),
+              onSuccess: () => {
+                resetImageAndCategory();
+                onSuccess(data.createProduct, formik);
+              },
               onError: (e) => onError(e as unknown as ApolloError, formik),
               onFinally: () => setImageUploading(false),
             });
           } else {
-            formik.resetForm();
+            resetImageAndCategory();
             onSuccess(data.createProduct, formik);
           }
         })
@@ -183,6 +198,7 @@ export default function ProductForm({
 
   return (
     <Formik
+      enableReinitialize
       initialValues={
         {
           name: product?.name ?? '',
