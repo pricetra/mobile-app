@@ -10,7 +10,7 @@ const categories: PartialCategory[] = [
   { id: '464', name: 'Milk', category: 'Milk' },
   { id: '478', name: 'Eggs', categoryId: '478' },
   { id: '490', name: 'Bread', category: 'Bread' },
-  { id: '490', name: 'Pasta', category: 'Pasta' },
+  { id: '635', name: 'Pasta', category: 'Pasta' },
   { id: '965', name: 'Rice', category: 'Rice' },
   { id: '474', name: 'Butter', category: 'Butter' },
 ];
@@ -39,8 +39,8 @@ export default function TabSubHeaderProductFilter({
         {categories.map((c, i) => (
           <Button
             className={cn(
-              'rounded-full px-4',
-              c.id === selectedCategoryId ? 'border-gray-500 bg-gray-500' : undefined
+              'rounded-full px-4 active:border-[#9fe342] active:bg-[#9fe342]',
+              c.id === selectedCategoryId ? 'border-[#5fb01e] bg-[#5fb01e]' : undefined
             )}
             variant="outlineLight"
             size="sm"
