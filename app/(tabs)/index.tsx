@@ -1,5 +1,4 @@
 import { useLazyQuery } from '@apollo/client';
-import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -11,7 +10,6 @@ import {
   TouchableOpacity,
   Platform,
   Text,
-  ScrollView,
 } from 'react-native';
 
 import { LocationInput } from '../../graphql/types/graphql';
@@ -19,25 +17,16 @@ import { LocationInput } from '../../graphql/types/graphql';
 import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
 import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
-import Button from '@/components/ui/Button';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import TabSubHeaderProductFilter, {
+  PartialCategory,
+} from '@/components/ui/TabSubHeaderProductFilter';
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
-import { cn } from '@/lib/utils';
 
 const limit = 30;
-
-const categories = [
-  { name: 'All', value: undefined },
-  { name: 'Milk', value: 'Milk' },
-  { name: 'Eggs', value: 'Eggs' },
-  { name: 'Bread', value: 'Bread' },
-  { name: 'Pasta', value: 'Pasta' },
-  { name: 'Rice', value: 'Rice' },
-  { name: 'Butter', value: 'Butter' },
-];
 
 export default function HomeScreen() {
   const bottomTabBarHeight = 45;
@@ -52,42 +41,20 @@ export default function HomeScreen() {
   const { location, getCurrentLocation } = useCurrentLocation();
   const [locationInput, setLocationInput] = useState<LocationInput>();
   const { setSubHeader } = useHeader();
-  const [category, setCategory] = useState<string>();
+  const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
 
   useFocusEffect(
     useCallback(() => {
       setSubHeader(
-        <ScrollView horizontal>
-          <View className="flex flex-row items-center justify-start gap-2 px-5 py-3">
-            <Button className="mr-4 rounded-full px-4" variant="secondary" size="sm">
-              <View className="flex flex-row items-center justify-center gap-2">
-                <Ionicons name="filter" size={15} color="white" />
-                <Text className="text-sm font-bold text-white">Filters</Text>
-              </View>
-            </Button>
-
-            {categories.map((c, i) => (
-              <Button
-                className={cn(
-                  'rounded-full px-4',
-                  c.value === category ? 'border-gray-500 bg-gray-500' : undefined
-                )}
-                variant="outlineLight"
-                size="sm"
-                key={i}
-                onPress={() => {
-                  setCategory(c.value);
-                }}>
-                <Text className={cn('text-sm', c.value === category ? 'text-white' : undefined)}>
-                  {c.name}
-                </Text>
-              </Button>
-            ))}
-          </View>
-        </ScrollView>
+        <TabSubHeaderProductFilter
+          selectedCategoryId={categoryFilterInput?.id}
+          onSelectCategory={(c) => {
+            setCategoryFilterInput(c);
+          }}
+        />
       );
       return () => setSubHeader(undefined);
-    }, [category])
+    }, [categoryFilterInput])
   );
 
   useEffect(() => {
@@ -109,7 +76,8 @@ export default function HomeScreen() {
         search: {
           query: search,
           location: locationInput,
-          category,
+          category: categoryFilterInput?.category,
+          categoryId: categoryFilterInput?.categoryId,
         },
       },
       fetchPolicy: force ? 'no-cache' : undefined,
@@ -148,7 +116,7 @@ export default function HomeScreen() {
     setPage(1);
     setInitLoading(true);
     fetchProducts(1, true);
-  }, [category]);
+  }, [categoryFilterInput]);
 
   if (productsError) {
     return (
