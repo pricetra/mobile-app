@@ -1,13 +1,18 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
+import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
-import { View, TextInput, Text } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
+
+import { Checkbox } from '../ui/Checkbox';
+import Input from '../ui/Input';
 
 import Button from '@/components/ui/Button';
 import Combobox from '@/components/ui/Combobox';
 import Image from '@/components/ui/Image';
 import {
+  CreatePrice,
   CreatePriceDocument,
   FindBranchesByDistanceDocument,
   GetProductStocksDocument,
@@ -37,7 +42,6 @@ export default function AddProductPriceForm({
   const [createPrice, { loading }] = useMutation(CreatePriceDocument, {
     refetchQueries: [GetProductStocksDocument],
   });
-  const [amount, setAmount] = useState<number>(0);
   const [branchId, setBranchId] = useState<string>();
   const { location } = useCurrentLocation();
 
@@ -56,25 +60,6 @@ export default function AddProductPriceForm({
     if (!branchesData) return;
     setBranchId(branchesData.findBranchesByDistance.at(0)?.id);
   }, [branchesData]);
-
-  function onSubmit() {
-    if (!branchId || !amount) return;
-
-    createPrice({
-      variables: {
-        input: {
-          amount,
-          productId: product.id,
-          branchId,
-        },
-      },
-    })
-      .then(({ data }) => {
-        if (!data) return;
-        onSuccess(data.createPrice as Price);
-      })
-      .catch((e) => onError(e));
-  }
 
   if (!location || branchesLoading || !branchesData)
     return (
@@ -120,39 +105,106 @@ export default function AddProductPriceForm({
         )}
       />
 
-      <CurrencyInput
-        value={amount}
-        onChangeValue={(v) => {
-          setAmount(v ?? 0);
-        }}
-        prefix="$"
-        delimiter=","
-        separator="."
-        precision={2}
-        minValue={0}
-        maxValue={1000}
-        renderTextInput={(props) => (
-          <TextInput
-            {...props}
-            style={{
-              fontSize: 50,
-              textAlign: 'center',
-              letterSpacing: 5,
-              fontFamily: 'monospace',
-              fontWeight: 'bold',
-            }}
-          />
-        )}
-      />
+      {branchId && (
+        <Formik
+          initialValues={
+            {
+              productId: product.id,
+              branchId,
+              amount: 0.0,
+              sale: false,
+              unitType: 'item',
+            } as CreatePrice
+          }
+          onSubmit={(input, formik) => {
+            createPrice({
+              variables: {
+                input: {
+                  ...input,
+                  branchId,
+                },
+              },
+            })
+              .then(({ data }) => {
+                if (!data) return;
+                onSuccess(data.createPrice as Price);
+              })
+              .catch((e) => onError(e));
+          }}>
+          {(formik) => (
+            <View className="flex flex-col gap-5">
+              <CurrencyInput
+                value={formik.values.amount}
+                onChangeValue={(v) => {
+                  formik.setFieldValue('amount', v ?? 0);
+                }}
+                onBlur={formik.handleBlur('amount')}
+                prefix="$"
+                delimiter=","
+                separator="."
+                precision={2}
+                minValue={0}
+                maxValue={1000}
+                renderTextInput={(props) => (
+                  <TextInput
+                    {...props}
+                    style={{
+                      fontSize: 50,
+                      textAlign: 'center',
+                      letterSpacing: 5,
+                      fontFamily: 'monospace',
+                      fontWeight: 'bold',
+                    }}
+                  />
+                )}
+              />
 
-      <Button
-        className="mt-5"
-        variant="secondary"
-        loading={loading}
-        onPress={onSubmit}
-        disabled={!amount || !branchId}>
-        Submit Price
-      </Button>
+              <Checkbox
+                label="Sale"
+                checked={formik.values.sale}
+                onCheckedChange={(c) => formik.setFieldValue('sale', c)}
+              />
+
+              {formik.values.sale && (
+                <View className="flex flex-row items-center justify-stretch gap-4">
+                  <CurrencyInput
+                    value={formik.values.originalPrice ?? null}
+                    onChangeValue={(v) => {
+                      formik.setFieldValue('originalPrice', v ?? 0);
+                    }}
+                    onBlur={formik.handleBlur('originalPrice')}
+                    prefix="$"
+                    delimiter=","
+                    separator="."
+                    precision={2}
+                    minValue={0}
+                    maxValue={1000}
+                    renderTextInput={(props) => <Input {...props} label="Original Price" />}
+                  />
+
+                  <Input
+                    label="Condition"
+                    value={formik.values.condition ?? undefined}
+                    onChangeText={formik.handleChange('condition')}
+                    onBlur={formik.handleBlur('condition')}
+                    className="flex-1"
+                    placeholder="Ex. Multiples of 2"
+                  />
+                </View>
+              )}
+
+              <Button
+                className="mt-10"
+                variant="secondary"
+                loading={loading}
+                onPress={formik.submitForm}
+                disabled={formik.values.amount <= 0}>
+                Submit Price
+              </Button>
+            </View>
+          )}
+        </Formik>
+      )}
     </View>
   );
 }
