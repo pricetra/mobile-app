@@ -189,34 +189,34 @@ export const CREATE_CATEGORY_MUTATION = gql(`
 
 export const CREATE_PRICE_MUTATION = gql(`
   mutation CreatePrice($input: CreatePrice!) {
-  createPrice(input: $input) {
-    id
-    amount
-    currencyCode
-    productId
-    product {
+    createPrice(input: $input) {
       id
-      name
-      brand
-      category {
+      amount
+      currencyCode
+      productId
+      product {
         id
-        expandedPathname
+        name
+        brand
+        category {
+          id
+          expandedPathname
+        }
       }
-    }
-    storeId
-    store {
-      id
-      name
-    }
-    branchId
-    branch {
-      id
-      name
-      address {
+      storeId
+      store {
         id
-        fullAddress
+        name
+      }
+      branchId
+      branch {
+        id
+        name
+        address {
+          id
+          fullAddress
+        }
       }
     }
   }
-}
 `);

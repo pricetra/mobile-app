@@ -181,6 +181,10 @@ export const ALL_PRODUCTS_QUERY = gql(`
             amount
             currencyCode
             createdAt
+            sale
+            originalPrice
+            condition
+            expiresAt
           }
         }
         weight
