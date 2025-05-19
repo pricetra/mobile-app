@@ -1,13 +1,11 @@
 import { Feather } from '@expo/vector-icons';
 import { ReactNode } from 'react';
 import {
-  KeyboardAvoidingView,
   Modal,
   NativeSyntheticEvent,
   TouchableOpacity,
   View,
   Text,
-  Pressable,
   SafeAreaView,
   FlatList,
 } from 'react-native';

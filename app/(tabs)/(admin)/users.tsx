@@ -7,12 +7,12 @@ import AdminProductBilling from '@/components/profile/AdminProductBilling';
 import ProfileLarge, { ProfileLargeLoading } from '@/components/profile/ProfileLarge';
 import ProfileMini from '@/components/profile/ProfileMini';
 import UserForm from '@/components/profile/UserForm';
+import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
 import { GetAllUsersDocument, User, UserFilter, UserRole } from '@/graphql/types/graphql';
 import { isRoleAuthorized } from '@/lib/roles';
-import ModalFormFull from '@/components/ui/ModalFormFull';
 
 export type SearchTypes = 'id' | 'email' | 'name' | 'role';
 
