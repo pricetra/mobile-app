@@ -112,7 +112,9 @@ export default function AppDrawer() {
                 <DrawerMenuItem
                   onPress={() => toRoute(() => router.push('/scan'))}
                   text="Scan"
-                  icon={({ color, size }) => <Feather name="camera" size={size} color={color} />}
+                  icon={({ color, size }) => (
+                    <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />
+                  )}
                 />
                 <DrawerMenuItem
                   onPress={() => toRoute(() => router.push('/(tabs)/(stores)'))}
@@ -125,7 +127,7 @@ export default function AppDrawer() {
                   onPress={() => toRoute(() => router.push('/(tabs)/(profile)/my-scan-data'))}
                   text="My Scan Data"
                   icon={({ color, size }) => (
-                    <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />
+                    <MaterialIcons name="data-object" size={size} color={color} />
                   )}
                 />
                 {isRoleAuthorized(UserRole.Admin, user.role) && (

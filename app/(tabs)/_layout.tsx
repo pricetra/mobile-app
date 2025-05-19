@@ -1,4 +1,4 @@
-import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { Feather, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React, { useContext } from 'react';
 import { Platform, Image } from 'react-native';
@@ -16,7 +16,7 @@ export default function TabLayout() {
     <Tabs
       backBehavior="history"
       screenOptions={{
-        tabBarActiveTintColor: '#111111',
+        tabBarActiveTintColor: '#396a12',
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
@@ -39,7 +39,9 @@ export default function TabLayout() {
         name="scan"
         options={{
           title: 'Scan',
-          tabBarIcon: ({ color, size }) => <Feather size={size} name="camera" color={color} />, // https://icons.expo.fyi/Index
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />
+          ),
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: { display: 'none' },
