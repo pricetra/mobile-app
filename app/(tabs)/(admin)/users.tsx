@@ -12,6 +12,7 @@ import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
 import { GetAllUsersDocument, User, UserFilter, UserRole } from '@/graphql/types/graphql';
 import { isRoleAuthorized } from '@/lib/roles';
+import ModalFormFull from '@/components/ui/ModalFormFull';
 
 export type SearchTypes = 'id' | 'email' | 'name' | 'role';
 
@@ -82,14 +83,14 @@ export default function UsersScreen() {
             />
           </ModalFormMini>
 
-          <ModalFormMini
+          <ModalFormFull
             visible={openUserModal}
             onRequestClose={() => setOpenUserModal(false)}
             TitleComponent={<ProfileMini user={selectedUser} />}
             title={selectedUser.name}
             className="px-0">
             <AdminProductBilling user={selectedUser} />
-          </ModalFormMini>
+          </ModalFormFull>
         </>
       )}
 

@@ -17,7 +17,7 @@ import { LocationInput } from '../../graphql/types/graphql';
 import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
 import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
-import ModalFormMini from '@/components/ui/ModalFormMini';
+import ModalFormFull from '@/components/ui/ModalFormFull';
 import TabSubHeaderProductFilter, {
   PartialCategory,
 } from '@/components/ui/TabSubHeaderProductFilter';
@@ -147,7 +147,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView>
-      <ModalFormMini
+      <ModalFormFull
         title={selectedProduct ? 'Edit Product' : 'Add Product'}
         visible={selectedProduct !== undefined}
         onRequestClose={() => setSelectedProduct(undefined)}>
@@ -160,7 +160,7 @@ export default function HomeScreen() {
           }}
           onError={(e) => alert(e.message)}
         />
-      </ModalFormMini>
+      </ModalFormFull>
 
       <FlatList
         data={products}
