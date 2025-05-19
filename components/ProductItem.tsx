@@ -18,11 +18,20 @@ export default function ProductItem({ product }: ProductItemProps) {
 
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <Image
-        src={createCloudinaryUrl(product.code, 500)}
-        className="rounded-lg"
-        style={{ width: width / 3, height: width / 3 }}
-      />
+      <View style={{ width: width / 3, height: width / 3, position: 'relative' }}>
+        {product.stock?.latestPrice?.sale && (
+          <View className="absolute left-1 top-1 z-[1] w-[40px]">
+            <Text className="inline-block rounded-md bg-red-700 px-1.5 py-1 text-center text-[9px] font-bold color-white">
+              SALE
+            </Text>
+          </View>
+        )}
+        <Image
+          src={createCloudinaryUrl(product.code, 500)}
+          className="rounded-lg"
+          style={{ width: width / 3, height: width / 3 }}
+        />
+      </View>
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
           <View className="flex flex-row flex-wrap items-center gap-1">
@@ -45,7 +54,14 @@ export default function ProductItem({ product }: ProductItemProps) {
           </View>
 
           {product.stock && product.stock.latestPrice && (
-            <Text className="font-black">{currencyFormat(product.stock.latestPrice.amount)}</Text>
+            <View>
+              {product.stock.latestPrice.sale && product.stock.latestPrice.originalPrice && (
+                <Text className="text-right text-xs line-through color-red-700">
+                  {currencyFormat(product.stock.latestPrice.originalPrice)}
+                </Text>
+              )}
+              <Text className="font-black">{currencyFormat(product.stock.latestPrice.amount)}</Text>
+            </View>
           )}
         </View>
       </View>
