@@ -39,8 +39,10 @@ export default function TabSubHeaderProductFilter({
         {categories.map((c, i) => (
           <Button
             className={cn(
-              'rounded-full px-4 active:border-[#9fe342] active:bg-[#9fe342]',
-              c.id === selectedCategoryId ? 'border-[#5fb01e] bg-[#5fb01e]' : undefined
+              'active:border-pricetraGreenDark active:bg-pricetraGreenDark rounded-full px-4',
+              c.id === selectedCategoryId
+                ? 'bg-pricetraGreenDark border-pricetraGreenDark'
+                : undefined
             )}
             variant="outlineLight"
             size="sm"
