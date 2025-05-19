@@ -23,6 +23,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
+import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import {
   GetProductStocksDocument,
@@ -85,35 +86,45 @@ export default function ProductScreen() {
 
   return (
     <SafeAreaView>
-      {productData && (
-        <>
-          <FloatingActionButton onPress={() => setOpenPriceModal(true)}>
-            <Feather name="plus" size={20} color="white" />
-            <Text className="text-md font-bold color-white">Price</Text>
-          </FloatingActionButton>
+      <FloatingActionButton onPress={() => setOpenPriceModal(true)}>
+        <Feather name="plus" size={20} color="white" />
+        <Text className="text-md font-bold color-white">Price</Text>
+      </FloatingActionButton>
 
-          <ModalFormMini
-            title="Add Price"
-            visible={openPriceModal}
-            onRequestClose={() => setOpenPriceModal(false)}>
-            <AddProductPriceForm
-              product={productData.product}
-              onCancel={() => setOpenPriceModal(false)}
-              onSuccess={(p) => {
-                setOpenPriceModal(false);
-                Alert.alert(
-                  'Price added',
-                  `Price set to $${p.amount} at location ${p.branch?.address?.fullAddress}`
-                );
-              }}
-              onError={(e) => alert(e.message)}
-            />
-          </ModalFormMini>
-        </>
-      )}
+      <ModalFormMini
+        title="Add Price"
+        visible={openPriceModal}
+        onRequestClose={() => setOpenPriceModal(false)}>
+        <AddProductPriceForm
+          product={productData.product}
+          onCancel={() => setOpenPriceModal(false)}
+          onSuccess={(p) => {
+            setOpenPriceModal(false);
+            Alert.alert(
+              'Price added',
+              `Price set to $${p.amount} at location ${p.branch?.address?.fullAddress}`
+            );
+          }}
+          onError={(e) => alert(e.message)}
+        />
+      </ModalFormMini>
+
+      <ModalFormFull
+        title="Edit Product"
+        visible={openEditModal}
+        onRequestClose={() => setOpenEditModal(false)}>
+        <ProductForm
+          product={productData.product}
+          onCancel={() => setOpenEditModal(false)}
+          onSuccess={(product) => {
+            setOpenEditModal(false);
+          }}
+          onError={(e) => alert(e.message)}
+        />
+      </ModalFormFull>
 
       <ScrollView
-        className="w-full"
+        className="h-full w-full"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -172,20 +183,6 @@ export default function ProductScreen() {
 
         <View className="h-[100px]" />
       </ScrollView>
-
-      <ModalFormMini
-        title="Edit Product"
-        visible={openEditModal}
-        onRequestClose={() => setOpenEditModal(false)}>
-        <ProductForm
-          product={productData?.product}
-          onCancel={() => setOpenEditModal(false)}
-          onSuccess={(product) => {
-            setOpenEditModal(false);
-          }}
-          onError={(e) => alert(e.message)}
-        />
-      </ModalFormMini>
     </SafeAreaView>
   );
 }
