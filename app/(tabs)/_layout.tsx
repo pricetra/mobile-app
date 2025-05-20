@@ -8,6 +8,7 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import TabHeader, { TabHeaderProps } from '@/components/ui/TabHeader';
 import { UserAuthContext } from '@/context/UserContext';
 import { createCloudinaryUrl } from '@/lib/files';
+import TabHeaderDismissible from '@/components/ui/TabHeaderDismissible';
 
 export default function TabLayout() {
   const { user } = useContext(UserAuthContext);
@@ -26,7 +27,7 @@ export default function TabLayout() {
           },
           default: {},
         }),
-        header: (props) => <TabHeader {...(props as unknown as TabHeaderProps)} />,
+        header: (props) => <TabHeader {...props} />,
       }}>
       <Tabs.Screen
         name="index"
@@ -45,6 +46,7 @@ export default function TabLayout() {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: { display: 'none' },
+          animation: 'shift',
         }}
       />
       <Tabs.Screen
@@ -99,12 +101,22 @@ export default function TabLayout() {
         name="(products)/[productId]"
         options={{
           href: null,
+          animation: 'shift',
+          header: (props) => <TabHeaderDismissible {...props} />,
+          title: 'Product',
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
         name="create-product"
         options={{
           href: null,
+          animation: 'fade',
+          header: (props) => <TabHeaderDismissible {...props} />,
+          title: 'Create Product',
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
     </Tabs>

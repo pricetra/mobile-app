@@ -79,7 +79,7 @@ export default function ProductScreen() {
   }
 
   return (
-    <SafeAreaView>
+    <>
       <FloatingActionButton onPress={() => setOpenPriceModal(true)}>
         <Feather name="plus" size={20} color="white" />
         <Text className="text-md font-bold color-white">Price</Text>
@@ -147,6 +147,6 @@ export default function ProductScreen() {
 
         <View className="h-[100px]" />
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 }
