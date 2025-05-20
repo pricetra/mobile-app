@@ -1,26 +1,11 @@
 import { Feather } from '@expo/vector-icons';
-import { ReactNode } from 'react';
-import {
-  Modal,
-  NativeSyntheticEvent,
-  TouchableOpacity,
-  View,
-  Text,
-  SafeAreaView,
-  FlatList,
-} from 'react-native';
+import { Modal, TouchableOpacity, View, Text, SafeAreaView, FlatList } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 import { cn } from '@/lib/utils';
+import { ModalProps } from '@/types/modal';
 
-export type ModalFormFullProps = {
-  visible: boolean;
-  onRequestClose: (event: NativeSyntheticEvent<any>) => void;
-  children: ReactNode;
-  title: string;
-  TitleComponent?: ReactNode;
-  className?: string;
-};
+export type ModalFormFullProps = ModalProps;
 
 export default function ModalFormFull({
   children,

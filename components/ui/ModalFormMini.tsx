@@ -1,9 +1,7 @@
 import { Feather } from '@expo/vector-icons';
-import { ReactNode } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
-  NativeSyntheticEvent,
   TouchableOpacity,
   View,
   Text,
@@ -14,15 +12,9 @@ import {
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 import { cn } from '@/lib/utils';
+import { ModalProps } from '@/types/modal';
 
-export type ModalFormMiniProps = {
-  visible: boolean;
-  onRequestClose: (event: NativeSyntheticEvent<any>) => void;
-  children: ReactNode;
-  title: string;
-  TitleComponent?: ReactNode;
-  className?: string;
-};
+export type ModalFormMiniProps = ModalProps;
 
 export default function ModalFormMini({
   children,
