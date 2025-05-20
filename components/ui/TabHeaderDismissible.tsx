@@ -37,8 +37,8 @@ export default function TabHeaderDismissible(props: TabHeaderDismissibleProps) {
       <View
         className="w-full flex-row items-center justify-between gap-3"
         style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
-        <TouchableOpacity onPress={() => {}} style={iconStyles}>
-          <Text className="text-xl font-bold">{props.options.title}</Text>
+        <TouchableOpacity onPress={() => {}} style={{ ...iconStyles, flex: 1 }}>
+          <Text className="truncate text-xl font-bold">{props.options.title}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.back()} style={iconStyles}>

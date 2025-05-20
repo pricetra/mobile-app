@@ -36,23 +36,26 @@ export default function TabSubHeaderProductFilter({
           </View>
         </Button>
 
-        {categories.map((c, i) => (
-          <Button
-            className={cn(
-              'active:border-pricetraGreenDark active:bg-pricetraGreenDark rounded-full px-4',
-              c.id === selectedCategoryId
-                ? 'bg-pricetraGreenDark border-pricetraGreenDark'
-                : undefined
-            )}
-            variant="outlineLight"
-            size="sm"
-            key={i}
-            onPress={() => onSelectCategory(c)}>
-            <Text className={cn('text-sm', c.id === selectedCategoryId ? 'text-white' : undefined)}>
-              {c.name}
-            </Text>
-          </Button>
-        ))}
+        <View className="mr-[15vh] flex flex-row items-center gap-2">
+          {categories.map((c, i) => (
+            <Button
+              className={cn(
+                'rounded-full px-4 active:border-pricetraGreenDark active:bg-pricetraGreenDark',
+                c.id === selectedCategoryId
+                  ? 'border-pricetraGreenDark bg-pricetraGreenDark'
+                  : undefined
+              )}
+              variant="outlineLight"
+              size="sm"
+              key={i}
+              onPress={() => onSelectCategory(c)}>
+              <Text
+                className={cn('text-sm', c.id === selectedCategoryId ? 'text-white' : undefined)}>
+                {c.name}
+              </Text>
+            </Button>
+          ))}
+        </View>
       </View>
     </ScrollView>
   );

@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   SafeAreaView,
@@ -28,6 +28,7 @@ import {
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 export default function ProductScreen() {
+  const navigation = useNavigation();
   const { productId } = useLocalSearchParams();
   const { location } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
@@ -66,6 +67,9 @@ export default function ProductScreen() {
     if (!productId || typeof productId !== 'string') return router.back();
     getProduct({
       variables: { productId },
+    }).then(({ data }) => {
+      if (!data) return;
+      navigation.setOptions({ title: data.product.name });
     });
     fetchProductStocksWithLocation(productId);
   }, [productId]);
