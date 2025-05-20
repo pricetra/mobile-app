@@ -10,6 +10,7 @@ import {
   Alert,
   RefreshControl,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 
 import { ProductDetails } from '@/components/ProductDetails';
@@ -26,15 +27,18 @@ import {
   Stock,
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
+import { useHeader } from '@/context/HeaderContext';
+import Button from '@/components/ui/Button';
 
 export default function ProductScreen() {
-  const navigation = useNavigation();
+  const { setRightNav } = useHeader();
   const { productId } = useLocalSearchParams();
   const { location } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
     useLazyQuery(ProductDocument);
-  const [getProductStocks, { data: stocksData, loading: stocksLoading, error: stocksError }] =
-    useLazyQuery(GetProductStocksDocument, { fetchPolicy: 'network-only' });
+  const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
+    fetchPolicy: 'network-only',
+  });
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -67,12 +71,33 @@ export default function ProductScreen() {
     if (!productId || typeof productId !== 'string') return router.back();
     getProduct({
       variables: { productId },
-    }).then(({ data }) => {
-      if (!data) return;
-      navigation.setOptions({ title: data.product.name });
     });
     fetchProductStocksWithLocation(productId);
   }, [productId]);
+
+  useEffect(() => {
+    if (productLoading || !productData) return;
+    setRightNav(
+      <>
+        <TouchableOpacity
+          onPress={() => setOpenPriceModal(true)}
+          className="flex flex-row items-center gap-2 px-3 py-2">
+          <Feather name="plus" size={23} color="#396a12" />
+          <Text className="text-md font-bold color-pricetraGreenHeavyDark">Price</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setOpenEditModal(true)}
+          className="flex flex-row items-center gap-2 px-3 py-2">
+          <Feather name="edit" size={20} color="#3b82f6" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => {}} className="flex flex-row items-center gap-2 px-3 py-2">
+          <Feather name="more-vertical" size={20} color="black" />
+        </TouchableOpacity>
+      </>
+    );
+  }, [productData, productLoading]);
 
   if (productLoading || !productData) {
     return (
@@ -84,11 +109,6 @@ export default function ProductScreen() {
 
   return (
     <>
-      <FloatingActionButton onPress={() => setOpenPriceModal(true)}>
-        <Feather name="plus" size={20} color="white" />
-        <Text className="text-md font-bold color-white">Price</Text>
-      </FloatingActionButton>
-
       <ModalFormMini
         title="Add Price"
         visible={openPriceModal}
@@ -141,6 +161,7 @@ export default function ProductScreen() {
         <ProductFull
           product={productData.product}
           hideDescription
+          hideEditButton
           onEditButtonPress={() => setOpenEditModal(true)}
         />
 

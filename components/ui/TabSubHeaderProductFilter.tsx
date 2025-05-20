@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
 import { Text, ScrollView, View } from 'react-native';
 
 import Button from '@/components/ui/Button';
@@ -36,7 +35,7 @@ export default function TabSubHeaderProductFilter({
           </View>
         </Button>
 
-        <View className="mr-[15vh] flex flex-row items-center gap-2">
+        <View className="ml-1 mr-[15vh] flex flex-row items-center gap-2">
           {categories.map((c, i) => (
             <Button
               className={cn(

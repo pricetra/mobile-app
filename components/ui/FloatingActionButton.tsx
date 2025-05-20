@@ -13,7 +13,7 @@ export default function FloatingActionButton({ children, onPress }: FloatingActi
       style={{ bottom: Platform.OS === 'android' ? 0 : 75 }}>
       <TouchableOpacity
         onPress={onPress}
-        className="bg-pricetraGreenHeavyDark flex flex-row items-center justify-center gap-2 rounded-full px-5 py-3 shadow-lg">
+        className="flex flex-row items-center justify-center gap-2 rounded-full bg-pricetraGreenDark px-5 py-3 shadow-lg">
         {children}
       </TouchableOpacity>
     </View>

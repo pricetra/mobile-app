@@ -5,10 +5,11 @@ import { Platform, Image } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
-import TabHeader, { TabHeaderProps } from '@/components/ui/TabHeader';
+import TabHeader from '@/components/ui/TabHeader';
+import TabHeaderDismissible from '@/components/ui/TabHeaderDismissible';
+import TabHeaderProduct from '@/components/ui/TabHeaderProduct';
 import { UserAuthContext } from '@/context/UserContext';
 import { createCloudinaryUrl } from '@/lib/files';
-import TabHeaderDismissible from '@/components/ui/TabHeaderDismissible';
 
 export default function TabLayout() {
   const { user } = useContext(UserAuthContext);
@@ -102,7 +103,7 @@ export default function TabLayout() {
         options={{
           href: null,
           animation: 'shift',
-          header: (props) => <TabHeaderDismissible {...props} />,
+          header: (props) => <TabHeaderProduct {...props} />,
           title: 'Product',
           tabBarShowLabel: false,
           tabBarStyle: { display: 'none' },
