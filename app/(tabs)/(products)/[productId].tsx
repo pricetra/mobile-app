@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import { Feather } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -80,20 +80,24 @@ export default function ProductScreen() {
     setRightNav(
       <>
         <TouchableOpacity
-          onPress={() => setOpenPriceModal(true)}
-          className="flex flex-row items-center gap-2 px-3 py-2">
-          <Feather name="plus" size={23} color="#396a12" />
-          <Text className="text-md font-bold color-pricetraGreenHeavyDark">Price</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
           onPress={() => setOpenEditModal(true)}
-          className="flex flex-row items-center gap-2 px-3 py-2">
+          className="flex flex-row items-center gap-2 p-2">
           <Feather name="edit" size={20} color="#3b82f6" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {}} className="flex flex-row items-center gap-2 px-3 py-2">
-          <Feather name="more-vertical" size={20} color="black" />
+        <TouchableOpacity onPress={() => {}} className="flex flex-row items-center gap-2 p-2">
+          <AntDesign name="hearto" size={20} color="#db2777" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => {}} className="flex flex-row items-center gap-2 p-2">
+          <AntDesign name="eyeo" size={20} color="#a855f7" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setOpenPriceModal(true)}
+          className="flex flex-row items-center gap-2 rounded-lg bg-green-100 px-4 py-2">
+          <Feather name="plus" size={20} color="#396a12" />
+          <Text className="text-sm font-bold color-pricetraGreenHeavyDark">Price</Text>
         </TouchableOpacity>
       </>
     );

@@ -36,7 +36,7 @@ export default function TabHeaderProduct(props: TabHeaderProductProps) {
           <Feather name="arrow-left" size={iconSize} color={iconColor} />
         </TouchableOpacity>
 
-        <View className="flex flex-row items-center gap-2 px-3">{rightNav}</View>
+        <View className="flex flex-row items-center gap-3 px-3">{rightNav}</View>
       </View>
     </SafeAreaView>
   );
