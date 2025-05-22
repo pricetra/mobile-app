@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -48,12 +49,17 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
   if (userDataLoading)
     return (
-      <View className="flex h-screen w-screen items-center justify-center bg-white p-10">
+      <View className="flex h-screen w-screen items-center justify-center gap-10 bg-white p-10">
+        <Image
+          source={require('../assets/images/logotype_black_color.svg')}
+          style={{ height: 45, width: 190 }}
+        />
+
         <AntDesign
           name="loading1"
-          className="size-[50px] animate-spin text-center"
-          color="#374151"
-          size={50}
+          className="mt-10 size-[40px] animate-spin text-center"
+          color="black"
+          size={40}
         />
       </View>
     );
