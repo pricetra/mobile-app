@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   SafeAreaView,
@@ -17,9 +17,9 @@ import { ProductDetails } from '@/components/ProductDetails';
 import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
-import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import { useHeader } from '@/context/HeaderContext';
 import {
   GetProductStocksDocument,
   LocationInput,
@@ -27,8 +27,6 @@ import {
   Stock,
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
-import { useHeader } from '@/context/HeaderContext';
-import Button from '@/components/ui/Button';
 
 export default function ProductScreen() {
   const { setRightNav } = useHeader();
