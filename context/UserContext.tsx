@@ -7,10 +7,24 @@ import { View } from 'react-native';
 
 import { JwtStoreContext } from './JwtStoreContext';
 
-import { LogoutDocument, MeDocument, User } from '@/graphql/types/graphql';
+import {
+  GetAllListsDocument,
+  List,
+  ListType,
+  LogoutDocument,
+  MeDocument,
+  User,
+} from '@/graphql/types/graphql';
+
+export type UserListsType = {
+  allLists: List[];
+  favorites: List;
+  watchList: List;
+};
 
 export type UserContextType = {
   user: User;
+  lists: UserListsType;
   token: string;
   updateUser: (updatedUser: User) => void;
   logout: () => void;
@@ -26,13 +40,17 @@ type UserContextProviderProps = {
 export function UserContextProvider({ children, jwt }: UserContextProviderProps) {
   const { removeJwt } = useContext(JwtStoreContext);
   const [user, setUser] = useState<User>();
+  const [userLists, setUserLists] = useState<UserListsType>();
   const router = useRouter();
   const {
     data: userData,
     loading: userDataLoading,
     error: userError,
   } = useQuery(MeDocument, {
-    context: { headers: { authorization: `Bearer ${jwt}` } },
+    fetchPolicy: 'no-cache',
+  });
+  const { data: listsData, loading: listsLoading } = useQuery(GetAllListsDocument, {
+    fetchPolicy: 'network-only',
   });
   const [logout] = useMutation(LogoutDocument);
 
@@ -41,13 +59,24 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     setUser(userData.me);
   }, [userData]);
 
+  useEffect(() => {
+    if (!listsData) return;
+
+    const allLists = listsData.getAllLists as List[];
+    setUserLists({
+      allLists,
+      favorites: allLists.find(({ type }) => type === ListType.Favorites)!,
+      watchList: allLists.find(({ type }) => type === ListType.WatchList)!,
+    });
+  }, [listsData]);
+
   function removeStoredJwtAndRedirect() {
     removeJwt().finally(() => {
       router.replace('/login');
     });
   }
 
-  if (userDataLoading)
+  if (userDataLoading || listsLoading)
     return (
       <View className="flex h-screen w-screen items-center justify-center gap-10 bg-white p-10">
         <Image
@@ -73,19 +102,18 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
   return (
     <UserAuthContext.Provider
-      value={
-        {
-          token: jwt,
-          user: user ?? userData.me,
-          updateUser: (updatedUser) => setUser(updatedUser),
-          logout: () => {
-            logout().then(({ data, errors }) => {
-              if (errors || !data || !data.logout) return;
-              removeStoredJwtAndRedirect();
-            });
-          },
-        } as UserContextType
-      }>
+      value={{
+        token: jwt,
+        user: user ?? userData.me,
+        lists: userLists ?? { allLists: [], favorites: {} as List, watchList: {} as List },
+        updateUser: (updatedUser) => setUser(updatedUser),
+        logout: () => {
+          logout().then(({ data, errors }) => {
+            if (errors || !data || !data.logout) return;
+            removeStoredJwtAndRedirect();
+          });
+        },
+      }}>
       {children}
     </UserAuthContext.Provider>
   );

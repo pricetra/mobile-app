@@ -468,3 +468,88 @@ export const MY_PRODUCT_BILLING_DATA_QUERY = gql(`
     }
   }
 `);
+
+export const GET_ALL_LISTS = gql`
+  query GetAllLists($listType: ListType) {
+    getAllLists(listType: $listType) {
+      id
+      name
+      type
+      userId
+      createdAt
+      productList {
+        id
+        listId
+        productId
+        product {
+          id
+          name
+          image
+          description
+          url
+          brand
+          code
+          color
+          model
+          categoryId
+          category {
+            id
+            name
+            expandedPathname
+            path
+          }
+          stock {
+            id
+            productId
+            storeId
+            store {
+              id
+              name
+              logo
+            }
+            branchId
+            branch {
+              id
+              name
+              address {
+                id
+                latitude
+                longitude
+                mapsLink
+                fullAddress
+                city
+                administrativeDivision
+                zipCode
+                country
+                distance
+              }
+            }
+            latestPriceId
+            latestPrice {
+              id
+              amount
+              currencyCode
+              createdAt
+              sale
+              originalPrice
+              condition
+              expiresAt
+            }
+          }
+          weight
+          lowestRecordedPrice
+          highestRecordedPrice
+          createdAt
+          updatedAt
+          createdBy {
+            id
+            name
+            avatar
+          }
+        }
+        stockId
+        createdAt
+      }
+    }
+  }
+`;
