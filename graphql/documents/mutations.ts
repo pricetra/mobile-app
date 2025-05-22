@@ -220,3 +220,29 @@ export const CREATE_PRICE_MUTATION = gql(`
     }
   }
 `);
+
+export const ADD_TO_LIST_MUTATION = gql(`
+  mutation AddToList($listId: ID!, $productId: ID!, $stockId: ID) {
+    addToList(listId: $listId, productId: $productId, stockId: $stockId) {
+      id
+      userId
+      listId
+      productId
+      stockId
+      createdAt
+    }
+  }
+`);
+
+export const REMOVE_FROM_LIST_MUTATION = gql(`
+  mutation RemoveFromList($listId: ID!, $productListId: ID!) {
+    removeFromList(listId: $listId, productListId: $productListId) {
+      id
+      userId
+      listId
+      productId
+      stockId
+      createdAt
+    }
+  }
+`);

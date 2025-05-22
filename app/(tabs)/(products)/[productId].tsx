@@ -1,7 +1,7 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -20,17 +20,22 @@ import ProductForm from '@/components/product-form/ProductForm';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { useHeader } from '@/context/HeaderContext';
+import { UserAuthContext } from '@/context/UserContext';
 import {
+  AddToListDocument,
+  GetAllListsDocument,
   GetProductStocksDocument,
   LocationInput,
   ProductDocument,
+  RemoveFromListDocument,
   Stock,
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 export default function ProductScreen() {
+  const { lists } = useContext(UserAuthContext);
   const { setRightNav } = useHeader();
-  const { productId } = useLocalSearchParams();
+  const { productId } = useLocalSearchParams<{ productId: string }>();
   const { location } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
     useLazyQuery(ProductDocument);
@@ -40,6 +45,13 @@ export default function ProductScreen() {
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [favorite, setFavorite] = useState(false);
+  const [watching, setWatching] = useState(false);
+
+  const [addToList] = useMutation(AddToListDocument, { refetchQueries: [GetAllListsDocument] });
+  const [removeFromList] = useMutation(RemoveFromListDocument, {
+    refetchQueries: [GetAllListsDocument],
+  });
 
   useEffect(() => {
     if (!productError) return;
@@ -67,6 +79,14 @@ export default function ProductScreen() {
 
   useEffect(() => {
     if (!productId || typeof productId !== 'string') return router.back();
+
+    setFavorite(
+      lists.favorites.productList?.some((p) => p.productId.toString() === productId) ?? false
+    );
+    setWatching(
+      lists.watchList.productList?.some((p) => p.productId.toString() === productId) ?? false
+    );
+
     getProduct({
       variables: { productId },
     });
@@ -83,23 +103,69 @@ export default function ProductScreen() {
           <Feather name="edit" size={20} color="#3b82f6" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {}} className="flex flex-row items-center gap-2 p-2">
-          <AntDesign name="hearto" size={20} color="#db2777" />
+        <TouchableOpacity
+          onPress={() => {
+            if (!favorite) {
+              setFavorite(true);
+              addToList({
+                variables: {
+                  listId: lists.favorites.id,
+                  productId,
+                },
+              }).catch(() => setFavorite(false));
+              return;
+            }
+            setFavorite(false);
+            removeFromList({
+              variables: {
+                listId: lists.favorites.id,
+                productListId: lists.favorites.productList?.find(
+                  (p) => p.productId.toString() === productId
+                )?.id!,
+              },
+            }).catch(() => setFavorite(true));
+          }}
+          className="flex flex-row items-center gap-2 p-2">
+          <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {}} className="flex flex-row items-center gap-2 p-2">
-          <AntDesign name="eyeo" size={20} color="#a855f7" />
+        <TouchableOpacity
+          onPress={() => {
+            if (!stocksData) return;
+
+            if (!watching) {
+              setWatching(true);
+              addToList({
+                variables: {
+                  listId: lists.favorites.id,
+                  productId,
+                  // TODO: Add stock id
+                },
+              }).catch(() => setWatching(false));
+              return;
+            }
+            setWatching(false);
+            addToList({
+              variables: {
+                listId: lists.favorites.id,
+                productId,
+                // TODO: Add stock id
+              },
+            }).catch(() => setWatching(true));
+          }}
+          className="flex flex-row items-center gap-2 p-2">
+          <AntDesign name={watching ? 'eye' : 'eyeo'} size={20} color="#a855f7" />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => setOpenPriceModal(true)}
-          className="flex flex-row items-center gap-2 rounded-lg bg-green-100 px-4 py-2">
+          className="flex flex-row items-center gap-2 rounded-full bg-green-100 px-4 py-2">
           <Feather name="plus" size={20} color="#396a12" />
           <Text className="text-sm font-bold color-pricetraGreenHeavyDark">Price</Text>
         </TouchableOpacity>
       </>
     );
-  }, [productData, productLoading]);
+  }, [productData, productLoading, favorite, productId]);
 
   if (productLoading || !productData) {
     return (
