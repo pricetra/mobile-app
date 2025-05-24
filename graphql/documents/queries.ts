@@ -270,6 +270,10 @@ export const GET_PRODUCT_STOCKS_QUERY = gql(`
         id
         amount
         currencyCode
+        sale
+        originalPrice
+        condition
+        expiresAt
       }
       createdAt
       updatedAt
