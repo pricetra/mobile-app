@@ -38,7 +38,9 @@ export default function ProductScreen() {
   const { productId } = useLocalSearchParams<{ productId: string }>();
   const { location } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
-    useLazyQuery(ProductDocument);
+    useLazyQuery(ProductDocument, {
+      fetchPolicy: 'network-only',
+    });
   const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
     fetchPolicy: 'network-only',
   });
@@ -67,8 +69,8 @@ export default function ProductScreen() {
     let locationInput: LocationInput | undefined = undefined;
     if (location) {
       locationInput = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: 41.8636388,
+        longitude: -88.3457751,
         radiusMeters: 32187, // ~20 miles
       };
     }
