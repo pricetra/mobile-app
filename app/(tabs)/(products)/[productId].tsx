@@ -69,8 +69,8 @@ export default function ProductScreen() {
     let locationInput: LocationInput | undefined = undefined;
     if (location) {
       locationInput = {
-        latitude: 41.8636388,
-        longitude: -88.3457751,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
         radiusMeters: 32187, // ~20 miles
       };
     }
