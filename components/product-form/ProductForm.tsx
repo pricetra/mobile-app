@@ -232,22 +232,24 @@ export default function ProductForm({
             </TouchableOpacity>
           </View>
           <Input value={formik.values.code} label="UPC Code" editable={false} readOnly />
-          <Textarea
-            onChangeText={formik.handleChange('name')}
-            onBlur={formik.handleBlur('name')}
-            value={formik.values.name}
-            label="Product Name"
-            editable={!loading}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              formik.setFieldValue('name', titleCase(formik.values.name));
-            }}
-            className="mb-5 mt-[-10px] inline-block w-fit">
-            <Text className="inline-block w-fit text-right text-sm color-blue-500">
-              Convert to Title Case
-            </Text>
-          </TouchableOpacity>
+
+          <View className="mb-5">
+            <Textarea
+              onChangeText={formik.handleChange('name')}
+              onBlur={formik.handleBlur('name')}
+              value={formik.values.name}
+              label="Product Name"
+              editable={!loading}
+            />
+            <View className="mt-2 flex flex-row-reverse">
+              <TouchableOpacity
+                onPress={() => {
+                  formik.setFieldValue('name', titleCase(formik.values.name));
+                }}>
+                <Text className="text-sm color-blue-500">Convert to Title Case</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
 
           <View style={{ position: 'relative' }}>
             <Label className="mb-1">Brand</Label>
