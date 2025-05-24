@@ -19,15 +19,16 @@ export default function ProductStockMini({ stock }: ProductStockMiniProps) {
       />
       <View>
         <Text className="text-xs font-semibold">{stock.store?.name}</Text>
-        <View className="flex flex-row items-center gap-[1px]">
-          <Text className="text-[9px]">{stock.branch?.address?.city}</Text>
-          {stock.branch?.address?.distance && (
-            <>
-              <Entypo name="dot-single" size={10} color="black" />
-              <Text className="text-[9px]">{metersToMiles(stock.branch.address.distance)} mi</Text>
-            </>
-          )}
-        </View>
+        {stock.branch?.address && (
+          <View className="flex flex-row flex-wrap items-center gap-[1px]">
+            <Text className="text-[9px]">{stock.branch.address?.city}</Text>
+            {stock.branch.address.distance && (
+              <Text className="text-[9px]">
+                ({metersToMiles(stock.branch.address.distance)} mi)
+              </Text>
+            )}
+          </View>
+        )}
       </View>
     </View>
   );

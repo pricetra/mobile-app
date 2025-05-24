@@ -48,22 +48,28 @@ export default function ProductItem({ product }: ProductItemProps) {
           {product.category && <Text className="mt-2 text-xs">{product.category.name}</Text>}
         </View>
 
-        <View className="flex flex-row items-center justify-between gap-2">
-          <View className="flex-1 gap-1">
-            {product.stock?.store && <ProductStockMini stock={product.stock} />}
-          </View>
+        {product.stock && (
+          <View className="flex flex-row items-center justify-between gap-2">
+            {product.stock.store && product.stock.branch && (
+              <View className="flex-[2] gap-1">
+                <ProductStockMini stock={product.stock} />
+              </View>
+            )}
 
-          {product.stock && product.stock.latestPrice && (
-            <View>
-              {product.stock.latestPrice.sale && product.stock.latestPrice.originalPrice && (
-                <Text className="text-right text-xs line-through color-red-700">
-                  {currencyFormat(product.stock.latestPrice.originalPrice)}
+            {product.stock.latestPrice && (
+              <View className="flex-[1] flex-col items-end">
+                {product.stock.latestPrice.sale && product.stock.latestPrice.originalPrice && (
+                  <Text className="text-right text-xs line-through color-red-700">
+                    {currencyFormat(product.stock.latestPrice.originalPrice)}
+                  </Text>
+                )}
+                <Text className="font-black">
+                  {currencyFormat(product.stock.latestPrice.amount)}
                 </Text>
-              )}
-              <Text className="font-black">{currencyFormat(product.stock.latestPrice.amount)}</Text>
-            </View>
-          )}
-        </View>
+              </View>
+            )}
+          </View>
+        )}
       </View>
     </View>
   );
