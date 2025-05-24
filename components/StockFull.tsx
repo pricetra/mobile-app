@@ -15,24 +15,42 @@ export default function StockFull({ stock }: StockFullProps) {
 
   return (
     <View className="flex flex-row items-center justify-between gap-5">
-      <View className="flex flex-1 flex-row items-center gap-2">
+      <View className="flex flex-1 flex-row items-center gap-4">
         <Image
           src={createCloudinaryUrl(stock.store.logo, 500, 500)}
           className="size-[60px] rounded-lg"
         />
-        <View className="flex flex-col gap-1">
-          <Text className="text-lg font-semibold">{stock.store.name}</Text>
-          <Text className="text-wrap text-sm">{stock.branch.address?.fullAddress}</Text>
+        <View className="flex flex-col flex-wrap gap-1">
+          <View className="flex flex-row flex-wrap items-center gap-3">
+            <Text className="text-lg font-semibold">{stock.store.name}</Text>
+
+            {stock.latestPrice?.sale && (
+              <View className="w-[35px]">
+                <Text className="inline-block rounded-md bg-red-700 px-1.5 py-1 text-center text-[9px] font-bold color-white">
+                  SALE
+                </Text>
+              </View>
+            )}
+          </View>
+          <Text className="text-wrap text-xs">{stock.branch.address?.fullAddress}</Text>
           {stock.branch.address?.distance && (
-            <Text className="text-sm">{metersToMiles(stock.branch.address.distance)} mi</Text>
+            <Text className="text-xs">{metersToMiles(stock.branch.address.distance)} mi</Text>
           )}
         </View>
       </View>
 
       {stock.latestPrice && stock.latestPrice && (
-        <Text className="bg-white p-2 text-xl font-black">
-          {currencyFormat(stock.latestPrice.amount)}
-        </Text>
+        <View className="flex flex-col items-end gap-1">
+          {stock.latestPrice.sale && stock.latestPrice.originalPrice && (
+            <Text className="text text-right line-through color-red-700">
+              {currencyFormat(stock.latestPrice.originalPrice)}
+            </Text>
+          )}
+
+          <Text className="bg-white text-xl font-black">
+            {currencyFormat(stock.latestPrice.amount)}
+          </Text>
+        </View>
       )}
     </View>
   );
