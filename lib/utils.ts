@@ -44,6 +44,10 @@ export function diffObjects<T extends Record<string, any>>(obj1: T, obj2: T): Pa
   return result;
 }
 
+export function toPrecision(n: number, p: number): string {
+  return n < 1 ? n.toFixed(p - 1) : n.toPrecision(p);
+}
+
 export function metersToMiles(m: number) {
-  return convert(m).from('m').to('mi').toPrecision(2);
+  return toPrecision(convert(m).from('m').to('mi'), 2);
 }
