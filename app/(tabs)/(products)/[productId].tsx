@@ -15,6 +15,7 @@ import {
 
 import { ProductDetails } from '@/components/ProductDetails';
 import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
+import SelectedStock from '@/components/SelectedStock';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
 import ModalFormFull from '@/components/ui/ModalFormFull';
@@ -29,18 +30,25 @@ import {
   ProductDocument,
   RemoveFromListDocument,
   Stock,
+  StockDocument,
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 export default function ProductScreen() {
   const { lists } = useContext(UserAuthContext);
   const { setRightNav } = useHeader();
-  const { productId } = useLocalSearchParams<{ productId: string }>();
+  const { productId, stockId } = useLocalSearchParams<{ productId: string; stockId?: string }>();
   const { location } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
     useLazyQuery(ProductDocument, {
       fetchPolicy: 'network-only',
     });
+  const [getStock, { data: stockData, loading: stockLoading, error: stockError }] = useLazyQuery(
+    StockDocument,
+    {
+      fetchPolicy: 'network-only',
+    }
+  );
   const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
     fetchPolicy: 'network-only',
   });
@@ -92,6 +100,9 @@ export default function ProductScreen() {
     getProduct({
       variables: { productId },
     });
+    if (stockId) {
+      getStock({ variables: { stockId } });
+    }
     fetchProductStocksWithLocation(productId);
   }, [productId]);
 
@@ -234,6 +245,12 @@ export default function ProductScreen() {
           hideEditButton
           onEditButtonPress={() => setOpenEditModal(true)}
         />
+
+        {stockData && (
+          <View className="mb-5 p-5">
+            <SelectedStock stock={stockData.stock as Stock} />
+          </View>
+        )}
 
         <ProductDetails
           stocks={(stocksData?.getProductStocks ?? []) as Stock[]}

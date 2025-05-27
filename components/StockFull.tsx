@@ -14,14 +14,21 @@ export default function StockFull({ stock }: StockFullProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
   return (
-    <View className="flex flex-row items-center justify-between gap-5">
-      <View className="flex flex-1 flex-row items-center gap-4">
+    <View className="flex flex-row justify-between gap-5">
+      <View className="flex flex-1 flex-row gap-4">
         <Image
           src={createCloudinaryUrl(stock.store.logo, 500, 500)}
           className="size-[60px] rounded-lg"
         />
-        <View className="flex flex-col flex-wrap gap-1">
-          <View className="flex flex-row flex-wrap items-center gap-3">
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 4,
+            paddingRight: 50,
+            flexWrap: 'wrap',
+          }}>
+          <View className="flex w-full flex-row flex-wrap items-center gap-3">
             <Text className="text-lg font-semibold">{stock.store.name}</Text>
 
             {stock.latestPrice?.sale && (
@@ -32,24 +39,34 @@ export default function StockFull({ stock }: StockFullProps) {
               </View>
             )}
           </View>
-          <Text className="text-wrap text-xs">{stock.branch.address?.fullAddress}</Text>
-          {stock.branch.address?.distance && (
-            <Text className="text-xs">{metersToMiles(stock.branch.address.distance)} mi</Text>
+
+          <View className="w-full">
+            <Text className="text-xs">{stock.branch.address?.fullAddress}</Text>
+
+            {stock.branch.address?.distance && (
+              <Text className="mt-1 text-xs">
+                {metersToMiles(stock.branch.address.distance)} mi
+              </Text>
+            )}
+          </View>
+
+          {stock.latestPrice?.condition && (
+            <Text className="mt-3 text-xs italic color-gray-700">
+              *{stock.latestPrice.condition}
+            </Text>
           )}
         </View>
       </View>
 
       {stock.latestPrice && stock.latestPrice && (
-        <View className="flex flex-col items-end gap-1">
+        <View className="flex w-fit flex-col items-end gap-0.5 py-3">
           {stock.latestPrice.sale && stock.latestPrice.originalPrice && (
             <Text className="text text-right line-through color-red-700">
               {currencyFormat(stock.latestPrice.originalPrice)}
             </Text>
           )}
 
-          <Text className="bg-white text-xl font-black">
-            {currencyFormat(stock.latestPrice.amount)}
-          </Text>
+          <Text className="text-xl font-black">{currencyFormat(stock.latestPrice.amount)}</Text>
         </View>
       )}
     </View>

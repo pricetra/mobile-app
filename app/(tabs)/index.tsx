@@ -169,7 +169,7 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <View className="mb-10">
             <TouchableOpacity
-              onPress={() => router.push(`/(tabs)/(products)/${item.id}`)}
+              onPress={() => router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`)}
               onLongPress={() => setSelectedProduct(item)}>
               <ProductItem product={item} />
             </TouchableOpacity>
