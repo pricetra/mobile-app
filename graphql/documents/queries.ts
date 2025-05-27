@@ -557,3 +557,45 @@ export const GET_ALL_LISTS = gql`
     }
   }
 `;
+
+export const GET_STOCK_BY_ID = gql(`
+  query Stock($stockId: ID!) {
+    stock(stockId: $stockId) {
+      id
+      productId
+      storeId
+      store {
+        id
+        name
+        logo
+      }
+      branchId
+      branch {
+        id
+        name
+        address {
+          id
+          fullAddress
+          distance
+        }
+      }
+      latestPriceId
+      latestPrice {
+        id
+        amount
+        currencyCode
+        sale
+        originalPrice
+        condition
+        expiresAt
+      }
+      createdAt
+      updatedAt
+      createdBy {
+        id
+        name
+        avatar
+      }
+    }
+  }
+`);
