@@ -107,7 +107,6 @@ export default function ProductScreen() {
   }
 
   function toggleWatchList() {
-    console.log('hello', stockData);
     if (!stockData) return;
 
     if (!watching) {
