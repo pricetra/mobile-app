@@ -25,7 +25,7 @@ export default function StockFull({ stock }: StockFullProps) {
             display: 'flex',
             flexDirection: 'row',
             gap: 4,
-            paddingRight: 50,
+            paddingRight: 60,
             flexWrap: 'wrap',
           }}>
           <View className="flex w-full flex-row flex-wrap items-center gap-3">

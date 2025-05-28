@@ -15,11 +15,11 @@ export default function SelectedStock({ stock }: SelectedStockProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
   return (
-    <View className="flex flex-col gap-2 rounded-lg bg-gray-50 p-5">
+    <View className="flex flex-col gap-2">
       <StockFull stock={stock} />
 
       {stock.createdBy && (
-        <View className="mt-2 flex flex-row items-center gap-2">
+        <View className="mt-4 flex flex-row items-center gap-2">
           <Image
             src={
               stock.createdBy.avatar

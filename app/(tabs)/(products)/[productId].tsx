@@ -43,12 +43,9 @@ export default function ProductScreen() {
     useLazyQuery(ProductDocument, {
       fetchPolicy: 'network-only',
     });
-  const [getStock, { data: stockData, loading: stockLoading, error: stockError }] = useLazyQuery(
-    StockDocument,
-    {
-      fetchPolicy: 'network-only',
-    }
-  );
+  const [getStock, { data: stockData, loading: stockLoading }] = useLazyQuery(StockDocument, {
+    fetchPolicy: 'network-only',
+  });
   const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
     fetchPolicy: 'network-only',
   });
@@ -87,6 +84,54 @@ export default function ProductScreen() {
     });
   }
 
+  function toggleFavoriteList() {
+    if (!favorite) {
+      setFavorite(true);
+      addToList({
+        variables: {
+          listId: lists.favorites.id,
+          productId,
+        },
+      }).catch(() => setFavorite(false));
+      return;
+    }
+    setFavorite(false);
+    removeFromList({
+      variables: {
+        listId: lists.favorites.id,
+        productListId: lists.favorites.productList?.find(
+          (p) => p.productId.toString() === productId
+        )?.id!,
+      },
+    }).catch(() => setFavorite(true));
+  }
+
+  function toggleWatchList() {
+    console.log('hello', stockData);
+    if (!stockData) return;
+
+    if (!watching) {
+      setWatching(true);
+      addToList({
+        variables: {
+          listId: lists.watchList.id,
+          productId,
+          stockId,
+        },
+      }).catch(() => setWatching(false));
+      return;
+    }
+    setWatching(false);
+    removeFromList({
+      variables: {
+        listId: lists.watchList.id,
+        productListId: lists.watchList.productList?.find(
+          (p) => p.productId.toString() === productId
+        )?.id!,
+      },
+    }).catch(() => setWatching(true));
+  }
+
   useEffect(() => {
     if (!productId || typeof productId !== 'string') return router.back();
 
@@ -104,7 +149,7 @@ export default function ProductScreen() {
       getStock({ variables: { stockId } });
     }
     fetchProductStocksWithLocation(productId);
-  }, [productId]);
+  }, [productId, stockId]);
 
   useEffect(() => {
     if (productLoading || !productData) return;
@@ -117,55 +162,13 @@ export default function ProductScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => {
-            if (!favorite) {
-              setFavorite(true);
-              addToList({
-                variables: {
-                  listId: lists.favorites.id,
-                  productId,
-                },
-              }).catch(() => setFavorite(false));
-              return;
-            }
-            setFavorite(false);
-            removeFromList({
-              variables: {
-                listId: lists.favorites.id,
-                productListId: lists.favorites.productList?.find(
-                  (p) => p.productId.toString() === productId
-                )?.id!,
-              },
-            }).catch(() => setFavorite(true));
-          }}
+          onPress={toggleFavoriteList}
           className="flex flex-row items-center gap-2 p-2">
           <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => {
-            if (!stocksData) return;
-
-            if (!watching) {
-              setWatching(true);
-              addToList({
-                variables: {
-                  listId: lists.favorites.id,
-                  productId,
-                  // TODO: Add stock id
-                },
-              }).catch(() => setWatching(false));
-              return;
-            }
-            setWatching(false);
-            addToList({
-              variables: {
-                listId: lists.favorites.id,
-                productId,
-                // TODO: Add stock id
-              },
-            }).catch(() => setWatching(true));
-          }}
+          onPress={toggleWatchList}
           className="flex flex-row items-center gap-2 p-2">
           <AntDesign name={watching ? 'eye' : 'eyeo'} size={20} color="#a855f7" />
         </TouchableOpacity>
@@ -178,9 +181,9 @@ export default function ProductScreen() {
         </TouchableOpacity>
       </>
     );
-  }, [productData, productLoading, favorite, productId]);
+  }, [productData, stockData, productLoading, favorite, watching, productId, stockId]);
 
-  if (productLoading || !productData) {
+  if (productLoading || !productData || stockLoading) {
     return (
       <SafeAreaView>
         <ProductFullLoading />
@@ -248,7 +251,9 @@ export default function ProductScreen() {
 
         {stockData && (
           <View className="mb-5 p-5">
-            <SelectedStock stock={stockData.stock as Stock} />
+            <View className="rounded-xl bg-gray-50 p-5">
+              <SelectedStock stock={stockData.stock as Stock} />
+            </View>
           </View>
         )}
 
