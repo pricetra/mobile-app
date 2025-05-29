@@ -1,29 +1,29 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { AlertTriangle } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, View, Text } from 'react-native';
 
 import CreateBranchForm from '@/components/CreateBranchForm';
 import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { FindStoreDocument } from '@/graphql/types/graphql';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
-import { AlertTriangle } from 'lucide-react-native';
 
 export default function SelectedStoreScreen() {
-  const { id } = useLocalSearchParams();
+  const { storeId } = useLocalSearchParams<{ storeId: string }>();
   const [openModal, setOpenModal] = useState(false);
   const [findStore, { data: storeData, loading: storeLoading, error: storeError }] =
     useLazyQuery(FindStoreDocument);
 
   useEffect(() => {
-    if (!id || typeof id !== 'string') return router.back();
+    if (!storeId || typeof storeId !== 'string') return router.back();
     findStore({
-      variables: { id },
+      variables: { id: storeId },
     });
-  }, [id]);
+  }, [storeId]);
 
   return (
     <SafeAreaView className="h-full">
