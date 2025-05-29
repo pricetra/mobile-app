@@ -356,9 +356,37 @@ export const ALL_BRANCHES_QUERY = gql(`
   }
 `);
 
+export const BRANCH_QUERY = gql(`
+  query Branch($branchId: ID!, $storeId: ID!) {
+    findBranch(id: $branchId, storeId: $storeId) {
+      id
+      name
+      addressId
+      storeId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        countryCode
+        country
+        zipCode
+      }
+    }
+
+    findStore(id: $storeId) {
+      id
+      name
+      logo
+      website
+    }
+  }
+`);
+
 export const FIND_BRANCH_QUERY = gql(`
-  query FindBranch($id: ID!, $storeId: ID!) {
-    findBranch(id: $id, storeId: $storeId) {
+  query FindBranch($branchId: ID!, $storeId: ID!) {
+    findBranch(id: $branchId, storeId: $storeId) {
       id
       name
       addressId

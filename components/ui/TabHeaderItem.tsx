@@ -32,7 +32,7 @@ export default function TabHeaderItem(props: TabHeaderItemProps) {
       <View
         className="w-full flex-row items-center justify-between gap-3"
         style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
-        <View className="flex flex-row items-center justify-start gap-2">
+        <View className="flex flex-[2] flex-row items-center justify-start gap-1">
           <TouchableOpacity onPress={() => router.back()} style={iconStyles}>
             <Feather name="arrow-left" size={iconSize} color={iconColor} />
           </TouchableOpacity>
@@ -40,7 +40,9 @@ export default function TabHeaderItem(props: TabHeaderItemProps) {
           {leftNav}
         </View>
 
-        <View className="flex flex-row items-center gap-3 px-3">{rightNav}</View>
+        <View className="flex flex-[1] flex-row items-center justify-end gap-3 px-5">
+          {rightNav}
+        </View>
       </View>
     </SafeAreaView>
   );

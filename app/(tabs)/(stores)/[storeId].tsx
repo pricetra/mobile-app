@@ -1,32 +1,65 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
-import { AlertTriangle } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, View, Text } from 'react-native';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { SafeAreaView, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 
 import CreateBranchForm from '@/components/CreateBranchForm';
-import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
+import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import { useHeader } from '@/context/HeaderContext';
 import { FindStoreDocument } from '@/graphql/types/graphql';
+import { createCloudinaryUrl } from '@/lib/files';
 
 export default function SelectedStoreScreen() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { setLeftNav, setRightNav } = useHeader();
   const { storeId } = useLocalSearchParams<{ storeId: string }>();
   const [openModal, setOpenModal] = useState(false);
-  const [findStore, { data: storeData, loading: storeLoading, error: storeError }] =
-    useLazyQuery(FindStoreDocument);
+  const [findStore, { data: storeData, loading: storeLoading }] = useLazyQuery(FindStoreDocument);
+
+  useFocusEffect(
+    useCallback(() => {
+      setLeftNav(<></>);
+      setRefreshKey((prev) => prev + 1);
+      return () => {
+        setLeftNav(<></>);
+      };
+    }, [])
+  );
 
   useEffect(() => {
-    if (!storeId || typeof storeId !== 'string') return router.back();
+    if (!storeId) return router.back();
     findStore({
       variables: { id: storeId },
     });
-  }, [storeId]);
+  }, [storeId, refreshKey]);
+
+  useEffect(() => {
+    if (!storeData) return;
+    setLeftNav(
+      <View className="flex flex-row items-center gap-2">
+        <Image
+          src={createCloudinaryUrl(storeData.findStore.logo, 100, 100)}
+          className="size-[30px] rounded-lg"
+        />
+        <Text className="font-bold">{storeData.findStore.name}</Text>
+      </View>
+    );
+    setRightNav(
+      <>
+        <TouchableOpacity
+          onPress={() => setOpenModal(true)}
+          className="flex flex-row items-center gap-2 rounded-full p-2">
+          <Feather name="plus" size={20} color="#3b82f6" />
+        </TouchableOpacity>
+      </>
+    );
+  }, [storeData, refreshKey]);
 
   return (
-    <SafeAreaView className="h-full">
+    <SafeAreaView className="h-full" key={refreshKey}>
       {storeData && (
         <ModalFormMini
           visible={openModal}
@@ -40,22 +73,7 @@ export default function SelectedStoreScreen() {
         </ModalFormMini>
       )}
 
-      <FloatingActionButton onPress={() => setOpenModal(true)}>
-        <Feather name="plus" size={20} color="white" />
-        <Text className="text-md font-bold color-white">Branch</Text>
-      </FloatingActionButton>
-
       <View className="p-5">
-        <View>
-          {storeLoading && <StoreItemLoading />}
-          {storeError && (
-            <Alert icon={AlertTriangle} variant="destructive" className="mb-10 max-w-xl">
-              <AlertTitle>Error!</AlertTitle>
-              <AlertDescription>{storeError.message}</AlertDescription>
-            </Alert>
-          )}
-          {storeData && <StoreItem {...storeData.findStore} />}
-        </View>
         <ScrollView className="mt-5 w-full">
           {storeLoading && (
             <View className="flex h-40 w-full items-center justify-center px-10">
@@ -71,10 +89,13 @@ export default function SelectedStoreScreen() {
             {storeData &&
               (storeData.allBranches.length > 0 ? (
                 storeData.allBranches.map((b) => (
-                  <View key={b.id} className="mb-7">
+                  <TouchableOpacity
+                    onPress={() => router.push(`/(stores)/${b.storeId}/branch/${b.id}`)}
+                    key={b.id}
+                    className="mb-7">
                     <Text className="font-bold">{b.name}</Text>
                     <Text className="text-sm color-gray-700">{b.address?.fullAddress}</Text>
-                  </View>
+                  </TouchableOpacity>
                 ))
               ) : (
                 <Text className="text-center text-gray-600">No branches on this store</Text>
