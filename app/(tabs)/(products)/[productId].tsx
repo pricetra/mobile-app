@@ -65,8 +65,10 @@ export default function ProductScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      setRightNav(<></>);
       setRefreshKey((prev) => prev + 1);
       return () => {
+        setRightNav(<></>);
         setWatching(false);
         setFavorite(false);
       };
@@ -167,7 +169,7 @@ export default function ProductScreen() {
     if (productLoading || !productData) return;
     setRightNav(
       <>
-        {stockId && stockData && (
+        {stockId && (
           <TouchableOpacity
             onPress={toggleWatchList}
             className="flex flex-row items-center gap-2 p-2">
