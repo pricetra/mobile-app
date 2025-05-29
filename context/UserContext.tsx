@@ -118,3 +118,5 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     </UserAuthContext.Provider>
   );
 }
+
+export const useAuth = () => useContext(UserAuthContext);
