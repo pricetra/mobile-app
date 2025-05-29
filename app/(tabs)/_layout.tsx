@@ -63,6 +63,10 @@ export default function TabLayout() {
         name="(stores)/[id]"
         options={{
           href: null,
+          header: (props) => <TabHeaderItem {...props} />,
+          animation: 'shift',
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
