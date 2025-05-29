@@ -10,7 +10,9 @@ export type HeaderSectionStateType = (
 export type HeaderContextType = {
   subHeader?: ReactNode;
   rightNav?: ReactNode;
+  leftNav?: ReactNode;
   setSubHeader: (elem?: ReactNode) => void;
+  setLeftNav: (elem?: ReactNode) => void;
   setRightNav: (elem?: ReactNode) => void;
 };
 
@@ -19,13 +21,16 @@ const HeaderContext = createContext<HeaderContextType>({} as HeaderContextType);
 export const HeaderProvider = ({ children }: { children: ReactNode }) => {
   const [subHeader, setSubHeader] = useState<ReactNode>();
   const [rightNav, setRightNav] = useState<ReactNode>();
+  const [leftNav, setLeftNav] = useState<ReactNode>();
 
   return (
     <HeaderContext.Provider
       value={{
         subHeader,
+        leftNav,
         rightNav,
         setSubHeader,
+        setLeftNav,
         setRightNav,
       }}>
       {children}

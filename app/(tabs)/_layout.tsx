@@ -7,7 +7,7 @@ import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import TabHeader from '@/components/ui/TabHeader';
 import TabHeaderDismissible from '@/components/ui/TabHeaderDismissible';
-import TabHeaderProduct from '@/components/ui/TabHeaderProduct';
+import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { UserAuthContext } from '@/context/UserContext';
 import { createCloudinaryUrl } from '@/lib/files';
 
@@ -103,7 +103,7 @@ export default function TabLayout() {
         options={{
           href: null,
           animation: 'shift',
-          header: (props) => <TabHeaderProduct {...props} />,
+          header: (props) => <TabHeaderItem {...props} />,
           title: 'Product',
           tabBarShowLabel: false,
           tabBarStyle: { display: 'none' },
