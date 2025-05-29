@@ -1,7 +1,7 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useContext, useEffect, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -31,11 +31,14 @@ import {
   RemoveFromListDocument,
   Stock,
   StockDocument,
+  UserRole,
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
+import { isRoleAuthorized } from '@/lib/roles';
 
 export default function ProductScreen() {
-  const { lists } = useContext(UserAuthContext);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { lists, user } = useContext(UserAuthContext);
   const { setRightNav } = useHeader();
   const { productId, stockId } = useLocalSearchParams<{ productId: string; stockId?: string }>();
   const { location } = useCurrentLocation();
@@ -59,6 +62,16 @@ export default function ProductScreen() {
   const [removeFromList] = useMutation(RemoveFromListDocument, {
     refetchQueries: [GetAllListsDocument],
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      setRefreshKey((prev) => prev + 1);
+      return () => {
+        setWatching(false);
+        setFavorite(false);
+      };
+    }, [])
+  );
 
   useEffect(() => {
     if (!productError) return;
@@ -148,17 +161,19 @@ export default function ProductScreen() {
       getStock({ variables: { stockId } });
     }
     fetchProductStocksWithLocation(productId);
-  }, [productId, stockId]);
+  }, [productId, stockId, refreshKey]);
 
   useEffect(() => {
     if (productLoading || !productData) return;
     setRightNav(
       <>
-        <TouchableOpacity
-          onPress={() => setOpenEditModal(true)}
-          className="flex flex-row items-center gap-2 p-2">
-          <Feather name="edit" size={20} color="#3b82f6" />
-        </TouchableOpacity>
+        {stockId && stockData && (
+          <TouchableOpacity
+            onPress={toggleWatchList}
+            className="flex flex-row items-center gap-2 p-2">
+            <AntDesign name={watching ? 'eye' : 'eyeo'} size={20} color="#a855f7" />
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           onPress={toggleFavoriteList}
@@ -166,11 +181,13 @@ export default function ProductScreen() {
           <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={toggleWatchList}
-          className="flex flex-row items-center gap-2 p-2">
-          <AntDesign name={watching ? 'eye' : 'eyeo'} size={20} color="#a855f7" />
-        </TouchableOpacity>
+        {isRoleAuthorized(UserRole.Contributor, user.role) && (
+          <TouchableOpacity
+            onPress={() => setOpenEditModal(true)}
+            className="flex flex-row items-center gap-2 p-2">
+            <Feather name="edit" size={20} color="#3b82f6" />
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           onPress={() => setOpenPriceModal(true)}
@@ -180,7 +197,7 @@ export default function ProductScreen() {
         </TouchableOpacity>
       </>
     );
-  }, [productData, stockData, productLoading, favorite, watching, productId, stockId]);
+  }, [productData, stockData, productLoading, favorite, watching, productId, stockId, refreshKey]);
 
   if (productLoading || !productData || stockLoading) {
     return (
@@ -191,7 +208,7 @@ export default function ProductScreen() {
   }
 
   return (
-    <>
+    <Fragment key={refreshKey}>
       <ModalFormMini
         title="Add Price"
         visible={openPriceModal}
@@ -248,7 +265,7 @@ export default function ProductScreen() {
           onEditButtonPress={() => setOpenEditModal(true)}
         />
 
-        {stockData && (
+        {stockId && stockData && (
           <View className="mb-5 p-5">
             <View className="rounded-xl bg-gray-50 p-5">
               <SelectedStock stock={stockData.stock as Stock} />
@@ -263,6 +280,6 @@ export default function ProductScreen() {
 
         <View className="h-[100px]" />
       </ScrollView>
-    </>
+    </Fragment>
   );
 }
