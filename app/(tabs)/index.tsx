@@ -14,17 +14,16 @@ import ModalFormFull from '@/components/ui/ModalFormFull';
 import TabSubHeaderProductFilter, {
   PartialCategory,
 } from '@/components/ui/TabSubHeaderProductFilter';
+import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { AllProductsDocument, Product } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 
-const limit = 30;
-
 export default function HomeScreen() {
   const bottomTabBarHeight = 45;
   const [initLoading, setInitLoading] = useState(true);
-  const [getAllProducts, { data: productsData, error: productsError }] =
+  const [getAllProducts, { data: productsData, error: productsError, fetchMore }] =
     useLazyQuery(AllProductsDocument);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [products, setProducts] = useState<Product[]>([]);
@@ -62,7 +61,7 @@ export default function HomeScreen() {
     return getAllProducts({
       variables: {
         paginator: {
-          limit,
+          limit: LIMIT,
           page,
         },
         search: {
