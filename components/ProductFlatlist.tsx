@@ -1,3 +1,4 @@
+import { QueryResult } from '@apollo/client';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -12,12 +13,17 @@ import {
 
 import ProductItem, { RenderProductLoadingItems } from './ProductItem';
 
-import { Paginator, Product } from '@/graphql/types/graphql';
+import {
+  AllProductsQuery,
+  Paginator,
+  Product,
+  QueryAllProductsArgs,
+} from '@/graphql/types/graphql';
 
 export type ProductFlatlistProps = {
   products: Product[];
   paginator?: Paginator;
-  handleRefresh: () => Promise<void>;
+  handleRefresh: () => Promise<void | QueryResult<AllProductsQuery, QueryAllProductsArgs>>;
   setPage: (page: number) => void;
   style?: StyleProp<ViewStyle>;
   onItemLongPress?: (product: Product) => void;

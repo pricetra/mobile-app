@@ -22,26 +22,29 @@ import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 export default function HomeScreen() {
   const bottomTabBarHeight = 45;
-  const [initLoading, setInitLoading] = useState(true);
-  const [getAllProducts, { data: productsData, error: productsError, fetchMore }] =
-    useLazyQuery(AllProductsDocument);
+  const [getAllProducts, { data, error, loading, fetchMore }] = useLazyQuery(AllProductsDocument);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [page, setPage] = useState(1);
   const { search, searching, setSearching } = useContext(SearchContext);
   const { location, getCurrentLocation } = useCurrentLocation();
   const [locationInput, setLocationInput] = useState<LocationInput>();
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
 
+  const searchVariables = {
+    search: {
+      query: search,
+      location: locationInput,
+      category: categoryFilterInput?.category,
+      categoryId: categoryFilterInput?.categoryId,
+    },
+  };
+
   useFocusEffect(
     useCallback(() => {
       setSubHeader(
         <TabSubHeaderProductFilter
           selectedCategoryId={categoryFilterInput?.id}
-          onSelectCategory={(c) => {
-            setCategoryFilterInput(c);
-          }}
+          onSelectCategory={(c) => setCategoryFilterInput(c)}
         />
       );
       return () => setSubHeader(undefined);
@@ -57,75 +60,72 @@ export default function HomeScreen() {
     });
   }, [location]);
 
-  async function fetchProducts(page: number, force = false) {
-    return getAllProducts({
+  const loadProducts = useCallback(
+    async (page = 1, force = false) => {
+      if (!locationInput) return Promise.resolve();
+
+      try {
+        return await getAllProducts({
+          variables: {
+            paginator: { limit: LIMIT, page },
+            ...searchVariables,
+          },
+          fetchPolicy: force ? 'no-cache' : undefined,
+        });
+      } finally {
+        if (searching) setSearching(false);
+      }
+    },
+    [locationInput, searchVariables, searching, setSearching, getAllProducts]
+  );
+
+  const loadMore = useCallback(() => {
+    if (!data?.allProducts.paginator) return;
+
+    const { next } = data.allProducts.paginator;
+    if (!next) return;
+
+    return fetchMore({
       variables: {
-        paginator: {
-          limit: LIMIT,
-          page,
-        },
-        search: {
-          query: search,
-          location: locationInput,
-          category: categoryFilterInput?.category,
-          categoryId: categoryFilterInput?.categoryId,
-        },
+        paginator: { limit: LIMIT, page: next },
+        ...searchVariables,
       },
-      fetchPolicy: force ? 'no-cache' : undefined,
-    })
-      .then(({ data }) => {
-        if (!data) return;
+      updateQuery: (prev, { fetchMoreResult }) => ({
+        ...prev,
+        allProducts: {
+          ...fetchMoreResult.allProducts,
+          products: [...prev.allProducts.products, ...fetchMoreResult.allProducts.products],
+        },
+      }),
+    });
+  }, [data, fetchMore, searchVariables]);
 
-        if (page === 1) {
-          setProducts([...data.allProducts.products] as Product[]);
-        } else {
-          setProducts([...products, ...data.allProducts.products] as Product[]);
-        }
-      })
-      .finally(() => {
-        setInitLoading(false);
-        if (searching) {
-          setSearching(false);
-        }
-      });
-  }
-
+  // Initial load and dependency changes
   useEffect(() => {
-    if (!locationInput) return;
-    fetchProducts(page);
-  }, [page, locationInput]);
-
+    loadProducts(1);
+  }, [locationInput]);
   useEffect(() => {
-    if (search === undefined) return;
-    setPage(1);
-    setInitLoading(true);
-    fetchProducts(1, true);
-  }, [search]);
+    loadProducts(1, true);
+  }, [search, categoryFilterInput]);
 
-  useEffect(() => {
-    setPage(1);
-    setInitLoading(true);
-    fetchProducts(1, true);
-  }, [categoryFilterInput]);
-
-  if (productsError) {
+  if (error) {
     return (
       <SafeAreaView>
         <View className="p-5">
           <Alert icon={AlertTriangle} variant="destructive" className="max-w-xl">
             <AlertTitle>Error!</AlertTitle>
-            <AlertDescription>{productsError.message}</AlertDescription>
+            <AlertDescription>{error.message}</AlertDescription>
           </Alert>
         </View>
       </SafeAreaView>
     );
   }
 
-  if (initLoading || searching) {
+  if (loading || searching) {
     return <RenderProductLoadingItems count={10} />;
   }
 
-  if (!products) return;
+  const products = (data?.allProducts.products as Product[]) || [];
 
   if (products.length === 0) {
     return (
@@ -154,13 +154,12 @@ export default function HomeScreen() {
 
       <ProductFlatlist
         products={products}
-        paginator={productsData?.allProducts.paginator}
+        paginator={data?.allProducts.paginator}
         handleRefresh={async () => {
           await getCurrentLocation({});
-          setPage(1);
-          return fetchProducts(1, true);
+          return loadProducts(1, true);
         }}
-        setPage={setPage}
+        setPage={loadMore}
         onItemLongPress={(p) => setSelectedProduct(p)}
         style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0 }}
       />

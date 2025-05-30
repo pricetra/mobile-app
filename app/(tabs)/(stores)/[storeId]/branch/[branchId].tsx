@@ -2,31 +2,64 @@ import { useLazyQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Fragment, useCallback, useEffect, useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  Platform,
-} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
-import ProductItem from '@/components/ProductItem';
+import ProductFlatlist from '@/components/ProductFlatlist';
+import { RenderProductLoadingItems } from '@/components/ProductItem';
 import Image from '@/components/ui/Image';
+import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
 import { AllProductsDocument, BranchDocument, Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export default function SelectedBranchScreen() {
-  const bottomTabBarHeight = 45;
   const [refreshKey, setRefreshKey] = useState(0);
   const { setLeftNav, setRightNav } = useHeader();
   const { storeId, branchId } = useLocalSearchParams<{ storeId: string; branchId: string }>();
-  const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument);
+  const [fetchBranch, { data: branchData }] = useLazyQuery(BranchDocument);
   const [favorite, setFavorite] = useState(false);
-  const [getAllProducts, { data: productsData, error: productsError }] =
-    useLazyQuery(AllProductsDocument);
+  const [
+    getAllProducts,
+    { data: productsData, loading: productsLoading, fetchMore: fetchMoreProducts },
+  ] = useLazyQuery(AllProductsDocument);
+
+  const loadProducts = useCallback(
+    async (page = 1, force = false) => {
+      return getAllProducts({
+        variables: {
+          paginator: { limit: LIMIT, page },
+          search: {
+            branchId,
+          },
+        },
+        fetchPolicy: force ? 'no-cache' : undefined,
+      });
+    },
+    [storeId, branchId, getAllProducts]
+  );
+
+  const loadMore = useCallback(() => {
+    if (!productsData?.allProducts.paginator) return;
+
+    const { next } = productsData.allProducts.paginator;
+    if (!next) return;
+
+    return fetchMoreProducts({
+      variables: {
+        paginator: { limit: LIMIT, page: next },
+        search: {
+          branchId,
+        },
+      },
+      updateQuery: (prev, { fetchMoreResult }) => ({
+        ...prev,
+        allProducts: {
+          ...fetchMoreResult.allProducts,
+          products: [...prev.allProducts.products, ...fetchMoreResult.allProducts.products],
+        },
+      }),
+    });
+  }, [productsData, fetchMoreProducts]);
 
   useFocusEffect(
     useCallback(() => {
@@ -44,22 +77,13 @@ export default function SelectedBranchScreen() {
     if (!storeId || !branchId) return router.back();
 
     fetchBranch({
-      variables: { storeId, branchId },
-    }).then((data) => {
-      if (!data) return;
-      getAllProducts({
-        variables: {
-          search: {
-            branchId,
-          },
-          paginator: {
-            limit: 10,
-            page: 1,
-          },
-        },
-      });
+      variables: {
+        storeId,
+        branchId,
+      },
     });
-  }, [storeId, branchId, refreshKey]);
+    loadProducts(1);
+  }, [storeId, branchId, branchData, refreshKey]);
 
   useEffect(() => {
     if (!branchData) return;
@@ -72,7 +96,7 @@ export default function SelectedBranchScreen() {
         <View className="flex flex-col justify-center gap-[1px]">
           <Text className="font-bold">{branchData.findStore.name}</Text>
           {branchData.findBranch.address && (
-            <Text className="text-xs w-[80%]" numberOfLines={1}>
+            <Text className="w-[80%] text-xs" numberOfLines={1}>
               {branchData.findBranch.address.fullAddress}
             </Text>
           )}
@@ -88,26 +112,30 @@ export default function SelectedBranchScreen() {
     );
   }, [branchData, refreshKey]);
 
+  if (productsLoading) {
+    return <RenderProductLoadingItems count={10} />;
+  }
+
+  const products = (productsData?.allProducts.products as Product[]) || [];
+
+  if (products.length === 0) {
+    return (
+      <View className="flex items-center justify-center px-5 py-36">
+        <Text className="text-center">No products found</Text>
+      </View>
+    );
+  }
+
   return (
     <Fragment key={refreshKey}>
-      {productsData && (
-        <FlatList
-          data={productsData.allProducts.products as Product[]}
-          keyExtractor={({ id }, i) => `${id}-${i}`}
-          indicatorStyle="black"
-          renderItem={({ item }) => (
-            <View className="mb-10">
-              <TouchableOpacity
-                onPress={() =>
-                  router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`)
-                }>
-                <ProductItem product={item} />
-              </TouchableOpacity>
-            </View>
-          )}
-          className="p-5"
-        />
-      )}
+      <ProductFlatlist
+        products={products}
+        paginator={productsData?.allProducts.paginator}
+        handleRefresh={async () => {
+          return loadProducts(1, true);
+        }}
+        setPage={loadMore}
+      />
     </Fragment>
   );
 }

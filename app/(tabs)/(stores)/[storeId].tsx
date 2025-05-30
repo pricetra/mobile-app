@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 
 import CreateBranchForm from '@/components/CreateBranchForm';
-import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { useHeader } from '@/context/HeaderContext';
