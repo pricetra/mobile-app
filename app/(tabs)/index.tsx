@@ -2,19 +2,12 @@ import { useLazyQuery } from '@apollo/client';
 import { router, useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import {
-  View,
-  RefreshControl,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-  Platform,
-  Text,
-} from 'react-native';
+import { View, SafeAreaView, Platform, Text } from 'react-native';
 
 import { LocationInput } from '../../graphql/types/graphql';
 
-import ProductItem, { RenderProductLoadingItems } from '@/components/ProductItem';
+import ProductFlatlist from '@/components/ProductFlatlist';
+import { RenderProductLoadingItems } from '@/components/ProductItem';
 import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormFull from '@/components/ui/ModalFormFull';
@@ -31,7 +24,6 @@ const limit = 30;
 export default function HomeScreen() {
   const bottomTabBarHeight = 45;
   const [initLoading, setInitLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [getAllProducts, { data: productsData, error: productsError }] =
     useLazyQuery(AllProductsDocument);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
@@ -66,8 +58,8 @@ export default function HomeScreen() {
     });
   }, [location]);
 
-  function fetchProducts(page: number, force = false) {
-    getAllProducts({
+  async function fetchProducts(page: number, force = false) {
+    return getAllProducts({
       variables: {
         paginator: {
           limit,
@@ -92,7 +84,6 @@ export default function HomeScreen() {
         }
       })
       .finally(() => {
-        setRefreshing(false);
         setInitLoading(false);
         if (searching) {
           setSearching(false);
@@ -148,7 +139,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView>
       <ModalFormFull
-        title={selectedProduct ? 'Edit Product' : 'Add Product'}
+        title="Edit Product"
         visible={selectedProduct !== undefined}
         onRequestClose={() => setSelectedProduct(undefined)}>
         <ProductForm
@@ -162,48 +153,16 @@ export default function HomeScreen() {
         />
       </ModalFormFull>
 
-      <FlatList
-        data={products}
-        keyExtractor={({ id }, i) => `${id}-${i}`}
-        indicatorStyle="black"
-        renderItem={({ item }) => (
-          <View className="mb-10">
-            <TouchableOpacity
-              onPress={() => router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`)}
-              onLongPress={() => setSelectedProduct(item)}>
-              <ProductItem product={item} />
-            </TouchableOpacity>
-          </View>
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => {
-              setRefreshing(true);
-              setTimeout(() => {
-                getCurrentLocation({});
-                setPage(1);
-                fetchProducts(1, true);
-              }, 2000);
-            }}
-            colors={Platform.OS === 'ios' ? ['black'] : ['white']}
-            progressBackgroundColor="#111827"
-          />
-        }
-        onEndReached={() => {
-          if (!productsData?.allProducts?.paginator || !productsData?.allProducts?.paginator.next)
-            return;
-          setPage(productsData.allProducts.paginator.next);
+      <ProductFlatlist
+        products={products}
+        paginator={productsData?.allProducts.paginator}
+        handleRefresh={async () => {
+          await getCurrentLocation({});
+          setPage(1);
+          return fetchProducts(1, true);
         }}
-        onEndReachedThreshold={5}
-        className="p-5"
-        ListFooterComponent={() => (
-          <>
-            {products.length > 0 && productsData?.allProducts?.paginator?.next && (
-              <RenderProductLoadingItems count={5} noPadding />
-            )}
-          </>
-        )}
+        setPage={setPage}
+        onItemLongPress={(p) => setSelectedProduct(p)}
         style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0 }}
       />
     </SafeAreaView>
