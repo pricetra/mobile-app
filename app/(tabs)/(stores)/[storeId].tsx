@@ -21,9 +21,11 @@ export default function SelectedStoreScreen() {
   useFocusEffect(
     useCallback(() => {
       setLeftNav(<></>);
+      setRightNav(<></>);
       setRefreshKey((prev) => prev + 1);
       return () => {
-        setLeftNav(<></>);
+        setLeftNav(undefined);
+        setRightNav(undefined);
       };
     }, [])
   );
@@ -58,22 +60,22 @@ export default function SelectedStoreScreen() {
   }, [storeData, refreshKey]);
 
   return (
-    <SafeAreaView className="h-full" key={refreshKey}>
-      {storeData && (
-        <ModalFormMini
-          visible={openModal}
-          onRequestClose={() => setOpenModal(false)}
-          title="Add Branch">
-          <CreateBranchForm
-            store={storeData.findStore}
-            onSuccess={(_data) => setOpenModal(false)}
-            onError={(e) => alert(e.message)}
-          />
-        </ModalFormMini>
-      )}
+    <ScrollView>
+      <SafeAreaView className="h-full" key={refreshKey}>
+        {storeData && (
+          <ModalFormMini
+            visible={openModal}
+            onRequestClose={() => setOpenModal(false)}
+            title="Add Branch">
+            <CreateBranchForm
+              store={storeData.findStore}
+              onSuccess={(_data) => setOpenModal(false)}
+              onError={(e) => alert(e.message)}
+            />
+          </ModalFormMini>
+        )}
 
-      <View className="p-5">
-        <ScrollView className="mt-5 w-full">
+        <View className="p-5">
           {storeLoading && (
             <View className="flex h-40 w-full items-center justify-center px-10">
               <AntDesign
@@ -100,8 +102,8 @@ export default function SelectedStoreScreen() {
                 <Text className="text-center text-gray-600">No branches on this store</Text>
               ))}
           </View>
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+        </View>
+      </SafeAreaView>
+    </ScrollView>
   );
 }

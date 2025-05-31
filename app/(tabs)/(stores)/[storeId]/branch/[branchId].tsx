@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Fragment, useCallback, useEffect, useState } from 'react';
@@ -9,10 +9,19 @@ import { RenderProductLoadingItems } from '@/components/ProductItem';
 import Image from '@/components/ui/Image';
 import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
-import { AllProductsDocument, BranchDocument, Product } from '@/graphql/types/graphql';
+import { useAuth } from '@/context/UserContext';
+import {
+  AddBranchToListDocument,
+  AllProductsDocument,
+  BranchDocument,
+  GetAllListsDocument,
+  Product,
+  RemoveBranchFromListDocument,
+} from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export default function SelectedBranchScreen() {
+  const { lists } = useAuth();
   const [refreshKey, setRefreshKey] = useState(0);
   const { setLeftNav, setRightNav } = useHeader();
   const { storeId, branchId } = useLocalSearchParams<{ storeId: string; branchId: string }>();
@@ -22,6 +31,12 @@ export default function SelectedBranchScreen() {
     getAllProducts,
     { data: productsData, loading: productsLoading, fetchMore: fetchMoreProducts },
   ] = useLazyQuery(AllProductsDocument);
+  const [addBranchToList] = useMutation(AddBranchToListDocument, {
+    refetchQueries: [GetAllListsDocument],
+  });
+  const [removeBranchFromList] = useMutation(RemoveBranchFromListDocument, {
+    refetchQueries: [GetAllListsDocument],
+  });
 
   const loadProducts = useCallback(
     async (page = 1, force = false) => {
@@ -67,8 +82,8 @@ export default function SelectedBranchScreen() {
       setRightNav(<></>);
       setRefreshKey((prev) => prev + 1);
       return () => {
-        setLeftNav(<></>);
-        setRightNav(<></>);
+        setLeftNav(undefined);
+        setRightNav(undefined);
       };
     }, [])
   );
@@ -76,6 +91,9 @@ export default function SelectedBranchScreen() {
   useEffect(() => {
     if (!storeId || !branchId) return router.back();
 
+    setFavorite(
+      lists.favorites.branchList?.some((b) => b.branchId.toString() === branchId) ?? false
+    );
     fetchBranch({
       variables: {
         storeId,
@@ -83,7 +101,7 @@ export default function SelectedBranchScreen() {
       },
     });
     loadProducts(1);
-  }, [storeId, branchId, branchData, refreshKey]);
+  }, [storeId, branchId, refreshKey]);
 
   useEffect(() => {
     if (!branchData) return;
@@ -105,12 +123,34 @@ export default function SelectedBranchScreen() {
     );
     setRightNav(
       <>
-        <TouchableOpacity onPress={() => {}} className="flex flex-row items-center gap-2 p-2">
+        <TouchableOpacity
+          onPress={() => {
+            if (!favorite) {
+              setFavorite(true);
+              addBranchToList({
+                variables: {
+                  branchId,
+                  listId: lists.favorites.id,
+                },
+              }).catch(() => setFavorite(false));
+              return;
+            }
+            setFavorite(false);
+            removeBranchFromList({
+              variables: {
+                branchListId: lists.favorites.branchList?.find(
+                  (b) => b.branchId.toString() === branchId
+                )?.id!,
+                listId: lists.favorites.id,
+              },
+            });
+          }}
+          className="flex flex-row items-center gap-2 p-2">
           <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
         </TouchableOpacity>
       </>
     );
-  }, [branchData, refreshKey]);
+  }, [branchData, refreshKey, favorite]);
 
   if (productsLoading) {
     return <RenderProductLoadingItems count={10} />;
