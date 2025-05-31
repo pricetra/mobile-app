@@ -1,7 +1,7 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { Fragment, useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -37,9 +37,8 @@ import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { isRoleAuthorized } from '@/lib/roles';
 
 export default function ProductScreen() {
-  const [refreshKey, setRefreshKey] = useState(0);
   const { lists, user } = useContext(UserAuthContext);
-  const { setRightNav } = useHeader();
+  const { setRightNav, setLeftNav } = useHeader();
   const { productId, stockId } = useLocalSearchParams<{ productId: string; stockId?: string }>();
   const { location } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
@@ -57,6 +56,7 @@ export default function ProductScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [watching, setWatching] = useState(false);
+  const loading = productLoading || stockLoading;
 
   const [addToList] = useMutation(AddToListDocument, { refetchQueries: [GetAllListsDocument] });
   const [removeFromList] = useMutation(RemoveFromListDocument, {
@@ -65,14 +65,29 @@ export default function ProductScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      setLeftNav(undefined);
       setRightNav(<></>);
-      setRefreshKey((prev) => prev + 1);
+
+      setFavorite(
+        lists.favorites.productList?.some((p) => p.productId.toString() === productId) ?? false
+      );
+      setWatching(
+        lists.watchList.productList?.some((p) => p.productId.toString() === productId) ?? false
+      );
+
+      getProduct({
+        variables: { productId },
+      });
+      if (stockId) {
+        getStock({ variables: { stockId } });
+      }
+      fetchProductStocksWithLocation(productId);
       return () => {
         setRightNav(<></>);
         setWatching(false);
         setFavorite(false);
       };
-    }, [])
+    }, [productId])
   );
 
   useEffect(() => {
@@ -147,26 +162,7 @@ export default function ProductScreen() {
   }
 
   useEffect(() => {
-    if (!productId || typeof productId !== 'string') return router.back();
-
-    setFavorite(
-      lists.favorites.productList?.some((p) => p.productId.toString() === productId) ?? false
-    );
-    setWatching(
-      lists.watchList.productList?.some((p) => p.productId.toString() === productId) ?? false
-    );
-
-    getProduct({
-      variables: { productId },
-    });
-    if (stockId) {
-      getStock({ variables: { stockId } });
-    }
-    fetchProductStocksWithLocation(productId);
-  }, [productId, stockId, refreshKey]);
-
-  useEffect(() => {
-    if (productLoading || !productData) return;
+    if (loading) return;
     setRightNav(
       <>
         {stockId && (
@@ -199,9 +195,9 @@ export default function ProductScreen() {
         </TouchableOpacity>
       </>
     );
-  }, [productData, stockData, productLoading, favorite, watching, productId, stockId, refreshKey]);
+  }, [loading, favorite, watching]);
 
-  if (productLoading || !productData || stockLoading) {
+  if (loading || !productData) {
     return (
       <SafeAreaView>
         <ProductFullLoading />
@@ -210,7 +206,7 @@ export default function ProductScreen() {
   }
 
   return (
-    <Fragment key={refreshKey}>
+    <>
       <ModalFormMini
         title="Add Price"
         visible={openPriceModal}
@@ -282,6 +278,6 @@ export default function ProductScreen() {
 
         <View className="h-[100px]" />
       </ScrollView>
-    </Fragment>
+    </>
   );
 }
