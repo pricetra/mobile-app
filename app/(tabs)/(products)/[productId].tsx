@@ -173,7 +173,7 @@ export default function ProductScreen() {
           <TouchableOpacity
             onPress={toggleWatchList}
             className="flex flex-row items-center gap-2 p-2">
-            <AntDesign name={watching ? 'eye' : 'eyeo'} size={20} color="#a855f7" />
+            <AntDesign name={watching ? 'eye' : 'eyeo'} size={25} color="#a855f7" />
           </TouchableOpacity>
         )}
 
