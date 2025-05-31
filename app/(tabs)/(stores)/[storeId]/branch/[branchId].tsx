@@ -25,7 +25,9 @@ export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
   const { storeId, branchId } = useLocalSearchParams<{ storeId: string; branchId: string }>();
-  const [fetchBranch, { data: branchData }] = useLazyQuery(BranchDocument);
+  const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
+    fetchPolicy: 'network-only',
+  });
   const [favorite, setFavorite] = useState(false);
   const [
     getAllProducts,
@@ -99,7 +101,7 @@ export default function SelectedBranchScreen() {
   );
 
   useEffect(() => {
-    if (!branchData) return;
+    if (branchLoading || !branchData) return;
 
     navigation.setOptions({
       header: (props: BottomTabHeaderProps) => (
@@ -151,7 +153,7 @@ export default function SelectedBranchScreen() {
         />
       ),
     });
-  }, [favorite, branchData, branchId]);
+  }, [favorite, branchLoading]);
 
   if (productsLoading) {
     return <RenderProductLoadingItems count={10} />;
