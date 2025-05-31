@@ -29,7 +29,7 @@ export default function StockFull({ stock }: StockFullProps) {
             flexWrap: 'wrap',
           }}>
           <View className="flex w-full flex-row flex-wrap items-center gap-3">
-            <Text className="text-lg font-semibold">{stock.store.name}</Text>
+            <Text className="text-lg font-bold">{stock.store.name}</Text>
 
             {stock.latestPrice?.sale && (
               <View className="w-[35px]">
