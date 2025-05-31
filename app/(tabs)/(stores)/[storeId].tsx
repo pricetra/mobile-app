@@ -1,67 +1,66 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { SafeAreaView, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 
 import CreateBranchForm from '@/components/CreateBranchForm';
 import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
-import { useHeader } from '@/context/HeaderContext';
+import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { FindStoreDocument } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export default function SelectedStoreScreen() {
-  const [refreshKey, setRefreshKey] = useState(0);
-  const { setLeftNav, setRightNav } = useHeader();
+  const navigation = useNavigation();
   const { storeId } = useLocalSearchParams<{ storeId: string }>();
   const [openModal, setOpenModal] = useState(false);
   const [findStore, { data: storeData, loading: storeLoading }] = useLazyQuery(FindStoreDocument);
 
   useFocusEffect(
     useCallback(() => {
-      setLeftNav(<></>);
-      setRightNav(<></>);
-      setRefreshKey((prev) => prev + 1);
+      if (!storeId) return router.back();
+      findStore({
+        variables: { id: storeId },
+      }).then(({ data }) => {
+        if (!data) return;
+
+        navigation.setOptions({
+          header: (props: BottomTabHeaderProps) => (
+            <TabHeaderItem
+              {...props}
+              leftNav={
+                <View className="flex flex-row items-center gap-2">
+                  <Image
+                    src={createCloudinaryUrl(data.findStore.logo, 100, 100)}
+                    className="size-[30px] rounded-lg"
+                  />
+                  <Text className="font-bold">{data.findStore.name}</Text>
+                </View>
+              }
+              rightNav={
+                <TouchableOpacity
+                  onPress={() => setOpenModal(true)}
+                  className="flex flex-row items-center gap-2 rounded-full p-2">
+                  <Feather name="plus" size={20} color="#3b82f6" />
+                </TouchableOpacity>
+              }
+            />
+          ),
+        });
+      });
       return () => {
-        setLeftNav(undefined);
-        setRightNav(undefined);
+        navigation.setOptions({
+          header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
+        });
       };
-    }, [])
+    }, [storeId])
   );
-
-  useEffect(() => {
-    if (!storeId) return router.back();
-    findStore({
-      variables: { id: storeId },
-    });
-  }, [storeId, refreshKey]);
-
-  useEffect(() => {
-    if (!storeData) return;
-    setLeftNav(
-      <View className="flex flex-row items-center gap-2">
-        <Image
-          src={createCloudinaryUrl(storeData.findStore.logo, 100, 100)}
-          className="size-[30px] rounded-lg"
-        />
-        <Text className="font-bold">{storeData.findStore.name}</Text>
-      </View>
-    );
-    setRightNav(
-      <>
-        <TouchableOpacity
-          onPress={() => setOpenModal(true)}
-          className="flex flex-row items-center gap-2 rounded-full p-2">
-          <Feather name="plus" size={20} color="#3b82f6" />
-        </TouchableOpacity>
-      </>
-    );
-  }, [storeData, refreshKey]);
 
   return (
     <ScrollView>
-      <SafeAreaView className="h-full" key={refreshKey}>
+      <SafeAreaView className="h-full">
         {storeData && (
           <ModalFormMini
             visible={openModal}

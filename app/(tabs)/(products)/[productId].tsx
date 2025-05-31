@@ -1,6 +1,6 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   SafeAreaView,
@@ -20,7 +20,6 @@ import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
-import { useHeader } from '@/context/HeaderContext';
 import { UserAuthContext } from '@/context/UserContext';
 import {
   AddToListDocument,
@@ -35,10 +34,12 @@ import {
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { isRoleAuthorized } from '@/lib/roles';
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import TabHeaderItem from '@/components/ui/TabHeaderItem';
 
 export default function ProductScreen() {
+  const navigation = useNavigation();
   const { lists, user } = useContext(UserAuthContext);
-  const { setRightNav, setLeftNav } = useHeader();
   const { productId, stockId } = useLocalSearchParams<{ productId: string; stockId?: string }>();
   const { location } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
@@ -65,9 +66,6 @@ export default function ProductScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setLeftNav(undefined);
-      setRightNav(<></>);
-
       setFavorite(
         lists.favorites.productList?.some((p) => p.productId.toString() === productId) ?? false
       );
@@ -83,9 +81,11 @@ export default function ProductScreen() {
       }
       fetchProductStocksWithLocation(productId);
       return () => {
-        setRightNav(<></>);
         setWatching(false);
         setFavorite(false);
+        navigation.setOptions({
+          header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
+        });
       };
     }, [productId])
   );
@@ -163,38 +163,45 @@ export default function ProductScreen() {
 
   useEffect(() => {
     if (loading) return;
-    setRightNav(
-      <>
-        {stockId && (
-          <TouchableOpacity
-            onPress={toggleWatchList}
-            className="flex flex-row items-center gap-2 p-2">
-            <AntDesign name={watching ? 'eye' : 'eyeo'} size={25} color="#a855f7" />
-          </TouchableOpacity>
-        )}
+    navigation.setOptions({
+      header: (props: BottomTabHeaderProps) => (
+        <TabHeaderItem
+          {...props}
+          rightNav={
+            <>
+              {stockId && (
+                <TouchableOpacity
+                  onPress={toggleWatchList}
+                  className="flex flex-row items-center gap-2 p-2">
+                  <AntDesign name={watching ? 'eye' : 'eyeo'} size={25} color="#a855f7" />
+                </TouchableOpacity>
+              )}
 
-        <TouchableOpacity
-          onPress={toggleFavoriteList}
-          className="flex flex-row items-center gap-2 p-2">
-          <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
-        </TouchableOpacity>
+              <TouchableOpacity
+                onPress={toggleFavoriteList}
+                className="flex flex-row items-center gap-2 p-2">
+                <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+              </TouchableOpacity>
 
-        {isRoleAuthorized(UserRole.Contributor, user.role) && (
-          <TouchableOpacity
-            onPress={() => setOpenEditModal(true)}
-            className="flex flex-row items-center gap-2 p-2">
-            <Feather name="edit" size={20} color="#3b82f6" />
-          </TouchableOpacity>
-        )}
+              {isRoleAuthorized(UserRole.Contributor, user.role) && (
+                <TouchableOpacity
+                  onPress={() => setOpenEditModal(true)}
+                  className="flex flex-row items-center gap-2 p-2">
+                  <Feather name="edit" size={20} color="#3b82f6" />
+                </TouchableOpacity>
+              )}
 
-        <TouchableOpacity
-          onPress={() => setOpenPriceModal(true)}
-          className="flex flex-row items-center gap-2 rounded-full bg-green-100 px-4 py-2">
-          <Feather name="plus" size={20} color="#396a12" />
-          <Text className="text-sm font-bold color-pricetraGreenHeavyDark">Price</Text>
-        </TouchableOpacity>
-      </>
-    );
+              <TouchableOpacity
+                onPress={() => setOpenPriceModal(true)}
+                className="flex flex-row items-center gap-2 rounded-full bg-green-100 px-4 py-2">
+                <Feather name="plus" size={20} color="#396a12" />
+                <Text className="text-sm font-bold color-pricetraGreenHeavyDark">Price</Text>
+              </TouchableOpacity>
+            </>
+          }
+        />
+      ),
+    });
   }, [loading, favorite, watching]);
 
   if (loading || !productData) {

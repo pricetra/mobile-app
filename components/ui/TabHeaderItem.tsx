@@ -1,12 +1,15 @@
 import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router';
+import { ReactNode } from 'react';
 import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
-import { useHeader } from '@/context/HeaderContext';
 import { cn } from '@/lib/utils';
 
-export type TabHeaderItemProps = BottomTabHeaderProps;
+export type TabHeaderItemProps = BottomTabHeaderProps & {
+  leftNav?: ReactNode;
+  rightNav?: ReactNode;
+};
 
 const iconSize = 20;
 const logoHeight = 23;
@@ -15,9 +18,7 @@ const navHeight = 2 * padding + logoHeight;
 
 const iconColor = '#333';
 
-export default function TabHeaderItem(props: TabHeaderItemProps) {
-  const { rightNav, leftNav } = useHeader();
-
+export default function TabHeaderItem({ leftNav, rightNav }: TabHeaderItemProps) {
   const iconStyles: StyleProp<ViewStyle> = {
     paddingVertical: padding,
     paddingHorizontal: padding + 5,

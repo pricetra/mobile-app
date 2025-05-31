@@ -1,14 +1,15 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
 import Image from '@/components/ui/Image';
+import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { LIMIT } from '@/constants/constants';
-import { useHeader } from '@/context/HeaderContext';
 import { useAuth } from '@/context/UserContext';
 import {
   AddBranchToListDocument,
@@ -21,9 +22,8 @@ import {
 import { createCloudinaryUrl } from '@/lib/files';
 
 export default function SelectedBranchScreen() {
+  const navigation = useNavigation();
   const { lists } = useAuth();
-  const [refreshKey, setRefreshKey] = useState(0);
-  const { setLeftNav, setRightNav } = useHeader();
   const { storeId, branchId } = useLocalSearchParams<{ storeId: string; branchId: string }>();
   const [fetchBranch, { data: branchData }] = useLazyQuery(BranchDocument);
   const [favorite, setFavorite] = useState(false);
@@ -78,79 +78,80 @@ export default function SelectedBranchScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setLeftNav(<></>);
-      setRightNav(<></>);
-      setRefreshKey((prev) => prev + 1);
+      if (!storeId || !branchId) return router.back();
+
+      setFavorite(
+        lists.favorites.branchList?.some((b) => b.branchId.toString() === branchId) ?? false
+      );
+      fetchBranch({
+        variables: {
+          storeId,
+          branchId,
+        },
+      });
+      loadProducts(1);
       return () => {
-        setLeftNav(undefined);
-        setRightNav(undefined);
+        navigation.setOptions({
+          header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
+        });
       };
-    }, [])
+    }, [storeId, branchId])
   );
 
   useEffect(() => {
-    if (!storeId || !branchId) return router.back();
-
-    setFavorite(
-      lists.favorites.branchList?.some((b) => b.branchId.toString() === branchId) ?? false
-    );
-    fetchBranch({
-      variables: {
-        storeId,
-        branchId,
-      },
-    });
-    loadProducts(1);
-  }, [storeId, branchId, refreshKey]);
-
-  useEffect(() => {
     if (!branchData) return;
-    setLeftNav(
-      <View className="flex flex-row items-center gap-2">
-        <Image
-          src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
-          className="size-[30px] rounded-lg"
+
+    navigation.setOptions({
+      header: (props: BottomTabHeaderProps) => (
+        <TabHeaderItem
+          {...props}
+          leftNav={
+            <View className="flex flex-row items-center gap-2">
+              <Image
+                src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
+                className="size-[30px] rounded-lg"
+              />
+              <View className="flex flex-col justify-center gap-[1px]">
+                <Text className="font-bold">{branchData.findStore.name}</Text>
+                {branchData.findBranch.address && (
+                  <Text className="w-[80%] text-xs" numberOfLines={1}>
+                    {branchData.findBranch.address.fullAddress}
+                  </Text>
+                )}
+              </View>
+            </View>
+          }
+          rightNav={
+            <TouchableOpacity
+              onPress={() => {
+                if (!favorite) {
+                  setFavorite(true);
+                  addBranchToList({
+                    variables: {
+                      branchId,
+                      listId: lists.favorites.id,
+                    },
+                  }).catch(() => setFavorite(false));
+                  return;
+                }
+                setFavorite(false);
+                removeBranchFromList({
+                  variables: {
+                    branchListId: lists.favorites.branchList?.find(
+                      (b) => b.branchId.toString() === branchId
+                    )?.id!,
+                    listId: lists.favorites.id,
+                  },
+                });
+              }}
+              className="flex flex-row items-center gap-2 p-2">
+              <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+            </TouchableOpacity>
+          }
         />
-        <View className="flex flex-col justify-center gap-[1px]">
-          <Text className="font-bold">{branchData.findStore.name}</Text>
-          {branchData.findBranch.address && (
-            <Text className="w-[80%] text-xs" numberOfLines={1}>
-              {branchData.findBranch.address.fullAddress}
-            </Text>
-          )}
-        </View>
-      </View>
-    );
-    setRightNav(
-      <>
-        <TouchableOpacity
-          onPress={() => {
-            if (!favorite) {
-              setFavorite(true);
-              addBranchToList({
-                variables: {
-                  branchId,
-                  listId: lists.favorites.id,
-                },
-              }).catch(() => setFavorite(false));
-              return;
-            }
-            setFavorite(false);
-            removeBranchFromList({
-              variables: {
-                branchListId: lists.favorites.branchList?.find(
-                  (b) => b.branchId.toString() === branchId
-                )?.id!,
-                listId: lists.favorites.id,
-              },
-            });
-          }}
-          className="flex flex-row items-center gap-2 p-2">
-          <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
-        </TouchableOpacity>
-      </>
-    );
-  }, [branchData, refreshKey, favorite]);
+      ),
+    });
+  }, [favorite, branchData, branchId]);
 
   if (productsLoading) {
     return <RenderProductLoadingItems count={10} />;
@@ -167,15 +168,13 @@ export default function SelectedBranchScreen() {
   }
 
   return (
-    <Fragment key={refreshKey}>
-      <ProductFlatlist
-        products={products}
-        paginator={productsData?.allProducts.paginator}
-        handleRefresh={async () => {
-          return loadProducts(1, true);
-        }}
-        setPage={loadMore}
-      />
-    </Fragment>
+    <ProductFlatlist
+      products={products}
+      paginator={productsData?.allProducts.paginator}
+      handleRefresh={async () => {
+        return loadProducts(1, true);
+      }}
+      setPage={loadMore}
+    />
   );
 }
