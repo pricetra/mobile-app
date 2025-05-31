@@ -530,28 +530,28 @@ export const GET_ALL_LISTS = gql`
             expandedPathname
             path
           }
-          stock {
-            id
-            productId
-            storeId
-            branchId
-            latestPriceId
-            latestPrice {
-              id
-              amount
-              currencyCode
-              createdAt
-              sale
-              originalPrice
-              condition
-              expiresAt
-            }
-          }
           weight
           lowestRecordedPrice
           highestRecordedPrice
           createdAt
           updatedAt
+        }
+        stock {
+          id
+          productId
+          storeId
+          branchId
+          latestPriceId
+          latestPrice {
+            id
+            amount
+            currencyCode
+            createdAt
+            sale
+            originalPrice
+            condition
+            expiresAt
+          }
         }
         stockId
         createdAt
