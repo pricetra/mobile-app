@@ -246,3 +246,27 @@ export const REMOVE_FROM_LIST_MUTATION = gql(`
     }
   }
 `);
+
+export const ADD_BRANCH_TO_LIST_MUTATION = gql(`
+  mutation AddBranchToList($listId: ID!, $branchId: ID!) {
+    addBranchToList(listId: $listId, branchId: $branchId) {
+      id
+      userId
+      listId
+      branchId
+      createdAt
+    }
+  }
+`);
+
+export const REMOVE_BRANCH_FROM_LIST_MUTATION = gql(`
+  mutation RemoveBranchFromList($listId: ID!, $branchListId: ID!) {
+    removeBranchFromList(listId: $listId, branchListId: $branchListId) {
+      id
+      userId
+      listId
+      branchId
+      createdAt
+    }
+  }
+`);

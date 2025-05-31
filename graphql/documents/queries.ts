@@ -534,28 +534,7 @@ export const GET_ALL_LISTS = gql`
             id
             productId
             storeId
-            store {
-              id
-              name
-              logo
-            }
             branchId
-            branch {
-              id
-              name
-              address {
-                id
-                latitude
-                longitude
-                mapsLink
-                fullAddress
-                city
-                administrativeDivision
-                zipCode
-                country
-                distance
-              }
-            }
             latestPriceId
             latestPrice {
               id
@@ -573,13 +552,30 @@ export const GET_ALL_LISTS = gql`
           highestRecordedPrice
           createdAt
           updatedAt
-          createdBy {
-            id
-            name
-            avatar
-          }
         }
         stockId
+        createdAt
+      }
+      branchList {
+        id
+        listId
+        branchId
+        branch {
+          id
+          name
+          address {
+            id
+            latitude
+            longitude
+            mapsLink
+            fullAddress
+            city
+            administrativeDivision
+            zipCode
+            country
+            distance
+          }
+        }
         createdAt
       }
     }
