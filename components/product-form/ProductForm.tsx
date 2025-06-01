@@ -223,7 +223,9 @@ export default function ProductForm({
                   formik.values.brand !== ''
                     ? `${formik.values.brand} ${formik.values.name}`
                     : formik.values.name;
-                Linking.openURL(`https://www.google.com/search?udm=2&q=${encodeURI(query)}`);
+                Linking.openURL(
+                  `https://www.google.com/search?udm=2&q=${encodeURIComponent(query)}`
+                );
               }}>
               <View className="flex size-28 items-center justify-center gap-2 rounded-md bg-sky-100/50">
                 <Feather name="globe" color="#3b82f6" size={35} />
