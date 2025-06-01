@@ -79,6 +79,12 @@
         "projectId": "5e02d7a0-8d71-485d-aec0-90390344e35a"
       }
     },
-    "owner": "pricetra"
+    "owner": "pricetra",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5e02d7a0-8d71-485d-aec0-90390344e35a"
+    }
   }
 }
