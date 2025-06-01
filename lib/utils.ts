@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { postgresArrayToArray } from './strings';
 
-import { Category } from '@/graphql/types/graphql';
+import { Category, Product } from '@/graphql/types/graphql';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -50,4 +50,18 @@ export function toPrecision(n: number, p: number): string {
 
 export function metersToMiles(m: number) {
   return toPrecision(convert(m).from('m').to('mi'), 2);
+}
+
+export function incompleteProductFields(product: Product): string[] {
+  const fields: string[] = [];
+  if (product.name.trim() === '') {
+    fields.push('name');
+  }
+  if (product.brand.trim() === '') {
+    fields.push('brand');
+  }
+  if (product.categoryId.toString() === '0' || product.categoryId.toString() === '842') {
+    fields.push('category');
+  }
+  return fields;
 }

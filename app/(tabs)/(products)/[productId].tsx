@@ -1,5 +1,6 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
@@ -20,6 +21,7 @@ import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { UserAuthContext } from '@/context/UserContext';
 import {
   AddToListDocument,
@@ -34,8 +36,7 @@ import {
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { isRoleAuthorized } from '@/lib/roles';
-import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
-import TabHeaderItem from '@/components/ui/TabHeaderItem';
+import { incompleteProductFields } from '@/lib/utils';
 
 export default function ProductScreen() {
   const navigation = useNavigation();
@@ -203,6 +204,13 @@ export default function ProductScreen() {
       ),
     });
   }, [loading, favorite, watching]);
+
+  useEffect(() => {
+    if (!productData) return;
+    const fields = incompleteProductFields(productData.product);
+    if (fields.length === 0) return;
+    setOpenEditModal(true);
+  }, [productData]);
 
   if (loading || !productData) {
     return (
