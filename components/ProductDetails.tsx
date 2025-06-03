@@ -7,14 +7,19 @@ import SelectedStock from './SelectedStock';
 import ModalFormMini from './ui/ModalFormMini';
 
 import StockFull from '@/components/StockFull';
-import { Product, Stock } from '@/graphql/types/graphql';
+import { BranchListWithPrices, Product, Stock } from '@/graphql/types/graphql';
+
+export type StockWithApproximatePrice = Stock & {
+  approximatePrice?: number;
+};
 
 export type ProductDetailsProps = {
+  favBranchesPriceData: BranchListWithPrices[];
   product: Product;
   stocks: Stock[];
 };
 
-export function ProductDetails({ stocks, product }: ProductDetailsProps) {
+export function ProductDetails({ favBranchesPriceData, stocks, product }: ProductDetailsProps) {
   const [activeSections, setActiveSections] = useState<number[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock>();
 
@@ -37,6 +42,39 @@ export function ProductDetails({ stocks, product }: ProductDetailsProps) {
         onChange={setActiveSections}
         expandMultiple
         sections={[
+          {
+            title: 'Favorite Branches',
+            content: (
+              <View>
+                {favBranchesPriceData.length > 0 ? (
+                  favBranchesPriceData
+                    .map(
+                      (data) =>
+                        ({
+                          id: data.stock?.id ?? 0,
+                          latestPriceId: data.stock?.latestPrice?.id ?? 0,
+                          latestPrice: data.stock?.latestPrice,
+                          branchId: data.branchId,
+                          branch: data.branch,
+                          store: data.branch?.store,
+                          storeId: data.branch?.storeId,
+                          approximatePrice: data.approximatePrice,
+                        }) as StockWithApproximatePrice
+                    )
+                    .map(({ approximatePrice, ...stock }, i) => (
+                      <TouchableOpacity
+                        onPress={() => {}}
+                        className="mb-5"
+                        key={`${stock.id}-${i}`}>
+                        <StockFull stock={stock} approximatePrice={approximatePrice} />
+                      </TouchableOpacity>
+                    ))
+                ) : (
+                  <Text className="py-5 text-center">You have no branches in your favorites</Text>
+                )}
+              </View>
+            ),
+          },
           {
             title: 'Available at',
             content: (

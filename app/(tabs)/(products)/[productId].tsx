@@ -25,6 +25,8 @@ import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { UserAuthContext } from '@/context/UserContext';
 import {
   AddToListDocument,
+  BranchListWithPrices,
+  FavoriteBranchesWithPricesDocument,
   GetAllListsDocument,
   GetProductStocksDocument,
   LocationInput,
@@ -53,6 +55,10 @@ export default function ProductScreen() {
   const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
     fetchPolicy: 'network-only',
   });
+  const [getFavBranchesPrices, { data: favBranchesPriceData }] = useLazyQuery(
+    FavoriteBranchesWithPricesDocument,
+    { fetchPolicy: 'network-only' }
+  );
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -81,6 +87,11 @@ export default function ProductScreen() {
         getStock({ variables: { stockId } });
       }
       fetchProductStocksWithLocation(productId);
+      getFavBranchesPrices({
+        variables: {
+          productId,
+        },
+      });
       return () => {
         setWatching(false);
         setFavorite(false);
@@ -288,6 +299,9 @@ export default function ProductScreen() {
 
         <ProductDetails
           stocks={(stocksData?.getProductStocks ?? []) as Stock[]}
+          favBranchesPriceData={
+            (favBranchesPriceData?.getFavoriteBranchesWithPrices ?? []) as BranchListWithPrices[]
+          }
           product={productData.product}
         />
 

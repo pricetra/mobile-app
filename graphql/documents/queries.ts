@@ -623,3 +623,51 @@ export const GET_STOCK_BY_ID = gql(`
     }
   }
 `);
+
+export const GET_FAVORITE_BRANCHES_WITH_PRICE_DATA_QUERY = gql(`
+  query FavoriteBranchesWithPrices($productId: ID!) {
+    getFavoriteBranchesWithPrices(productId: $productId) {
+      id
+      branchId
+      branch {
+        id
+        name
+        store {
+          id
+          name
+          logo
+        }
+        address {
+          id
+          latitude
+          longitude
+          mapsLink
+          fullAddress
+          city
+          administrativeDivision
+          zipCode
+          country
+          distance
+        }
+      }
+      stock {
+        id
+        productId
+        storeId
+        branchId
+        latestPriceId
+        latestPrice {
+          id
+          amount
+          currencyCode
+          createdAt
+          sale
+          originalPrice
+          condition
+          expiresAt
+        }
+      }
+      approximatePrice
+    }
+  }
+`);

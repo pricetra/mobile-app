@@ -8,9 +8,10 @@ import { metersToMiles } from '@/lib/utils';
 
 export type StockFullProps = {
   stock: Stock;
+  approximatePrice?: number;
 };
 
-export default function StockFull({ stock }: StockFullProps) {
+export default function StockFull({ stock, approximatePrice }: StockFullProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
   return (
@@ -58,17 +59,27 @@ export default function StockFull({ stock }: StockFullProps) {
         </View>
       </View>
 
-      {stock.latestPrice && stock.latestPrice && (
-        <View className="flex w-fit flex-col items-end gap-0.5 py-3">
-          {stock.latestPrice.sale && stock.latestPrice.originalPrice && (
-            <Text className="text text-right line-through color-red-700">
-              {currencyFormat(stock.latestPrice.originalPrice)}
-            </Text>
-          )}
+      <View className="flex w-fit flex-col items-end gap-0.5 py-3">
+        {stock?.latestPrice?.sale && stock.latestPrice.originalPrice && (
+          <Text className="text text-right line-through color-red-700">
+            {currencyFormat(stock.latestPrice.originalPrice)}
+          </Text>
+        )}
 
+        {stock?.latestPrice?.amount && (
           <Text className="text-xl font-black">{currencyFormat(stock.latestPrice.amount)}</Text>
-        </View>
-      )}
+        )}
+
+        {approximatePrice && (
+          <Text className="text-xl">
+            <Text className="text-xl font-black">{currencyFormat(approximatePrice)}</Text>*
+          </Text>
+        )}
+
+        {!stock?.latestPrice?.amount && !approximatePrice && (
+          <Text className="text-xl font-black">--</Text>
+        )}
+      </View>
     </View>
   );
 }
