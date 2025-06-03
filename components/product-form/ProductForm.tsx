@@ -1,5 +1,5 @@
 import { ApolloError, useMutation, useQuery } from '@apollo/client';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik, FormikHelpers } from 'formik';
 import { useEffect, useState } from 'react';
@@ -26,7 +26,7 @@ import {
   Category,
   ProductDocument,
 } from '@/graphql/types/graphql';
-import { uploadToCloudinary } from '@/lib/files';
+import { callGoogleVisionAsync, uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
 
@@ -45,6 +45,7 @@ export default function ProductForm({
   onSuccess,
   onError,
 }: ProductFormProps) {
+  const [analyzingImage, setAnalyzingImage] = useState(false);
   const [imageUri, setImageUri] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
@@ -210,6 +211,45 @@ export default function ProductForm({
       onSubmit={submit}>
       {(formik) => (
         <View className="flex flex-col gap-5">
+          <View className="mb-10 flex flex-row">
+            <TouchableOpacity
+              disabled={analyzingImage}
+              onPress={async () => {
+                const result = await ImagePicker.launchCameraAsync({
+                  mediaTypes: ['images'],
+                  allowsEditing: true,
+                  aspect: [1, 2],
+                  quality: 1,
+                  base64: true,
+                  allowsMultipleSelection: false,
+                  cameraType: ImagePicker.CameraType.back,
+                });
+                if (result.canceled || result.assets.length === 0) return;
+
+                const picture = result.assets.at(0);
+                if (!picture || !picture.base64) return alert('could not process image');
+
+                setAnalyzingImage(true);
+                const visionData = await callGoogleVisionAsync(picture.base64);
+                formik.setFieldValue('name', visionData.responses[0].fullTextAnnotation?.text);
+                setAnalyzingImage(false);
+              }}
+              className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-pricetraGreenLogo bg-lime-50 px-10 py-5">
+              {analyzingImage ? (
+                <AntDesign
+                  name="loading1"
+                  className="size-[24px] animate-spin"
+                  color="#396a12"
+                  size={24}
+                />
+              ) : (
+                <MaterialIcons name="camera-enhance" size={24} color="#396a12" />
+              )}
+              <Text className="color-pricetraGreenHeavyDark">Autofill with Image</Text>
+            </TouchableOpacity>
+            <View className="flex-1" />
+          </View>
+
           <View className="flex flex-row items-center justify-between gap-5">
             <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
               {renderImageSelection()}

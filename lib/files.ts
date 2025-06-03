@@ -5,6 +5,8 @@ import {
   UploadApiResponse,
 } from 'cloudinary-react-native/lib/typescript/src/api/upload/model/params/upload-params';
 
+import { GoogleVisionResponse } from '@/types/google-vision-api';
+
 export async function getFileBlobFromUri(uri: string) {
   const response = await fetch(uri);
   const blob = await response.blob();
@@ -64,4 +66,30 @@ export function createCloudinaryUrl(public_id: string, width?: number, height?: 
   if (transformations.length > 0) url += `/${transformations.join(',')}`;
   url += `/${public_id}`;
   return url;
+}
+
+const GOOGLE_VISION_API_URL = 'https://vision.googleapis.com/v1';
+
+export async function callGoogleVisionAsync(base64: string) {
+  const apiKey = process.env.EXPO_PUBLIC_GOOGLE_CLOUD_VISION_API_KEY;
+  const body = {
+    requests: [
+      {
+        image: {
+          content: base64,
+        },
+        features: [{ type: 'TEXT_DETECTION' }, { type: 'LOGO_DETECTION' }],
+      },
+    ],
+  };
+  const res = await fetch(`${GOOGLE_VISION_API_URL}/images:annotate?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  return (await res.json()) as GoogleVisionResponse;
 }
