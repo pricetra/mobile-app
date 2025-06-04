@@ -1,7 +1,7 @@
 {
   "name": "pricetra-mobile",
   "main": "expo-router/entry",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
     "android": "expo run:android",
     "ios": "expo run:ios",
