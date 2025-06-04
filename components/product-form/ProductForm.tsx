@@ -1,7 +1,7 @@
 import { ApolloError, useMutation, useQuery } from '@apollo/client';
-import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { Formik, FormikHelpers } from 'formik';
+import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
 import { Linking, TouchableOpacity, View } from 'react-native';
 
@@ -184,6 +184,28 @@ export default function ProductForm({
     );
   }
 
+  async function onPressAutofill(formik: FormikProps<CreateProduct>) {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 2],
+      quality: 1,
+      base64: true,
+      allowsMultipleSelection: false,
+      cameraType: ImagePicker.CameraType.back,
+    });
+    if (result.canceled || result.assets.length === 0) return;
+
+    const picture = result.assets.at(0);
+    if (!picture || !picture.base64) return alert('could not process image');
+
+    setAnalyzingImage(true);
+    const visionData = await callGoogleVisionAsync(picture.base64);
+    const rawVisionFullText = visionData.responses[0].fullTextAnnotation?.text;
+    formik.setFieldValue('name', rawVisionFullText);
+    setAnalyzingImage(false);
+  }
+
   if (brandsLoading || !brands)
     return (
       <View className="flex h-40 items-center justify-center p-10">
@@ -211,87 +233,7 @@ export default function ProductForm({
       onSubmit={submit}>
       {(formik) => (
         <View className="flex flex-col gap-5">
-          <View className="mb-10 flex flex-row">
-            <TouchableOpacity
-              disabled={analyzingImage}
-              onPress={async () => {
-                const result = await ImagePicker.launchCameraAsync({
-                  mediaTypes: ['images'],
-                  allowsEditing: true,
-                  aspect: [1, 2],
-                  quality: 1,
-                  base64: true,
-                  allowsMultipleSelection: false,
-                  cameraType: ImagePicker.CameraType.back,
-                });
-                if (result.canceled || result.assets.length === 0) return;
-
-                const picture = result.assets.at(0);
-                if (!picture || !picture.base64) return alert('could not process image');
-
-                setAnalyzingImage(true);
-                const visionData = await callGoogleVisionAsync(picture.base64);
-                formik.setFieldValue('name', visionData.responses[0].fullTextAnnotation?.text);
-                setAnalyzingImage(false);
-              }}
-              className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-pricetraGreenLogo bg-lime-50 px-10 py-5">
-              {analyzingImage ? (
-                <AntDesign
-                  name="loading1"
-                  className="size-[24px] animate-spin"
-                  color="#396a12"
-                  size={24}
-                />
-              ) : (
-                <MaterialIcons name="camera-enhance" size={24} color="#396a12" />
-              )}
-              <Text className="color-pricetraGreenHeavyDark">Autofill with Image</Text>
-            </TouchableOpacity>
-            <View className="flex-1" />
-          </View>
-
-          <View className="flex flex-row items-center justify-between gap-5">
-            <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
-              {renderImageSelection()}
-            </TouchableOpacity>
-
-            <Text className="font-bold text-black">OR</Text>
-
-            <TouchableOpacity
-              onPress={() => {
-                const query =
-                  formik.values.brand !== ''
-                    ? `${formik.values.brand} ${formik.values.name}`
-                    : formik.values.name;
-                Linking.openURL(
-                  `https://www.google.com/search?udm=2&q=${encodeURIComponent(query)}`
-                );
-              }}>
-              <View className="flex size-28 items-center justify-center gap-2 rounded-md bg-sky-100/50">
-                <Feather name="globe" color="#3b82f6" size={35} />
-                <Text className="px-2 text-center text-xs text-blue-500">Search for Images</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
           <Input value={formik.values.code} label="UPC Code" editable={false} readOnly />
-
-          <View className="mb-5">
-            <Textarea
-              onChangeText={formik.handleChange('name')}
-              onBlur={formik.handleBlur('name')}
-              value={formik.values.name}
-              label="Product Name"
-              editable={!loading}
-            />
-            <View className="mt-2 flex flex-row-reverse">
-              <TouchableOpacity
-                onPress={() => {
-                  formik.setFieldValue('name', titleCase(formik.values.name));
-                }}>
-                <Text className="text-sm color-blue-500">Convert to Title Case</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
 
           <View style={{ position: 'relative' }}>
             <Label className="mb-1">Brand</Label>
@@ -303,6 +245,73 @@ export default function ProductForm({
               setValue={formik.handleChange('brand')}
               value={formik.values.brand}
             />
+          </View>
+
+          <View className="mb-10">
+            <Textarea
+              onChangeText={formik.handleChange('name')}
+              onBlur={formik.handleBlur('name')}
+              value={formik.values.name}
+              label="Product Name"
+              editable={!loading}
+              placeholder="Ex: Great Value Grade A Whole Milk (1 Gallon)"
+            />
+
+            <View className="mt-3 flex flex-row gap-3">
+              <TouchableOpacity
+                disabled={analyzingImage}
+                onPress={() => onPressAutofill(formik)}
+                className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-emerald-300 bg-emerald-50 px-5 py-3">
+                {analyzingImage ? (
+                  <AntDesign
+                    name="loading1"
+                    className="size-[20px] animate-spin"
+                    color="#059669"
+                    size={20}
+                  />
+                ) : (
+                  <MaterialIcons name="camera-enhance" size={20} color="#059669" />
+                )}
+                <Text className="text-sm color-emerald-600">Autofill with Image</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  formik.setFieldValue('name', titleCase(formik.values.name));
+                }}
+                className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-purple-300 bg-purple-50 px-5 py-3">
+                <MaterialCommunityIcons name="format-text" size={20} color="#9333ea" />
+                <Text className="text-sm color-purple-600">Title Case</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View className="mb-10">
+            <Label className="mb-5">Product Image</Label>
+
+            <View className="flex flex-row items-center justify-between gap-5">
+              <TouchableOpacity onPress={!loading ? selectImage : () => {}}>
+                {renderImageSelection()}
+              </TouchableOpacity>
+
+              <Text className="font-bold text-black">OR</Text>
+
+              <TouchableOpacity
+                onPress={() => {
+                  const query =
+                    formik.values.brand !== ''
+                      ? `${formik.values.brand} ${formik.values.name}`
+                      : formik.values.name;
+                  Linking.openURL(
+                    `https://www.google.com/search?udm=2&q=${encodeURIComponent(query)}`
+                  );
+                }}>
+                <View className="flex size-28 items-center justify-center gap-2 rounded-md bg-sky-100/50">
+                  <Feather name="globe" color="#3b82f6" size={35} />
+                  <Text className="px-2 text-center text-xs text-blue-500">Search for Images</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View className="relative">
