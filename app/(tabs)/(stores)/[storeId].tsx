@@ -2,14 +2,15 @@ import { useLazyQuery } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 
 import CreateBranchForm from '@/components/CreateBranchForm';
 import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
-import { FindStoreDocument } from '@/graphql/types/graphql';
+import { FindStoreDocument, LocationInput } from '@/graphql/types/graphql';
+import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export default function SelectedStoreScreen() {
@@ -17,12 +18,22 @@ export default function SelectedStoreScreen() {
   const { storeId } = useLocalSearchParams<{ storeId: string }>();
   const [openModal, setOpenModal] = useState(false);
   const [findStore, { data: storeData, loading: storeLoading }] = useLazyQuery(FindStoreDocument);
+  const { location, getCurrentLocation } = useCurrentLocation();
+  const [locationInput, setLocationInput] = useState<LocationInput>();
+
+  useEffect(() => {
+    if (!location) return;
+    setLocationInput({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    });
+  }, [location]);
 
   useFocusEffect(
     useCallback(() => {
       if (!storeId) return router.back();
       findStore({
-        variables: { id: storeId },
+        variables: { id: storeId, location: locationInput },
       }).then(({ data }) => {
         if (!data) return;
 
@@ -55,7 +66,7 @@ export default function SelectedStoreScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [storeId])
+    }, [storeId, location])
   );
 
   return (

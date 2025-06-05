@@ -303,7 +303,7 @@ export const ALL_STORES_QUERY = gql(`
 `);
 
 export const FIND_STORE_QUERY = gql(`
-  query FindStore($id: ID!) {
+  query FindStore($id: ID!, $location: LocationInput) {
     findStore(id: $id) {
       id
       name
@@ -316,7 +316,7 @@ export const FIND_STORE_QUERY = gql(`
       }
     }
 
-    allBranches(storeId: $id) {
+    allBranches(storeId: $id, location: $location) {
       id
       name
       addressId
@@ -336,8 +336,8 @@ export const FIND_STORE_QUERY = gql(`
 `);
 
 export const ALL_BRANCHES_QUERY = gql(`
-  query AllBranches($storeId: ID!) {
-    allBranches(storeId: $storeId) {
+  query AllBranches($storeId: ID!, $location: LocationInput) {
+    allBranches(storeId: $storeId, location: $location) {
       id
       name
       addressId

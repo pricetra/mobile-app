@@ -93,3 +93,45 @@ export async function callGoogleVisionAsync(base64: string) {
 
   return (await res.json()) as GoogleVisionResponse;
 }
+
+export function extractProductInfo(text: string) {
+  const lines = text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  // 1. BRAND (from logo OR capitalized line)
+  const brand = lines.find(
+    (line) =>
+      /^[A-Z][A-Za-z0-9\s&'-]{2,}$/.test(line) &&
+      !line.match(/(vitamin|milk|protein|edition|this is|indy)/i)
+  );
+
+  // 2. PRODUCT NAME (line that includes milk/juice/etc)
+  const productName = lines.find((line) =>
+    /(milk|juice|yogurt|tea|soda|drink|water|butter)/i.test(line)
+  );
+
+  // 3. VITAMINS
+  const vitamin = lines
+    .find((line) => /vitamin\s*(A|C|D|E|K|B\d+)/i.test(line))
+    ?.match(/vitamin\s*(A|C|D|E|K|B\d+)/i)?.[1];
+
+  // 4. PROTEIN
+  const protein = lines
+    .find((line) => /\d+g\s*protein/i.test(line))
+    ?.match(/(\d+g)\s*protein/i)?.[1];
+
+  // 5. ATTRIBUTES (optional: catch things like "Special Edition")
+  const attributes = lines.filter((line) =>
+    /(special edition|limited|organic|unsweetened|sugar free|fat free|whole|skim|2%|1%)/i.test(line)
+  );
+
+  return {
+    brand,
+    productName,
+    vitamin,
+    protein,
+    attributes,
+  };
+}
