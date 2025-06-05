@@ -4,6 +4,7 @@ export enum AuthScreenType {
   LOGIN,
   REGISTER,
   EMAIL_VERIFICATION,
+  RESET_PASSWORD,
 }
 
 export type AuthModal = {

@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client';
 import * as Network from 'expo-network';
 import { useContext, useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import Button from '@/components/ui/Button';
@@ -59,18 +59,30 @@ export default function LoginScreen() {
         label="Email"
       />
 
-      <Input
-        onChangeText={setPassword}
-        value={password}
-        placeholder="Password"
-        textContentType="password"
-        autoCapitalize="none"
-        secureTextEntry
-        autoCorrect={false}
-        autoComplete="password"
-        editable={!loading}
-        label="Password"
-      />
+      <View>
+        <Input
+          onChangeText={setPassword}
+          value={password}
+          placeholder="Password"
+          textContentType="password"
+          autoCapitalize="none"
+          secureTextEntry
+          autoCorrect={false}
+          autoComplete="password"
+          editable={!loading}
+          label="Password"
+        />
+
+        <View className="mt-3 flex h-[20px] flex-row">
+          <View className="flex-1" />
+
+          {email && (
+            <TouchableOpacity onPress={() => setScreen(AuthScreenType.RESET_PASSWORD, email)}>
+              <Text className="text-right text-sm color-blue-400">Forgot password?</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
 
       {error && <Text className="color-red-700">{error.message}</Text>}
 

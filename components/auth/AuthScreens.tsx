@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import EmailVerificationScreen from './EmailVerification';
 import LoginScreen from './Login';
 import RegisterScreen from './Register';
+import ResetPassword from './ResetPassword';
 
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 
@@ -16,6 +17,8 @@ export default function AuthScreens() {
       return <EmailVerificationScreen />;
     case AuthScreenType.REGISTER:
       return <RegisterScreen />;
+    case AuthScreenType.RESET_PASSWORD:
+      return <ResetPassword />;
     default:
       return <LoginScreen />;
   }
