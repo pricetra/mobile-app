@@ -270,3 +270,19 @@ export const REMOVE_BRANCH_FROM_LIST_MUTATION = gql(`
     }
   }
 `);
+
+export const REQUEST_RESET_PASSWORD_MUTATION = gql(`
+  mutation RequestResetPassword($email: String!) {
+    requestPasswordReset(email: $email)
+  }
+`);
+
+export const UPDATE_PASSWORD_WITH_RESET_CODE_MUTATION = gql(`
+  mutation UpdatePasswordWithResetCode($email: String!, $code: String!, $newPassword: String!) {
+    updatePasswordWithResetCode(
+      email: $email
+      code: $code
+      newPassword: $newPassword
+    )
+  }
+`);

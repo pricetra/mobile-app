@@ -671,3 +671,9 @@ export const GET_FAVORITE_BRANCHES_WITH_PRICE_DATA_QUERY = gql(`
     }
   }
 `);
+
+export const VERIFY_PASSWORD_RESET_CODE_QUERY = gql(`
+  query VerifyPasswordResetCode($email: String!, $code: String!) {
+    verifyPasswordResetCode(email: $email, code: $code)
+  }
+`);
