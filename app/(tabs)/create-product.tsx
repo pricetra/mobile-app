@@ -9,7 +9,9 @@ export default function CreateProductScreen() {
   const query = useLocalSearchParams<{ upc?: string }>();
 
   useEffect(() => {
-    setUpc(query.upc ?? '');
+    let code = '';
+    if (query.upc) code = query.upc.replaceAll('*', '');
+    setUpc(code);
   }, [query.upc]);
 
   return (
@@ -20,7 +22,7 @@ export default function CreateProductScreen() {
             upc={upc}
             onCancel={({ resetForm }) => {
               resetForm();
-              router.push('/(tabs)/');
+              router.push('/(tabs)/scan');
             }}
             onSuccess={({ id }, { resetForm }) => {
               resetForm();

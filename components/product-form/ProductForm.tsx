@@ -59,6 +59,21 @@ export default function ProductForm({
   });
   const [selectedCategory, setSelectedCategory] = useState<Category>();
   const loading = updateLoading || createLoading || imageUploading;
+  const [isPLU, setIsPLU] = useState(false);
+
+  // Check for PLU codes (Produce)
+  useEffect(() => {
+    if (!upc || product) return;
+    if (upc.length < 4 || upc.length > 5) return;
+
+    setSelectedCategory({
+      id: '509',
+      name: 'Produce',
+      path: '{462,509}',
+      expandedPathname: 'Food, Beverages & Tobacco > Produce',
+    });
+    setIsPLU(true);
+  }, [upc, product]);
 
   useEffect(() => {
     if (!product) return;
@@ -243,7 +258,7 @@ export default function ProductForm({
               brands={brands}
               setBrands={setBrands}
               setValue={formik.handleChange('brand')}
-              value={formik.values.brand}
+              value={isPLU ? 'N/A' : formik.values.brand}
             />
           </View>
 
@@ -317,7 +332,7 @@ export default function ProductForm({
           <View className="relative">
             <Label className="mb-1">Category</Label>
             <CategorySelector
-              category={product?.category ?? undefined}
+              category={product?.category ?? selectedCategory}
               editable={!loading}
               onChange={setSelectedCategory}
             />
