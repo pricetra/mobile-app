@@ -123,17 +123,6 @@ export default function TabLayout() {
           tabBarStyle: { display: 'none' },
         }}
       />
-      <Tabs.Screen
-        name="create-product"
-        options={{
-          href: null,
-          animation: 'fade',
-          header: (props) => <TabHeaderDismissible {...props} />,
-          title: 'Create Product',
-          tabBarShowLabel: false,
-          tabBarStyle: { display: 'none' },
-        }}
-      />
     </Tabs>
   );
 }

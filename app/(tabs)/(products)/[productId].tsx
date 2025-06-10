@@ -258,7 +258,7 @@ export default function ProductScreen() {
         <ProductForm
           product={productData.product}
           onCancel={() => setOpenEditModal(false)}
-          onSuccess={(product) => {
+          onSuccess={(_product) => {
             setOpenEditModal(false);
           }}
           onError={(e) => alert(e.message)}
