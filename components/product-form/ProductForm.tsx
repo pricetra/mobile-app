@@ -3,7 +3,7 @@ import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from '@expo
 import * as ImagePicker from 'expo-image-picker';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
-import { Linking, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, TouchableOpacity, View } from 'react-native';
 
 import BrandSelector from './BrandSelector';
 import CategorySelector from './CategorySelector';
@@ -212,13 +212,16 @@ export default function ProductForm({
     if (result.canceled || result.assets.length === 0) return;
 
     const picture = result.assets.at(0);
-    if (!picture || !picture.base64) return alert('could not process image');
+    if (!picture || !picture.base64) {
+      Alert.alert(
+        'Image Selection Failed!',
+        'Selected image could not be processed properly. Please try again.'
+      );
+      return;
+    }
 
     setAnalyzingImage(true);
-    const visionData = await callGoogleVisionAsync(picture.base64);
-    const rawVisionFullText = visionData.responses[0].fullTextAnnotation?.text;
-    formik.setFieldValue('name', rawVisionFullText);
-    setAnalyzingImage(false);
+    return callGoogleVisionAsync(picture.base64).finally(() => setAnalyzingImage(false));
   }
 
   if (brandsLoading || !brands)
@@ -275,7 +278,12 @@ export default function ProductForm({
             <View className="mt-3 flex flex-row gap-3">
               <TouchableOpacity
                 disabled={analyzingImage}
-                onPress={() => onPressAutofill(formik)}
+                onPress={async () => {
+                  const visionData = await onPressAutofill(formik);
+                  if (!visionData) return;
+                  const rawVisionFullText = visionData.responses[0].fullTextAnnotation?.text;
+                  formik.setFieldValue('name', rawVisionFullText);
+                }}
                 className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-emerald-300 bg-emerald-50 px-5 py-3">
                 {analyzingImage ? (
                   <AntDesign
