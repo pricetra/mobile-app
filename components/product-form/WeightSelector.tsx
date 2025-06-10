@@ -10,7 +10,7 @@ import { defaultMeasurementUnit, measurementUnits } from '@/constants/measuremen
 export type WeightSelectorProps = {
   value: string;
   onChangeText: (value: string) => void;
-  onBlur: TextInputProps['onBlur'];
+  onBlur?: TextInputProps['onBlur'];
   editable: boolean;
 };
 
@@ -24,12 +24,7 @@ function getMeasurement(value: string): { measurement: string; unit: Autocomplet
   return { measurement, unit: { id: unit, title: unit } };
 }
 
-export default function WeightSelector({
-  value,
-  onChangeText,
-  onBlur,
-  editable,
-}: WeightSelectorProps) {
+export default function WeightSelector({ value, onChangeText, editable }: WeightSelectorProps) {
   const parsedValue = getMeasurement(value);
   const [measurement, setMeasurement] = useState<string>(parsedValue.measurement);
   const [unit, setUnit] = useState<AutocompleteDropdownItem>(parsedValue.unit);
