@@ -85,7 +85,7 @@ export default function ScanScreen() {
             setOpenCreateProductModal(false);
             setRenderCameraComponent(true);
           }}
-          title="Search Barcode">
+          title="Create Product">
           <ProductForm
             upc={scannedCode.replaceAll('*', '')}
             onCancel={({ resetForm }) => {
@@ -96,7 +96,7 @@ export default function ScanScreen() {
             onSuccess={({ id }, { resetForm }) => {
               resetForm();
               router.push(`/(tabs)/(products)/${id}`);
-              setRenderCameraComponent(true);
+              setOpenCreateProductModal(false);
             }}
             onError={(err) => Alert.alert(err.name, err.message)}
           />
