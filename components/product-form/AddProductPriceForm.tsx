@@ -1,6 +1,6 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
-import { Formik } from 'formik';
+import { Formik, FormikErrors } from 'formik';
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
@@ -107,6 +107,18 @@ export default function AddProductPriceForm({
 
       {branchId && (
         <Formik
+          validateOnChange
+          validate={(values) => {
+            const errors = {} as FormikErrors<CreatePrice>;
+            if (values.amount <= 0) {
+              errors.amount = 'Amount has to be higher than $0.00';
+            }
+
+            if (values.originalPrice && values.originalPrice <= values.amount) {
+              errors.originalPrice = 'Original price cannot be smaller than the Sale price';
+            }
+            return errors;
+          }}
           initialValues={
             {
               productId: product.id,
@@ -193,14 +205,25 @@ export default function AddProductPriceForm({
                 </View>
               )}
 
-              <Button
-                className="mt-10"
-                variant="secondary"
-                loading={loading}
-                onPress={formik.submitForm}
-                disabled={formik.values.amount <= 0}>
-                Submit Price
-              </Button>
+              <View className="mt-10">
+                {formik.errors && (
+                  <View className="mb-5">
+                    {Object.values(formik.errors).map((v, i) => (
+                      <Text className="color-red-700" key={i}>
+                        {v.toString()}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+
+                <Button
+                  variant="secondary"
+                  loading={loading}
+                  onPress={formik.submitForm}
+                  disabled={!formik.isValid}>
+                  Submit Price
+                </Button>
+              </View>
             </View>
           )}
         </Formik>
