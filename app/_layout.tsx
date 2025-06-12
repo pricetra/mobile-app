@@ -22,6 +22,7 @@ import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { NAV_THEME } from '@/lib/constants';
+import WelcomeModal from '@/components/welcome/WelcomeModal';
 
 dayjs.extend(relativeTime);
 
@@ -59,6 +60,8 @@ function RootStack() {
             <SearchContextProvider>
               <AutocompleteDropdownContextProvider>
                 <AppDrawer />
+
+                <WelcomeModal />
 
                 <HeaderProvider>
                   <Stack>
