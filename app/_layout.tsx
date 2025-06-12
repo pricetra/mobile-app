@@ -14,6 +14,7 @@ import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-d
 
 import AuthScreens from '@/components/auth/AuthScreens';
 import AppDrawer from '@/components/ui/AppDrawer';
+import WelcomeModal from '@/components/welcome/WelcomeModal';
 import AuthModalProvider from '@/context/AuthModalContext';
 import { DrawerProvider } from '@/context/DrawerContext';
 import { HeaderProvider } from '@/context/HeaderContext';
@@ -22,7 +23,6 @@ import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { NAV_THEME } from '@/lib/constants';
-import WelcomeModal from '@/components/welcome/WelcomeModal';
 
 dayjs.extend(relativeTime);
 
