@@ -1,10 +1,10 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
-import RNDateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { Formik, FormikErrors } from 'formik';
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, Platform } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
 import { Checkbox } from '../ui/Checkbox';
@@ -48,6 +48,7 @@ export default function AddProductPriceForm({
   });
   const [branchId, setBranchId] = useState<string>();
   const { location } = useCurrentLocation();
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
     if (!location) return;
@@ -213,14 +214,30 @@ export default function AddProductPriceForm({
                   <View className="mt-5">
                     <Label className="mb-5">Sale Expiration</Label>
 
-                    <RNDateTimePicker
-                      mode="date"
-                      value={formik.values.expiresAt ?? new Date()}
-                      onChange={({ nativeEvent: e }) => {
-                        formik.setFieldValue('expiresAt', new Date(e.timestamp));
-                      }}
-                      minimumDate={new Date()}
-                    />
+                    <Button
+                      onPress={() => {
+                        setShowDatePicker(true);
+                      }}>
+                      {formik.values.expiresAt
+                        ? dayjs(formik.values.expiresAt).format('MMM D, YYYY')
+                        : 'Select Expiration Date'}
+                    </Button>
+
+                    {showDatePicker && (
+                      <DateTimePicker
+                        mode="date"
+                        value={formik.values.expiresAt ?? new Date()}
+                        display="spinner"
+                        onChange={({ nativeEvent: e }) => {
+                          formik.setFieldValue('expiresAt', new Date(e.timestamp));
+                          if (Platform.OS === 'android') setShowDatePicker(false);
+                        }}
+                        minimumDate={new Date()}
+                        accentColor="black"
+                        textColor="black"
+                        maximumDate={dayjs(new Date()).add(1, 'year').toDate()}
+                      />
+                    )}
                   </View>
                 </View>
               )}
@@ -244,6 +261,8 @@ export default function AddProductPriceForm({
                   Submit Price
                 </Button>
               </View>
+
+              {Platform.OS === 'ios' && formik.values.sale && <View style={{ height: 150 }} />}
             </View>
           )}
         </Formik>
