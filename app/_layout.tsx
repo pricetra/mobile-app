@@ -9,7 +9,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useContext, useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
-import { Modal } from 'react-native';
+import { Modal, View } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 
 import AuthScreens from '@/components/auth/AuthScreens';
@@ -45,10 +45,12 @@ function RootStack() {
 
   return (
     <>
-      <Modal visible={!jwt} animationType="slide">
-        <AuthModalProvider>
-          <AuthScreens />
-        </AuthModalProvider>
+      <Modal visible={!jwt} animationType="slide" transparent>
+        <View style={{ flex: 1, backgroundColor: 'white' }}>
+          <AuthModalProvider>
+            <AuthScreens />
+          </AuthModalProvider>
+        </View>
       </Modal>
 
       {jwt && (

@@ -33,6 +33,8 @@ export default function AuthFormContainer({
           </View>
 
           <View className="flex w-full flex-col gap-5 rounded-lg p-5">{optionalContent}</View>
+
+          <View style={{ height: 300 }} />
         </View>
       </SafeAreaView>
     </ScrollView>
