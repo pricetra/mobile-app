@@ -17,6 +17,14 @@ export default function useCurrentLocation() {
     return curLocation;
   }
 
+  async function getCurrentGeocodeAddress(options: Location.LocationOptions) {
+    return getCurrentLocation(options).then(async ({ coords }) => {
+      console.log(coords.latitude, coords.longitude);
+      const address = await Location.reverseGeocodeAsync(coords);
+      return address;
+    });
+  }
+
   function watchLocation(options: Location.LocationOptions, cb: Location.LocationCallback) {
     return Location.watchPositionAsync(options, (l) => {
       setLocation(l);
@@ -29,5 +37,5 @@ export default function useCurrentLocation() {
     getCurrentLocation({});
   }, []);
 
-  return { location, getCurrentLocation, watchLocation };
+  return { location, getCurrentLocation, watchLocation, getCurrentGeocodeAddress };
 }
