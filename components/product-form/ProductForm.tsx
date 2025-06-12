@@ -58,6 +58,7 @@ export default function ProductForm({
     refetchQueries: [AllProductsDocument, AllBrandsDocument],
   });
   const [selectedCategory, setSelectedCategory] = useState<Category>();
+  const [category, setCategory] = useState<Category>();
   const loading = updateLoading || createLoading || imageUploading;
   const [isPLU, setIsPLU] = useState(false);
 
@@ -66,25 +67,31 @@ export default function ProductForm({
     if (!upc || product) return;
     if (upc.length < 4 || upc.length > 5) return;
 
-    setSelectedCategory({
+    const myCategory: Category = {
       id: '509',
       name: 'Produce',
       path: '{462,509}',
       expandedPathname: 'Food, Beverages & Tobacco > Produce',
-    });
+      depth: 2,
+    };
+    setCategory(myCategory);
+    setSelectedCategory(myCategory);
     setIsPLU(true);
   }, [upc, product]);
 
   useEffect(() => {
     if (!product) return;
 
+    if (product.category) {
+      setCategory(product.category);
+      setSelectedCategory(product.category);
+    }
+
     if (product.image && product.image !== '') {
       setImageUri(product.image);
     } else {
       setImageUri(undefined);
     }
-
-    if (product.category) setSelectedCategory(product.category);
   }, [product]);
 
   useEffect(() => {
@@ -115,6 +122,7 @@ export default function ProductForm({
   function resetImageAndCategory() {
     setImageUri(undefined);
     setImageUpdated(false);
+    setCategory(undefined);
     setSelectedCategory(undefined);
   }
 
@@ -340,7 +348,7 @@ export default function ProductForm({
           <View className="relative">
             <Label className="mb-1">Category</Label>
             <CategorySelector
-              category={product?.category ?? selectedCategory}
+              category={category}
               editable={!loading}
               onChange={setSelectedCategory}
             />

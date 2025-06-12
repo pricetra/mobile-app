@@ -16,9 +16,13 @@ export default function CategorySelector({ category, onChange }: CategorySelecto
   const [categoryDataSet, setCategoryDataSet] = useState<CategoryComboboxData[]>([{ depth: 1 }]);
 
   useEffect(() => {
-    if (!category) return;
+    if (!category) {
+      setCategoryDataSet([{ depth: 1 }]);
+      return;
+    }
 
     const categories = categoriesFromChild(category);
+    categories.push({ depth: categories.length + 1 } as Category);
     setCategoryDataSet(
       categories.map((c, i) => ({
         parentCategory: i > 0 ? categories[i - 1] : undefined,
