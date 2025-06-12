@@ -24,6 +24,7 @@
     "@apollo/client": "^3.13.1",
     "@cloudinary/url-gen": "^1.21.0",
     "@expo/vector-icons": "^14.0.2",
+    "@react-native-community/datetimepicker": "8.2.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@rn-primitives/accordion": "^1.1.0",
@@ -62,6 +63,7 @@
     "expo-status-bar": "~2.0.1",
     "expo-symbols": "~0.2.2",
     "expo-system-ui": "~4.0.8",
+    "expo-updates": "~0.27.4",
     "expo-web-browser": "~14.0.2",
     "formik": "^2.4.6",
     "graphql": "^16.10.0",
@@ -76,6 +78,7 @@
     "react-native-confirmation-code-field": "^7.4.0",
     "react-native-currency-input": "^1.1.1",
     "react-native-gesture-handler": "~2.20.2",
+    "react-native-pagination": "^1.5.5",
     "react-native-reanimated": "~3.16.7",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
@@ -83,9 +86,7 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7",
-    "expo-updates": "~0.27.4",
-    "@react-native-community/datetimepicker": "8.2.0"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
