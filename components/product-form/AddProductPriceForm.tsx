@@ -170,8 +170,7 @@ export default function AddProductPriceForm({
                       fontSize: 50,
                       textAlign: 'center',
                       letterSpacing: 5,
-                      fontFamily: 'monospace',
-                      fontWeight: 'bold',
+                      fontWeight: '900',
                     }}
                   />
                 )}
@@ -198,7 +197,9 @@ export default function AddProductPriceForm({
                       precision={2}
                       minValue={0}
                       maxValue={1000}
-                      renderTextInput={(props) => <Input {...props} label="Original Price" />}
+                      renderTextInput={(props) => (
+                        <Input {...props} label="Original Price" placeholder="Amount" />
+                      )}
                     />
 
                     <Input
@@ -216,7 +217,7 @@ export default function AddProductPriceForm({
 
                     <Button
                       onPress={() => {
-                        setShowDatePicker(true);
+                        setShowDatePicker(!showDatePicker);
                       }}>
                       {formik.values.expiresAt
                         ? dayjs(formik.values.expiresAt).format('MMM D, YYYY')
