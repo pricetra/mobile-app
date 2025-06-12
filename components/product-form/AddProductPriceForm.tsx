@@ -1,5 +1,7 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
+import dayjs from 'dayjs';
 import { Formik, FormikErrors } from 'formik';
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
@@ -11,9 +13,11 @@ import Input from '../ui/Input';
 import Button from '@/components/ui/Button';
 import Combobox from '@/components/ui/Combobox';
 import Image from '@/components/ui/Image';
+import Label from '@/components/ui/Label';
 import {
   CreatePrice,
   CreatePriceDocument,
+  FavoriteBranchesWithPricesDocument,
   FindBranchesByDistanceDocument,
   GetProductStocksDocument,
   Price,
@@ -40,7 +44,7 @@ export default function AddProductPriceForm({
     { fetchPolicy: 'no-cache' }
   );
   const [createPrice, { loading }] = useMutation(CreatePriceDocument, {
-    refetchQueries: [GetProductStocksDocument],
+    refetchQueries: [GetProductStocksDocument, FavoriteBranchesWithPricesDocument],
   });
   const [branchId, setBranchId] = useState<string>();
   const { location } = useCurrentLocation();
@@ -126,6 +130,7 @@ export default function AddProductPriceForm({
               amount: 0.0,
               sale: false,
               unitType: 'item',
+              expiresAt: dayjs(new Date()).add(7, 'day').toDate(),
             } as CreatePrice
           }
           onSubmit={(input, formik) => {
@@ -178,30 +183,45 @@ export default function AddProductPriceForm({
               />
 
               {formik.values.sale && (
-                <View className="flex flex-row items-center justify-stretch gap-4">
-                  <CurrencyInput
-                    value={formik.values.originalPrice ?? null}
-                    onChangeValue={(v) => {
-                      formik.setFieldValue('originalPrice', v ?? 0);
-                    }}
-                    onBlur={formik.handleBlur('originalPrice')}
-                    prefix="$"
-                    delimiter=","
-                    separator="."
-                    precision={2}
-                    minValue={0}
-                    maxValue={1000}
-                    renderTextInput={(props) => <Input {...props} label="Original Price" />}
-                  />
+                <View>
+                  <View className="flex flex-row items-center justify-stretch gap-4">
+                    <CurrencyInput
+                      value={formik.values.originalPrice ?? null}
+                      onChangeValue={(v) => {
+                        formik.setFieldValue('originalPrice', v ?? 0);
+                      }}
+                      onBlur={formik.handleBlur('originalPrice')}
+                      prefix="$"
+                      delimiter=","
+                      separator="."
+                      precision={2}
+                      minValue={0}
+                      maxValue={1000}
+                      renderTextInput={(props) => <Input {...props} label="Original Price" />}
+                    />
 
-                  <Input
-                    label="Condition"
-                    value={formik.values.condition ?? undefined}
-                    onChangeText={formik.handleChange('condition')}
-                    onBlur={formik.handleBlur('condition')}
-                    className="flex-1"
-                    placeholder="Ex. Multiples of 2"
-                  />
+                    <Input
+                      label="Condition"
+                      value={formik.values.condition ?? undefined}
+                      onChangeText={formik.handleChange('condition')}
+                      onBlur={formik.handleBlur('condition')}
+                      className="flex-1"
+                      placeholder="Ex. Multiples of 2"
+                    />
+                  </View>
+
+                  <View className="mt-5">
+                    <Label className="mb-5">Sale Expiration</Label>
+
+                    <RNDateTimePicker
+                      mode="date"
+                      value={formik.values.expiresAt ?? new Date()}
+                      onChange={({ nativeEvent: e }) => {
+                        formik.setFieldValue('expiresAt', new Date(e.timestamp));
+                      }}
+                      minimumDate={new Date()}
+                    />
+                  </View>
                 </View>
               )}
 
