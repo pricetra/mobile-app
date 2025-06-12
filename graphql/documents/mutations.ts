@@ -57,6 +57,19 @@ export const UPDATE_PROFILE_MUTATION = gql(`
       authPlatform
       authStateId
       role
+      addressId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        city
+        administrativeDivision
+        zipCode
+        countryCode
+        country
+      }
     }
   }
 `);

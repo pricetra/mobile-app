@@ -86,6 +86,19 @@ export const LOGIN_INTERNAL_QUERY = gql`
         authPlatform
         authStateId
         role
+        addressId
+        address {
+          id
+          latitude
+          longitude
+          mapsLink
+          fullAddress
+          city
+          administrativeDivision
+          zipCode
+          countryCode
+          country
+        }
       }
     }
   }
@@ -106,6 +119,19 @@ export const GOOGLE_OAUTH_QUERY = gql`
         authPlatform
         authStateId
         role
+        addressId
+        address {
+          id
+          latitude
+          longitude
+          mapsLink
+          fullAddress
+          city
+          administrativeDivision
+          zipCode
+          countryCode
+          country
+        }
       }
       isNewUser
     }
@@ -125,6 +151,19 @@ export const ME_QUERY = gql`
       authPlatform
       authStateId
       role
+      addressId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        city
+        administrativeDivision
+        zipCode
+        countryCode
+        country
+      }
     }
   }
 `;
