@@ -132,7 +132,6 @@ export default function WelcomeModal() {
                               if (!formattedAddress) {
                                 formattedAddress = `${data[0].name}, ${data[0].city}, ${data[0].region} ${data[0].postalCode}`;
                               }
-                              console.log(formattedAddress);
                               setAddressInput(formattedAddress ?? undefined);
                             })
                             .finally(() => {
