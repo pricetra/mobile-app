@@ -73,7 +73,7 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
   function submit(input: UpdateUserFull) {
     if (imageUri && imageUpdated) input.avatar = randomUUID();
 
-    const filteredInput = diffObjects(input, user);
+    const filteredInput = diffObjects(input, user as any);
     if (Object.keys(filteredInput).length === 0) return;
 
     updateProfile({
@@ -91,7 +91,7 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
           uploadToCloudinary({
             file: imageUri,
             public_id: input.avatar ?? randomUUID(),
-            tags: ['PRODUCT'],
+            tags: ['USER_PROFILE'],
             onSuccess: () => onSuccess(data.updateUserById),
             onError: (e) => onError(e as unknown as ApolloError),
             onFinally: () => setImageUploading(false),
