@@ -56,7 +56,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
   useEffect(() => {
     if (!userData) return;
-    setUser(userData.me);
+    setUser(userData.me as User);
   }, [userData]);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     });
   }
 
-  if (userDataLoading || listsLoading)
+  if (userDataLoading || listsLoading || !user || !userLists)
     return (
       <View className="flex h-screen w-screen items-center justify-center gap-10 bg-white p-10">
         <Image
@@ -104,7 +104,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     <UserAuthContext.Provider
       value={{
         token: jwt,
-        user: user ?? userData.me,
+        user: user ?? (userData.me as User),
         lists: userLists ?? { allLists: [], favorites: {} as List, watchList: {} as List },
         updateUser: (updatedUser) => setUser(updatedUser),
         logout: () => {

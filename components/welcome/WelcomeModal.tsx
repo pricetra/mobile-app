@@ -272,7 +272,7 @@ export default function WelcomeModal() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      disabled={addingBranches}
+                      disabled={addingBranches || selectedBranches.length === 0}
                       onPress={async () => {
                         setAddingBranches(true);
                         for (const branch of selectedBranches) {
