@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
+import { useAuth } from './UserContext';
 
 export type HeaderSectionStateType = (
   color?: string,
@@ -15,6 +16,7 @@ export type HeaderContextType = {
 const HeaderContext = createContext<HeaderContextType>({} as HeaderContextType);
 
 export const HeaderProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
   const [subHeader, setSubHeader] = useState<ReactNode>();
 
   return (
@@ -23,7 +25,7 @@ export const HeaderProvider = ({ children }: { children: ReactNode }) => {
         subHeader,
         setSubHeader,
       }}>
-      {children}
+      {user.address && children}
     </HeaderContext.Provider>
   );
 };
