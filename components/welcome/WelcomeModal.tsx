@@ -1,6 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
-import convert from 'convert-units';
 import { useEffect, useState } from 'react';
 import {
   Modal,
@@ -12,6 +11,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 
 import Image from '@/components/ui/Image';
@@ -21,6 +21,9 @@ import {
   UpdateProfileDocument,
   Address,
   FindBranchesByDistanceDocument,
+  Branch,
+  AddBranchToListDocument,
+  GetAllListsDocument,
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { createCloudinaryUrl } from '@/lib/files';
@@ -47,6 +50,11 @@ export default function WelcomeModal() {
     FindBranchesByDistanceDocument,
     { fetchPolicy: 'no-cache' }
   );
+  const [selectedBranches, setSelectedBranches] = useState<Branch[]>([]);
+  const [addBranchToList] = useMutation(AddBranchToListDocument, {
+    refetchQueries: [GetAllListsDocument],
+  });
+  const [addingBranches, setAddingBranches] = useState(false);
 
   useEffect(() => {
     setAddressInput(user.address?.fullAddress);
@@ -57,7 +65,7 @@ export default function WelcomeModal() {
     if (!lists.favorites.branchList || lists.favorites.branchList.length === 0) {
       return setOpenWelcomeModal(true);
     }
-  }, [user]);
+  }, [user, lists]);
 
   useEffect(() => {
     if (!profileData?.updateProfile?.address) return;
@@ -70,11 +78,9 @@ export default function WelcomeModal() {
       <View style={{ flex: 1 }} className="bg-white">
         <ScrollView>
           <SafeAreaView>
-            <KeyboardAvoidingView
-              behavior="padding"
-              className="flex w-full flex-col justify-center gap-5 p-5 pt-[20vh]">
+            <KeyboardAvoidingView behavior="padding" className="p-5 pb-[5vh]">
               {page === WelcomePageType.WELCOME && (
-                <>
+                <View className="flex flex-col justify-center gap-5 pt-[20vh]">
                   <Text className="text-5xl font-extrabold text-pricetraGreenHeavyDark">
                     Let's Setup Your Account...
                   </Text>
@@ -90,11 +96,11 @@ export default function WelcomeModal() {
                     <Octicons name="location" size={28} color="white" />
                     <Text className="text-lg font-bold color-white">Add Your Address</Text>
                   </TouchableOpacity>
-                </>
+                </View>
               )}
 
               {page === WelcomePageType.ADDRESS && (
-                <>
+                <View className="flex flex-col justify-center gap-5 pt-[20vh]">
                   <View className="mb-5 flex items-center">
                     <View className="flex size-[90px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark/10">
                       <Octicons name="location" size={50} color="#396a12" />
@@ -122,7 +128,12 @@ export default function WelcomeModal() {
                                   'Invalid address',
                                   'Your current location returned an invalid response'
                                 );
-                              setAddressInput(data[0].formattedAddress ?? undefined);
+                              let formattedAddress = data[0].formattedAddress;
+                              if (!formattedAddress) {
+                                formattedAddress = `${data[0].name}, ${data[0].city}, ${data[0].region} ${data[0].postalCode}`;
+                              }
+                              console.log(formattedAddress);
+                              setAddressInput(formattedAddress ?? undefined);
                             })
                             .finally(() => {
                               setLocating(false);
@@ -172,18 +183,14 @@ export default function WelcomeModal() {
                             const address = (data?.updateProfile?.address ??
                               user.address) as Address;
                             setNewAddress(address);
-                            console.log(address.latitude, address.longitude);
                             getBranches({
                               variables: {
                                 lat: address.latitude,
                                 lon: address.longitude,
                                 radiusMeters: 9000, // ~5 miles
                               },
-                            }).then(({ data }) => {
-                              console.log(data);
-                              if (!data) return;
-                              setPage(WelcomePageType.BRANCHES);
                             });
+                            setPage(WelcomePageType.BRANCHES);
                           });
                         }}>
                         {profileLoading ? (
@@ -199,11 +206,11 @@ export default function WelcomeModal() {
                       </TouchableOpacity>
                     </View>
                   </View>
-                </>
+                </View>
               )}
 
               {page === WelcomePageType.BRANCHES && newAddress && (
-                <>
+                <View className="flex flex-col justify-center gap-5 pt-[5vh]">
                   <View className="mb-5 flex items-center">
                     <View className="flex size-[90px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark/10">
                       <MaterialIcons name="storefront" size={50} color="#396a12" />
@@ -217,21 +224,78 @@ export default function WelcomeModal() {
                   <Text className="mb-5 text-lg text-gray-800">{newAddress.fullAddress}</Text>
 
                   <View className="rounded-lg bg-gray-50 p-5">
+                    {branchesLoading && <ActivityIndicator size="large" color="black" />}
                     {branchesData &&
-                      branchesData.findBranchesByDistance.map((data) => (
-                        <View className="mb-5 flex flex-row items-center gap-2" key={data.id}>
-                          <Image
-                            src={createCloudinaryUrl(data.store?.logo ?? '', 100, 100)}
-                            className="size-[35px] rounded-full"
-                          />
-                          <View>
-                            <Text className="text font-semibold">{data.store?.name}</Text>
-                            <Text className="text-xs">{data.address?.fullAddress}</Text>
+                      branchesData.findBranchesByDistance.map((branch) => (
+                        <TouchableOpacity
+                          disabled={addingBranches}
+                          onPress={() => {
+                            const foundBranch = selectedBranches.find(({ id }) => id === branch.id);
+                            if (foundBranch) {
+                              setSelectedBranches((branches) =>
+                                branches.filter(({ id }) => id !== branch.id)
+                              );
+                              return;
+                            }
+                            setSelectedBranches((branches) => {
+                              const newArr = branches.filter(({ id }) => id !== branch.id);
+                              newArr.push(branch as Branch);
+                              return newArr;
+                            });
+                          }}
+                          className="mb-7 flex flex-row justify-between"
+                          key={branch.id}>
+                          <View className="flex flex-1 flex-row items-center gap-2">
+                            <Image
+                              src={createCloudinaryUrl(branch.store?.logo ?? '', 100, 100)}
+                              className="size-[35px] rounded-lg"
+                            />
+                            <View>
+                              <Text className="text font-semibold">{branch.store?.name}</Text>
+                              <Text className="text-xs">{branch.address?.fullAddress}</Text>
+                            </View>
                           </View>
-                        </View>
+                          <View>
+                            {selectedBranches.find(({ id }) => id === branch.id) && (
+                              <MaterialIcons name="check" size={24} color="#396a12" />
+                            )}
+                          </View>
+                        </TouchableOpacity>
                       ))}
                   </View>
-                </>
+
+                  <View className="flex flex-row items-center gap-3">
+                    <TouchableOpacity
+                      disabled={addingBranches}
+                      onPress={() => setPage(WelcomePageType.ADDRESS)}
+                      className="flex flex-row items-center justify-center gap-5 rounded-xl bg-gray-200 px-7 py-5">
+                      <Text className="text-lg font-bold color-black">Back</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      disabled={addingBranches}
+                      onPress={async () => {
+                        setAddingBranches(true);
+                        for (const branch of selectedBranches) {
+                          await addBranchToList({
+                            variables: {
+                              listId: lists.favorites.id,
+                              branchId: branch.id,
+                            },
+                          });
+                        }
+                        setAddingBranches(false);
+                        setOpenWelcomeModal(false);
+                      }}
+                      className="flex flex-1 flex-row items-center justify-center gap-5 rounded-xl bg-pricetraGreenHeavyDark px-7 py-5">
+                      {addingBranches ? (
+                        <ActivityIndicator color="white" />
+                      ) : (
+                        <Text className="text-lg font-bold color-white">Finish Setup</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </View>
               )}
             </KeyboardAvoidingView>
           </SafeAreaView>

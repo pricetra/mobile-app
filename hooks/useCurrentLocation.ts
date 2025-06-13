@@ -19,7 +19,6 @@ export default function useCurrentLocation() {
 
   async function getCurrentGeocodeAddress(options: Location.LocationOptions) {
     return getCurrentLocation(options).then(async ({ coords }) => {
-      console.log(coords.latitude, coords.longitude);
       const address = await Location.reverseGeocodeAsync(coords);
       return address;
     });
