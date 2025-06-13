@@ -22,8 +22,8 @@ import {
   Address,
   FindBranchesByDistanceDocument,
   Branch,
-  AddBranchToListDocument,
   GetAllListsDocument,
+  BulkAddBranchesToListDocument,
 } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { createCloudinaryUrl } from '@/lib/files';
@@ -51,7 +51,7 @@ export default function WelcomeModal() {
     { fetchPolicy: 'no-cache' }
   );
   const [selectedBranches, setSelectedBranches] = useState<Branch[]>([]);
-  const [addBranchToList] = useMutation(AddBranchToListDocument, {
+  const [addBranchesToList] = useMutation(BulkAddBranchesToListDocument, {
     refetchQueries: [GetAllListsDocument],
   });
   const [addingBranches, setAddingBranches] = useState(false);
@@ -100,7 +100,7 @@ export default function WelcomeModal() {
               )}
 
               {page === WelcomePageType.ADDRESS && (
-                <View className="flex flex-col justify-center gap-5 pt-[20vh]">
+                <View className="flex flex-col justify-center gap-5 pt-[10vh]">
                   <View className="mb-5 flex items-center">
                     <View className="flex size-[90px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark/10">
                       <Octicons name="location" size={50} color="#396a12" />
@@ -275,16 +275,20 @@ export default function WelcomeModal() {
                       disabled={addingBranches || selectedBranches.length === 0}
                       onPress={async () => {
                         setAddingBranches(true);
-                        for (const branch of selectedBranches) {
-                          await addBranchToList({
-                            variables: {
-                              listId: lists.favorites.id,
-                              branchId: branch.id,
-                            },
-                          });
-                        }
-                        setAddingBranches(false);
-                        setOpenWelcomeModal(false);
+                        addBranchesToList({
+                          variables: {
+                            listId: lists.favorites.id,
+                            branchIds: selectedBranches.map(({ id }) => id),
+                          },
+                        }).then(({ data }) => {
+                          if (!data)
+                            return Alert.alert(
+                              'Could not add branches to list',
+                              'There was an error while adding the selected branches to your favorites list. Please try again.'
+                            );
+                          setAddingBranches(false);
+                          setOpenWelcomeModal(false);
+                        });
                       }}
                       className="flex flex-1 flex-row items-center justify-center gap-5 rounded-xl bg-pricetraGreenHeavyDark px-7 py-5">
                       {addingBranches ? (

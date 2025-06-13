@@ -32,6 +32,7 @@ type Documents = {
     "\n  mutation AddToList($listId: ID!, $productId: ID!, $stockId: ID) {\n    addToList(listId: $listId, productId: $productId, stockId: $stockId) {\n      id\n      userId\n      listId\n      productId\n      stockId\n      createdAt\n    }\n  }\n": typeof types.AddToListDocument,
     "\n  mutation RemoveFromList($listId: ID!, $productListId: ID!) {\n    removeFromList(listId: $listId, productListId: $productListId) {\n      id\n      userId\n      listId\n      productId\n      stockId\n      createdAt\n    }\n  }\n": typeof types.RemoveFromListDocument,
     "\n  mutation AddBranchToList($listId: ID!, $branchId: ID!) {\n    addBranchToList(listId: $listId, branchId: $branchId) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n": typeof types.AddBranchToListDocument,
+    "\n  mutation BulkAddBranchesToList($listId: ID!, $branchIds: [ID!]!) {\n    bulkAddBranchesToList(listId: $listId, branchIds: $branchIds) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n": typeof types.BulkAddBranchesToListDocument,
     "\n  mutation RemoveBranchFromList($listId: ID!, $branchListId: ID!) {\n    removeBranchFromList(listId: $listId, branchListId: $branchListId) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n": typeof types.RemoveBranchFromListDocument,
     "\n  mutation RequestResetPassword($email: String!) {\n    requestPasswordReset(email: $email)\n  }\n": typeof types.RequestResetPasswordDocument,
     "\n  mutation UpdatePasswordWithResetCode($email: String!, $code: String!, $newPassword: String!) {\n    updatePasswordWithResetCode(\n      email: $email\n      code: $code\n      newPassword: $newPassword\n    )\n  }\n": typeof types.UpdatePasswordWithResetCodeDocument,
@@ -77,6 +78,7 @@ const documents: Documents = {
     "\n  mutation AddToList($listId: ID!, $productId: ID!, $stockId: ID) {\n    addToList(listId: $listId, productId: $productId, stockId: $stockId) {\n      id\n      userId\n      listId\n      productId\n      stockId\n      createdAt\n    }\n  }\n": types.AddToListDocument,
     "\n  mutation RemoveFromList($listId: ID!, $productListId: ID!) {\n    removeFromList(listId: $listId, productListId: $productListId) {\n      id\n      userId\n      listId\n      productId\n      stockId\n      createdAt\n    }\n  }\n": types.RemoveFromListDocument,
     "\n  mutation AddBranchToList($listId: ID!, $branchId: ID!) {\n    addBranchToList(listId: $listId, branchId: $branchId) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n": types.AddBranchToListDocument,
+    "\n  mutation BulkAddBranchesToList($listId: ID!, $branchIds: [ID!]!) {\n    bulkAddBranchesToList(listId: $listId, branchIds: $branchIds) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n": types.BulkAddBranchesToListDocument,
     "\n  mutation RemoveBranchFromList($listId: ID!, $branchListId: ID!) {\n    removeBranchFromList(listId: $listId, branchListId: $branchListId) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n": types.RemoveBranchFromListDocument,
     "\n  mutation RequestResetPassword($email: String!) {\n    requestPasswordReset(email: $email)\n  }\n": types.RequestResetPasswordDocument,
     "\n  mutation UpdatePasswordWithResetCode($email: String!, $code: String!, $newPassword: String!) {\n    updatePasswordWithResetCode(\n      email: $email\n      code: $code\n      newPassword: $newPassword\n    )\n  }\n": types.UpdatePasswordWithResetCodeDocument,
@@ -190,6 +192,10 @@ export function graphql(source: "\n  mutation RemoveFromList($listId: ID!, $prod
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation AddBranchToList($listId: ID!, $branchId: ID!) {\n    addBranchToList(listId: $listId, branchId: $branchId) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation AddBranchToList($listId: ID!, $branchId: ID!) {\n    addBranchToList(listId: $listId, branchId: $branchId) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation BulkAddBranchesToList($listId: ID!, $branchIds: [ID!]!) {\n    bulkAddBranchesToList(listId: $listId, branchIds: $branchIds) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation BulkAddBranchesToList($listId: ID!, $branchIds: [ID!]!) {\n    bulkAddBranchesToList(listId: $listId, branchIds: $branchIds) {\n      id\n      userId\n      listId\n      branchId\n      createdAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

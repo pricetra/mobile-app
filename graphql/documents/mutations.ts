@@ -272,6 +272,18 @@ export const ADD_BRANCH_TO_LIST_MUTATION = gql(`
   }
 `);
 
+export const BULK_ADD_BRANCHES_TO_LIST_MUTATION = gql(`
+  mutation BulkAddBranchesToList($listId: ID!, $branchIds: [ID!]!) {
+    bulkAddBranchesToList(listId: $listId, branchIds: $branchIds) {
+      id
+      userId
+      listId
+      branchId
+      createdAt
+    }
+  }
+`);
+
 export const REMOVE_BRANCH_FROM_LIST_MUTATION = gql(`
   mutation RemoveBranchFromList($listId: ID!, $branchListId: ID!) {
     removeBranchFromList(listId: $listId, branchListId: $branchListId) {
