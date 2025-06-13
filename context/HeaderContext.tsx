@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
+
 import { useAuth } from './UserContext';
 
 export type HeaderSectionStateType = (
