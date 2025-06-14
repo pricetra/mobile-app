@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { Formik, FormikErrors } from 'formik';
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, Platform } from 'react-native';
+import { View, Text, TextInput, Platform, Alert } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
 import { Checkbox } from '../ui/Checkbox';
@@ -47,16 +47,19 @@ export default function AddProductPriceForm({
     refetchQueries: [GetProductStocksDocument, FavoriteBranchesWithPricesDocument],
   });
   const [branchId, setBranchId] = useState<string>();
-  const { location } = useCurrentLocation();
+  const { location, getCurrentLocation } = useCurrentLocation();
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
-    if (!location) return;
+    if (!location) {
+      getCurrentLocation({});
+      return;
+    }
     findBranchesByDistance({
       variables: {
         lat: location.coords.latitude,
         lon: location.coords.longitude,
-        radiusMeters: 10000, // TODO: Ideally use 500 meters as the radius
+        radiusMeters: 500, // TODO: Ideally use 500 meters as the radius
       },
     });
   }, [location]);
@@ -66,7 +69,16 @@ export default function AddProductPriceForm({
     setBranchId(branchesData.findBranchesByDistance.at(0)?.id);
   }, [branchesData]);
 
-  if (!location || branchesLoading || !branchesData)
+  if (!location) {
+    return (
+      <View className="flex h-40 items-center justify-center gap-5 py-10">
+        <Text className="text-lg font-bold">Adding prices requires Location access</Text>
+        <Button onPress={() => getCurrentLocation({})}>Request Location</Button>
+      </View>
+    );
+  }
+
+  if (branchesLoading || !branchesData)
     return (
       <View className="flex h-40 items-center justify-center p-10">
         <AntDesign
@@ -77,6 +89,15 @@ export default function AddProductPriceForm({
         />
       </View>
     );
+
+  if (branchesData.findBranchesByDistance.length === 0) {
+    return (
+      <View className="flex h-40 items-center justify-center gap-5 py-10">
+        <Text className="text-lg font-bold">No branches found near you</Text>
+        <Button onPress={() => getCurrentLocation({})}>Retry</Button>
+      </View>
+    );
+  }
 
   return (
     <View className="mb-10 flex gap-10">

@@ -4,8 +4,6 @@ import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, SafeAreaView, Platform, Text } from 'react-native';
 
-import { LocationInput } from '../../graphql/types/graphql';
-
 import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
 import ProductForm from '@/components/product-form/ProductForm';
@@ -17,18 +15,27 @@ import TabSubHeaderProductFilter, {
 import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
-import { AllProductsDocument, Product } from '@/graphql/types/graphql';
+import { useAuth } from '@/context/UserContext';
+import { AllProductsDocument, LocationInput, Product } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 
+const DEFAULT_SEARCH_RADIUS = 160934; // ~100 miles
+
 export default function HomeScreen() {
+  const { user } = useAuth();
   const bottomTabBarHeight = 45;
   const [getAllProducts, { data, error, loading, fetchMore }] = useLazyQuery(AllProductsDocument);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const { search, searching, setSearching } = useContext(SearchContext);
   const { location, getCurrentLocation } = useCurrentLocation();
-  const [locationInput, setLocationInput] = useState<LocationInput>();
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
+  const [searchRadius, setSearchRadius] = useState(DEFAULT_SEARCH_RADIUS);
+  const [locationInput, setLocationInput] = useState<LocationInput>({
+    latitude: user.address!.latitude,
+    longitude: user.address!.longitude,
+    radiusMeters: searchRadius,
+  });
 
   const searchVariables = {
     search: {
@@ -50,15 +57,6 @@ export default function HomeScreen() {
       return () => setSubHeader(undefined);
     }, [categoryFilterInput])
   );
-
-  useEffect(() => {
-    if (!location) return;
-    setLocationInput({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      radiusMeters: 160934, // ~100 miles
-    });
-  }, [location]);
 
   const loadProducts = useCallback(
     async (page = 1, force = false) => {
@@ -107,6 +105,15 @@ export default function HomeScreen() {
   useEffect(() => {
     loadProducts(1, true);
   }, [search, categoryFilterInput]);
+
+  useEffect(() => {
+    if (!location) return;
+    setLocationInput({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      radiusMeters: searchRadius,
+    });
+  }, [location]);
 
   if (error) {
     return (

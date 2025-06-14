@@ -40,6 +40,8 @@ import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { isRoleAuthorized } from '@/lib/roles';
 import { incompleteProductFields } from '@/lib/utils';
 
+const DEFAULT_SEARCH_RADIUS = 32187; // ~20 miles
+
 export default function ProductScreen() {
   const navigation = useNavigation();
   const { lists, user } = useContext(UserAuthContext);
@@ -113,14 +115,19 @@ export default function ProductScreen() {
   }, [productError]);
 
   function fetchProductStocksWithLocation(productId: string) {
-    let locationInput: LocationInput | undefined = undefined;
+    let locationInput: LocationInput = {
+      latitude: user.address!.latitude,
+      longitude: user.address!.longitude,
+      radiusMeters: DEFAULT_SEARCH_RADIUS,
+    };
     if (location) {
       locationInput = {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        radiusMeters: 32187, // ~20 miles
+        radiusMeters: DEFAULT_SEARCH_RADIUS,
       };
     }
+    console.log(locationInput);
     return getProductStocks({
       variables: { productId, location: locationInput },
     });
