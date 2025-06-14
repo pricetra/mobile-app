@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { Formik, FormikErrors } from 'formik';
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, Platform, Alert } from 'react-native';
+import { View, Text, TextInput, Platform } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
 import { Checkbox } from '../ui/Checkbox';
