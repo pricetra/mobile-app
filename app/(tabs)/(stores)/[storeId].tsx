@@ -3,23 +3,36 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, View, Text, TouchableOpacity } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  TouchableOpacity,
+  RefreshControl,
+  Platform,
+} from 'react-native';
 
 import CreateBranchForm from '@/components/CreateBranchForm';
 import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
+import { useAuth } from '@/context/UserContext';
 import { FindStoreDocument, LocationInput } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export default function SelectedStoreScreen() {
   const navigation = useNavigation();
+  const { user } = useAuth();
   const { storeId } = useLocalSearchParams<{ storeId: string }>();
   const [openModal, setOpenModal] = useState(false);
   const [findStore, { data: storeData, loading: storeLoading }] = useLazyQuery(FindStoreDocument);
   const { location, getCurrentLocation } = useCurrentLocation();
-  const [locationInput, setLocationInput] = useState<LocationInput>();
+  const [locationInput, setLocationInput] = useState<LocationInput>({
+    latitude: user.address!.latitude,
+    longitude: user.address!.longitude,
+  });
 
   useEffect(() => {
     if (!location) return;
@@ -66,11 +79,21 @@ export default function SelectedStoreScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [storeId, location])
+    }, [storeId, locationInput])
   );
 
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={storeLoading}
+          onRefresh={async () => {
+            await getCurrentLocation({});
+          }}
+          colors={Platform.OS === 'ios' ? ['black'] : ['white']}
+          progressBackgroundColor="#111827"
+        />
+      }>
       <SafeAreaView className="h-full">
         {storeData && (
           <ModalFormMini
