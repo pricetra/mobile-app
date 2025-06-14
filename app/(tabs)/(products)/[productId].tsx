@@ -127,7 +127,6 @@ export default function ProductScreen() {
         radiusMeters: DEFAULT_SEARCH_RADIUS,
       };
     }
-    console.log(locationInput);
     return getProductStocks({
       variables: { productId, location: locationInput },
     });
