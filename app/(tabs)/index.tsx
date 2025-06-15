@@ -9,6 +9,7 @@ import { RenderProductLoadingItems } from '@/components/ProductItem';
 import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormFull from '@/components/ui/ModalFormFull';
+import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabSubHeaderProductFilter, {
   PartialCategory,
 } from '@/components/ui/TabSubHeaderProductFilter';
@@ -19,7 +20,7 @@ import { useAuth } from '@/context/UserContext';
 import { AllProductsDocument, LocationInput, Product } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 
-const DEFAULT_SEARCH_RADIUS = 160934; // ~100 miles
+const DEFAULT_SEARCH_RADIUS = 160_934; // ~100 miles
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -36,6 +37,7 @@ export default function HomeScreen() {
     longitude: user.address!.longitude,
     radiusMeters: searchRadius,
   });
+  const [openFiltersModal, setOpenFiltersModal] = useState(false);
 
   const searchVariables = {
     search: {
@@ -52,6 +54,7 @@ export default function HomeScreen() {
         <TabSubHeaderProductFilter
           selectedCategoryId={categoryFilterInput?.id}
           onSelectCategory={(c) => setCategoryFilterInput(c)}
+          onFiltersButtonPressed={() => setOpenFiltersModal(true)}
         />
       );
       return () => setSubHeader(undefined);
@@ -144,6 +147,13 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView>
+      <ModalFormMini
+        title="Search Filters"
+        visible={openFiltersModal}
+        onRequestClose={() => setOpenFiltersModal(false)}>
+        <Text>Hello</Text>
+      </ModalFormMini>
+
       <ModalFormFull
         title="Edit Product"
         visible={selectedProduct !== undefined}
