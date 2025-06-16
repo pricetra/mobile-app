@@ -90,7 +90,7 @@ export default function ProductSearchFilterModal({ onSubmit }: ProductSearchFilt
 
           if (radius) {
             try {
-              res.radius = Math.round(parseInt(radius, 10));
+              res.radius = parseInt(radius, 10);
             } catch {
               res.radius = 5;
             }

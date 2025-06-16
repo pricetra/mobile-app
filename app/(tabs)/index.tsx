@@ -120,33 +120,6 @@ export default function HomeScreen() {
     });
   }, [location, searchRadius]);
 
-  if (error) {
-    return (
-      <SafeAreaView>
-        <View className="p-5">
-          <Alert icon={AlertTriangle} variant="destructive" className="max-w-xl">
-            <AlertTitle>Error!</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (loading || searching) {
-    return <RenderProductLoadingItems count={10} />;
-  }
-
-  const products = (data?.allProducts.products as Product[]) || [];
-
-  if (products.length === 0) {
-    return (
-      <View className="flex items-center justify-center px-5 py-36">
-        <Text className="text-center">No products found</Text>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView>
       <ModalFormMini
@@ -185,17 +158,38 @@ export default function HomeScreen() {
         />
       </ModalFormFull>
 
-      <ProductFlatlist
-        products={products}
-        paginator={data?.allProducts.paginator}
-        handleRefresh={async () => {
-          await getCurrentLocation({});
-          return loadProducts(1, true);
-        }}
-        setPage={loadMore}
-        onItemLongPress={(p) => setSelectedProduct(p)}
-        style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0 }}
-      />
+      {(loading || searching) && <RenderProductLoadingItems count={10} />}
+
+      {error && (
+        <SafeAreaView>
+          <View className="p-5">
+            <Alert icon={AlertTriangle} variant="destructive" className="max-w-xl">
+              <AlertTitle>Error!</AlertTitle>
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          </View>
+        </SafeAreaView>
+      )}
+
+      {data?.allProducts?.products?.length === 0 && (
+        <View className="flex items-center justify-center px-5 py-36">
+          <Text className="text-center">No products found</Text>
+        </View>
+      )}
+
+      {data?.allProducts?.products && (
+        <ProductFlatlist
+          products={data.allProducts.products as Product[]}
+          paginator={data?.allProducts.paginator}
+          handleRefresh={async () => {
+            await getCurrentLocation({});
+            return loadProducts(1, true);
+          }}
+          setPage={loadMore}
+          onItemLongPress={(p) => setSelectedProduct(p)}
+          style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0 }}
+        />
+      )}
     </SafeAreaView>
   );
 }
