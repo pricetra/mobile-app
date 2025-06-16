@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 
 import CreateBranchForm from '@/components/CreateBranchForm';
@@ -111,12 +112,7 @@ export default function SelectedStoreScreen() {
         <View className="p-5">
           {storeLoading && (
             <View className="flex h-40 w-full items-center justify-center px-10">
-              <AntDesign
-                name="loading1"
-                className="size-[30px] animate-spin text-center"
-                color="#555"
-                size={30}
-              />
+              <ActivityIndicator color="#555" size="large" />
             </View>
           )}
           <View>

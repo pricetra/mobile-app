@@ -3,7 +3,7 @@ import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from '@expo
 import * as ImagePicker from 'expo-image-picker';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
-import { Alert, Linking, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, TouchableOpacity, View } from 'react-native';
 
 import BrandSelector from './BrandSelector';
 import CategorySelector from './CategorySelector';
@@ -235,12 +235,7 @@ export default function ProductForm({
   if (brandsLoading || !brands)
     return (
       <View className="flex h-40 items-center justify-center p-10">
-        <AntDesign
-          name="loading1"
-          className="size-[50px] animate-spin text-center"
-          color="#374151"
-          size={50}
-        />
+        <ActivityIndicator color="#374151" size="large" />
       </View>
     );
 

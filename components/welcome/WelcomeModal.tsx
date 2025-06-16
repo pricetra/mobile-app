@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign, Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
+import { Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import {
   Modal,
@@ -142,12 +142,7 @@ export default function WelcomeModal() {
                         className="flex flex-row items-center justify-center gap-2">
                         {locating ? (
                           <>
-                            <AntDesign
-                              name="loading1"
-                              size={18}
-                              color="black"
-                              className="animate-spin"
-                            />
+                            <ActivityIndicator size={18} color="black" />
                             <Text className="font-semibold">Locating...</Text>
                           </>
                         ) : (
@@ -193,12 +188,7 @@ export default function WelcomeModal() {
                           });
                         }}>
                         {profileLoading ? (
-                          <AntDesign
-                            name="loading1"
-                            size={24}
-                            color="white"
-                            className="animate-spin"
-                          />
+                          <ActivityIndicator size={24} color="white" />
                         ) : (
                           <Feather name="arrow-right" size={24} color="white" />
                         )}
@@ -301,6 +291,8 @@ export default function WelcomeModal() {
                 </View>
               )}
             </KeyboardAvoidingView>
+
+            <View style={{ height: 50 }} />
           </SafeAreaView>
         </ScrollView>
       </View>

@@ -1,10 +1,9 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { Formik, FormikErrors } from 'formik';
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, Platform } from 'react-native';
+import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
 import { Checkbox } from '../ui/Checkbox';
@@ -69,6 +68,13 @@ export default function AddProductPriceForm({
     setBranchId(branchesData.findBranchesByDistance.at(0)?.id);
   }, [branchesData]);
 
+  if (branchesLoading)
+    return (
+      <View className="flex h-40 items-center justify-center p-10">
+        <ActivityIndicator color="#374151" size="large" />
+      </View>
+    );
+
   if (!location) {
     return (
       <View className="flex h-40 items-center justify-center gap-5 py-10">
@@ -78,19 +84,7 @@ export default function AddProductPriceForm({
     );
   }
 
-  if (branchesLoading || !branchesData)
-    return (
-      <View className="flex h-40 items-center justify-center p-10">
-        <AntDesign
-          name="loading1"
-          className="size-[50px] animate-spin text-center"
-          color="#374151"
-          size={50}
-        />
-      </View>
-    );
-
-  if (branchesData.findBranchesByDistance.length === 0) {
+  if (!branchesData || branchesData.findBranchesByDistance.length === 0) {
     return (
       <View className="flex h-40 items-center justify-center gap-5 py-10">
         <Text className="text-lg font-bold">No branches found near you</Text>

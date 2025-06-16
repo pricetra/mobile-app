@@ -1,9 +1,8 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import { JwtStoreContext } from './JwtStoreContext';
 
@@ -97,12 +96,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
           style={{ height: 45, width: 190 }}
         />
 
-        <AntDesign
-          name="loading1"
-          className="mt-10 size-[40px] animate-spin text-center"
-          color="black"
-          size={40}
-        />
+        <ActivityIndicator color="black" size={40} />
       </View>
     );
 

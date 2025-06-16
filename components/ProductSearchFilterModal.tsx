@@ -1,4 +1,4 @@
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useState } from 'react';
 import { TouchableOpacity, View, Text, Alert, ActivityIndicator } from 'react-native';
@@ -56,7 +56,7 @@ export default function ProductSearchFilterModal({ onSubmit }: ProductSearchFilt
           className="flex flex-row items-center gap-2">
           {locating ? (
             <>
-              <AntDesign name="loading1" size={15} color="#396a12" className="animate-spin" />
+              <ActivityIndicator size={15} color="#396a12" />
               <Text className="text-sm font-semibold text-pricetraGreenHeavyDark">Locating...</Text>
             </>
           ) : (
