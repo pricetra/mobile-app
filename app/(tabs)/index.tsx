@@ -1,4 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
+import convert from 'convert-units';
 import { router, useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -6,6 +7,7 @@ import { View, SafeAreaView, Platform, Text } from 'react-native';
 
 import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
+import ProductSearchFilterModal from '@/components/ProductSearchFilterModal';
 import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormFull from '@/components/ui/ModalFormFull';
@@ -116,7 +118,7 @@ export default function HomeScreen() {
       longitude: location.coords.longitude,
       radiusMeters: searchRadius,
     });
-  }, [location]);
+  }, [location, searchRadius]);
 
   if (error) {
     return (
@@ -151,7 +153,21 @@ export default function HomeScreen() {
         title="Search Filters"
         visible={openFiltersModal}
         onRequestClose={() => setOpenFiltersModal(false)}>
-        <Text>Hello</Text>
+        <ProductSearchFilterModal
+          onSubmit={({ location, radius }) => {
+            if (radius) setSearchRadius(Math.round(convert(radius).from('mi').to('m')));
+            if (location) {
+              setLocationInput({
+                latitude: location.latitude,
+                longitude: location.longitude,
+                radiusMeters: radius
+                  ? Math.round(convert(radius).from('mi').to('m'))
+                  : searchRadius,
+              });
+            }
+            setOpenFiltersModal(false);
+          }}
+        />
       </ModalFormMini>
 
       <ModalFormFull
