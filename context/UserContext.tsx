@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
@@ -42,33 +42,14 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   const [user, setUser] = useState<User>();
   const [userLists, setUserLists] = useState<UserListsType>();
   const router = useRouter();
-  const {
-    data: userData,
-    loading: userDataLoading,
-    error: userError,
-  } = useQuery(MeDocument, {
+  const [me] = useLazyQuery(MeDocument, {
     fetchPolicy: 'no-cache',
   });
-  const { data: listsData, loading: listsLoading } = useQuery(GetAllListsDocument, {
-    fetchPolicy: 'network-only',
+  const [lists] = useLazyQuery(GetAllListsDocument, {
+    fetchPolicy: 'no-cache',
   });
   const [logout] = useMutation(LogoutDocument);
-
-  useEffect(() => {
-    if (!userData) return;
-    setUser(userData.me as User);
-  }, [userData]);
-
-  useEffect(() => {
-    if (!listsData) return;
-
-    const allLists = listsData.getAllLists as List[];
-    setUserLists({
-      allLists,
-      favorites: allLists.find(({ type }) => type === ListType.Favorites)!,
-      watchList: allLists.find(({ type }) => type === ListType.WatchList)!,
-    });
-  }, [listsData]);
+  const [loading, setLoading] = useState(true);
 
   function removeStoredJwtAndRedirect() {
     removeJwt().finally(() => {
@@ -76,7 +57,39 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     });
   }
 
-  if (userDataLoading || listsLoading || !user || !userLists)
+  useEffect(() => {
+    if (!jwt) return;
+
+    const ctx = {
+      headers: {
+        authorization: `Bearer ${jwt}`,
+      },
+    };
+    me({
+      context: { ...ctx },
+    })
+      .then(async ({ data: userData, error, errors }) => {
+        if (error || errors || !userData) return removeStoredJwtAndRedirect();
+
+        setUser(userData.me as User);
+        const { data: listData } = await lists({ context: { ...ctx } });
+        return listData;
+      })
+      .then((listData) => {
+        if (!listData) return;
+
+        const allLists = listData.getAllLists as List[];
+        setUserLists({
+          allLists,
+          favorites: allLists.find(({ type }) => type === ListType.Favorites)!,
+          watchList: allLists.find(({ type }) => type === ListType.WatchList)!,
+        });
+      })
+      .catch((_e) => removeStoredJwtAndRedirect())
+      .finally(() => setLoading(false));
+  }, [jwt]);
+
+  if (loading)
     return (
       <View className="flex h-screen w-screen items-center justify-center gap-10 bg-white p-10">
         <Image
@@ -93,18 +106,16 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
       </View>
     );
 
-  if (userError) {
+  if (!user) {
     removeStoredJwtAndRedirect();
     return <></>;
   }
-
-  if (!userData) throw new Error('could not load user data');
 
   return (
     <UserAuthContext.Provider
       value={{
         token: jwt,
-        user: user ?? (userData.me as User),
+        user,
         lists: userLists ?? { allLists: [], favorites: {} as List, watchList: {} as List },
         updateUser: (updatedUser) => setUser(updatedUser),
         logout: () => {

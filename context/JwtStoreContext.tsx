@@ -28,12 +28,14 @@ export default function JwtStoreProvider({ children }: JwtStoreProviderProps) {
       .finally(() => setLoading(false));
   }, []);
 
-  function updateJwt(newJwt: string) {
-    return SecureStore.setItemAsync(JWT_KEY, newJwt).then(() => setJwt(newJwt));
+  async function updateJwt(newJwt: string) {
+    await SecureStore.setItemAsync(JWT_KEY, newJwt);
+    return setJwt(newJwt);
   }
 
-  function removeJwt() {
-    return SecureStore.deleteItemAsync(JWT_KEY).then(() => setJwt(undefined));
+  async function removeJwt() {
+    await SecureStore.deleteItemAsync(JWT_KEY);
+    return setJwt(undefined);
   }
 
   return (

@@ -1,21 +1,11 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  createHttpLink,
-  InMemoryCache,
-  NormalizedCacheObject,
-} from '@apollo/client';
+import { ApolloClient, ApolloLink, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
-import { ReactNode, useContext, useEffect, useState } from 'react';
-
 import { RetryLink } from '@apollo/client/link/retry';
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
+import { ReactNode } from 'react';
 
-import { JwtStoreContext } from '@/context/JwtStoreContext';
+export const uri = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/graphql';
 
-const uri = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/graphql';
-
-const httpLink = createHttpLink({ uri });
 const uploadLink = createUploadLink({ uri });
 
 const retryLink = new RetryLink({
@@ -30,35 +20,30 @@ const retryLink = new RetryLink({
   },
 });
 
-function createAuthLink(jwt?: string) {
-  return setContext((_, { headers }) => {
-    return {
-      headers: {
-        ...headers,
-        authorization: jwt ? `Bearer ${jwt}` : undefined,
-      },
-    };
-  });
+function createAuthLink(jwt: string) {
+  return setContext((_, { headers }) => ({
+    headers: {
+      ...headers,
+      authorization: `Bearer ${jwt}`,
+    },
+  }));
 }
 
 function newClient(jwt?: string) {
+  if (!jwt)
+    return new ApolloClient({
+      link: uploadLink,
+      cache: new InMemoryCache(),
+    });
+
   return new ApolloClient({
-    link: createAuthLink(jwt).concat(uploadLink).concat(retryLink),
+    link: ApolloLink.from([retryLink, createAuthLink(jwt), uploadLink]),
     cache: new InMemoryCache(),
   });
 }
 
-type ApolloWrapperProps = { children: ReactNode };
+type ApolloWrapperProps = { jwt?: string; children: ReactNode };
 
-export default function ApolloWrapper({ children }: ApolloWrapperProps) {
-  const { jwt } = useContext(JwtStoreContext);
-  const [client, setClient] = useState<ApolloClient<NormalizedCacheObject>>();
-
-  useEffect(() => {
-    setClient(newClient(jwt));
-  }, [jwt]);
-
-  if (!client) return <></>;
-
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+export default function ApolloWrapper({ jwt, children }: ApolloWrapperProps) {
+  return <ApolloProvider client={newClient(jwt)}>{children}</ApolloProvider>;
 }

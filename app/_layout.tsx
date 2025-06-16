@@ -46,33 +46,37 @@ function RootStack() {
 
   return (
     <>
-      <Modal visible={!jwt} animationType="slide" transparent>
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <AuthModalProvider>
-            <AuthScreens />
-          </AuthModalProvider>
-        </View>
-      </Modal>
+      <ApolloWrapper>
+        <Modal visible={!jwt} animationType="slide" transparent>
+          <View style={{ flex: 1, backgroundColor: 'white' }}>
+            <AuthModalProvider>
+              <AuthScreens />
+            </AuthModalProvider>
+          </View>
+        </Modal>
+      </ApolloWrapper>
 
       {jwt && (
-        <UserContextProvider jwt={jwt}>
-          <DrawerProvider>
-            <SearchContextProvider>
-              <AutocompleteDropdownContextProvider>
-                <AppDrawer />
+        <ApolloWrapper jwt={jwt}>
+          <UserContextProvider jwt={jwt}>
+            <DrawerProvider>
+              <SearchContextProvider>
+                <AutocompleteDropdownContextProvider>
+                  <AppDrawer />
 
-                <WelcomeModal />
+                  <WelcomeModal />
 
-                <HeaderProvider>
-                  <Stack>
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                    <Stack.Screen name="+not-found" />
-                  </Stack>
-                </HeaderProvider>
-              </AutocompleteDropdownContextProvider>
-            </SearchContextProvider>
-          </DrawerProvider>
-        </UserContextProvider>
+                  <HeaderProvider>
+                    <Stack>
+                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                      <Stack.Screen name="+not-found" />
+                    </Stack>
+                  </HeaderProvider>
+                </AutocompleteDropdownContextProvider>
+              </SearchContextProvider>
+            </DrawerProvider>
+          </UserContextProvider>
+        </ApolloWrapper>
       )}
     </>
   );
@@ -89,13 +93,11 @@ export default function RootLayout() {
 
   return (
     <JwtStoreProvider>
-      <ApolloWrapper>
-        <ThemeProvider value={LIGHT_THEME}>
-          <RootStack />
-          <StatusBar style="dark" />
-          <PortalHost />
-        </ThemeProvider>
-      </ApolloWrapper>
+      <ThemeProvider value={LIGHT_THEME}>
+        <RootStack />
+        <StatusBar style="dark" />
+        <PortalHost />
+      </ThemeProvider>
     </JwtStoreProvider>
   );
 }
