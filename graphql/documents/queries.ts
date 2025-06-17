@@ -250,8 +250,8 @@ export const ALL_PRODUCTS_QUERY = gql(`
 `);
 
 export const PRODUCT_BY_ID_QUERY = gql(`
-  query Product($productId: ID!) {
-    product(id: $productId) {
+  query Product($productId: ID!, $viewerTrail: ViewerTrailInput) {
+    product(id: $productId, viewerTrail: $viewerTrail) {
       id
       name
       image
@@ -278,6 +278,16 @@ export const PRODUCT_BY_ID_QUERY = gql(`
         id
         name
         avatar
+      }
+      views
+      productList {
+        id
+        listId
+        userId
+        productId
+        type
+        stockId
+        createdAt
       }
     }
   }

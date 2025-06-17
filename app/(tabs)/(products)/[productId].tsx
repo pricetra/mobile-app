@@ -29,9 +29,12 @@ import {
   FavoriteBranchesWithPricesDocument,
   GetAllListsDocument,
   GetProductStocksDocument,
+  ListType,
   LocationInput,
+  Product,
   ProductDocument,
-  RemoveFromListDocument,
+  ProductList,
+  RemoveFromListWithProductIdDocument,
   Stock,
   StockDocument,
   UserRole,
@@ -64,26 +67,37 @@ export default function ProductScreen() {
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [favorite, setFavorite] = useState(false);
-  const [watching, setWatching] = useState(false);
   const loading = productLoading || stockLoading;
 
-  const [addToList] = useMutation(AddToListDocument, { refetchQueries: [GetAllListsDocument] });
-  const [removeFromList] = useMutation(RemoveFromListDocument, {
+  const [addToList, { loading: addToListLoading }] = useMutation(AddToListDocument, {
     refetchQueries: [GetAllListsDocument],
   });
+  const [removeFromList, { loading: removeFromListLoading }] = useMutation(
+    RemoveFromListWithProductIdDocument,
+    {
+      refetchQueries: [GetAllListsDocument],
+    }
+  );
+  const [favProductList, setFavProductList] = useState<ProductList>();
+  const [watchProductList, setWatchProductList] = useState<ProductList>();
 
   useFocusEffect(
     useCallback(() => {
-      setFavorite(
-        lists.favorites.productList?.some((p) => p.productId.toString() === productId) ?? false
-      );
-      setWatching(
-        lists.watchList.productList?.some((p) => p.productId.toString() === productId) ?? false
-      );
-
       getProduct({
-        variables: { productId },
+        variables: {
+          productId,
+          viewerTrail: {
+            stockId,
+            // TODO: Add origin history is not supported so that will also need to be implemented
+          },
+        },
+      }).then(({ data }) => {
+        if (!data) return;
+
+        const fav = data.product.productList.find((p) => p.type === ListType.Favorites);
+        setFavProductList(fav);
+        const watch = data.product.productList.find((p) => p.type === ListType.WatchList);
+        setWatchProductList(watch);
       });
       if (stockId) {
         getStock({ variables: { stockId } });
@@ -95,8 +109,8 @@ export default function ProductScreen() {
         },
       });
       return () => {
-        setWatching(false);
-        setFavorite(false);
+        setFavProductList(undefined);
+        setWatchProductList(undefined);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
@@ -132,55 +146,36 @@ export default function ProductScreen() {
     });
   }
 
-  function toggleFavoriteList() {
-    if (!favorite) {
-      setFavorite(true);
-      addToList({
-        variables: {
-          listId: lists.favorites.id,
-          productId,
-        },
-      }).catch(() => setFavorite(false));
-      return;
-    }
-    setFavorite(false);
-    removeFromList({
+  function add(type: ListType.WatchList | ListType.Favorites, cb: (p: ProductList) => void) {
+    const listId = type === ListType.Favorites ? lists.favorites.id : lists.watchList.id;
+    addToList({
       variables: {
-        listId: lists.favorites.id,
-        productListId: lists.favorites.productList?.find(
-          (p) => p.productId.toString() === productId
-        )?.id!,
+        listId,
+        productId,
+        stockId: type === ListType.WatchList ? stockId : undefined,
       },
-    }).catch(() => setFavorite(true));
+    }).then(({ data, errors }) => {
+      if (!data || errors) return;
+      cb(data.addToList);
+    });
   }
 
-  function toggleWatchList() {
-    if (!stockData) return;
-
-    if (!watching) {
-      setWatching(true);
-      addToList({
-        variables: {
-          listId: lists.watchList.id,
-          productId,
-          stockId,
-        },
-      }).catch(() => setWatching(false));
-      return;
-    }
-    setWatching(false);
+  function remove(type: ListType.WatchList | ListType.Favorites, cb: (p: ProductList) => void) {
+    const listId = type === ListType.Favorites ? lists.favorites.id : lists.watchList.id;
     removeFromList({
       variables: {
-        listId: lists.watchList.id,
-        productListId: lists.watchList.productList?.find(
-          (p) => p.productId.toString() === productId
-        )?.id!,
+        listId,
+        productId,
       },
-    }).catch(() => setWatching(true));
+    }).then(({ data, errors }) => {
+      if (!data || errors) return;
+      cb(data.removeFromListWithProductId);
+    });
   }
 
   useEffect(() => {
     if (loading) return;
+
     navigation.setOptions({
       header: (props: BottomTabHeaderProps) => (
         <TabHeaderItem
@@ -189,16 +184,28 @@ export default function ProductScreen() {
             <>
               {stockId && (
                 <TouchableOpacity
-                  onPress={toggleWatchList}
+                  onPress={() => {
+                    if (watchProductList) {
+                      return remove(ListType.WatchList, () => setWatchProductList(undefined));
+                    }
+                    add(ListType.WatchList, (p) => setWatchProductList(p));
+                  }}
+                  disabled={addToListLoading || removeFromListLoading}
                   className="flex flex-row items-center gap-2 p-2">
-                  <AntDesign name={watching ? 'eye' : 'eyeo'} size={25} color="#a855f7" />
+                  <AntDesign name={watchProductList ? 'eye' : 'eyeo'} size={25} color="#a855f7" />
                 </TouchableOpacity>
               )}
 
               <TouchableOpacity
-                onPress={toggleFavoriteList}
+                onPress={() => {
+                  if (favProductList) {
+                    return remove(ListType.Favorites, () => setFavProductList(undefined));
+                  }
+                  add(ListType.Favorites, (p) => setFavProductList(p));
+                }}
+                disabled={addToListLoading || removeFromListLoading}
                 className="flex flex-row items-center gap-2 p-2">
-                <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                <AntDesign name={favProductList ? 'heart' : 'hearto'} size={20} color="#e11d48" />
               </TouchableOpacity>
 
               {isRoleAuthorized(UserRole.Contributor, user.role) && (
@@ -220,7 +227,7 @@ export default function ProductScreen() {
         />
       ),
     });
-  }, [loading, favorite, watching]);
+  }, [loading, favProductList, watchProductList, addToListLoading, removeFromListLoading]);
 
   useEffect(() => {
     if (!productData) return;
@@ -262,7 +269,7 @@ export default function ProductScreen() {
         visible={openEditModal}
         onRequestClose={() => setOpenEditModal(false)}>
         <ProductForm
-          product={productData.product}
+          product={productData.product as Product}
           onCancel={() => setOpenEditModal(false)}
           onSuccess={(_product) => {
             setOpenEditModal(false);
@@ -289,7 +296,7 @@ export default function ProductScreen() {
           />
         }>
         <ProductFull
-          product={productData.product}
+          product={productData.product as Product}
           hideDescription
           hideEditButton
           onEditButtonPress={() => setOpenEditModal(true)}

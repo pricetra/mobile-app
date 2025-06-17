@@ -260,6 +260,19 @@ export const REMOVE_FROM_LIST_MUTATION = gql(`
   }
 `);
 
+export const REMOVE_FROM_LIST_BY_PRODUCT_ID_MUTATION = gql(`
+  mutation RemoveFromListWithProductId($listId: ID!, $productId: ID!) {
+    removeFromListWithProductId(listId: $listId, productId: $productId) {
+      id
+      userId
+      listId
+      productId
+      stockId
+      createdAt
+    }
+  }
+`);
+
 export const ADD_BRANCH_TO_LIST_MUTATION = gql(`
   mutation AddBranchToList($listId: ID!, $branchId: ID!) {
     addBranchToList(listId: $listId, branchId: $branchId) {
