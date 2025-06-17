@@ -236,6 +236,7 @@ export const ALL_PRODUCTS_QUERY = gql(`
           name
           avatar
         }
+        views
       }
       paginator {
         next
