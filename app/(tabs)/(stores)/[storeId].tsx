@@ -61,7 +61,9 @@ export default function SelectedStoreScreen() {
                     src={createCloudinaryUrl(data.findStore.logo, 100, 100)}
                     className="size-[30px] rounded-lg"
                   />
-                  <Text className="font-bold">{data.findStore.name}</Text>
+                  <Text className="font-bold" numberOfLines={1}>
+                    {data.findStore.name}
+                  </Text>
                 </View>
               }
               rightNav={

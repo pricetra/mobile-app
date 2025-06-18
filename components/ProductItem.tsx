@@ -44,7 +44,9 @@ export default function ProductItem({ product }: ProductItemProps) {
               </>
             )}
           </View>
-          <Text className="font-bold">{product.name}</Text>
+          <Text className="font-bold" numberOfLines={3}>
+            {product.name}
+          </Text>
           {product.category && <Text className="mt-2 text-xs">{product.category.name}</Text>}
         </View>
 

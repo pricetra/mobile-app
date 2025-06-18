@@ -114,7 +114,9 @@ export default function SelectedBranchScreen() {
                 className="size-[30px] rounded-lg"
               />
               <View className="flex flex-col justify-center gap-[1px]">
-                <Text className="font-bold">{branchData.findStore.name}</Text>
+                <Text className="font-bold" numberOfLines={1}>
+                  {branchData.findStore.name}
+                </Text>
                 {branchData.findBranch.address && (
                   <Text className="w-[80%] text-xs" numberOfLines={1}>
                     {branchData.findBranch.address.fullAddress}

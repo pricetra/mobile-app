@@ -17,15 +17,23 @@ export default function ProductStockMini({ stock }: ProductStockMiniProps) {
         src={createCloudinaryUrl(stock.store?.logo ?? '', 100, 100)}
         className="size-[25px] rounded-full"
       />
-      <View>
-        <Text className="text-xs font-semibold">{stock.store?.name}</Text>
+      <View className="flex w-full flex-col pr-5">
+        <Text className="text-xs font-semibold" numberOfLines={1}>
+          {stock.store?.name}
+        </Text>
         {stock.branch?.address && (
           <View className="flex flex-row flex-wrap items-center gap-[1px]">
-            <Text className="text-[9px]">{stock.branch.address?.city}</Text>
+            <Text className="max-w-[70%] text-[9px]" numberOfLines={1}>
+              {stock.branch.address?.city}
+            </Text>
             {stock.branch.address.distance && (
-              <Text className="text-[9px]">
-                ({metersToMiles(stock.branch.address.distance)} mi)
-              </Text>
+              <>
+                <Entypo name="dot-single" size={12} color="black" />
+
+                <Text className="text-[9px]">
+                  {metersToMiles(stock.branch.address.distance)} mi
+                </Text>
+              </>
             )}
           </View>
         )}
