@@ -3,7 +3,7 @@ const IS_DEV = process.env.APP_VARIANT === 'development';
 export default {
   name: IS_DEV ? 'Pricetra (Dev)' : 'Pricetra',
   slug: 'pricetra',
-  version: '1.0.11',
+  version: '1.0.12',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   scheme: 'pricetra',
