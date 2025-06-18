@@ -1,26 +1,57 @@
 import { useQuery } from '@apollo/client';
-import { Feather } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import { router, useFocusEffect, useNavigation } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { View, ScrollView, SafeAreaView, TouchableOpacity, Text } from 'react-native';
 
 import CreateStoreForm from '@/components/CreateStoreForm';
 import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
-import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { AllStoresDocument } from '@/graphql/types/graphql';
 
 export default function CreateStoreScreen() {
+  const navigation = useNavigation();
   const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument);
   const [openModal, setOpenModal] = useState(false);
 
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({
+        header: (props: BottomTabHeaderProps) => (
+          <TabHeaderItem
+            {...props}
+            leftNav={
+              <View className="flex flex-row items-center gap-3">
+                <View className="flex size-[35px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark/10">
+                  <MaterialIcons size={20} name="storefront" color="#396a12" />
+                </View>
+                <Text className="font-bold" numberOfLines={1}>
+                  Stores
+                </Text>
+              </View>
+            }
+            rightNav={
+              <TouchableOpacity
+                onPress={() => setOpenModal(true)}
+                className="flex flex-row items-center gap-2 rounded-full p-2">
+                <Feather name="plus" size={20} color="#396a12" />
+              </TouchableOpacity>
+            }
+          />
+        ),
+      });
+      return () => {
+        navigation.setOptions({
+          header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
+        });
+      };
+    }, [])
+  );
+
   return (
     <SafeAreaView>
-      <FloatingActionButton onPress={() => setOpenModal(true)}>
-        <Feather name="plus" size={20} color="white" />
-        <Text className="text-md font-bold color-white">Store</Text>
-      </FloatingActionButton>
-
       <ScrollView className="h-full p-5">
         <ModalFormMini
           visible={openModal}

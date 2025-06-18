@@ -132,6 +132,8 @@ export default function CreateStoreForm({ onSuccess, onError }: CreateStoreFormP
         variant="secondary">
         Create store
       </Button>
+
+      <View style={{ height: 50 }} />
     </View>
   );
 }

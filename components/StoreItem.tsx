@@ -9,7 +9,7 @@ import { createCloudinaryUrl } from '@/lib/files';
 
 export default function StoreItem({ name, logo, website }: Store) {
   return (
-    <View className="mb-10 flex flex-row gap-3">
+    <View className="mb-8 flex flex-row gap-3">
       <View className="flex flex-row gap-3">
         <Image src={createCloudinaryUrl(logo, 500, 500)} className="size-[60px] rounded-lg" />
       </View>
@@ -28,7 +28,7 @@ export default function StoreItem({ name, logo, website }: Store) {
 
 export function StoreItemLoading() {
   return (
-    <View className="mb-10 flex flex-row gap-3">
+    <View className="mb-8 flex flex-row gap-3">
       <View className="flex flex-row gap-3">
         <Skeleton className="size-[60px] rounded-lg" />
       </View>

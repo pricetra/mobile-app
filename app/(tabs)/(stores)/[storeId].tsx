@@ -70,7 +70,7 @@ export default function SelectedStoreScreen() {
                 <TouchableOpacity
                   onPress={() => setOpenModal(true)}
                   className="flex flex-row items-center gap-2 rounded-full p-2">
-                  <Feather name="plus" size={20} color="#3b82f6" />
+                  <Feather name="plus" size={20} color="#396a12" />
                 </TouchableOpacity>
               }
             />

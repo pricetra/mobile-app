@@ -60,6 +60,8 @@ export default function CreateBranchForm({ store, onSuccess, onError }: CreateBr
       <Button onPress={search} loading={loading} disabled={!fullAddress} variant="secondary">
         Submit
       </Button>
+
+      <View style={{ height: 50 }} />
     </View>
   );
 }
