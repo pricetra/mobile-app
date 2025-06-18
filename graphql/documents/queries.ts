@@ -164,6 +164,9 @@ export const ME_QUERY = gql`
         countryCode
         country
       }
+      birthDate
+      phoneNumber
+      bio
     }
   }
 `;

@@ -1,68 +1,64 @@
-import { useMutation } from '@apollo/client';
-import { upload } from 'cloudinary-react-native';
-import { randomUUID } from 'expo-crypto';
-import * as ImagePicker from 'expo-image-picker';
-import { useContext } from 'react';
-import { SafeAreaView, View, ScrollView, Alert } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import { useFocusEffect, useNavigation } from 'expo-router';
+import { useCallback, useContext, useState } from 'react';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, Alert } from 'react-native';
 
-import ProfileSmall from '@/components/profile/ProfileSmall';
+import ProfileForm from '@/components/profile/ProfileForm';
+import ProfileTiny from '@/components/profile/ProfileTiny';
+import ModalFormMini from '@/components/ui/ModalFormMini';
+import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { UserAuthContext } from '@/context/UserContext';
-import { UpdateProfileDocument, User } from '@/graphql/types/graphql';
-import { cloudinary } from '@/lib/files';
 
 export default function ProfileScreen() {
+  const navigation = useNavigation();
   const { user, updateUser } = useContext(UserAuthContext);
-  const [updateProfileDocument] = useMutation(UpdateProfileDocument);
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
 
-  async function selectProfileAvatar() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0,
-      base64: true,
-      allowsMultipleSelection: false,
-    });
-
-    if (result.canceled || result.assets.length === 0) return;
-
-    const picture = result.assets.at(0);
-    if (!picture || !picture.uri) return alert('could not process image');
-
-    const upload_id = randomUUID();
-    upload(cloudinary, {
-      file: picture.uri,
-      options: {
-        public_id: upload_id,
-        tags: ['USER_PROFILE'],
-      },
-      callback: (err) => {
-        if (err) {
-          Alert.alert('Upload Failed', err.message);
-          return;
-        }
-        updateProfileDocument({
-          variables: {
-            input: {
-              avatar: upload_id,
-            },
-          },
-        }).then(({ errors, data }) => {
-          if (errors || !data) {
-            console.error(errors);
-            return;
-          }
-          updateUser({ ...data.updateProfile } as User);
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({
+        header: (props: BottomTabHeaderProps) => (
+          <TabHeaderItem
+            {...props}
+            leftNav={<ProfileTiny user={user} />}
+            rightNav={
+              <TouchableOpacity
+                onPress={() => setOpenSettingsModal(true)}
+                className="flex flex-row items-center gap-2 rounded-full p-2">
+                <Feather name="settings" size={20} color="#396a12" />
+              </TouchableOpacity>
+            }
+          />
+        ),
+      });
+      return () => {
+        navigation.setOptions({
+          header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
-      },
-    });
-  }
+      };
+    }, [user])
+  );
 
   return (
-    <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
-      <View className="p-5 pb-3">
-        <ProfileSmall user={user} selectProfileAvatar={selectProfileAvatar} />
-      </View>
+    <SafeAreaView style={{ height: '100%' }}>
+      <ModalFormMini
+        visible={openSettingsModal}
+        onRequestClose={() => setOpenSettingsModal(false)}
+        title="Edit Profile">
+        <ProfileForm
+          user={user}
+          onCancel={() => setOpenSettingsModal(false)}
+          onSuccess={(updatedUser) => {
+            updateUser({
+              ...user,
+              ...updatedUser,
+            });
+            setOpenSettingsModal(false);
+          }}
+          onError={(e) => Alert.alert('Could not edit profile', e.message)}
+        />
+      </ModalFormMini>
 
       <ScrollView />
     </SafeAreaView>
