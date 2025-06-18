@@ -70,6 +70,9 @@ export const UPDATE_PROFILE_MUTATION = gql(`
         countryCode
         country
       }
+      birthDate
+      phoneNumber
+      bio
     }
   }
 `);
