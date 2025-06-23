@@ -327,3 +327,34 @@ export const UPDATE_PASSWORD_WITH_RESET_CODE_MUTATION = gql(`
     )
   }
 `);
+
+export const REGISTER_EXPO_PUSH_TOKEN = gql(`
+  RegisterExpoPushToken($expoPushToken: String!) {
+    registerExpoPushToken(expoPushToken: $expoPushToken) {
+      id
+      name
+      email
+      avatar
+      createdAt
+      updatedAt
+      active
+      authPlatform
+      authStateId
+      expoPushToken
+      role
+      addressId
+      address {
+        id
+        latitude
+        longitude
+        mapsLink
+        fullAddress
+        city
+        administrativeDivision
+        zipCode
+        countryCode
+        country
+      }
+    }
+  }
+`);

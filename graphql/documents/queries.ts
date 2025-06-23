@@ -85,6 +85,7 @@ export const LOGIN_INTERNAL_QUERY = gql`
         active
         authPlatform
         authStateId
+        expoPushToken
         role
         addressId
         address {
@@ -118,6 +119,7 @@ export const GOOGLE_OAUTH_QUERY = gql`
         active
         authPlatform
         authStateId
+        expoPushToken
         role
         addressId
         address {
@@ -150,6 +152,7 @@ export const ME_QUERY = gql`
       active
       authPlatform
       authStateId
+      expoPushToken
       role
       addressId
       address {
