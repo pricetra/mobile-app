@@ -19,7 +19,12 @@ import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import { AllProductsDocument, LocationInput, Product } from '@/graphql/types/graphql';
+import {
+  AllProductsDocument,
+  LocationInput,
+  Product,
+  ProductSearch,
+} from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 const DEFAULT_SEARCH_RADIUS = 160_934; // ~100 miles
@@ -43,13 +48,11 @@ export default function HomeScreen() {
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
 
   const searchVariables = {
-    search: {
-      query: search,
-      location: locationInput,
-      category: categoryFilterInput?.category,
-      categoryId: categoryFilterInput?.categoryId,
-    },
-  };
+    query: search,
+    location: locationInput,
+    category: categoryFilterInput?.category,
+    categoryId: categoryFilterInput?.categoryId,
+  } as ProductSearch;
 
   useFocusEffect(
     useCallback(() => {
@@ -72,7 +75,7 @@ export default function HomeScreen() {
         return await getAllProducts({
           variables: {
             paginator: { limit: LIMIT, page },
-            ...searchVariables,
+            search: { ...searchVariables },
           },
           fetchPolicy: force ? 'no-cache' : undefined,
         });

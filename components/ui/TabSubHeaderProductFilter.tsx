@@ -8,6 +8,7 @@ const categories: PartialCategory[] = [
   { id: undefined, name: 'All', category: undefined },
   { id: '464', name: 'Milk', category: 'Milk' },
   { id: '478', name: 'Eggs', categoryId: '478' },
+  { id: '509', name: 'Produce', category: 'Produce' },
   { id: '490', name: 'Bread', category: 'Bread' },
   { id: '635', name: 'Pasta', category: 'Pasta' },
   { id: '965', name: 'Rice', category: 'Rice' },
