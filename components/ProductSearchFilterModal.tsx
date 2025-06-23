@@ -8,20 +8,70 @@ import Input from './ui/Input';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 
 export type SearchFilterReturnType = {
+  address?: string;
   location?: Location.LocationGeocodedLocation;
   radius?: number;
 };
 
 export type ProductSearchFilterModalProps = {
+  addressInit?: string;
+  radiusInit?: string;
   onSubmit: (res: SearchFilterReturnType) => void;
 };
 
-export default function ProductSearchFilterModal({ onSubmit }: ProductSearchFilterModalProps) {
-  const [address, setAddress] = useState<string>();
+export default function ProductSearchFilterModal({
+  addressInit,
+  radiusInit,
+  onSubmit,
+}: ProductSearchFilterModalProps) {
+  const [address, setAddress] = useState(addressInit);
   const [locating, setLocating] = useState(false);
-  const [radius, setRadius] = useState<string>();
+  const [radius, setRadius] = useState(radiusInit);
   const { getCurrentGeocodeAddress } = useCurrentLocation();
   const [submitting, setSubmitting] = useState(false);
+
+  async function submitForm() {
+    setSubmitting(true);
+    const res = {} as SearchFilterReturnType;
+    if (address) {
+      const locations = await Location.geocodeAsync(address);
+      if (locations.length > 0) {
+        res.address = address;
+        res.location = locations[0];
+      }
+    }
+
+    if (radius) {
+      try {
+        res.radius = parseInt(radius, 10);
+      } catch {
+        res.radius = 5;
+      }
+    }
+
+    onSubmit(res);
+    setSubmitting(false);
+  }
+
+  function currentAddress() {
+    setLocating(true);
+    getCurrentGeocodeAddress({})
+      .then((data) => {
+        if (data.length === 0)
+          return Alert.alert(
+            'Invalid address',
+            'Your current location returned an invalid response'
+          );
+        let formattedAddress = data[0].formattedAddress;
+        if (!formattedAddress) {
+          formattedAddress = `${data[0].name}, ${data[0].city}, ${data[0].region} ${data[0].postalCode}`;
+        }
+        setAddress(formattedAddress ?? undefined);
+      })
+      .finally(() => {
+        setLocating(false);
+      });
+  }
 
   return (
     <View className="flex flex-col gap-7">
@@ -33,25 +83,7 @@ export default function ProductSearchFilterModal({ onSubmit }: ProductSearchFilt
           label="Address"
         />
         <TouchableOpacity
-          onPress={() => {
-            setLocating(true);
-            getCurrentGeocodeAddress({})
-              .then((data) => {
-                if (data.length === 0)
-                  return Alert.alert(
-                    'Invalid address',
-                    'Your current location returned an invalid response'
-                  );
-                let formattedAddress = data[0].formattedAddress;
-                if (!formattedAddress) {
-                  formattedAddress = `${data[0].name}, ${data[0].city}, ${data[0].region} ${data[0].postalCode}`;
-                }
-                setAddress(formattedAddress ?? undefined);
-              })
-              .finally(() => {
-                setLocating(false);
-              });
-          }}
+          onPress={currentAddress}
           disabled={locating}
           className="flex flex-row items-center gap-2">
           {locating ? (
@@ -80,25 +112,7 @@ export default function ProductSearchFilterModal({ onSubmit }: ProductSearchFilt
 
       <TouchableOpacity
         className="mt-5 flex flex-1 flex-row items-center justify-center gap-5 rounded-lg bg-pricetraGreenHeavyDark px-7 py-3"
-        onPress={async () => {
-          setSubmitting(true);
-          const res = {} as SearchFilterReturnType;
-          if (address) {
-            const locations = await Location.geocodeAsync(address);
-            if (locations.length > 0) res.location = locations[0];
-          }
-
-          if (radius) {
-            try {
-              res.radius = parseInt(radius, 10);
-            } catch {
-              res.radius = 5;
-            }
-          }
-
-          onSubmit(res);
-          setSubmitting(false);
-        }}>
+        onPress={submitForm}>
         {submitting ? (
           <ActivityIndicator color="white" />
         ) : (

@@ -39,6 +39,7 @@ export default function HomeScreen() {
     longitude: user.address!.longitude,
     radiusMeters: searchRadius,
   });
+  const [address, setAddress] = useState(user.address?.fullAddress);
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
 
   const searchVariables = {
@@ -127,9 +128,12 @@ export default function HomeScreen() {
         visible={openFiltersModal}
         onRequestClose={() => setOpenFiltersModal(false)}>
         <ProductSearchFilterModal
-          onSubmit={({ location, radius }) => {
+          addressInit={address}
+          radiusInit={Math.round(convert(searchRadius).from('m').to('mi')).toString()}
+          onSubmit={({ address, location, radius }) => {
             if (radius) setSearchRadius(Math.round(convert(radius).from('mi').to('m')));
-            if (location) {
+            if (location && address) {
+              setAddress(address);
               setLocationInput({
                 latitude: location.latitude,
                 longitude: location.longitude,
