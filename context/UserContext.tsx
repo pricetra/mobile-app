@@ -1,8 +1,9 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Image } from 'expo-image';
+import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, View } from 'react-native';
 
 import { JwtStoreContext } from './JwtStoreContext';
 
@@ -12,6 +13,7 @@ import {
   ListType,
   LogoutDocument,
   MeDocument,
+  RegisterExpoPushTokenDocument,
   User,
 } from '@/graphql/types/graphql';
 
@@ -48,6 +50,10 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     fetchPolicy: 'no-cache',
   });
   const [logout] = useMutation(LogoutDocument);
+  const [registerExpoPushToken] = useMutation(RegisterExpoPushTokenDocument, {
+    refetchQueries: [MeDocument],
+    fetchPolicy: 'no-cache',
+  });
   const [loading, setLoading] = useState(true);
 
   function removeStoredJwtAndRedirect() {
@@ -71,6 +77,16 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         if (error || errors || !userData) return removeStoredJwtAndRedirect();
 
         setUser(userData.me as User);
+
+        Notifications.getExpoPushTokenAsync()
+          .then(({ data: expoPushToken }) => {
+            registerExpoPushToken({
+              context: { ...ctx },
+              variables: { expoPushToken },
+            });
+          })
+          .catch((err) => Alert.alert('Could not generate Push Token', err.toString()));
+
         const { data: listData } = await lists({ context: { ...ctx } });
         return listData;
       })
@@ -96,7 +112,11 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
           style={{ height: 45, width: 190 }}
         />
 
-        <ActivityIndicator color="black" size={40} />
+        <ActivityIndicator
+          color="black"
+          size={Platform.OS === 'ios' ? 'large' : 40}
+          style={{ marginTop: 20 }}
+        />
       </View>
     );
 
