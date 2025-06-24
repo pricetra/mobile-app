@@ -329,7 +329,7 @@ export const UPDATE_PASSWORD_WITH_RESET_CODE_MUTATION = gql(`
 `);
 
 export const REGISTER_EXPO_PUSH_TOKEN = gql(`
-  RegisterExpoPushToken($expoPushToken: String!) {
+  mutation RegisterExpoPushToken($expoPushToken: String!) {
     registerExpoPushToken(expoPushToken: $expoPushToken) {
       id
       name
