@@ -28,3 +28,7 @@ android
 
 expo-env.d.ts
 # @end expo-cli
+
+# Firebase
+*-firebase-adminsdk-*.json
+google-services*.json

@@ -28,6 +28,7 @@ export default {
       'android.permission.ACCESS_FINE_LOCATION',
     ],
     package: IS_DEV ? 'com.pricetra.mobileApp.dev' : 'com.pricetra.mobileApp',
+    googleServicesFile: IS_DEV ? './google-services.dev.json' : './google-services.json',
   },
   web: {
     bundler: 'metro',
