@@ -1,6 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Image } from 'expo-image';
-import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, View } from 'react-native';
@@ -62,6 +61,19 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     });
   }
 
+  function fetchAndRegisterExpoPushToken(ctx: any) {
+    const Notifications = require('expo-notifications');
+
+    Notifications.getExpoPushTokenAsync()
+      .then(({ data: expoPushToken }: any) => {
+        registerExpoPushToken({
+          context: { ...ctx },
+          variables: { expoPushToken },
+        });
+      })
+      .catch((err: any) => Alert.alert('Could not generate Push Token', err.toString()));
+  }
+
   useEffect(() => {
     if (!jwt) return;
 
@@ -78,14 +90,9 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
         setUser(userData.me as User);
 
-        Notifications.getExpoPushTokenAsync()
-          .then(({ data: expoPushToken }) => {
-            registerExpoPushToken({
-              context: { ...ctx },
-              variables: { expoPushToken },
-            });
-          })
-          .catch((err) => Alert.alert('Could not generate Push Token', err.toString()));
+        if (Platform.OS === 'android') {
+          fetchAndRegisterExpoPushToken(ctx);
+        }
 
         const { data: listData } = await lists({ context: { ...ctx } });
         return listData;
