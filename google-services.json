@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "68139939052",
+    "project_id": "pricetra-firebase",
+    "storage_bucket": "pricetra-firebase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68139939052:android:75255f9c836f6ed18f21c9",
+        "android_client_info": {
+          "package_name": "com.pricetra.mobileApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBHlSKf1BaVFMgkBxoDFTQCc4-I4OJMmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
