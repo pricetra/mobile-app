@@ -42,10 +42,10 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   const [user, setUser] = useState<User>();
   const [userLists, setUserLists] = useState<UserListsType>();
   const router = useRouter();
-  const [me] = useLazyQuery(MeDocument, {
+  const [me, { data: meData, error: meError }] = useLazyQuery(MeDocument, {
     fetchPolicy: 'no-cache',
   });
-  const [lists] = useLazyQuery(GetAllListsDocument, {
+  const [lists, { data: listData }] = useLazyQuery(GetAllListsDocument, {
     fetchPolicy: 'no-cache',
   });
   const [logout] = useMutation(LogoutDocument);
@@ -61,18 +61,38 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     });
   }
 
-  function fetchAndRegisterExpoPushToken(ctx: any) {
+  function fetchAndRegisterExpoPushToken() {
     const Notifications = require('expo-notifications');
 
     Notifications.getExpoPushTokenAsync()
       .then(({ data: expoPushToken }: any) => {
         registerExpoPushToken({
-          context: { ...ctx },
           variables: { expoPushToken },
         });
       })
       .catch((err: any) => Alert.alert('Could not generate Push Token', err.toString()));
   }
+
+  useEffect(() => {
+    if (!meError) return;
+    removeStoredJwtAndRedirect();
+  }, [meError]);
+
+  useEffect(() => {
+    if (!meData) return;
+    setUser(meData.me as User);
+  }, [meData]);
+
+  useEffect(() => {
+    if (!listData) return;
+
+    const allLists = listData.getAllLists as List[];
+    setUserLists({
+      allLists,
+      favorites: allLists.find(({ type }) => type === ListType.Favorites)!,
+      watchList: allLists.find(({ type }) => type === ListType.WatchList)!,
+    });
+  }, [listData]);
 
   useEffect(() => {
     if (!jwt) return;
@@ -82,30 +102,14 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         authorization: `Bearer ${jwt}`,
       },
     };
-    me({
-      context: { ...ctx },
-    })
-      .then(async ({ data: userData, error, errors }) => {
-        if (error || errors || !userData) return removeStoredJwtAndRedirect();
-
-        setUser(userData.me as User);
+    me({ context: { ...ctx } })
+      .then(async ({ data: userData }) => {
+        if (!userData) return;
 
         if (Platform.OS === 'android') {
-          fetchAndRegisterExpoPushToken(ctx);
+          fetchAndRegisterExpoPushToken();
         }
-
-        const { data: listData } = await lists({ context: { ...ctx } });
-        return listData;
-      })
-      .then((listData) => {
-        if (!listData) return;
-
-        const allLists = listData.getAllLists as List[];
-        setUserLists({
-          allLists,
-          favorites: allLists.find(({ type }) => type === ListType.Favorites)!,
-          watchList: allLists.find(({ type }) => type === ListType.WatchList)!,
-        });
+        await lists({ context: { ...ctx } });
       })
       .catch((_e) => removeStoredJwtAndRedirect())
       .finally(() => setLoading(false));
