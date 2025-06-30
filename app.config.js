@@ -5,11 +5,11 @@ export default {
   slug: 'pricetra',
   version: '1.0.12',
   orientation: 'portrait',
-  icon: './assets/images/icon.png',
   scheme: 'pricetra',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
+    icon: './assets/images/icon.png',
     supportsTablet: true,
     bundleIdentifier: IS_DEV ? 'com.pricetra.mobileApp.dev' : 'com.pricetra.mobileApp',
     infoPlist: {
@@ -17,9 +17,11 @@ export default {
     },
   },
   android: {
+    icon: './assets/images/adaptive-icon.png',
     adaptiveIcon: {
-      foregroundImage: './assets/images/adaptive-icon.png',
-      backgroundColor: '#ffffff',
+      foregroundImage: './assets/images/adaptive-icon_foreground.png',
+      monochromeImage: './assets/images/adaptive-icon_monochrome.png',
+      backgroundColor: '#101827',
     },
     permissions: [
       'android.permission.CAMERA',
@@ -85,5 +87,10 @@ export default {
   },
   updates: {
     url: 'https://u.expo.dev/5e02d7a0-8d71-485d-aec0-90390344e35a',
+  },
+  notification: {
+    // https://docs.expo.dev/versions/latest/config/app/#notification
+    icon: './assets/images/notification-icon-96.png',
+    iosDisplayInForeground: true,
   },
 };
