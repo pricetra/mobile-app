@@ -123,11 +123,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
           style={{ height: 45, width: 190 }}
         />
 
-        <ActivityIndicator
-          color="black"
-          size={Platform.OS === 'ios' ? 'large' : 40}
-          style={{ marginTop: 20 }}
-        />
+        <ActivityIndicator color="black" size={40} style={{ marginTop: 20 }} />
       </View>
     );
 
