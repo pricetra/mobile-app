@@ -15,7 +15,7 @@ export default function ProductStockMini({ stock }: ProductStockMiniProps) {
     <View className="flex flex-row items-center gap-2">
       <Image
         src={createCloudinaryUrl(stock.store?.logo ?? '', 100, 100)}
-        className="size-[25px] rounded-full"
+        className="size-[25px] rounded-md"
       />
       <View className="flex w-full flex-col pr-5">
         <Text className="text-xs font-semibold" numberOfLines={1}>

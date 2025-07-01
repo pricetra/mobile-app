@@ -1,6 +1,7 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
@@ -12,6 +13,7 @@ import {
   RefreshControl,
   Platform,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 
 import { ProductDetails } from '@/components/ProductDetails';
@@ -80,6 +82,7 @@ export default function ProductScreen() {
   );
   const [favProductList, setFavProductList] = useState<ProductList>();
   const [watchProductList, setWatchProductList] = useState<ProductList>();
+  const [openWatchModal, setOpenWatchModal] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -146,18 +149,30 @@ export default function ProductScreen() {
     });
   }
 
-  function add(type: ListType.WatchList | ListType.Favorites, cb: (p: ProductList) => void) {
+  async function add(type: ListType.WatchList | ListType.Favorites): Promise<ProductList> {
+    // Check notification permissions
+    if (type === ListType.WatchList) {
+      const { granted, ios } = await Notifications.getPermissionsAsync();
+      if (
+        !granted ||
+        ios?.status === Notifications.IosAuthorizationStatus.DENIED ||
+        ios?.status === Notifications.IosAuthorizationStatus.NOT_DETERMINED
+      ) {
+        const permissionReq = await Notifications.requestPermissionsAsync();
+        if (!permissionReq.granted) throw new Error('Notification permission was not granted');
+      }
+    }
+
     const listId = type === ListType.Favorites ? lists.favorites.id : lists.watchList.id;
-    addToList({
+    const { data, errors } = await addToList({
       variables: {
         listId,
         productId,
         stockId: type === ListType.WatchList ? stockId : undefined,
       },
-    }).then(({ data, errors }) => {
-      if (!data || errors) return;
-      cb(data.addToList);
     });
+    if (errors || !data) throw errors;
+    return data.addToList;
   }
 
   function remove(type: ListType.WatchList | ListType.Favorites, cb: (p: ProductList) => void) {
@@ -188,20 +203,19 @@ export default function ProductScreen() {
                     if (watchProductList) {
                       return remove(ListType.WatchList, () => setWatchProductList(undefined));
                     }
-                    add(ListType.WatchList, (p) => setWatchProductList(p));
+                    setOpenWatchModal(true);
                   }}
                   disabled={addToListLoading || removeFromListLoading}
                   className="flex flex-row items-center gap-2 p-2">
                   <AntDesign name={watchProductList ? 'eye' : 'eyeo'} size={25} color="#a855f7" />
                 </TouchableOpacity>
               )}
-
               <TouchableOpacity
                 onPress={() => {
                   if (favProductList) {
                     return remove(ListType.Favorites, () => setFavProductList(undefined));
                   }
-                  add(ListType.Favorites, (p) => setFavProductList(p));
+                  add(ListType.Favorites).then((p) => setFavProductList(p));
                 }}
                 disabled={addToListLoading || removeFromListLoading}
                 className="flex flex-row items-center gap-2 p-2">
@@ -215,7 +229,6 @@ export default function ProductScreen() {
                   <Feather name="edit" size={20} color="#3b82f6" />
                 </TouchableOpacity>
               )}
-
               <TouchableOpacity
                 onPress={() => setOpenPriceModal(true)}
                 className="flex flex-row items-center gap-2 rounded-full bg-green-100 px-4 py-2">
@@ -262,6 +275,50 @@ export default function ProductScreen() {
           }}
           onError={(e) => alert(e.message)}
         />
+      </ModalFormMini>
+
+      <ModalFormMini
+        title="Watch Stock"
+        visible={openWatchModal}
+        onRequestClose={() => setOpenWatchModal(false)}>
+        <View>
+          <Text>
+            Watching this product will allow you to track changes on this product on the selected
+            store. You will recieve push notifications, and/or emails when the price changes.
+          </Text>
+
+          <View className="mt-10 flex flex-row items-center gap-3">
+            <TouchableOpacity
+              onPress={() => setOpenWatchModal(false)}
+              className="rounded-full bg-slate-200 px-10 py-5">
+              <Text className="font-bold color-black">Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() =>
+                add(ListType.WatchList)
+                  .then((p) => {
+                    setWatchProductList(p);
+                    setOpenWatchModal(false);
+                  })
+                  .catch((_err) =>
+                    Alert.alert(
+                      'Enable Notifications',
+                      'Please go to settings and allow Pricetra to send Push Notifications before watching a product'
+                    )
+                  )
+              }
+              className="flex flex-1 flex-row items-center justify-center gap-3 rounded-full bg-pricetraGreenHeavyDark px-10 py-5"
+              disabled={addToListLoading}>
+              {addToListLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <AntDesign name="eyeo" size={20} color="#fff" />
+              )}
+              <Text className="font-bold color-white">Watch</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ModalFormMini>
 
       <ModalFormFull
