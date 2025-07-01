@@ -2,7 +2,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 import ProductFlatlist from '@/components/ProductFlatlist';
@@ -10,6 +10,7 @@ import { RenderProductLoadingItems } from '@/components/ProductItem';
 import Image from '@/components/ui/Image';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { LIMIT } from '@/constants/constants';
+import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
 import {
   AddBranchToListDocument,
@@ -24,6 +25,7 @@ import { createCloudinaryUrl } from '@/lib/files';
 export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
+  const { search, handleSearch } = useContext(SearchContext);
   const { storeId, branchId } = useLocalSearchParams<{ storeId: string; branchId: string }>();
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
@@ -47,12 +49,13 @@ export default function SelectedBranchScreen() {
           paginator: { limit: LIMIT, page },
           search: {
             branchId,
+            query: search,
           },
         },
         fetchPolicy: force ? 'no-cache' : undefined,
       });
     },
-    [storeId, branchId, getAllProducts]
+    [storeId, branchId, getAllProducts, search]
   );
 
   const loadMore = useCallback(() => {
@@ -66,6 +69,7 @@ export default function SelectedBranchScreen() {
         paginator: { limit: LIMIT, page: next },
         search: {
           branchId,
+          query: search,
         },
       },
       updateQuery: (prev, { fetchMoreResult }) => ({
@@ -97,7 +101,7 @@ export default function SelectedBranchScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [storeId, branchId])
+    }, [storeId, branchId, search])
   );
 
   useEffect(() => {
@@ -107,6 +111,7 @@ export default function SelectedBranchScreen() {
       header: (props: BottomTabHeaderProps) => (
         <TabHeaderItem
           {...props}
+          showSearch
           leftNav={
             <View className="flex flex-row items-center gap-2">
               <Image
@@ -156,6 +161,10 @@ export default function SelectedBranchScreen() {
       ),
     });
   }, [favorite, branchLoading]);
+
+  useEffect(() => {
+    handleSearch(null);
+  }, []);
 
   if (productsLoading) {
     return <RenderProductLoadingItems count={10} />;

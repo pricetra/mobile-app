@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -18,8 +18,9 @@ import CreateBranchForm from '@/components/CreateBranchForm';
 import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
+import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import { FindStoreDocument, LocationInput } from '@/graphql/types/graphql';
+import { FindStoreDocument, LocationInput, PaginatorInput } from '@/graphql/types/graphql';
 import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { createCloudinaryUrl } from '@/lib/files';
 
@@ -27,6 +28,7 @@ export default function SelectedStoreScreen() {
   const navigation = useNavigation();
   const { user } = useAuth();
   const { storeId } = useLocalSearchParams<{ storeId: string }>();
+  const { search, handleSearch } = useContext(SearchContext);
   const [openModal, setOpenModal] = useState(false);
   const [findStore, { data: storeData, loading: storeLoading }] = useLazyQuery(FindStoreDocument);
   const { location, getCurrentLocation } = useCurrentLocation();
@@ -34,6 +36,10 @@ export default function SelectedStoreScreen() {
     latitude: user.address!.latitude,
     longitude: user.address!.longitude,
   });
+  const paginator: PaginatorInput = {
+    limit: 100,
+    page: 1,
+  };
 
   useEffect(() => {
     if (!location) return;
@@ -43,16 +49,24 @@ export default function SelectedStoreScreen() {
     });
   }, [location]);
 
+  useEffect(() => {
+    findStore({
+      variables: {
+        storeId,
+        paginator,
+        location: locationInput,
+        search,
+      },
+    });
+  }, [search]);
+
   useFocusEffect(
     useCallback(() => {
       if (!storeId) return router.back();
       findStore({
         variables: {
           storeId,
-          paginator: {
-            limit: 100,
-            page: 1,
-          },
+          paginator,
           location: locationInput,
         },
       }).then(({ data }) => {
@@ -62,6 +76,7 @@ export default function SelectedStoreScreen() {
           header: (props: BottomTabHeaderProps) => (
             <TabHeaderItem
               {...props}
+              showSearch
               leftNav={
                 <View className="flex flex-row items-center gap-2">
                   <Image
@@ -77,7 +92,7 @@ export default function SelectedStoreScreen() {
                 <TouchableOpacity
                   onPress={() => setOpenModal(true)}
                   className="flex flex-row items-center gap-2 rounded-full p-2">
-                  <Feather name="plus" size={20} color="#396a12" />
+                  <Feather name="plus" size={23} color="#396a12" />
                 </TouchableOpacity>
               }
             />
@@ -85,6 +100,7 @@ export default function SelectedStoreScreen() {
         });
       });
       return () => {
+        handleSearch(null);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
