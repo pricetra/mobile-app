@@ -1,9 +1,8 @@
 import dayjs from 'dayjs';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 
 import StockFull from './StockFull';
 
-import Image from '@/components/ui/Image';
 import { Stock } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 
@@ -13,6 +12,7 @@ export type SelectedStockProps = {
 
 export default function SelectedStock({ stock }: SelectedStockProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
+  console.log(stock.createdBy);
 
   return (
     <View className="flex flex-col gap-2">
@@ -21,9 +21,11 @@ export default function SelectedStock({ stock }: SelectedStockProps) {
       {stock.createdBy && (
         <View className="mt-4 flex flex-row items-center gap-2">
           <Image
-            src={
+            source={
               stock.createdBy.avatar
-                ? createCloudinaryUrl(stock.createdBy.avatar, 100, 100)
+                ? {
+                    uri: createCloudinaryUrl(stock.createdBy.avatar, 100, 100),
+                  }
                 : require('@/assets/images/no_avatar.jpg')
             }
             className="size-[25px] rounded-full"

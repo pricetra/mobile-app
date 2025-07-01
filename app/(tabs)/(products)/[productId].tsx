@@ -118,7 +118,7 @@ export default function ProductScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [productId])
+    }, [productId, stockId])
   );
 
   useEffect(() => {
