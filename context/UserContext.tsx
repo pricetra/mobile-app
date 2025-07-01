@@ -1,5 +1,6 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Image } from 'expo-image';
+import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, View } from 'react-native';
@@ -15,6 +16,7 @@ import {
   RegisterExpoPushTokenDocument,
   User,
 } from '@/graphql/types/graphql';
+import { NotificationHandler } from '@/hooks/useNotificationObserver';
 
 export type UserListsType = {
   allLists: List[];
@@ -62,8 +64,6 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   }
 
   function fetchAndRegisterExpoPushToken() {
-    const Notifications = require('expo-notifications');
-
     Notifications.getExpoPushTokenAsync()
       .then(({ data: expoPushToken }: any) => {
         registerExpoPushToken({
@@ -146,7 +146,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
           });
         },
       }}>
-      {children}
+      <NotificationHandler>{children}</NotificationHandler>
     </UserAuthContext.Provider>
   );
 }
