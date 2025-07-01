@@ -153,14 +153,14 @@ export default function ProductForm({
               tags: ['PRODUCT'],
               onSuccess: () => {
                 resetImageAndCategory();
-                onSuccess(data.updateProduct, formik);
+                onSuccess(data.updateProduct as Product, formik);
               },
               onError: (e) => onError(e as unknown as ApolloError, formik),
               onFinally: () => setImageUploading(false),
             });
           } else {
             resetImageAndCategory();
-            onSuccess(data.updateProduct, formik);
+            onSuccess(data.updateProduct as Product, formik);
           }
         })
         .catch((e) => onError(e, formik));
@@ -182,14 +182,14 @@ export default function ProductForm({
               tags: ['PRODUCT'],
               onSuccess: () => {
                 resetImageAndCategory();
-                onSuccess(data.createProduct, formik);
+                onSuccess(data.createProduct as Product, formik);
               },
               onError: (e) => onError(e as unknown as ApolloError, formik),
               onFinally: () => setImageUploading(false),
             });
           } else {
             resetImageAndCategory();
-            onSuccess(data.createProduct, formik);
+            onSuccess(data.createProduct as Product, formik);
           }
         })
         .catch((e) => onError(e, formik));
