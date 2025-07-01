@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, View } from 'react-native';
+import { ActivityIndicator, Alert, View } from 'react-native';
 
 import { JwtStoreContext } from './JwtStoreContext';
 
@@ -63,9 +63,11 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     });
   }
 
-  function fetchAndRegisterExpoPushToken() {
+  function fetchAndRegisterExpoPushToken(user: User) {
     Notifications.getExpoPushTokenAsync()
-      .then(({ data: expoPushToken }: any) => {
+      .then(({ data: expoPushToken }) => {
+        if (user.expoPushToken && expoPushToken === user.expoPushToken) return;
+
         registerExpoPushToken({
           variables: { expoPushToken },
         });
@@ -106,9 +108,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
       .then(async ({ data: userData }) => {
         if (!userData) return;
 
-        if (Platform.OS === 'android') {
-          fetchAndRegisterExpoPushToken();
-        }
+        fetchAndRegisterExpoPushToken(userData.me as User);
         await lists({ context: { ...ctx } });
       })
       .catch((_e) => removeStoredJwtAndRedirect())
