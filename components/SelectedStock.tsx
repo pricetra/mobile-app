@@ -12,7 +12,6 @@ export type SelectedStockProps = {
 
 export default function SelectedStock({ stock }: SelectedStockProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
-  console.log(stock.createdBy);
 
   return (
     <View className="flex flex-col gap-2">
