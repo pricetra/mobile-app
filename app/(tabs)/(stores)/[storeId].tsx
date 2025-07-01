@@ -47,7 +47,14 @@ export default function SelectedStoreScreen() {
     useCallback(() => {
       if (!storeId) return router.back();
       findStore({
-        variables: { id: storeId, location: locationInput },
+        variables: {
+          storeId,
+          paginator: {
+            limit: 100,
+            page: 1,
+          },
+          location: locationInput,
+        },
       }).then(({ data }) => {
         if (!data) return;
 
@@ -119,8 +126,8 @@ export default function SelectedStoreScreen() {
           )}
           <View>
             {storeData &&
-              (storeData.allBranches.length > 0 ? (
-                storeData.allBranches.map((b) => (
+              (storeData.allBranches.branches.length > 0 ? (
+                storeData.allBranches.branches.map((b) => (
                   <TouchableOpacity
                     onPress={() => router.push(`/(stores)/${b.storeId}/branch/${b.id}`)}
                     key={b.id}

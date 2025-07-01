@@ -94,11 +94,12 @@ export const LOGIN_INTERNAL_QUERY = gql`
           longitude
           mapsLink
           fullAddress
+          street
           city
           administrativeDivision
-          zipCode
           countryCode
           country
+          zipCode
         }
       }
     }
@@ -128,11 +129,12 @@ export const GOOGLE_OAUTH_QUERY = gql`
           longitude
           mapsLink
           fullAddress
+          street
           city
           administrativeDivision
-          zipCode
           countryCode
           country
+          zipCode
         }
       }
       isNewUser
@@ -161,11 +163,12 @@ export const ME_QUERY = gql`
         longitude
         mapsLink
         fullAddress
+        street
         city
         administrativeDivision
-        zipCode
         countryCode
         country
+        zipCode
       }
       birthDate
       phoneNumber
@@ -213,11 +216,12 @@ export const ALL_PRODUCTS_QUERY = gql(`
               longitude
               mapsLink
               fullAddress
+              street
               city
               administrativeDivision
-              zipCode
+              countryCode
               country
-              distance
+              zipCode
             }
           }
           latestPriceId
@@ -359,8 +363,8 @@ export const ALL_STORES_QUERY = gql(`
 `);
 
 export const FIND_STORE_QUERY = gql(`
-  query FindStore($id: ID!, $location: LocationInput) {
-    findStore(id: $id) {
+  query FindStore($storeId: ID!, $paginator: PaginatorInput!, $search: String, $location: LocationInput) {
+    findStore(id: $storeId) {
       id
       name
       logo
@@ -372,41 +376,67 @@ export const FIND_STORE_QUERY = gql(`
       }
     }
 
-    allBranches(storeId: $id, location: $location) {
-      id
-      name
-      addressId
-      storeId
-      address {
+    allBranches(storeId: $storeId, paginator: $paginator, search: $search, location: $location) {
+      branches {
         id
-        latitude
-        longitude
-        mapsLink
-        fullAddress
-        countryCode
-        country
-        zipCode
+        name
+        addressId
+        storeId
+        address {
+          id
+          latitude
+          longitude
+          mapsLink
+          fullAddress
+          street
+          city
+          administrativeDivision
+          countryCode
+          country
+          zipCode
+        }
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
       }
     }
   }
 `);
 
 export const ALL_BRANCHES_QUERY = gql(`
-  query AllBranches($storeId: ID!, $location: LocationInput) {
-    allBranches(storeId: $storeId, location: $location) {
-      id
-      name
-      addressId
-      storeId
-      address {
+  query AllBranches($storeId: ID!, $paginator: PaginatorInput!, $search: String, $location: LocationInput) {
+    allBranches(storeId: $storeId, paginator: $paginator, search: $search, location: $location) {
+      branches {
         id
-        latitude
-        longitude
-        mapsLink
-        fullAddress
-        countryCode
-        country
-        zipCode
+        name
+        addressId
+        storeId
+        address {
+          id
+          latitude
+          longitude
+          mapsLink
+          fullAddress
+          street
+          city
+          administrativeDivision
+          countryCode
+          country
+          zipCode
+        }
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
       }
     }
   }
@@ -425,6 +455,9 @@ export const BRANCH_QUERY = gql(`
         longitude
         mapsLink
         fullAddress
+        street
+        city
+        administrativeDivision
         countryCode
         country
         zipCode
@@ -453,6 +486,9 @@ export const FIND_BRANCH_QUERY = gql(`
         longitude
         mapsLink
         fullAddress
+        street
+        city
+        administrativeDivision
         countryCode
         country
         zipCode
@@ -486,14 +522,16 @@ export const FIND_BRANCHES_BY_DISTANCE_QUERY = gql(`
       address {
         id
         distance
-        fullAddress
-        city
-        administrativeDivision
-        zipCode
-        countryCode
-        country
         latitude
         longitude
+        mapsLink
+        fullAddress
+        street
+        city
+        administrativeDivision
+        countryCode
+        country
+        zipCode
       }
     }
   }
@@ -621,15 +659,17 @@ export const GET_ALL_LISTS = gql`
           name
           address {
             id
+            distance
             latitude
             longitude
             mapsLink
             fullAddress
+            street
             city
             administrativeDivision
-            zipCode
+            countryCode
             country
-            distance
+            zipCode
           }
         }
         createdAt
@@ -695,15 +735,17 @@ export const GET_FAVORITE_BRANCHES_WITH_PRICE_DATA_QUERY = gql(`
         }
         address {
           id
+          distance
           latitude
           longitude
           mapsLink
           fullAddress
+          street
           city
           administrativeDivision
-          zipCode
+          countryCode
           country
-          distance
+          zipCode
         }
       }
       stock {

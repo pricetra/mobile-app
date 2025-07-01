@@ -64,11 +64,12 @@ export const UPDATE_PROFILE_MUTATION = gql(`
         longitude
         mapsLink
         fullAddress
+        street
         city
         administrativeDivision
-        zipCode
         countryCode
         country
+        zipCode
       }
       birthDate
       phoneNumber
@@ -103,10 +104,12 @@ export const CREATE_BRANCH_WITH_FULL_ADDRESS_MUTATION = gql(`
         longitude
         mapsLink
         fullAddress
-        countryCode
-        zipCode
+        street
         city
         administrativeDivision
+        countryCode
+        country
+        zipCode
       }
     }
   }
@@ -125,10 +128,12 @@ export const CREATE_BRANCH_MUTATION = gql(`
         longitude
         mapsLink
         fullAddress
-        countryCode
-        zipCode
+        street
         city
         administrativeDivision
+        countryCode
+        country
+        zipCode
       }
     }
   }
@@ -349,11 +354,12 @@ export const REGISTER_EXPO_PUSH_TOKEN = gql(`
         longitude
         mapsLink
         fullAddress
+        street
         city
         administrativeDivision
-        zipCode
         countryCode
         country
+        zipCode
       }
     }
   }
