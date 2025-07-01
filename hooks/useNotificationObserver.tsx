@@ -1,7 +1,8 @@
-import { useAuth } from '@/context/UserContext';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { ReactNode, useEffect } from 'react';
+
+import { useAuth } from '@/context/UserContext';
 
 export function useNotificationObserver() {
   const { lists } = useAuth();

@@ -24,12 +24,12 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
      showguides="true"
-     inkscape:zoom="0.27574599"
-     inkscape:cx="828.6612"
-     inkscape:cy="1051.6926"
+     inkscape:zoom="1.6439844"
+     inkscape:cx="464.7246"
+     inkscape:cy="228.10435"
      inkscape:window-width="1920"
      inkscape:window-height="1019"
-     inkscape:window-x="3968"
+     inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="0"
      inkscape:current-layer="g123" />
@@ -97,15 +97,15 @@
            transform="translate(-2.2047244e-4)" />
         <g
            id="g2"
-           style="stroke-width:1.00157;stroke-dasharray:none">
+           style="stroke-width:1.00157;stroke-dasharray:none;fill:#5fae23;fill-opacity:1">
           <path
              id="path27-0"
              d="m 17499.361,962.11107 v 0 c 2.021,71.59323 59.853,129.40663 131.439,131.44433 -2.024,-71.5933 -59.851,-129.40673 -131.439,-131.44433"
-             style="fill:#9ee244;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
+             style="fill:#5fae23;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill" />
           <path
              id="path28-2"
              d="m 17724.123,1000.2043 v 0 c -50.831,1.4506 -91.887,42.514 -93.323,93.3511 50.826,-1.4506 91.887,-42.514 93.323,-93.3511"
-             style="fill:#9ee244;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157;stroke-linecap:square;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke" />
+             style="fill:#5fae23;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157;stroke-linecap:square;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke" />
         </g>
         <g
            id="g1"
