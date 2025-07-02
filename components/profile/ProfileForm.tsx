@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { TouchableOpacity, View, Image as NativeImage, Platform } from 'react-native';
 
 import Label from '../ui/Label';
+import Textarea from '../ui/Textarea';
 
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
@@ -21,7 +22,6 @@ import {
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
 import { diffObjects } from '@/lib/utils';
-import Textarea from '../ui/Textarea';
 
 export type ProfileFormProps = {
   user: User;
@@ -159,7 +159,7 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
                 setShowDatePicker(!showDatePicker);
               }}>
               {values.birthDate
-                ? dayjs(values.birthDate).format('MMM D, YYYY')
+                ? dayjs.utc(values.birthDate).format('MMM D, YYYY')
                 : 'Select Birth Date'}
             </Button>
 
