@@ -83,6 +83,10 @@ export default function TabLayout() {
         name="(admin)/users"
         options={{
           href: null,
+          header: (props) => <TabHeaderItem {...props} />,
+          animation: 'shift',
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
@@ -110,6 +114,10 @@ export default function TabLayout() {
         name="(profile)/my-scan-data"
         options={{
           href: null,
+          header: (props) => <TabHeaderItem {...props} />,
+          animation: 'shift',
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen

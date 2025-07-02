@@ -1,7 +1,9 @@
 import { useLazyQuery } from '@apollo/client';
-import { router } from 'expo-router';
-import { useContext, useEffect, useState } from 'react';
-import { View, ScrollView, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import { router, useFocusEffect, useNavigation } from 'expo-router';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { View, ScrollView, SafeAreaView, TouchableOpacity, Alert, Text } from 'react-native';
 
 import AdminProductBilling from '@/components/profile/AdminProductBilling';
 import ProfileLarge, { ProfileLargeLoading } from '@/components/profile/ProfileLarge';
@@ -9,6 +11,7 @@ import ProfileMini from '@/components/profile/ProfileMini';
 import UserForm from '@/components/profile/UserForm';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
 import { GetAllUsersDocument, User, UserFilter, UserRole } from '@/graphql/types/graphql';
@@ -17,6 +20,7 @@ import { isRoleAuthorized } from '@/lib/roles';
 export type SearchTypes = 'id' | 'email' | 'name' | 'role';
 
 export default function UsersScreen() {
+  const navigation = useNavigation();
   const { user } = useContext(UserAuthContext);
   const { search } = useContext(SearchContext);
   const [loadUsers, { data: users, loading, fetchMore }] = useLazyQuery(GetAllUsersDocument);
@@ -26,6 +30,34 @@ export default function UsersScreen() {
   const limit = 50;
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<UserFilter>();
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({
+        header: (props: BottomTabHeaderProps) => (
+          <TabHeaderItem
+            {...props}
+            showSearch
+            leftNav={
+              <View className="flex flex-row items-center gap-3">
+                <View className="flex size-[35px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark/10">
+                  <Feather name="users" size={20} color="#396a12" />
+                </View>
+                <Text className="font-bold" numberOfLines={1}>
+                  Users
+                </Text>
+              </View>
+            }
+          />
+        ),
+      });
+      return () => {
+        navigation.setOptions({
+          header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
+        });
+      };
+    }, [])
+  );
 
   useEffect(() => {
     if (!isRoleAuthorized(UserRole.Admin, user.role)) return router.replace('/');
