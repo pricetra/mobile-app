@@ -17,22 +17,22 @@ export default function SelectedStock({ stock }: SelectedStockProps) {
     <View className="flex flex-col gap-2">
       <StockFull stock={stock} />
 
-      {stock.createdBy && (
+      {stock.updatedBy && (
         <View className="mt-4 flex flex-row items-center gap-2">
           <Image
             source={
-              stock.createdBy.avatar
+              stock.updatedBy.avatar
                 ? {
-                    uri: createCloudinaryUrl(stock.createdBy.avatar, 100, 100),
+                    uri: createCloudinaryUrl(stock.updatedBy.avatar, 100, 100),
                   }
                 : require('@/assets/images/no_avatar.jpg')
             }
             className="size-[25px] rounded-full"
           />
           <View>
-            <Text className="text-xs font-bold">{stock.createdBy.name}</Text>
+            <Text className="text-xs font-bold">{stock.updatedBy.name}</Text>
             <Text className="mt-0.5 text-xs italic">
-              {dayjs(stock.latestPrice?.createdAt ?? stock.createdAt).fromNow()}
+              {dayjs(stock.latestPrice?.createdAt ?? stock.updatedAt).fromNow()}
             </Text>
           </View>
         </View>

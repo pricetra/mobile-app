@@ -246,6 +246,11 @@ export const ALL_PRODUCTS_QUERY = gql(`
           name
           avatar
         }
+        updatedBy {
+          id
+          name
+          avatar
+        }
         views
       }
       paginator {
@@ -321,8 +326,16 @@ export const GET_PRODUCT_STOCKS_QUERY = gql(`
         name
         address {
           id
+          latitude
+          longitude
+          mapsLink
           fullAddress
-          distance
+          street
+          city
+          administrativeDivision
+          countryCode
+          country
+          zipCode
         }
       }
       latestPriceId
@@ -338,6 +351,11 @@ export const GET_PRODUCT_STOCKS_QUERY = gql(`
       createdAt
       updatedAt
       createdBy {
+        id
+        name
+        avatar
+      }
+      updatedBy {
         id
         name
         avatar
@@ -695,8 +713,16 @@ export const GET_STOCK_BY_ID = gql(`
         name
         address {
           id
+          latitude
+          longitude
+          mapsLink
           fullAddress
-          distance
+          street
+          city
+          administrativeDivision
+          countryCode
+          country
+          zipCode
         }
       }
       latestPriceId
@@ -708,10 +734,16 @@ export const GET_STOCK_BY_ID = gql(`
         originalPrice
         condition
         expiresAt
+        createdAt
       }
       createdAt
       updatedAt
       createdBy {
+        id
+        name
+        avatar
+      }
+      updatedBy {
         id
         name
         avatar
