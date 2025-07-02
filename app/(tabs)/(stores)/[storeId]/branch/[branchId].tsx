@@ -25,7 +25,7 @@ import { createCloudinaryUrl } from '@/lib/files';
 export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
-  const { search, handleSearch } = useContext(SearchContext);
+  const { search, handleSearch, setSearching } = useContext(SearchContext);
   const { storeId, branchId } = useLocalSearchParams<{ storeId: string; branchId: string }>();
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
@@ -34,7 +34,7 @@ export default function SelectedBranchScreen() {
   const [
     getAllProducts,
     { data: productsData, loading: productsLoading, fetchMore: fetchMoreProducts },
-  ] = useLazyQuery(AllProductsDocument);
+  ] = useLazyQuery(AllProductsDocument, { fetchPolicy: 'network-only' });
   const [addBranchToList] = useMutation(AddBranchToListDocument, {
     refetchQueries: [GetAllListsDocument],
   });
@@ -42,21 +42,17 @@ export default function SelectedBranchScreen() {
     refetchQueries: [GetAllListsDocument],
   });
 
-  const loadProducts = useCallback(
-    async (page = 1, force = false) => {
-      return getAllProducts({
-        variables: {
-          paginator: { limit: LIMIT, page },
-          search: {
-            branchId,
-            query: search,
-          },
+  useEffect(() => {
+    getAllProducts({
+      variables: {
+        paginator: { limit: LIMIT, page: 1 },
+        search: {
+          branchId,
+          query: search,
         },
-        fetchPolicy: force ? 'no-cache' : undefined,
-      });
-    },
-    [storeId, branchId, getAllProducts, search]
-  );
+      },
+    });
+  }, [storeId, branchId, search]);
 
   const loadMore = useCallback(() => {
     if (!productsData?.allProducts.paginator) return;
@@ -95,13 +91,22 @@ export default function SelectedBranchScreen() {
           branchId,
         },
       });
-      loadProducts(1);
+      getAllProducts({
+        variables: {
+          paginator: { limit: LIMIT, page: 1 },
+          search: {
+            branchId,
+          },
+        },
+      });
       return () => {
+        handleSearch(null);
+        setSearching(false);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [storeId, branchId, search])
+    }, [storeId, branchId])
   );
 
   useEffect(() => {
@@ -185,7 +190,15 @@ export default function SelectedBranchScreen() {
       products={products}
       paginator={productsData?.allProducts.paginator}
       handleRefresh={async () => {
-        return loadProducts(1, true);
+        return getAllProducts({
+          variables: {
+            paginator: { limit: LIMIT, page: 1 },
+            search: {
+              branchId,
+              query: search,
+            },
+          },
+        });
       }}
       setPage={loadMore}
     />

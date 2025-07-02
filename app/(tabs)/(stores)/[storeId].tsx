@@ -28,7 +28,7 @@ export default function SelectedStoreScreen() {
   const navigation = useNavigation();
   const { user } = useAuth();
   const { storeId } = useLocalSearchParams<{ storeId: string }>();
-  const { search, handleSearch } = useContext(SearchContext);
+  const { search, handleSearch, setSearching } = useContext(SearchContext);
   const [openModal, setOpenModal] = useState(false);
   const [findStore, { data: storeData, loading: storeLoading }] = useLazyQuery(FindStoreDocument);
   const { location, getCurrentLocation } = useCurrentLocation();
@@ -101,6 +101,7 @@ export default function SelectedStoreScreen() {
       });
       return () => {
         handleSearch(null);
+        setSearching(false);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
