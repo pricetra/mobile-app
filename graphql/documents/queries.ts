@@ -807,3 +807,112 @@ export const VERIFY_PASSWORD_RESET_CODE_QUERY = gql(`
     verifyPasswordResetCode(email: $email, code: $code)
   }
 `);
+
+export const GET_ALL_PRODUCT_LISTS_BY_LIST_ID = gql(`
+  query GetAllProductListsByListId($listId: ID!) {
+    getAllProductListsByListId(listId: $listId) {
+      id
+      listId
+      userId
+      productId
+      type
+      stockId
+      createdAt
+      product {
+        id
+        name
+        image
+        description
+        url
+        brand
+        code
+        color
+        model
+        categoryId
+        category {
+          id
+          name
+          expandedPathname
+          path
+        }
+        weight
+        lowestRecordedPrice
+        highestRecordedPrice
+        createdAt
+        updatedAt
+      }
+      stock {
+        id
+        productId
+        storeId
+        store {
+          id
+          name
+          logo
+        }
+        branchId
+        branch {
+          id
+          name
+          address {
+            id
+            latitude
+            longitude
+            mapsLink
+            fullAddress
+            street
+            city
+            administrativeDivision
+            countryCode
+            country
+            zipCode
+          }
+        }
+        latestPriceId
+        latestPrice {
+          id
+          amount
+          currencyCode
+          createdAt
+          sale
+          originalPrice
+          condition
+          expiresAt
+        }
+      }
+    }
+  }
+`);
+
+export const GET_ALL_BRANCH_LISTS_BY_LIST_ID = gql(`
+  query GetAllBranchListsByListId($listId: ID!) {
+    getAllBranchListsByListId(listId: $listId) {
+      id
+      listId
+      branchId
+      branch {
+        id
+        name
+        address {
+          id
+          latitude
+          longitude
+          mapsLink
+          fullAddress
+          street
+          city
+          administrativeDivision
+          countryCode
+          country
+          zipCode
+        }
+        store {
+          id
+          name
+          logo
+        }
+      }
+      createdAt
+    }
+  }
+`);
