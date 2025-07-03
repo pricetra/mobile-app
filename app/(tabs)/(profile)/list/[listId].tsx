@@ -5,6 +5,7 @@ import { SafeAreaView, View, Text } from 'react-native';
 
 import { ListIconRenderer } from '../index';
 
+import BranchListView from '@/components/BranchListView';
 import ProductListView from '@/components/ProductListView';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
@@ -49,6 +50,12 @@ export default function ListScreen() {
           />
         ),
       });
+
+      return () => {
+        navigation.setOptions({
+          header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
+        });
+      };
     }, [listId])
   );
 
@@ -74,7 +81,7 @@ export default function ListScreen() {
             <ProductListView listId={listId} />
           </TabsContent>
           <TabsContent value={ListScreenViewType.Branches}>
-            <Text>My Branches</Text>
+            <BranchListView listId={listId} />
           </TabsContent>
         </Tabs>
       </View>
