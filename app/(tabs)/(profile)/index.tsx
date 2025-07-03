@@ -77,28 +77,24 @@ export default function ProfileScreen() {
       </ModalFormMini>
 
       <ScrollView className="p-5">
-        <View className="mt-5">
-          <Text className="text-2xl font-bold">Details</Text>
-
-          <View className="mt-5 flex flex-col gap-5 rounded-lg border-[1px] border-gray-100 bg-gray-50 p-5">
-            <View className="mb-5">
-              <ProfileSmall user={user} />
-            </View>
-
-            {user.address && (
-              <View className="flex flex-row items-center gap-5">
-                <Octicons name="location" size={20} color="black" />
-                <Text>{user.address.fullAddress}</Text>
-              </View>
-            )}
-
-            {user.birthDate && (
-              <View className="flex flex-row items-center gap-5">
-                <Entypo name="cake" size={20} color="black" />
-                <Text>{dayjs.utc(user.birthDate).format('LL')}</Text>
-              </View>
-            )}
+        <View className="flex flex-col gap-5 rounded-lg border-[1px] border-gray-100 bg-gray-50 p-5">
+          <View className="mb-5">
+            <ProfileSmall user={user} />
           </View>
+
+          {user.address && (
+            <View className="flex flex-row items-center gap-5">
+              <Octicons name="location" size={20} color="black" />
+              <Text>{user.address.fullAddress}</Text>
+            </View>
+          )}
+
+          {user.birthDate && (
+            <View className="flex flex-row items-center gap-5">
+              <MaterialIcons name="cake" size={20} color="black" />
+              <Text>{dayjs.utc(user.birthDate).format('LL')}</Text>
+            </View>
+          )}
         </View>
 
         <View className="mt-16">
@@ -109,7 +105,7 @@ export default function ProfileScreen() {
               {lists.allLists.map((list) => (
                 <TouchableOpacity
                   key={list.id}
-                  onPress={() => router.push('/(tabs)/(profile)/list')}
+                  onPress={() => router.push(`/(tabs)/(profile)/list/${list.id}`)}
                   className="flex flex-row items-center justify-between gap-5 px-0 py-2">
                   <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
                     <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">

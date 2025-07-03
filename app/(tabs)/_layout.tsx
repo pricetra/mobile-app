@@ -6,7 +6,6 @@ import { Platform, Image } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import TabHeader from '@/components/ui/TabHeader';
-import TabHeaderDismissible from '@/components/ui/TabHeaderDismissible';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { UserAuthContext } from '@/context/UserContext';
 import { createCloudinaryUrl } from '@/lib/files';
@@ -108,6 +107,17 @@ export default function TabLayout() {
               />
             );
           },
+        }}
+      />
+      <Tabs.Screen
+        name="(profile)/list/[listId]"
+        options={{
+          href: null,
+          animation: 'shift',
+          header: (props) => <TabHeaderItem {...props} />,
+          title: 'My List',
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen
