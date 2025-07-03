@@ -906,6 +906,7 @@ export const GET_ALL_BRANCH_LISTS_BY_LIST_ID = gql(`
           country
           zipCode
         }
+        storeId
         store {
           id
           name
