@@ -8,6 +8,7 @@ import Image from '@/components/ui/Image';
 import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat } from '@/lib/strings';
+import { isSaleExpired } from '@/lib/utils';
 
 export type ProductItemProps = {
   product: Product;
@@ -19,7 +20,7 @@ export default function ProductItem({ product }: ProductItemProps) {
   return (
     <View className="flex max-w-full flex-row gap-2">
       <View style={{ width: width / 3, height: width / 3, position: 'relative' }}>
-        {product.stock?.latestPrice?.sale && (
+        {product.stock?.latestPrice?.sale && !isSaleExpired(product.stock.latestPrice) && (
           <View className="absolute left-1 top-1 z-[1] w-[40px]">
             <Text className="inline-block rounded-md bg-red-700 px-1.5 py-1 text-center text-[9px] font-bold color-white">
               SALE
@@ -60,13 +61,19 @@ export default function ProductItem({ product }: ProductItemProps) {
 
             {product.stock.latestPrice && (
               <View className="flex-[1] flex-col items-end">
-                {product.stock.latestPrice.sale && product.stock.latestPrice.originalPrice && (
-                  <Text className="text-right text-xs line-through color-red-700">
-                    {currencyFormat(product.stock.latestPrice.originalPrice)}
-                  </Text>
-                )}
+                {product.stock.latestPrice.sale &&
+                  !isSaleExpired(product.stock.latestPrice) &&
+                  product.stock.latestPrice.originalPrice && (
+                    <Text className="text-right text-xs line-through color-red-700">
+                      {currencyFormat(product.stock.latestPrice.originalPrice)}
+                    </Text>
+                  )}
                 <Text className="font-black">
-                  {currencyFormat(product.stock.latestPrice.amount)}
+                  {!isSaleExpired(product.stock.latestPrice)
+                    ? currencyFormat(product.stock.latestPrice.amount)
+                    : currencyFormat(
+                        product.stock.latestPrice.originalPrice ?? product.stock.latestPrice.amount
+                      )}
                 </Text>
               </View>
             )}

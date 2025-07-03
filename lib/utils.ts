@@ -4,7 +4,8 @@ import { twMerge } from 'tailwind-merge';
 
 import { postgresArrayToArray } from './strings';
 
-import { Category, Product } from '@/graphql/types/graphql';
+import { Category, Price, Product } from '@/graphql/types/graphql';
+import dayjs from 'dayjs';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -64,4 +65,8 @@ export function incompleteProductFields(product: Product): string[] {
     fields.push('category');
   }
   return fields;
+}
+
+export function isSaleExpired(price: Price) {
+  return dayjs(price.expiresAt).isBefore(new Date());
 }
