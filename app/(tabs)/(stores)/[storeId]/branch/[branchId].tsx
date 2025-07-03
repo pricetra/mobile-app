@@ -16,6 +16,7 @@ import {
   AddBranchToListDocument,
   AllProductsDocument,
   BranchDocument,
+  GetAllBranchListsByListIdDocument,
   GetAllListsDocument,
   Product,
   RemoveBranchFromListDocument,
@@ -36,10 +37,10 @@ export default function SelectedBranchScreen() {
     { data: productsData, loading: productsLoading, fetchMore: fetchMoreProducts },
   ] = useLazyQuery(AllProductsDocument, { fetchPolicy: 'network-only' });
   const [addBranchToList] = useMutation(AddBranchToListDocument, {
-    refetchQueries: [GetAllListsDocument],
+    refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
   const [removeBranchFromList] = useMutation(RemoveBranchFromListDocument, {
-    refetchQueries: [GetAllListsDocument],
+    refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
 
   useEffect(() => {

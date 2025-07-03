@@ -30,6 +30,7 @@ import {
   BranchListWithPrices,
   FavoriteBranchesWithPricesDocument,
   GetAllListsDocument,
+  GetAllProductListsByListIdDocument,
   GetProductStocksDocument,
   ListType,
   LocationInput,
@@ -72,12 +73,12 @@ export default function ProductScreen() {
   const loading = productLoading || stockLoading;
 
   const [addToList, { loading: addToListLoading }] = useMutation(AddToListDocument, {
-    refetchQueries: [GetAllListsDocument],
+    refetchQueries: [GetAllListsDocument, GetAllProductListsByListIdDocument],
   });
   const [removeFromList, { loading: removeFromListLoading }] = useMutation(
     RemoveFromListWithProductIdDocument,
     {
-      refetchQueries: [GetAllListsDocument],
+      refetchQueries: [GetAllListsDocument, GetAllProductListsByListIdDocument],
     }
   );
   const [favProductList, setFavProductList] = useState<ProductList>();
