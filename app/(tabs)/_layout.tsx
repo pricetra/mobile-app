@@ -1,4 +1,4 @@
-import { Feather, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialIcons, MaterialCommunityIcons, FontAwesome6 } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React, { useContext } from 'react';
 import { Platform, Image } from 'react-native';
@@ -22,18 +22,19 @@ export default function TabLayout() {
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
           },
-          default: {},
         }),
         header: (props) => <TabHeader {...props} />,
+        tabBarShowLabel: false,
       }}>
       <Tabs.Screen
-        name="index"
+        name="grocery-list"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, size }) => <Feather size={size} name="home" color={color} />, // https://icons.expo.fyi/Index
+          title: 'Groceries',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome6 name="list-check" size={size - 2} color={color} />
+          ), // https://icons.expo.fyi/Index
         }}
       />
       <Tabs.Screen
@@ -47,6 +48,13 @@ export default function TabLayout() {
           tabBarShowLabel: false,
           tabBarStyle: { display: 'none' },
           animation: 'shift',
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ size, color }) => <Feather name="home" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -92,7 +100,7 @@ export default function TabLayout() {
         name="(profile)/index"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ color, size, focused }) => {
             if (!user.avatar) return <Feather size={size} name="user" color={color} />;
             return (
               <Image
@@ -103,6 +111,7 @@ export default function TabLayout() {
                 style={{
                   width: size,
                   height: size,
+                  opacity: focused ? 1 : 0.8,
                 }}
               />
             );
