@@ -1,4 +1,5 @@
 import { Entypo } from '@expo/vector-icons';
+import { useMemo } from 'react';
 import { View, Text, useWindowDimensions } from 'react-native';
 
 import ProductStockMini from './ProductStockMini';
@@ -16,11 +17,15 @@ export type ProductItemProps = {
 
 export default function ProductItem({ product }: ProductItemProps) {
   const { width } = useWindowDimensions();
+  const isExpired = useMemo(
+    () => (product.stock?.latestPrice ? isSaleExpired(product.stock.latestPrice) : false),
+    [product.stock?.latestPrice]
+  );
 
   return (
     <View className="flex max-w-full flex-row gap-2">
       <View style={{ width: width / 3, height: width / 3, position: 'relative' }}>
-        {product.stock?.latestPrice?.sale && !isSaleExpired(product.stock.latestPrice) && (
+        {product.stock?.latestPrice?.sale && !isExpired && (
           <View className="absolute left-1 top-1 z-[1] w-[40px]">
             <Text className="inline-block rounded-md bg-red-700 px-1.5 py-1 text-center text-[9px] font-bold color-white">
               SALE
@@ -62,14 +67,14 @@ export default function ProductItem({ product }: ProductItemProps) {
             {product.stock.latestPrice && (
               <View className="flex-[1] flex-col items-end">
                 {product.stock.latestPrice.sale &&
-                  !isSaleExpired(product.stock.latestPrice) &&
+                  !isExpired &&
                   product.stock.latestPrice.originalPrice && (
                     <Text className="text-right text-xs line-through color-red-700">
                       {currencyFormat(product.stock.latestPrice.originalPrice)}
                     </Text>
                   )}
                 <Text className="font-black">
-                  {!isSaleExpired(product.stock.latestPrice)
+                  {!isExpired
                     ? currencyFormat(product.stock.latestPrice.amount)
                     : currencyFormat(
                         product.stock.latestPrice.originalPrice ?? product.stock.latestPrice.amount
