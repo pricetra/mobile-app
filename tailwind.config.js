@@ -8,7 +8,7 @@ module.exports = {
     extend: {
       colors: {
         pricetraGreenHeavyDark: '#396a12',
-        pricetraGreenDark: '#5fb01e',
+        pricetraGreenDark: '#5fae23',
         pricetraGreenLogo: '#9fe342',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
