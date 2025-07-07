@@ -17,6 +17,7 @@
     "eas:dev:build:ios": "eas build -p ios --profile development",
     "eas:device:create": "eas device:create",
     "eas:publish:prod:ios": "eas build --platform ios --auto-submit --profile production",
+    "eas:publish:prod:android": "eas build --platform android --auto-submit --profile production",
     "doctor": "expo-doctor",
     "install-check": "expo install --check"
   },
