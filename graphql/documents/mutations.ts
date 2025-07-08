@@ -269,8 +269,8 @@ export const REMOVE_FROM_LIST_MUTATION = gql(`
 `);
 
 export const REMOVE_FROM_LIST_BY_PRODUCT_ID_MUTATION = gql(`
-  mutation RemoveFromListWithProductId($listId: ID!, $productId: ID!) {
-    removeFromListWithProductId(listId: $listId, productId: $productId) {
+  mutation RemoveFromListWithProductId($listId: ID!, $productId: ID!, $stockId: ID) {
+    removeFromListWithProductId(listId: $listId, productId: $productId, stockId: $stockId) {
       id
       userId
       listId

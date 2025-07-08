@@ -100,7 +100,9 @@ export default function ProductScreen() {
 
         const fav = data.product.productList.find((p) => p.type === ListType.Favorites);
         setFavProductList(fav);
-        const watch = data.product.productList.find((p) => p.type === ListType.WatchList);
+        const watch = data.product.productList.find(
+          (p) => p.type === ListType.WatchList && p.stockId?.toString() === stockId
+        );
         setWatchProductList(watch);
       });
       if (stockId) {
@@ -182,6 +184,7 @@ export default function ProductScreen() {
       variables: {
         listId,
         productId,
+        stockId,
       },
     }).then(({ data, errors }) => {
       if (!data || errors) return;
