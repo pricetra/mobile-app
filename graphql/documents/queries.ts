@@ -917,3 +917,14 @@ export const GET_ALL_BRANCH_LISTS_BY_LIST_ID = gql(`
     }
   }
 `);
+
+export const EXTRACT_PRODUCT_FIELDS_QUERY = gql(`
+  query ExtractProductFields($base64Image: String!) {
+    extractProductFields(base64Image: $base64Image) {
+      brand
+      productName
+      weight
+      category
+    }
+  }
+`);
