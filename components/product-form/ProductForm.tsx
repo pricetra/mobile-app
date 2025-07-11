@@ -1,4 +1,4 @@
-import { ApolloError, useMutation, useQuery } from '@apollo/client';
+import { ApolloError, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
@@ -25,8 +25,9 @@ import {
   Product,
   Category,
   ProductDocument,
+  ExtractProductFieldsDocument,
 } from '@/graphql/types/graphql';
-import { callGoogleVisionAsync, uploadToCloudinary } from '@/lib/files';
+import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
 
@@ -56,6 +57,9 @@ export default function ProductForm({
   });
   const [createProduct, { loading: createLoading }] = useMutation(CreateProductDocument, {
     refetchQueries: [AllProductsDocument, AllBrandsDocument],
+  });
+  const [extractProductFields] = useLazyQuery(ExtractProductFieldsDocument, {
+    fetchPolicy: 'no-cache',
   });
   const [selectedCategory, setSelectedCategory] = useState<Category>();
   const [category, setCategory] = useState<Category>();
@@ -229,7 +233,26 @@ export default function ProductForm({
     }
 
     setAnalyzingImage(true);
-    return callGoogleVisionAsync(picture.base64).finally(() => setAnalyzingImage(false));
+    const encodedBase64 = `data:${picture.mimeType};base64,${picture.base64}`;
+    const { data, error } = await extractProductFields({
+      variables: {
+        base64Image: encodedBase64,
+      },
+    }).finally(() => setAnalyzingImage(false));
+    if (error || !data) {
+      Alert.alert(
+        'Could not auto-fill using the provided image',
+        error?.message ?? 'No data found'
+      );
+      return;
+    }
+    formik.setFieldValue('brand', data.extractProductFields.brand);
+    formik.setFieldValue('name', data.extractProductFields.name);
+    if (data.extractProductFields) formik.setFieldValue('weight', data.extractProductFields.weight);
+    if (data.extractProductFields.categoryId && data.extractProductFields.category) {
+      setCategory({ ...data.extractProductFields.category });
+      setSelectedCategory({ ...data.extractProductFields.category });
+    }
   }
 
   if (brandsLoading || !brands)
@@ -283,9 +306,7 @@ export default function ProductForm({
                 disabled={analyzingImage}
                 onPress={async () => {
                   const visionData = await onPressAutofill(formik);
-                  if (!visionData) return;
-                  const rawVisionFullText = visionData.responses[0].fullTextAnnotation?.text;
-                  formik.setFieldValue('name', rawVisionFullText);
+                  console.log(visionData);
                 }}
                 className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-emerald-300 bg-emerald-50 px-5 py-3">
                 {analyzingImage ? (

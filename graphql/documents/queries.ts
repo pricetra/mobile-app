@@ -922,9 +922,15 @@ export const EXTRACT_PRODUCT_FIELDS_QUERY = gql(`
   query ExtractProductFields($base64Image: String!) {
     extractProductFields(base64Image: $base64Image) {
       brand
-      productName
+      name
       weight
-      category
+      categoryId
+      category {
+        id
+        name
+        expandedPathname
+        path
+      }
     }
   }
 `);
