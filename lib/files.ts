@@ -5,8 +5,6 @@ import {
   UploadApiResponse,
 } from 'cloudinary-react-native/lib/typescript/src/api/upload/model/params/upload-params';
 
-import { GoogleVisionResponse } from '@/types/google-vision-api';
-
 export async function getFileBlobFromUri(uri: string) {
   const response = await fetch(uri);
   const blob = await response.blob();

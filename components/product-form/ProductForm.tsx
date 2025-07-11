@@ -304,10 +304,7 @@ export default function ProductForm({
             <View className="mt-3 flex flex-row gap-3">
               <TouchableOpacity
                 disabled={analyzingImage}
-                onPress={async () => {
-                  const visionData = await onPressAutofill(formik);
-                  console.log(visionData);
-                }}
+                onPress={() => onPressAutofill(formik)}
                 className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-emerald-300 bg-emerald-50 px-5 py-3">
                 {analyzingImage ? (
                   <AntDesign
