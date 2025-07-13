@@ -1,5 +1,6 @@
 import { ApolloError, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { useEffect, useState } from 'react';
@@ -233,7 +234,17 @@ export default function ProductForm({
     }
 
     setAnalyzingImage(true);
-    const encodedBase64 = `data:${picture.mimeType};base64,${picture.base64}`;
+    const manipulationResult = await ImageManipulator.manipulateAsync(
+      picture.uri,
+      [{ resize: { width: 1000 } }],
+      {
+        compress: 0.8,
+        format: ImageManipulator.SaveFormat.JPEG,
+        base64: true,
+      }
+    );
+    const base64Image = manipulationResult.base64;
+    const encodedBase64 = `data:image/jpeg;base64,${base64Image}`;
     const { data, error } = await extractProductFields({
       variables: {
         base64Image: encodedBase64,
