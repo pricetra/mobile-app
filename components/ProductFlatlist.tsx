@@ -52,9 +52,6 @@ export default function ProductFlatlist({
             onPress={() => {
               if (onItemPress) onItemPress(item);
               router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`);
-            }}
-            onLongPress={() => {
-              if (onItemLongPress) onItemLongPress(item);
             }}>
             <ProductItem product={item} />
           </TouchableOpacity>

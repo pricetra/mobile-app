@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import convert from 'convert-units';
-import { router, useFocusEffect } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, SafeAreaView, Platform, Text } from 'react-native';
@@ -8,9 +8,7 @@ import { View, SafeAreaView, Platform, Text } from 'react-native';
 import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
 import ProductSearchFilterModal from '@/components/ProductSearchFilterModal';
-import ProductForm from '@/components/product-form/ProductForm';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
-import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabSubHeaderProductFilter, {
   PartialCategory,
@@ -33,7 +31,6 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const bottomTabBarHeight = 45;
   const [getAllProducts, { data, error, loading, fetchMore }] = useLazyQuery(AllProductsDocument);
-  const [selectedProduct, setSelectedProduct] = useState<Product>();
   const { search, searching, setSearching } = useContext(SearchContext);
   const { location, getCurrentLocation } = useCurrentLocation();
   const { setSubHeader } = useHeader();
@@ -150,21 +147,6 @@ export default function HomeScreen() {
         />
       </ModalFormMini>
 
-      <ModalFormFull
-        title="Edit Product"
-        visible={selectedProduct !== undefined}
-        onRequestClose={() => setSelectedProduct(undefined)}>
-        <ProductForm
-          product={selectedProduct}
-          onCancel={() => setSelectedProduct(undefined)}
-          onSuccess={({ id }) => {
-            router.push(`/(tabs)/(products)/${id}`);
-            setSelectedProduct(undefined);
-          }}
-          onError={(e) => alert(e.message)}
-        />
-      </ModalFormFull>
-
       {(loading || searching) && <RenderProductLoadingItems count={10} />}
 
       {error && (
@@ -193,7 +175,6 @@ export default function HomeScreen() {
             return loadProducts(1, true);
           }}
           setPage={loadMore}
-          onItemLongPress={(p) => setSelectedProduct(p)}
           style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0 }}
         />
       )}

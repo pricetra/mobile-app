@@ -10,7 +10,6 @@ import ProfileLarge, { ProfileLargeLoading } from '@/components/profile/ProfileL
 import ProfileMini from '@/components/profile/ProfileMini';
 import UserForm from '@/components/profile/UserForm';
 import ModalFormFull from '@/components/ui/ModalFormFull';
-import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
@@ -109,7 +108,7 @@ export default function UsersScreen() {
     <SafeAreaView>
       {selectedUser && (
         <>
-          <ModalFormMini
+          <ModalFormFull
             visible={openEditModal}
             onRequestClose={() => setOpenEditModal(false)}
             title="Edit User">
@@ -119,7 +118,7 @@ export default function UsersScreen() {
               onCancel={() => setOpenEditModal(false)}
               onError={(e) => Alert.alert(e.name, e.message)}
             />
-          </ModalFormMini>
+          </ModalFormFull>
 
           <ModalFormFull
             visible={openUserModal}

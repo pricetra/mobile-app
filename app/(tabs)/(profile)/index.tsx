@@ -7,7 +7,7 @@ import { SafeAreaView, ScrollView, Text, TouchableOpacity, Alert, View } from 'r
 
 import ProfileForm from '@/components/profile/ProfileForm';
 import ProfileSmall from '@/components/profile/ProfileSmall';
-import ModalFormMini from '@/components/ui/ModalFormMini';
+import ModalFormFull from '@/components/ui/ModalFormFull';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { UserAuthContext } from '@/context/UserContext';
 import { ListType } from '@/graphql/types/graphql';
@@ -64,7 +64,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
-      <ModalFormMini
+      <ModalFormFull
         visible={openSettingsModal}
         onRequestClose={() => setOpenSettingsModal(false)}
         title="Edit Profile">
@@ -74,7 +74,7 @@ export default function ProfileScreen() {
           onSuccess={(_u) => setOpenSettingsModal(false)}
           onError={(e) => Alert.alert('Could not edit profile', e.message)}
         />
-      </ModalFormMini>
+      </ModalFormFull>
 
       <ScrollView className="p-5">
         <View className="flex flex-col gap-5 rounded-lg border-[1px] border-gray-100 bg-gray-50 p-5">
