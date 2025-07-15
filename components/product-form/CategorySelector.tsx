@@ -24,11 +24,14 @@ export default function CategorySelector({ category, onChange }: CategorySelecto
     const categories = categoriesFromChild(category);
     categories.push({ depth: categories.length + 1 } as Category);
     setCategoryDataSet(
-      categories.map((c, i) => ({
-        parentCategory: i > 0 ? categories[i - 1] : undefined,
-        depth: c.depth ?? i + 1,
-        selection: { id: c.id.toString(), title: c.name },
-      }))
+      categories.map(
+        (c, i) =>
+          ({
+            parentCategory: i > 0 ? categories[i - 1] : undefined,
+            depth: c.depth ?? i + 1,
+            selection: { id: c.id?.toString(), title: c.name },
+          }) as CategoryComboboxData
+      )
     );
   }, [category]);
 
