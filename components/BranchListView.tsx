@@ -18,7 +18,7 @@ export default function BranchListView({ listId }: BranchListViewProps) {
 
   useEffect(() => {
     getBranches({
-      variables: { listId },
+      variables: { listId: +listId },
     });
   }, [listId]);
 

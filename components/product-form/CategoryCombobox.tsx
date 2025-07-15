@@ -64,9 +64,10 @@ export default function CategoryCombobox({
 
   return (
     <Combobox
-      dataSet={categories.map((c) => ({ id: c.id, title: c.name })) ?? []}
+      dataSet={categories.map((c) => ({ id: c.id.toString(), title: c.name })) ?? []}
       onSelectItem={(item) => {
-        const category = categories.find(({ id }) => id === item?.id);
+        if (!item) return;
+        const category = categories.find(({ id }) => id === +item.id);
         if (!category) return;
         setRawCategoryInput(category.name);
         onSelect(category);

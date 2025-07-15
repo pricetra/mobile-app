@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from 'clsx';
 import convert from 'convert-units';
 import { twMerge } from 'tailwind-merge';
 
-import { postgresArrayToArray } from './strings';
+import { postgresArrayToArray, postgresArrayToNumericArray } from './strings';
 
 import { Category, Price, Product } from '@/graphql/types/graphql';
 import dayjs from 'dayjs';
@@ -20,7 +20,7 @@ export const CATEGORY_DELIM = ' > ';
  * @returns The parent category and all the nested child categories
  */
 export function categoriesFromChild(category: Category): Category[] {
-  const path = postgresArrayToArray(category.path);
+  const path = postgresArrayToNumericArray(category.path);
   const categoryNames = category.expandedPathname.split(CATEGORY_DELIM);
   const categories: Category[] = [];
   for (let i = 0; i < path.length; i++) {

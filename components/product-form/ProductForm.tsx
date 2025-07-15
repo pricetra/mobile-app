@@ -73,7 +73,7 @@ export default function ProductForm({
     if (upc.length < 4 || upc.length > 5) return;
 
     const myCategory: Category = {
-      id: '509',
+      id: 509,
       name: 'Produce',
       path: '{462,509}',
       expandedPathname: 'Food, Beverages & Tobacco > Produce',

@@ -84,10 +84,16 @@ export default function UsersScreen() {
     if (parsedSearch.length !== 2) return;
     const type = parsedSearch[0].trim().toLowerCase() as SearchTypes;
     const term = parsedSearch[1].trim();
+    let numericTerm = 0;
 
     switch (type) {
       case 'id':
-        return setFilters({ id: term });
+        try {
+          numericTerm = parseInt(term, 10);
+        } catch {
+          Alert.alert('Could not parse', 'ID search type only supports numeric inputs.');
+        }
+        return setFilters({ id: numericTerm });
       case 'email':
         return setFilters({ email: term });
       case 'role':

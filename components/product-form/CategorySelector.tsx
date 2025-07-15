@@ -27,7 +27,7 @@ export default function CategorySelector({ category, onChange }: CategorySelecto
       categories.map((c, i) => ({
         parentCategory: i > 0 ? categories[i - 1] : undefined,
         depth: c.depth ?? i + 1,
-        selection: { id: c.id, title: c.name },
+        selection: { id: c.id.toString(), title: c.name },
       }))
     );
   }, [category]);

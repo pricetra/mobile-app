@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const UPDATE_USER_BY_ID_MUTATION = gql(`
-  mutation UpdateUserById($userId: String!, $input: UpdateUserFull!) {
+  mutation UpdateUserById($userId: ID!, $input: UpdateUserFull!) {
     updateUserById(userId: $userId, input: $input) {
       id
       email

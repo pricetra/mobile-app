@@ -52,7 +52,7 @@ export default function SelectedStoreScreen() {
   useEffect(() => {
     findStore({
       variables: {
-        storeId,
+        storeId: +storeId,
         paginator,
         location: locationInput,
         search,
@@ -65,7 +65,7 @@ export default function SelectedStoreScreen() {
       if (!storeId) return router.back();
       findStore({
         variables: {
-          storeId,
+          storeId: +storeId,
           paginator,
           location: locationInput,
         },

@@ -17,7 +17,7 @@ export default function ProductListView({ listId }: ProductListViewProps) {
 
   useEffect(() => {
     getProducts({
-      variables: { listId },
+      variables: { listId: +listId },
     });
   }, [listId]);
 

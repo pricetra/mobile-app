@@ -89,9 +89,9 @@ export default function ProductScreen() {
     useCallback(() => {
       getProduct({
         variables: {
-          productId,
+          productId: +productId,
           viewerTrail: {
-            stockId,
+            stockId: stockId ? +stockId : undefined,
             // TODO: Add origin history is not supported so that will also need to be implemented
           },
         },
@@ -106,12 +106,12 @@ export default function ProductScreen() {
         setWatchProductList(watch);
       });
       if (stockId) {
-        getStock({ variables: { stockId } });
+        getStock({ variables: { stockId: +stockId } });
       }
       fetchProductStocksWithLocation(productId);
       getFavBranchesPrices({
         variables: {
-          productId,
+          productId: +productId,
         },
       });
       return () => {
@@ -148,7 +148,7 @@ export default function ProductScreen() {
       };
     }
     return getProductStocks({
-      variables: { productId, location: locationInput },
+      variables: { productId: +productId, location: locationInput },
     });
   }
 
@@ -170,8 +170,8 @@ export default function ProductScreen() {
     const { data, errors } = await addToList({
       variables: {
         listId,
-        productId,
-        stockId: type === ListType.WatchList ? stockId : undefined,
+        productId: +productId,
+        stockId: type === ListType.WatchList && stockId ? +stockId : undefined,
       },
     });
     if (errors || !data) throw errors;
@@ -183,8 +183,8 @@ export default function ProductScreen() {
     removeFromList({
       variables: {
         listId,
-        productId,
-        stockId,
+        productId: +productId,
+        stockId: stockId ? +stockId : undefined,
       },
     }).then(({ data, errors }) => {
       if (!data || errors) return;

@@ -65,7 +65,7 @@ export default function AddProductPriceForm({
 
   useEffect(() => {
     if (!branchesData) return;
-    setBranchId(branchesData.findBranchesByDistance.at(0)?.id);
+    setBranchId(branchesData.findBranchesByDistance.at(0)?.id?.toString());
   }, [branchesData]);
 
   if (branchesLoading)
@@ -98,7 +98,7 @@ export default function AddProductPriceForm({
       <Combobox
         initialValue={branchId}
         dataSet={branchesData.findBranchesByDistance.map((b) => ({
-          id: b.id,
+          id: b.id.toString(),
           title: b.name,
           description: b.address?.fullAddress,
           logo: b.store?.logo,
@@ -109,7 +109,8 @@ export default function AddProductPriceForm({
         }}
         textInputProps={{
           placeholder: 'Select Branch',
-          value: branchesData.findBranchesByDistance?.find(({ id }) => id === branchId)?.name,
+          value: branchesData.findBranchesByDistance?.find(({ id }) => id.toString() === branchId)
+            ?.name,
         }}
         renderItem={(item: any) => (
           <View className="flex flex-row items-center gap-2 p-3">
@@ -142,7 +143,7 @@ export default function AddProductPriceForm({
           initialValues={
             {
               productId: product.id,
-              branchId,
+              branchId: +branchId,
               amount: 0.0,
               sale: false,
               unitType: 'item',
@@ -154,7 +155,7 @@ export default function AddProductPriceForm({
               variables: {
                 input: {
                   ...input,
-                  branchId,
+                  branchId: +branchId,
                 },
               },
             })

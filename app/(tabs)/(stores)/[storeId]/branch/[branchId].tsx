@@ -48,7 +48,7 @@ export default function SelectedBranchScreen() {
       variables: {
         paginator: { limit: LIMIT, page: 1 },
         search: {
-          branchId,
+          branchId: +branchId,
           query: search,
         },
       },
@@ -88,15 +88,15 @@ export default function SelectedBranchScreen() {
       );
       fetchBranch({
         variables: {
-          storeId,
-          branchId,
+          storeId: +storeId,
+          branchId: +branchId,
         },
       });
       getAllProducts({
         variables: {
           paginator: { limit: LIMIT, page: 1 },
           search: {
-            branchId,
+            branchId: +branchId,
           },
         },
       });
@@ -143,7 +143,7 @@ export default function SelectedBranchScreen() {
                   setFavorite(true);
                   addBranchToList({
                     variables: {
-                      branchId,
+                      branchId: +branchId,
                       listId: lists.favorites.id,
                     },
                   }).catch(() => setFavorite(false));
@@ -195,7 +195,7 @@ export default function SelectedBranchScreen() {
           variables: {
             paginator: { limit: LIMIT, page: 1 },
             search: {
-              branchId,
+              branchId: +branchId,
               query: search,
             },
           },
