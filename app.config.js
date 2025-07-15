@@ -9,7 +9,7 @@ export default {
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
-    icon: './assets/images/icon.png',
+    icon: IS_DEV ? './assets/images/icon_dev.png' : './assets/images/icon.png',
     supportsTablet: true,
     bundleIdentifier: IS_DEV ? 'com.pricetra.mobileApp.dev' : 'com.pricetra.mobileApp',
     infoPlist: {
@@ -17,7 +17,7 @@ export default {
     },
   },
   android: {
-    icon: './assets/images/adaptive-icon.png',
+    icon: IS_DEV ? './assets/images/adaptive-icon_dev.png' : './assets/images/adaptive-icon.png',
     adaptiveIcon: {
       foregroundImage: './assets/images/adaptive-icon_foreground.png',
       monochromeImage: './assets/images/adaptive-icon_monochrome.png',
@@ -35,7 +35,7 @@ export default {
   web: {
     bundler: 'metro',
     output: 'static',
-    favicon: './assets/images/favicon.png',
+    favicon: './assets/images/favicon.ico',
   },
   plugins: [
     'expo-router',
