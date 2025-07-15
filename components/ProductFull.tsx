@@ -41,7 +41,9 @@ export default function ProductFull({
       <View className="p-5">
         <View className="flex flex-col gap-2">
           <View className="flex flex-row flex-wrap items-center gap-1">
-            <Text className="font-semibold">{product.brand}</Text>
+            {product.brand && product.brand !== 'N/A' && (
+              <Text className="font-semibold">{product.brand}</Text>
+            )}
             {product.weight && (
               <>
                 <Entypo name="dot-single" size={20} color="black" />

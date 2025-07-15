@@ -41,7 +41,9 @@ export default function ProductItem({ product }: ProductItemProps) {
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
           <View className="flex flex-row flex-wrap items-center gap-1">
-            {product.brand && <Text className="text-xs">{product.brand}</Text>}
+            {product.brand && product.brand !== 'N/A' && (
+              <Text className="text-xs">{product.brand}</Text>
+            )}
 
             {product.weight && product.weight.length > 0 && (
               <>
