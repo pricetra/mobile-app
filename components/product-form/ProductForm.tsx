@@ -52,7 +52,9 @@ export default function ProductForm({
   const [imageUpdated, setImageUpdated] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>();
-  const { data: brandsData, loading: brandsLoading } = useQuery(AllBrandsDocument);
+  const { data: brandsData, loading: brandsLoading } = useQuery(AllBrandsDocument, {
+    fetchPolicy: 'network-only',
+  });
   const [updateProduct, { loading: updateLoading }] = useMutation(UpdateProductDocument, {
     refetchQueries: [AllProductsDocument, AllBrandsDocument, ProductDocument],
   });
