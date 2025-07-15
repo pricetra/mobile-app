@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
 import TabHeaderSearchBar from './TabHeaderSearchBar';
@@ -71,10 +71,17 @@ export default function TabHeader(props: TabHeaderProps) {
               onPress={() => router.push('/(tabs)/')}
               className="flex w-full flex-1 items-center justify-center"
               style={iconStyles}>
-              <Image
-                source={require('../../assets/images/logotype_header_black.svg')}
-                style={{ height: logoHeight, width: 119.21 }}
-              />
+              {process.env.NODE_ENV === 'development' ? (
+                <Image
+                  source={require('@/assets/images/logotype_header_black_dev.svg')}
+                  style={{ height: logoHeight, width: 119.21 }}
+                />
+              ) : (
+                <Image
+                  source={require('@/assets/images/logotype_header_black.svg')}
+                  style={{ height: logoHeight, width: 119.21 }}
+                />
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setOpenSearch(true)} style={iconStyles}>
