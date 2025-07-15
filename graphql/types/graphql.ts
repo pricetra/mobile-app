@@ -9,7 +9,7 @@ export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> =
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
+  ID: { input: number; output: number; }
   String: { input: string; output: string; }
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
@@ -249,6 +249,7 @@ export type Mutation = {
   addBranchToList: BranchList;
   addToList: ProductList;
   bulkAddBranchesToList: Array<BranchList>;
+  clearSearchHistory: Scalars['Boolean']['output'];
   createAccount: User;
   createBranch: Branch;
   createBranchWithFullAddress: Branch;
@@ -258,6 +259,7 @@ export type Mutation = {
   createProduct: Product;
   createStore: Store;
   deleteList: List;
+  deleteSearchById: Scalars['Boolean']['output'];
   logout: Scalars['Boolean']['output'];
   registerExpoPushToken: User;
   removeBranchFromList: BranchList;
@@ -336,6 +338,11 @@ export type MutationCreateStoreArgs = {
 
 export type MutationDeleteListArgs = {
   listId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteSearchByIdArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -422,6 +429,12 @@ export type PaginatedProducts = {
   __typename?: 'PaginatedProducts';
   paginator: Paginator;
   products: Array<Product>;
+};
+
+export type PaginatedSearch = {
+  __typename?: 'PaginatedSearch';
+  paginator: Paginator;
+  searches: Array<SearchHistory>;
 };
 
 export type PaginatedUsers = {
@@ -575,6 +588,8 @@ export type Query = {
   login: Auth;
   me: User;
   myProductBillingData: PaginatedProductBilling;
+  myProductViewHistory: PaginatedProducts;
+  mySearchHistory: PaginatedSearch;
   product: Product;
   productBillingDataByUserId: PaginatedProductBilling;
   stock: Stock;
@@ -684,6 +699,16 @@ export type QueryMyProductBillingDataArgs = {
 };
 
 
+export type QueryMyProductViewHistoryArgs = {
+  paginator: PaginatorInput;
+};
+
+
+export type QueryMySearchHistoryArgs = {
+  paginator: PaginatorInput;
+};
+
+
 export type QueryProductArgs = {
   id: Scalars['ID']['input'];
   viewerTrail?: InputMaybe<ViewerTrailInput>;
@@ -713,6 +738,13 @@ export type SaveExternalProductInput = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   search: Scalars['String']['input'];
   upc?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SearchHistory = {
+  __typename?: 'SearchHistory';
+  createdAt: Scalars['Time']['output'];
+  id: Scalars['ID']['output'];
+  searchTerm: Scalars['String']['output'];
 };
 
 export type SearchResult = {
@@ -853,7 +885,7 @@ export type UpdateUserByIdMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserByIdMutation = { __typename?: 'Mutation', updateUserById: { __typename?: 'User', id: string, email: string, phoneNumber?: string | null, name: string, avatar?: string | null, birthDate?: any | null, bio?: string | null, active: boolean, role: UserRole, createdAt: any, updatedAt: any } };
+export type UpdateUserByIdMutation = { __typename?: 'Mutation', updateUserById: { __typename?: 'User', id: number, email: string, phoneNumber?: string | null, name: string, avatar?: string | null, birthDate?: any | null, bio?: string | null, active: boolean, role: UserRole, createdAt: any, updatedAt: any } };
 
 export type GetAllUsersQueryVariables = Exact<{
   paginator: PaginatorInput;
@@ -861,7 +893,7 @@ export type GetAllUsersQueryVariables = Exact<{
 }>;
 
 
-export type GetAllUsersQuery = { __typename?: 'Query', getAllUsers: { __typename?: 'PaginatedUsers', users: Array<{ __typename?: 'User', id: string, email: string, phoneNumber?: string | null, name: string, avatar?: string | null, birthDate?: any | null, bio?: string | null, active: boolean, role: UserRole, createdAt: any, updatedAt: any }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
+export type GetAllUsersQuery = { __typename?: 'Query', getAllUsers: { __typename?: 'PaginatedUsers', users: Array<{ __typename?: 'User', id: number, email: string, phoneNumber?: string | null, name: string, avatar?: string | null, birthDate?: any | null, bio?: string | null, active: boolean, role: UserRole, createdAt: any, updatedAt: any }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
 
 export type ProductBillingDataByUserIdQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -869,7 +901,7 @@ export type ProductBillingDataByUserIdQueryVariables = Exact<{
 }>;
 
 
-export type ProductBillingDataByUserIdQuery = { __typename?: 'Query', productBillingDataByUserId: { __typename?: 'PaginatedProductBilling', data: Array<{ __typename?: 'ProductBilling', id: string, rate: number, userId: string, productId: string, createdAt: any, paidAt?: any | null, billingRateType: string, user?: { __typename?: 'UserShallow', id: string, name: string, avatar?: string | null, active?: boolean | null } | null, product?: { __typename?: 'Product', id: string, name: string, image: string, brand: string, code: string, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null } | null }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
+export type ProductBillingDataByUserIdQuery = { __typename?: 'Query', productBillingDataByUserId: { __typename?: 'PaginatedProductBilling', data: Array<{ __typename?: 'ProductBilling', id: number, rate: number, userId: number, productId: number, createdAt: any, paidAt?: any | null, billingRateType: string, user?: { __typename?: 'UserShallow', id: number, name: string, avatar?: string | null, active?: boolean | null } | null, product?: { __typename?: 'Product', id: number, name: string, image: string, brand: string, code: string, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } | null }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
 
 export type CreateAccountMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -878,14 +910,14 @@ export type CreateAccountMutationVariables = Exact<{
 }>;
 
 
-export type CreateAccountMutation = { __typename?: 'Mutation', createAccount: { __typename?: 'User', id: string, name: string, email: string, phoneNumber?: string | null, createdAt: any, updatedAt: any, authPlatform?: AuthPlatformType | null, role: UserRole } };
+export type CreateAccountMutation = { __typename?: 'Mutation', createAccount: { __typename?: 'User', id: number, name: string, email: string, phoneNumber?: string | null, createdAt: any, updatedAt: any, authPlatform?: AuthPlatformType | null, role: UserRole } };
 
 export type VerifyEmailMutationVariables = Exact<{
   verificationCode: Scalars['String']['input'];
 }>;
 
 
-export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'User', id: string, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, role: UserRole } };
+export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, role: UserRole } };
 
 export type ResendVerificationMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -904,14 +936,14 @@ export type UpdateProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: string, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, role: UserRole, addressId?: string | null, birthDate?: any | null, phoneNumber?: string | null, bio?: string | null, address?: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, role: UserRole, addressId?: number | null, birthDate?: any | null, phoneNumber?: string | null, bio?: string | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
 
 export type CreateStoreMutationVariables = Exact<{
   input: CreateStore;
 }>;
 
 
-export type CreateStoreMutation = { __typename?: 'Mutation', createStore: { __typename?: 'Store', id: string, name: string, logo: string, website: string, createdById?: string | null, updatedById?: string | null } };
+export type CreateStoreMutation = { __typename?: 'Mutation', createStore: { __typename?: 'Store', id: number, name: string, logo: string, website: string, createdById?: number | null, updatedById?: number | null } };
 
 export type CreateBranchFromFullAddressMutationVariables = Exact<{
   storeId: Scalars['ID']['input'];
@@ -919,21 +951,21 @@ export type CreateBranchFromFullAddressMutationVariables = Exact<{
 }>;
 
 
-export type CreateBranchFromFullAddressMutation = { __typename?: 'Mutation', createBranchWithFullAddress: { __typename?: 'Branch', id: string, name: string, addressId: string, storeId: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } };
+export type CreateBranchFromFullAddressMutation = { __typename?: 'Mutation', createBranchWithFullAddress: { __typename?: 'Branch', id: number, name: string, addressId: number, storeId: number, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } };
 
 export type CreateBranchMutationVariables = Exact<{
   input: CreateBranch;
 }>;
 
 
-export type CreateBranchMutation = { __typename?: 'Mutation', createBranch: { __typename?: 'Branch', id: string, name: string, addressId: string, storeId: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } };
+export type CreateBranchMutation = { __typename?: 'Mutation', createBranch: { __typename?: 'Branch', id: number, name: string, addressId: number, storeId: number, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProduct;
 }>;
 
 
-export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'Product', id: string, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: string, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null } };
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } };
 
 export type UpdateProductMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -941,21 +973,21 @@ export type UpdateProductMutationVariables = Exact<{
 }>;
 
 
-export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct: { __typename?: 'Product', id: string, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: string, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null } };
+export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct: { __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } };
 
 export type CreateCategoryMutationVariables = Exact<{
   input: CreateCategory;
 }>;
 
 
-export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: string, name: string, path: string, expandedPathname: string, categoryAlias?: string | null, depth?: number | null } };
+export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: number, name: string, path: string, expandedPathname: string, categoryAlias?: string | null, depth?: number | null } };
 
 export type CreatePriceMutationVariables = Exact<{
   input: CreatePrice;
 }>;
 
 
-export type CreatePriceMutation = { __typename?: 'Mutation', createPrice: { __typename?: 'Price', id: string, amount: number, currencyCode: string, productId: string, storeId: string, branchId: string, product?: { __typename?: 'Product', id: string, name: string, brand: string, category?: { __typename?: 'Category', id: string, expandedPathname: string } | null } | null, store?: { __typename?: 'Store', id: string, name: string } | null, branch?: { __typename?: 'Branch', id: string, name: string, address: { __typename?: 'Address', id: string, fullAddress: string } } | null } };
+export type CreatePriceMutation = { __typename?: 'Mutation', createPrice: { __typename?: 'Price', id: number, amount: number, currencyCode: string, productId: number, storeId: number, branchId: number, product?: { __typename?: 'Product', id: number, name: string, brand: string, category?: { __typename?: 'Category', id: number, expandedPathname: string } | null } | null, store?: { __typename?: 'Store', id: number, name: string } | null, branch?: { __typename?: 'Branch', id: number, name: string, address: { __typename?: 'Address', id: number, fullAddress: string } } | null } };
 
 export type AddToListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -964,7 +996,7 @@ export type AddToListMutationVariables = Exact<{
 }>;
 
 
-export type AddToListMutation = { __typename?: 'Mutation', addToList: { __typename?: 'ProductList', id: string, userId: string, listId: string, productId: string, stockId?: string | null, createdAt: any } };
+export type AddToListMutation = { __typename?: 'Mutation', addToList: { __typename?: 'ProductList', id: number, userId: number, listId: number, productId: number, stockId?: number | null, createdAt: any } };
 
 export type RemoveFromListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -972,7 +1004,7 @@ export type RemoveFromListMutationVariables = Exact<{
 }>;
 
 
-export type RemoveFromListMutation = { __typename?: 'Mutation', removeFromList: { __typename?: 'ProductList', id: string, userId: string, listId: string, productId: string, stockId?: string | null, createdAt: any } };
+export type RemoveFromListMutation = { __typename?: 'Mutation', removeFromList: { __typename?: 'ProductList', id: number, userId: number, listId: number, productId: number, stockId?: number | null, createdAt: any } };
 
 export type RemoveFromListWithProductIdMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -981,7 +1013,7 @@ export type RemoveFromListWithProductIdMutationVariables = Exact<{
 }>;
 
 
-export type RemoveFromListWithProductIdMutation = { __typename?: 'Mutation', removeFromListWithProductId: { __typename?: 'ProductList', id: string, userId: string, listId: string, productId: string, stockId?: string | null, createdAt: any } };
+export type RemoveFromListWithProductIdMutation = { __typename?: 'Mutation', removeFromListWithProductId: { __typename?: 'ProductList', id: number, userId: number, listId: number, productId: number, stockId?: number | null, createdAt: any } };
 
 export type AddBranchToListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -989,7 +1021,7 @@ export type AddBranchToListMutationVariables = Exact<{
 }>;
 
 
-export type AddBranchToListMutation = { __typename?: 'Mutation', addBranchToList: { __typename?: 'BranchList', id: string, userId: string, listId: string, branchId: string, createdAt: any } };
+export type AddBranchToListMutation = { __typename?: 'Mutation', addBranchToList: { __typename?: 'BranchList', id: number, userId: number, listId: number, branchId: number, createdAt: any } };
 
 export type BulkAddBranchesToListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -997,7 +1029,7 @@ export type BulkAddBranchesToListMutationVariables = Exact<{
 }>;
 
 
-export type BulkAddBranchesToListMutation = { __typename?: 'Mutation', bulkAddBranchesToList: Array<{ __typename?: 'BranchList', id: string, userId: string, listId: string, branchId: string, createdAt: any }> };
+export type BulkAddBranchesToListMutation = { __typename?: 'Mutation', bulkAddBranchesToList: Array<{ __typename?: 'BranchList', id: number, userId: number, listId: number, branchId: number, createdAt: any }> };
 
 export type RemoveBranchFromListMutationVariables = Exact<{
   listId: Scalars['ID']['input'];
@@ -1005,7 +1037,7 @@ export type RemoveBranchFromListMutationVariables = Exact<{
 }>;
 
 
-export type RemoveBranchFromListMutation = { __typename?: 'Mutation', removeBranchFromList: { __typename?: 'BranchList', id: string, userId: string, listId: string, branchId: string, createdAt: any } };
+export type RemoveBranchFromListMutation = { __typename?: 'Mutation', removeBranchFromList: { __typename?: 'BranchList', id: number, userId: number, listId: number, branchId: number, createdAt: any } };
 
 export type RequestResetPasswordMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -1028,7 +1060,7 @@ export type RegisterExpoPushTokenMutationVariables = Exact<{
 }>;
 
 
-export type RegisterExpoPushTokenMutation = { __typename?: 'Mutation', registerExpoPushToken: { __typename?: 'User', id: string, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, expoPushToken?: string | null, role: UserRole, addressId?: string | null, address?: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
+export type RegisterExpoPushTokenMutation = { __typename?: 'Mutation', registerExpoPushToken: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
 
 export type GetAllCountriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1041,9 +1073,9 @@ export type BarcodeScanQueryVariables = Exact<{
 }>;
 
 
-export type BarcodeScanQuery = { __typename?: 'Query', barcodeScan: { __typename?: 'Product', id: string, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: string, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null } };
+export type BarcodeScanQuery = { __typename?: 'Query', barcodeScan: { __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } };
 
-export type UserFieldsFragment = { __typename?: 'User', id: string, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, role: UserRole } & { ' $fragmentName'?: 'UserFieldsFragment' };
+export type UserFieldsFragment = { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, role: UserRole } & { ' $fragmentName'?: 'UserFieldsFragment' };
 
 export type LoginInternalQueryVariables = Exact<{
   email: Scalars['String']['input'];
@@ -1053,7 +1085,7 @@ export type LoginInternalQueryVariables = Exact<{
 }>;
 
 
-export type LoginInternalQuery = { __typename?: 'Query', login: { __typename?: 'Auth', token: string, user: { __typename?: 'User', id: string, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, expoPushToken?: string | null, role: UserRole, addressId?: string | null, address?: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } } };
+export type LoginInternalQuery = { __typename?: 'Query', login: { __typename?: 'Auth', token: string, user: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } } };
 
 export type GoogleOAuthQueryVariables = Exact<{
   accessToken: Scalars['String']['input'];
@@ -1062,12 +1094,12 @@ export type GoogleOAuthQueryVariables = Exact<{
 }>;
 
 
-export type GoogleOAuthQuery = { __typename?: 'Query', googleOAuth: { __typename?: 'Auth', token: string, isNewUser?: boolean | null, user: { __typename?: 'User', id: string, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, expoPushToken?: string | null, role: UserRole, addressId?: string | null, address?: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } } };
+export type GoogleOAuthQuery = { __typename?: 'Query', googleOAuth: { __typename?: 'Auth', token: string, isNewUser?: boolean | null, user: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, expoPushToken?: string | null, role: UserRole, addressId?: string | null, birthDate?: any | null, phoneNumber?: string | null, bio?: string | null, address?: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, birthDate?: any | null, phoneNumber?: string | null, bio?: string | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
 
 export type AllProductsQueryVariables = Exact<{
   paginator: PaginatorInput;
@@ -1075,7 +1107,7 @@ export type AllProductsQueryVariables = Exact<{
 }>;
 
 
-export type AllProductsQuery = { __typename?: 'Query', allProducts: { __typename?: 'PaginatedProducts', products: Array<{ __typename?: 'Product', id: string, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: string, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, views: number, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null, stock?: { __typename?: 'Stock', id: string, productId: string, storeId: string, branchId: string, latestPriceId: string, store?: { __typename?: 'Store', id: string, name: string, logo: string } | null, branch?: { __typename?: 'Branch', id: string, name: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, latestPrice?: { __typename?: 'Price', id: string, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null, createdBy?: { __typename?: 'CreatedByUser', id: string, name: string, avatar?: string | null } | null, updatedBy?: { __typename?: 'UpdatedByUser', id: string, name: string, avatar?: string | null } | null }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
+export type AllProductsQuery = { __typename?: 'Query', allProducts: { __typename?: 'PaginatedProducts', products: Array<{ __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, views: number, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null, stock?: { __typename?: 'Stock', id: number, productId: number, storeId: number, branchId: number, latestPriceId: number, store?: { __typename?: 'Store', id: number, name: string, logo: string } | null, branch?: { __typename?: 'Branch', id: number, name: string, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, latestPrice?: { __typename?: 'Price', id: number, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null, createdBy?: { __typename?: 'CreatedByUser', id: number, name: string, avatar?: string | null } | null, updatedBy?: { __typename?: 'UpdatedByUser', id: number, name: string, avatar?: string | null } | null }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
 
 export type ProductQueryVariables = Exact<{
   productId: Scalars['ID']['input'];
@@ -1083,7 +1115,7 @@ export type ProductQueryVariables = Exact<{
 }>;
 
 
-export type ProductQuery = { __typename?: 'Query', product: { __typename?: 'Product', id: string, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: string, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, views: number, category?: { __typename?: 'Category', id: string, name: string, categoryAlias?: string | null, expandedPathname: string, path: string } | null, createdBy?: { __typename?: 'CreatedByUser', id: string, name: string, avatar?: string | null } | null, productList: Array<{ __typename?: 'ProductList', id: string, listId: string, userId: string, productId: string, type?: ListType | null, stockId?: string | null, createdAt: any }> } };
+export type ProductQuery = { __typename?: 'Query', product: { __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, views: number, category?: { __typename?: 'Category', id: number, name: string, categoryAlias?: string | null, expandedPathname: string, path: string } | null, createdBy?: { __typename?: 'CreatedByUser', id: number, name: string, avatar?: string | null } | null, productList: Array<{ __typename?: 'ProductList', id: number, listId: number, userId: number, productId: number, type?: ListType | null, stockId?: number | null, createdAt: any }> } };
 
 export type GetProductStocksQueryVariables = Exact<{
   productId: Scalars['ID']['input'];
@@ -1091,12 +1123,12 @@ export type GetProductStocksQueryVariables = Exact<{
 }>;
 
 
-export type GetProductStocksQuery = { __typename?: 'Query', getProductStocks: Array<{ __typename?: 'Stock', id: string, productId: string, storeId: string, branchId: string, latestPriceId: string, createdAt: any, updatedAt: any, store?: { __typename?: 'Store', id: string, name: string, logo: string } | null, branch?: { __typename?: 'Branch', id: string, name: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, latestPrice?: { __typename?: 'Price', id: string, amount: number, currencyCode: string, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null, createdBy?: { __typename?: 'CreatedByUser', id: string, name: string, avatar?: string | null } | null, updatedBy?: { __typename?: 'UpdatedByUser', id: string, name: string, avatar?: string | null } | null }> };
+export type GetProductStocksQuery = { __typename?: 'Query', getProductStocks: Array<{ __typename?: 'Stock', id: number, productId: number, storeId: number, branchId: number, latestPriceId: number, createdAt: any, updatedAt: any, store?: { __typename?: 'Store', id: number, name: string, logo: string } | null, branch?: { __typename?: 'Branch', id: number, name: string, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, latestPrice?: { __typename?: 'Price', id: number, amount: number, currencyCode: string, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null, createdBy?: { __typename?: 'CreatedByUser', id: number, name: string, avatar?: string | null } | null, updatedBy?: { __typename?: 'UpdatedByUser', id: number, name: string, avatar?: string | null } | null }> };
 
 export type AllStoresQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllStoresQuery = { __typename?: 'Query', allStores: Array<{ __typename?: 'Store', id: string, name: string, logo: string, website: string, createdBy?: { __typename?: 'CreatedByUser', id: string, name: string, avatar?: string | null } | null }> };
+export type AllStoresQuery = { __typename?: 'Query', allStores: Array<{ __typename?: 'Store', id: number, name: string, logo: string, website: string, createdBy?: { __typename?: 'CreatedByUser', id: number, name: string, avatar?: string | null } | null }> };
 
 export type FindStoreQueryVariables = Exact<{
   storeId: Scalars['ID']['input'];
@@ -1106,7 +1138,7 @@ export type FindStoreQueryVariables = Exact<{
 }>;
 
 
-export type FindStoreQuery = { __typename?: 'Query', findStore: { __typename?: 'Store', id: string, name: string, logo: string, website: string, createdBy?: { __typename?: 'CreatedByUser', id: string, name: string, avatar?: string | null } | null }, allBranches: { __typename?: 'PaginatedBranches', branches: Array<{ __typename?: 'Branch', id: string, name: string, addressId: string, storeId: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
+export type FindStoreQuery = { __typename?: 'Query', findStore: { __typename?: 'Store', id: number, name: string, logo: string, website: string, createdBy?: { __typename?: 'CreatedByUser', id: number, name: string, avatar?: string | null } | null }, allBranches: { __typename?: 'PaginatedBranches', branches: Array<{ __typename?: 'Branch', id: number, name: string, addressId: number, storeId: number, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
 
 export type AllBranchesQueryVariables = Exact<{
   storeId: Scalars['ID']['input'];
@@ -1116,7 +1148,7 @@ export type AllBranchesQueryVariables = Exact<{
 }>;
 
 
-export type AllBranchesQuery = { __typename?: 'Query', allBranches: { __typename?: 'PaginatedBranches', branches: Array<{ __typename?: 'Branch', id: string, name: string, addressId: string, storeId: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
+export type AllBranchesQuery = { __typename?: 'Query', allBranches: { __typename?: 'PaginatedBranches', branches: Array<{ __typename?: 'Branch', id: number, name: string, addressId: number, storeId: number, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
 
 export type BranchQueryVariables = Exact<{
   branchId: Scalars['ID']['input'];
@@ -1124,7 +1156,7 @@ export type BranchQueryVariables = Exact<{
 }>;
 
 
-export type BranchQuery = { __typename?: 'Query', findBranch: { __typename?: 'Branch', id: string, name: string, addressId: string, storeId: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } }, findStore: { __typename?: 'Store', id: string, name: string, logo: string, website: string } };
+export type BranchQuery = { __typename?: 'Query', findBranch: { __typename?: 'Branch', id: number, name: string, addressId: number, storeId: number, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } }, findStore: { __typename?: 'Store', id: number, name: string, logo: string, website: string } };
 
 export type FindBranchQueryVariables = Exact<{
   branchId: Scalars['ID']['input'];
@@ -1132,7 +1164,7 @@ export type FindBranchQueryVariables = Exact<{
 }>;
 
 
-export type FindBranchQuery = { __typename?: 'Query', findBranch: { __typename?: 'Branch', id: string, name: string, addressId: string, storeId: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } };
+export type FindBranchQuery = { __typename?: 'Query', findBranch: { __typename?: 'Branch', id: number, name: string, addressId: number, storeId: number, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } };
 
 export type AllBrandsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1146,7 +1178,7 @@ export type FindBranchesByDistanceQueryVariables = Exact<{
 }>;
 
 
-export type FindBranchesByDistanceQuery = { __typename?: 'Query', findBranchesByDistance: Array<{ __typename?: 'Branch', id: string, name: string, storeId: string, addressId: string, store?: { __typename?: 'Store', id: string, name: string, website: string, logo: string } | null, address: { __typename?: 'Address', id: string, distance?: number | null, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } }> };
+export type FindBranchesByDistanceQuery = { __typename?: 'Query', findBranchesByDistance: Array<{ __typename?: 'Branch', id: number, name: string, storeId: number, addressId: number, store?: { __typename?: 'Store', id: number, name: string, website: string, logo: string } | null, address: { __typename?: 'Address', id: number, distance?: number | null, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } }> };
 
 export type GetCategoriesQueryVariables = Exact<{
   depth?: InputMaybe<Scalars['Int']['input']>;
@@ -1154,35 +1186,35 @@ export type GetCategoriesQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', id: string, name: string, path: string, expandedPathname: string, categoryAlias?: string | null, depth?: number | null }> };
+export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', id: number, name: string, path: string, expandedPathname: string, categoryAlias?: string | null, depth?: number | null }> };
 
 export type MyProductBillingDataQueryVariables = Exact<{
   paginator: PaginatorInput;
 }>;
 
 
-export type MyProductBillingDataQuery = { __typename?: 'Query', myProductBillingData: { __typename?: 'PaginatedProductBilling', data: Array<{ __typename?: 'ProductBilling', id: string, rate: number, userId: string, productId: string, createdAt: any, paidAt?: any | null, billingRateType: string, user?: { __typename?: 'UserShallow', id: string, name: string, avatar?: string | null, active?: boolean | null } | null, product?: { __typename?: 'Product', id: string, name: string, image: string, brand: string, code: string, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null } | null }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
+export type MyProductBillingDataQuery = { __typename?: 'Query', myProductBillingData: { __typename?: 'PaginatedProductBilling', data: Array<{ __typename?: 'ProductBilling', id: number, rate: number, userId: number, productId: number, createdAt: any, paidAt?: any | null, billingRateType: string, user?: { __typename?: 'UserShallow', id: number, name: string, avatar?: string | null, active?: boolean | null } | null, product?: { __typename?: 'Product', id: number, name: string, image: string, brand: string, code: string, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } | null }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
 
 export type GetAllListsQueryVariables = Exact<{
   listType?: InputMaybe<ListType>;
 }>;
 
 
-export type GetAllListsQuery = { __typename?: 'Query', getAllLists: Array<{ __typename?: 'List', id: string, name: string, type: ListType, userId: string, createdAt: any, productList?: Array<{ __typename?: 'ProductList', id: string, listId: string, productId: string, stockId?: string | null, createdAt: any, product?: { __typename?: 'Product', id: string, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: string, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null } | null, stock?: { __typename?: 'Stock', id: string, productId: string, storeId: string, branchId: string, latestPriceId: string, latestPrice?: { __typename?: 'Price', id: string, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null }> | null, branchList?: Array<{ __typename?: 'BranchList', id: string, listId: string, branchId: string, createdAt: any, branch?: { __typename?: 'Branch', id: string, name: string, address: { __typename?: 'Address', id: string, distance?: number | null, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null }> | null }> };
+export type GetAllListsQuery = { __typename?: 'Query', getAllLists: Array<{ __typename?: 'List', id: number, name: string, type: ListType, userId: number, createdAt: any, productList?: Array<{ __typename?: 'ProductList', id: number, listId: number, productId: number, stockId?: number | null, createdAt: any, product?: { __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } | null, stock?: { __typename?: 'Stock', id: number, productId: number, storeId: number, branchId: number, latestPriceId: number, latestPrice?: { __typename?: 'Price', id: number, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null }> | null, branchList?: Array<{ __typename?: 'BranchList', id: number, listId: number, branchId: number, createdAt: any, branch?: { __typename?: 'Branch', id: number, name: string, address: { __typename?: 'Address', id: number, distance?: number | null, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null }> | null }> };
 
 export type StockQueryVariables = Exact<{
   stockId: Scalars['ID']['input'];
 }>;
 
 
-export type StockQuery = { __typename?: 'Query', stock: { __typename?: 'Stock', id: string, productId: string, storeId: string, branchId: string, latestPriceId: string, createdAt: any, updatedAt: any, store?: { __typename?: 'Store', id: string, name: string, logo: string } | null, branch?: { __typename?: 'Branch', id: string, name: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, latestPrice?: { __typename?: 'Price', id: string, amount: number, currencyCode: string, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null, createdAt: any } | null, createdBy?: { __typename?: 'CreatedByUser', id: string, name: string, avatar?: string | null } | null, updatedBy?: { __typename?: 'UpdatedByUser', id: string, name: string, avatar?: string | null } | null } };
+export type StockQuery = { __typename?: 'Query', stock: { __typename?: 'Stock', id: number, productId: number, storeId: number, branchId: number, latestPriceId: number, createdAt: any, updatedAt: any, store?: { __typename?: 'Store', id: number, name: string, logo: string } | null, branch?: { __typename?: 'Branch', id: number, name: string, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, latestPrice?: { __typename?: 'Price', id: number, amount: number, currencyCode: string, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null, createdAt: any } | null, createdBy?: { __typename?: 'CreatedByUser', id: number, name: string, avatar?: string | null } | null, updatedBy?: { __typename?: 'UpdatedByUser', id: number, name: string, avatar?: string | null } | null } };
 
 export type FavoriteBranchesWithPricesQueryVariables = Exact<{
   productId: Scalars['ID']['input'];
 }>;
 
 
-export type FavoriteBranchesWithPricesQuery = { __typename?: 'Query', getFavoriteBranchesWithPrices: Array<{ __typename?: 'BranchListWithPrices', id: string, branchId: string, approximatePrice?: number | null, branch?: { __typename?: 'Branch', id: string, name: string, store?: { __typename?: 'Store', id: string, name: string, logo: string } | null, address: { __typename?: 'Address', id: string, distance?: number | null, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, stock?: { __typename?: 'Stock', id: string, productId: string, storeId: string, branchId: string, latestPriceId: string, latestPrice?: { __typename?: 'Price', id: string, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null }> };
+export type FavoriteBranchesWithPricesQuery = { __typename?: 'Query', getFavoriteBranchesWithPrices: Array<{ __typename?: 'BranchListWithPrices', id: number, branchId: number, approximatePrice?: number | null, branch?: { __typename?: 'Branch', id: number, name: string, store?: { __typename?: 'Store', id: number, name: string, logo: string } | null, address: { __typename?: 'Address', id: number, distance?: number | null, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, stock?: { __typename?: 'Stock', id: number, productId: number, storeId: number, branchId: number, latestPriceId: number, latestPrice?: { __typename?: 'Price', id: number, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null }> };
 
 export type VerifyPasswordResetCodeQueryVariables = Exact<{
   email: Scalars['String']['input'];
@@ -1197,21 +1229,21 @@ export type GetAllProductListsByListIdQueryVariables = Exact<{
 }>;
 
 
-export type GetAllProductListsByListIdQuery = { __typename?: 'Query', getAllProductListsByListId: Array<{ __typename?: 'ProductList', id: string, listId: string, userId: string, productId: string, type?: ListType | null, stockId?: string | null, createdAt: any, product?: { __typename?: 'Product', id: string, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: string, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null } | null, stock?: { __typename?: 'Stock', id: string, productId: string, storeId: string, branchId: string, latestPriceId: string, store?: { __typename?: 'Store', id: string, name: string, logo: string } | null, branch?: { __typename?: 'Branch', id: string, name: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, latestPrice?: { __typename?: 'Price', id: string, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null }> };
+export type GetAllProductListsByListIdQuery = { __typename?: 'Query', getAllProductListsByListId: Array<{ __typename?: 'ProductList', id: number, listId: number, userId: number, productId: number, type?: ListType | null, stockId?: number | null, createdAt: any, product?: { __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weight?: string | null, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } | null, stock?: { __typename?: 'Stock', id: number, productId: number, storeId: number, branchId: number, latestPriceId: number, store?: { __typename?: 'Store', id: number, name: string, logo: string } | null, branch?: { __typename?: 'Branch', id: number, name: string, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } } | null, latestPrice?: { __typename?: 'Price', id: number, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null }> };
 
 export type GetAllBranchListsByListIdQueryVariables = Exact<{
   listId: Scalars['ID']['input'];
 }>;
 
 
-export type GetAllBranchListsByListIdQuery = { __typename?: 'Query', getAllBranchListsByListId: Array<{ __typename?: 'BranchList', id: string, listId: string, branchId: string, createdAt: any, branch?: { __typename?: 'Branch', id: string, name: string, storeId: string, address: { __typename?: 'Address', id: string, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string }, store?: { __typename?: 'Store', id: string, name: string, logo: string } | null } | null }> };
+export type GetAllBranchListsByListIdQuery = { __typename?: 'Query', getAllBranchListsByListId: Array<{ __typename?: 'BranchList', id: number, listId: number, branchId: number, createdAt: any, branch?: { __typename?: 'Branch', id: number, name: string, storeId: number, address: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string }, store?: { __typename?: 'Store', id: number, name: string, logo: string } | null } | null }> };
 
 export type ExtractProductFieldsQueryVariables = Exact<{
   base64Image: Scalars['String']['input'];
 }>;
 
 
-export type ExtractProductFieldsQuery = { __typename?: 'Query', extractProductFields: { __typename?: 'ProductExtractionResponse', brand: string, name: string, weight?: string | null, categoryId?: string | null, category?: { __typename?: 'Category', id: string, name: string, expandedPathname: string, path: string } | null } };
+export type ExtractProductFieldsQuery = { __typename?: 'Query', extractProductFields: { __typename?: 'ProductExtractionResponse', brand: string, name: string, weight?: string | null, categoryId?: number | null, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } };
 
 export const UserFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"authPlatform"}},{"kind":"Field","name":{"kind":"Name","value":"authStateId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<UserFieldsFragment, unknown>;
 export const UpdateUserByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateUserFull"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"birthDate"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateUserByIdMutation, UpdateUserByIdMutationVariables>;

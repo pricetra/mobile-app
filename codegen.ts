@@ -5,11 +5,14 @@ const config: CodegenConfig = {
   documents: ['graphql/documents/**/*.ts'],
   generates: {
     'graphql/types/': {
-      // plugins: ['typescript', 'typescript-operations'],
-      // config: {
-      //   avoidOptionals: true,
-      // },
       preset: 'client',
+      // plugins: ['typescript', 'typescript-operations'],
+      config: {
+        // avoidOptionals: true,
+        scalars: {
+          ID: 'number',
+        },
+      },
     },
   },
 };
