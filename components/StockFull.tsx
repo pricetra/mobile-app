@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
@@ -57,11 +58,17 @@ export default function StockFull({ stock, approximatePrice }: StockFullProps) {
             )}
           </View>
 
-          {stock.latestPrice?.condition && (
-            <Text className="mt-3 text-xs italic color-gray-700">
-              *{stock.latestPrice.condition}
-            </Text>
-          )}
+          <View className="mt-1 flex flex-col gap-1">
+            {!isExpired && stock.latestPrice?.expiresAt && (
+              <Text className="text-xs italic">
+                Valid until {dayjs(stock.latestPrice.expiresAt).format('LL')}
+              </Text>
+            )}
+
+            {!isExpired && stock.latestPrice?.condition && (
+              <Text className="text-xs italic color-gray-700">*{stock.latestPrice.condition}</Text>
+            )}
+          </View>
         </View>
       </View>
 
