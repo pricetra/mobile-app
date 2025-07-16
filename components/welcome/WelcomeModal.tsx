@@ -8,11 +8,13 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  TextInput,
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
 } from 'react-native';
+
+import Btn from '../ui/Btn';
+import Input from '../ui/Input';
 
 import Image from '@/components/ui/Image';
 import { useAuth } from '@/context/UserContext';
@@ -156,18 +158,16 @@ export default function WelcomeModal() {
                       <View className="flex-1" />
                     </View>
 
-                    <View className="flex flex-row items-center gap-3">
-                      <TextInput
+                    <View className="flex max-h-[80px] flex-row items-center gap-3">
+                      <Input
                         placeholder="Zip Code or Full Address..."
-                        className="flex-1 rounded-lg bg-gray-200/50 p-5 color-gray-900 placeholder:color-gray-600"
                         value={addressInput}
                         onChangeText={setAddressInput}
                         editable={!profileLoading && !locating}
+                        className="flex-1"
                       />
 
-                      <TouchableOpacity
-                        className="flex size-[55px] items-center justify-center rounded-lg bg-pricetraGreenHeavyDark"
-                        disabled={!addressInput || addressInput.trim().length <= 3}
+                      <Btn
                         onPress={() => {
                           updateProfile({
                             variables: {
@@ -186,13 +186,12 @@ export default function WelcomeModal() {
                             });
                             setPage(WelcomePageType.BRANCHES);
                           });
-                        }}>
-                        {profileLoading ? (
-                          <ActivityIndicator size={24} color="white" />
-                        ) : (
-                          <Feather name="arrow-right" size={24} color="white" />
-                        )}
-                      </TouchableOpacity>
+                        }}
+                        disabled={!addressInput || addressInput.trim().length <= 3}
+                        loading={profileLoading}
+                        icon={<Feather name="arrow-right" size={24} color="white" />}
+                        className="px-5"
+                      />
                     </View>
                   </View>
                 </View>
@@ -254,39 +253,40 @@ export default function WelcomeModal() {
                   </View>
 
                   <View className="flex flex-row items-center gap-3">
-                    <TouchableOpacity
+                    <Btn
                       disabled={addingBranches}
                       onPress={() => setPage(WelcomePageType.ADDRESS)}
-                      className="flex flex-row items-center justify-center gap-5 rounded-xl bg-gray-200 px-7 py-5">
-                      <Text className="text-lg font-bold color-black">Back</Text>
-                    </TouchableOpacity>
+                      text="Back"
+                      size="md"
+                      bgColor="bg-gray-100"
+                      color="text-gray-700"
+                    />
 
-                    <TouchableOpacity
-                      disabled={addingBranches || selectedBranches.length === 0}
-                      onPress={async () => {
-                        setAddingBranches(true);
-                        addBranchesToList({
-                          variables: {
-                            listId: lists.favorites.id,
-                            branchIds: selectedBranches.map(({ id }) => id),
-                          },
-                        }).then(({ data }) => {
-                          if (!data)
-                            return Alert.alert(
-                              'Could not add branches to list',
-                              'There was an error while adding the selected branches to your favorites list. Please try again.'
-                            );
-                          setAddingBranches(false);
-                          setOpenWelcomeModal(false);
-                        });
-                      }}
-                      className="flex flex-1 flex-row items-center justify-center gap-5 rounded-xl bg-pricetraGreenHeavyDark px-7 py-5">
-                      {addingBranches ? (
-                        <ActivityIndicator color="white" />
-                      ) : (
-                        <Text className="text-lg font-bold color-white">Finish Setup</Text>
-                      )}
-                    </TouchableOpacity>
+                    <View className="flex-1">
+                      <Btn
+                        disabled={selectedBranches.length === 0}
+                        onPress={async () => {
+                          setAddingBranches(true);
+                          addBranchesToList({
+                            variables: {
+                              listId: lists.favorites.id,
+                              branchIds: selectedBranches.map(({ id }) => id),
+                            },
+                          }).then(({ data }) => {
+                            if (!data)
+                              return Alert.alert(
+                                'Could not add branches to list',
+                                'There was an error while adding the selected branches to your favorites list. Please try again.'
+                              );
+                            setAddingBranches(false);
+                            setOpenWelcomeModal(false);
+                          });
+                        }}
+                        loading={addingBranches}
+                        size="md"
+                        text="Finish Setup"
+                      />
+                    </View>
                   </View>
                 </View>
               )}

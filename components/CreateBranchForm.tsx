@@ -2,7 +2,8 @@ import { ApolloError, useMutation } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
-import Button from '@/components/ui/Button';
+import Btn from './ui/Btn';
+
 import { Input } from '@/components/ui/Input';
 import {
   AllBranchesDocument,
@@ -16,9 +17,15 @@ export type CreateBranchFormProps = {
   onSuccess?: (data: CreateBranchFromFullAddressMutation) => void;
   onError?: (err: ApolloError) => void;
   store: Store;
+  onCloseModal: () => void;
 };
 
-export default function CreateBranchForm({ store, onSuccess, onError }: CreateBranchFormProps) {
+export default function CreateBranchForm({
+  store,
+  onSuccess,
+  onError,
+  onCloseModal,
+}: CreateBranchFormProps) {
   const [fullAddress, setFullAddress] = useState('');
   const [createBranch, { data, loading, error }] = useMutation(
     CreateBranchFromFullAddressDocument,
@@ -37,15 +44,6 @@ export default function CreateBranchForm({ store, onSuccess, onError }: CreateBr
     if (onError) onError(error);
   }, [error]);
 
-  function search() {
-    createBranch({
-      variables: {
-        storeId: store.id,
-        fullAddress,
-      },
-    });
-  }
-
   return (
     <View className="flex flex-col gap-6">
       <Input
@@ -57,9 +55,33 @@ export default function CreateBranchForm({ store, onSuccess, onError }: CreateBr
         editable={!loading}
       />
 
-      <Button onPress={search} loading={loading} disabled={!fullAddress} variant="secondary">
-        Submit
-      </Button>
+      <View className="mt-3 flex flex-row items-center gap-3">
+        <Btn
+          onPress={onCloseModal}
+          disabled={loading}
+          text="Cancel"
+          size="md"
+          bgColor="bg-gray-100"
+          color="text-gray-700"
+        />
+
+        <View className="flex-1">
+          <Btn
+            onPress={() => {
+              createBranch({
+                variables: {
+                  storeId: store.id,
+                  fullAddress,
+                },
+              });
+            }}
+            loading={loading}
+            disabled={!fullAddress}
+            size="md"
+            text="Create Branch"
+          />
+        </View>
+      </View>
 
       <View style={{ height: 50 }} />
     </View>

@@ -5,7 +5,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import { View, Image, TouchableOpacity } from 'react-native';
 
-import Button from '@/components/ui/Button';
+import Btn from './ui/Btn';
+
 import { Input } from '@/components/ui/Input';
 import {
   AllStoresDocument,
@@ -17,9 +18,14 @@ import { uploadToCloudinary } from '@/lib/files';
 export type CreateStoreFormProps = {
   onSuccess?: (data: CreateStoreMutation) => void;
   onError?: (err: ApolloError) => void;
+  onCloseModal: () => void;
 };
 
-export default function CreateStoreForm({ onSuccess, onError }: CreateStoreFormProps) {
+export default function CreateStoreForm({
+  onSuccess,
+  onError,
+  onCloseModal,
+}: CreateStoreFormProps) {
   const [name, setName] = useState<string>();
   const [website, setWebsite] = useState<string>();
   const [logoFileUri, setLogoFileUri] = useState<string>();
@@ -89,49 +95,59 @@ export default function CreateStoreForm({ onSuccess, onError }: CreateStoreFormP
 
   return (
     <View>
-      <View className="flex w-full flex-row gap-3">
-        <TouchableOpacity onPress={selectLogo}>
-          {logoFileUri ? (
-            <Image source={{ uri: logoFileUri }} className="size-[93px] rounded-lg" />
-          ) : (
-            <View className="flex size-[93px] items-center justify-center rounded-md bg-gray-400">
-              <Feather name="camera" color="white" size={35} />
-            </View>
-          )}
-        </TouchableOpacity>
+      <TouchableOpacity onPress={selectLogo} className="mb-3">
+        {logoFileUri ? (
+          <Image source={{ uri: logoFileUri }} className="size-[93px] rounded-lg" />
+        ) : (
+          <View className="flex size-[93px] items-center justify-center rounded-md bg-gray-400">
+            <Feather name="camera" color="white" size={35} />
+          </View>
+        )}
+      </TouchableOpacity>
 
-        <View className="flex flex-1 flex-col gap-3">
-          <Input
-            placeholder="Store name"
-            onChangeText={setName}
-            value={name}
-            autoCorrect
-            editable={!loading}
-            autoFocus
-          />
+      <View className="flex flex-1 flex-col gap-3">
+        <Input
+          placeholder="Store name"
+          onChangeText={setName}
+          value={name}
+          autoCorrect
+          editable={!loading}
+          autoFocus
+        />
 
-          <Input
-            placeholder="Website (https://example.com)"
-            onChangeText={setWebsite}
-            value={website}
-            autoCapitalize="none"
-            textContentType="URL"
-            keyboardType="default"
-            autoCorrect={false}
-            autoComplete="url"
-            editable={!loading}
+        <Input
+          placeholder="Website (https://example.com)"
+          onChangeText={setWebsite}
+          value={website}
+          autoCapitalize="none"
+          textContentType="URL"
+          keyboardType="default"
+          autoCorrect={false}
+          autoComplete="url"
+          editable={!loading}
+        />
+      </View>
+
+      <View className="mt-10 flex flex-row items-center gap-3">
+        <Btn
+          onPress={onCloseModal}
+          disabled={loading}
+          text="Cancel"
+          size="md"
+          bgColor="bg-gray-100"
+          color="text-gray-700"
+        />
+
+        <View className="flex-1">
+          <Btn
+            onPress={create}
+            loading={loading}
+            disabled={!name || !logoFileUri || !website}
+            size="md"
+            text="Create Store"
           />
         </View>
       </View>
-
-      <Button
-        onPress={create}
-        className="mt-5 w-full"
-        loading={loading}
-        disabled={!name || !logoFileUri || !website}
-        variant="secondary">
-        Create store
-      </Button>
 
       <View style={{ height: 50 }} />
     </View>

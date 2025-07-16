@@ -22,6 +22,7 @@ import {
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
 import { diffObjects } from '@/lib/utils';
+import Btn from '@/components/ui/Btn';
 
 export type ProfileFormProps = {
   user: User;
@@ -188,17 +189,24 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
             editable={!loading}
           />
 
-          <View className="my-10 flex flex-row justify-between gap-3">
-            <Button onPress={onCancel} disabled={loading} variant="outline" className="flex-1">
-              Cancel
-            </Button>
-            <Button
-              onPress={() => handleSubmit()}
-              loading={loading}
-              variant="secondary"
-              className="flex-1">
-              {user ? 'Update' : 'Create'}
-            </Button>
+          <View className="mt-5 flex flex-row justify-between gap-3">
+            <Btn
+              onPress={onCancel}
+              disabled={loading}
+              size="md"
+              bgColor="bg-gray-100"
+              color="text-gray-700"
+              text="Cancel"
+            />
+
+            <View className="flex-1">
+              <Btn
+                onPress={() => handleSubmit()}
+                loading={loading}
+                size="md"
+                text={user ? 'Update' : 'Create'}
+              />
+            </View>
           </View>
 
           <View className="h-[100px]" />

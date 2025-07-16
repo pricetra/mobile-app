@@ -3,9 +3,10 @@ import * as Network from 'expo-network';
 import { useContext, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import Input from '../ui/Input';
+
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
@@ -41,9 +42,13 @@ export default function LoginScreen() {
         <>
           <Text className="mt-5 text-center text-gray-600">Don't have an account?</Text>
 
-          <Button onPress={() => setScreen(AuthScreenType.REGISTER, email)} variant="outline">
-            Create new account
-          </Button>
+          <Btn
+            onPress={() => setScreen(AuthScreenType.REGISTER, email)}
+            text="Create new account"
+            size="md"
+            bgColor="bg-transparent border-[1px] border-gray-400"
+            color="text-gray-600"
+          />
         </>
       }>
       <Input
@@ -78,7 +83,9 @@ export default function LoginScreen() {
 
           {email && (
             <TouchableOpacity onPress={() => setScreen(AuthScreenType.RESET_PASSWORD, email)}>
-              <Text className="text-right text-sm color-blue-400">Forgot password?</Text>
+              <Text className="text-right text-sm color-pricetraGreenHeavyDark">
+                Forgot password?
+              </Text>
             </TouchableOpacity>
           )}
         </View>
@@ -86,7 +93,7 @@ export default function LoginScreen() {
 
       {error && <Text className="color-red-700">{error.message}</Text>}
 
-      <Button
+      <Btn
         onPress={async () => {
           const ipAddress = await Network.getIpAddressAsync();
           const device = getAuthDeviceTypeFromPlatform();
@@ -94,11 +101,11 @@ export default function LoginScreen() {
             variables: { email, password, ipAddress, device },
           });
         }}
+        disabled={email.trim().length === 0 || password.length === 0}
         loading={loading}
-        className="mt-5"
-        variant="secondary">
-        Login
-      </Button>
+        text="Login"
+        size="md"
+      />
     </AuthFormContainer>
   );
 }

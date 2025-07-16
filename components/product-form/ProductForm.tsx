@@ -10,7 +10,7 @@ import BrandSelector from './BrandSelector';
 import CategorySelector from './CategorySelector';
 import WeightSelector from './WeightSelector';
 
-import Button from '@/components/ui/Button';
+import Btn from '@/components/ui/Btn';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
@@ -394,24 +394,27 @@ export default function ProductForm({
             label="Description"
             editable={!loading}
           />
-          <View className="my-10 flex flex-row justify-between gap-3">
-            <Button
+          <View className="my-10 flex flex-row items-center gap-3">
+            <Btn
               onPress={() => {
                 formik.resetForm();
                 onCancel(formik);
               }}
               disabled={loading}
-              variant="outline"
-              className="flex-1">
-              Cancel
-            </Button>
-            <Button
-              onPress={() => formik.handleSubmit()}
-              loading={loading}
-              variant="secondary"
-              className="flex-1">
-              {product ? 'Update' : 'Create'}
-            </Button>
+              text="Cancel"
+              size="md"
+              bgColor="bg-gray-100"
+              color="text-gray-700"
+            />
+
+            <View className="flex-1">
+              <Btn
+                onPress={() => formik.handleSubmit()}
+                loading={loading}
+                text={product ? 'Update' : 'Create'}
+                size="md"
+              />
+            </View>
           </View>
 
           <View className="h-[100px]" />

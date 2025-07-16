@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { useContext, useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import {
   CodeField,
   Cursor,
@@ -9,7 +9,7 @@ import {
 } from 'react-native-confirmation-code-field';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Button from '@/components/ui/Button';
+import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
 
@@ -60,14 +60,17 @@ export default function EmailVerificationScreen() {
             Didn't receive a verification code?
           </Text>
 
-          <Button
+          <Btn
             onPress={() => {
               resendVerification({ variables: { email } });
             }}
             loading={resendVerificationLoading}
-            variant="outline">
-            Resend code
-          </Button>
+            text="Resend code"
+            size="md"
+            bgColor="bg-transparent border-[1px] border-gray-400"
+            color="text-gray-600"
+            iconColor="black"
+          />
         </>
       }>
       {resendVerificationData && (
@@ -101,16 +104,16 @@ export default function EmailVerificationScreen() {
 
       {error && <Text className="px- color-red-700">{error.message}</Text>}
 
-      <Button
-        onPress={() => {
-          verifyEmail({ variables: { verificationCode: code } });
-        }}
-        loading={loading}
-        disabled={code.length < 6}
-        className="mt-1"
-        variant="secondary">
-        Verify email
-      </Button>
+      <View className="mt-5">
+        <Btn
+          onPress={() => {
+            verifyEmail({ variables: { verificationCode: code } });
+          }}
+          loading={loading}
+          disabled={code.length < 6}
+          text="Verify email"
+        />
+      </View>
     </AuthFormContainer>
   );
 }

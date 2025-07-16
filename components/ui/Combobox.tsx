@@ -36,7 +36,7 @@ export default function Combobox({
         backgroundColor: 'white',
         borderColor: '#d1d5db',
         borderWidth: 1,
-        borderRadius: 6,
+        borderRadius: 12,
         top: 5,
         left: 0,
         boxShadow: '0 7px 6px 0px rgba(0,0,0,0.1)',
@@ -53,11 +53,12 @@ export default function Combobox({
       ItemSeparatorComponent={() => <Separator />}
       inputContainerStyle={{
         backgroundColor: 'white',
-        borderRadius: 6,
-        borderColor: '#d1d5db',
+        borderRadius: 12,
+        borderColor: '#e5e7eb',
         borderWidth: 1,
         margin: 0,
         padding: 0,
+        paddingVertical: 5,
         ...inputContainerStylesExtras,
       }}
       textInputProps={{

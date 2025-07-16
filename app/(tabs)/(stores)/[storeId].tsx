@@ -131,6 +131,7 @@ export default function SelectedStoreScreen() {
               store={storeData.findStore}
               onSuccess={(_data) => setOpenModal(false)}
               onError={(e) => alert(e.message)}
+              onCloseModal={() => setOpenModal(false)}
             />
           </ModalFormMini>
         )}

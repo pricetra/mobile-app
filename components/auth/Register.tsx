@@ -2,9 +2,10 @@ import { useMutation } from '@apollo/client';
 import { useContext, useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 
+import Input from '../ui/Input';
+
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { CreateAccountDocument } from '@/graphql/types/graphql';
 
@@ -27,11 +28,13 @@ export default function RegisterScreen() {
         <>
           <Text className="mt-5 text-center text-gray-600">Already have an account?</Text>
 
-          <View>
-            <Button onPress={() => setScreen(AuthScreenType.LOGIN, email)} variant="outline">
-              Login
-            </Button>
-          </View>
+          <Btn
+            onPress={() => setScreen(AuthScreenType.LOGIN, email)}
+            text="Login"
+            size="sm"
+            bgColor="bg-transparent border-[1px] border-gray-400"
+            color="text-gray-600"
+          />
         </>
       }>
       <Input
@@ -75,15 +78,17 @@ export default function RegisterScreen() {
 
       {error && <Text className="color-red-700">{error.message}</Text>}
 
-      <Button
-        onPress={() => {
-          createAccount({ variables: { email, password, name } });
-        }}
-        loading={loading}
-        className="mt-5"
-        variant="secondary">
-        Register
-      </Button>
+      <View className="mt-7">
+        <Btn
+          onPress={() => {
+            createAccount({ variables: { email, password, name } });
+          }}
+          disabled={email.trim().length === 0 || name.trim().length === 0 || password.length === 0}
+          loading={loading}
+          text="Create account"
+          size="md"
+        />
+      </View>
     </AuthFormContainer>
   );
 }

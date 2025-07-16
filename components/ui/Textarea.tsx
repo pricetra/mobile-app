@@ -17,11 +17,13 @@ const Textarea = React.forwardRef<React.ElementRef<typeof TextInput>, TextareaPr
         <TextInput
           ref={ref}
           className={cn(
-            'native:text-lg native:leading-[1.25] min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 placeholder:text-muted-foreground web:flex web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2 lg:text-sm',
+            'flex min-h-[80px] items-center justify-center rounded-xl border-[1px] border-gray-200 bg-white px-5 py-4 text-lg  color-black placeholder:color-gray-600 focus:border-gray-300',
             props.editable === false && 'opacity-50 web:cursor-not-allowed',
             className
           )}
-          placeholderClassName={cn('text-muted-foreground', placeholderClassName)}
+          style={{
+            lineHeight: 19,
+          }}
           multiline={multiline}
           numberOfLines={numberOfLines}
           textAlignVertical="top"

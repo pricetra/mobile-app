@@ -9,6 +9,7 @@ import CurrencyInput from 'react-native-currency-input';
 import { Checkbox } from '../ui/Checkbox';
 import Input from '../ui/Input';
 
+import Btn from '@/components/ui/Btn';
 import Button from '@/components/ui/Button';
 import Combobox from '@/components/ui/Combobox';
 import Image from '@/components/ui/Image';
@@ -116,7 +117,7 @@ export default function AddProductPriceForm({
           <View className="flex flex-row items-center gap-2 p-3">
             <Image
               src={createCloudinaryUrl(item.logo ?? '', 100, 100)}
-              className="size-[35px] rounded-full"
+              className="size-[35px] rounded-lg"
             />
             <View>
               <Text className="text font-semibold">{item.title}</Text>
@@ -128,7 +129,7 @@ export default function AddProductPriceForm({
 
       {branchId && (
         <Formik
-          validateOnChange
+          validateOnBlur
           validate={(values) => {
             const errors = {} as FormikErrors<CreatePrice>;
             if (values.amount <= 0) {
@@ -261,22 +262,35 @@ export default function AddProductPriceForm({
 
               <View className="mt-10">
                 {formik.errors && (
-                  <View className="mb-5">
+                  <>
                     {Object.values(formik.errors).map((v, i) => (
                       <Text className="color-red-700" key={i}>
                         {v.toString()}
                       </Text>
                     ))}
-                  </View>
+                  </>
                 )}
 
-                <Button
-                  variant="secondary"
-                  loading={loading}
-                  onPress={formik.submitForm}
-                  disabled={!formik.isValid}>
-                  Submit Price
-                </Button>
+                <View className="mt-3 flex flex-row items-center gap-3">
+                  <Btn
+                    onPress={onCancel}
+                    disabled={loading}
+                    text="Cancel"
+                    size="md"
+                    bgColor="bg-gray-100"
+                    color="text-gray-700"
+                  />
+
+                  <View className="flex-1">
+                    <Btn
+                      onPress={formik.submitForm}
+                      loading={loading}
+                      disabled={!formik.isValid || formik.values.amount === 0}
+                      text="Submit Price"
+                      size="md"
+                    />
+                  </View>
+                </View>
               </View>
 
               {Platform.OS === 'ios' && formik.values.sale && <View style={{ height: 150 }} />}

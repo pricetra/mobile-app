@@ -144,6 +144,7 @@ export default function HomeScreen() {
             }
             setOpenFiltersModal(false);
           }}
+          onCloseModal={() => setOpenFiltersModal(false)}
         />
       </ModalFormMini>
 

@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import { useState } from 'react';
 import { TouchableOpacity, View, Text, Alert, ActivityIndicator } from 'react-native';
 
+import Btn from './ui/Btn';
 import Input from './ui/Input';
 
 import useCurrentLocation from '@/hooks/useCurrentLocation';
@@ -17,12 +18,14 @@ export type ProductSearchFilterModalProps = {
   addressInit?: string;
   radiusInit?: string;
   onSubmit: (res: SearchFilterReturnType) => void;
+  onCloseModal: () => void;
 };
 
 export default function ProductSearchFilterModal({
   addressInit,
   radiusInit,
   onSubmit,
+  onCloseModal,
 }: ProductSearchFilterModalProps) {
   const [address, setAddress] = useState(addressInit);
   const [locating, setLocating] = useState(false);
@@ -110,15 +113,22 @@ export default function ProductSearchFilterModal({
         label="Search Radius"
       />
 
-      <TouchableOpacity
-        className="mt-5 flex flex-1 flex-row items-center justify-center gap-5 rounded-lg bg-pricetraGreenHeavyDark px-7 py-3"
-        onPress={submitForm}>
-        {submitting ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-lg font-bold color-white">Apply Filters</Text>
-        )}
-      </TouchableOpacity>
+      <View className="mt-5 flex flex-row items-center gap-3">
+        <Btn
+          onPress={onCloseModal}
+          disabled={submitting}
+          text="Cancel"
+          size="md"
+          bgColor="bg-gray-100"
+          color="text-gray-700"
+        />
+
+        <View className="flex-1">
+          <Btn onPress={submitForm} loading={submitting} size="md" text="Apply Filters" />
+        </View>
+      </View>
+
+      <View style={{ height: 30 }} />
     </View>
   );
 }

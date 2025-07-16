@@ -57,7 +57,10 @@ export default function CreateStoreScreen() {
           visible={openModal}
           onRequestClose={() => setOpenModal(false)}
           title="Add Store">
-          <CreateStoreForm onSuccess={(_data) => setOpenModal(false)} />
+          <CreateStoreForm
+            onSuccess={(_data) => setOpenModal(false)}
+            onCloseModal={() => setOpenModal(false)}
+          />
         </ModalFormMini>
 
         <View className="mb-20">

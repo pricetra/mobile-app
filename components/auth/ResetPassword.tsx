@@ -9,9 +9,10 @@ import {
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 
+import Input from '../ui/Input';
+
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import {
   RequestResetPasswordDocument,
@@ -80,14 +81,17 @@ export default function ResetPassword() {
         <>
           <Text className="mt-5 text-center text-gray-600">Didn't receive an email?</Text>
 
-          <Button
+          <Btn
             onPress={() => {
               requestCode({ variables: { email } });
             }}
             loading={requestCodeLoading}
-            variant="outline">
-            Resend Reset Code
-          </Button>
+            text="Resend Reset Code"
+            size="md"
+            bgColor="bg-transparent border-[1px] border-gray-400"
+            color="text-gray-600"
+            iconColor="black"
+          />
         </>
       }>
       {requestCodeLoading ? (
@@ -136,16 +140,16 @@ export default function ResetPassword() {
                 <Text className="px- color-red-700">{verificationError.message}</Text>
               )}
 
-              <Button
-                onPress={() => {
-                  verifyResetCode({ variables: { email, code } });
-                }}
-                loading={verificationLoading}
-                disabled={code.length < 6}
-                className="mt-1"
-                variant="secondary">
-                Verify Reset Code
-              </Button>
+              <View className="mt-5">
+                <Btn
+                  onPress={() => {
+                    verifyResetCode({ variables: { email, code } });
+                  }}
+                  loading={verificationLoading}
+                  disabled={code.length < 6}
+                  text="Verify Reset Code"
+                />
+              </View>
             </>
           ) : (
             <>
@@ -164,16 +168,16 @@ export default function ResetPassword() {
 
               {resetError && <Text className="px- color-red-700">{resetError.message}</Text>}
 
-              <Button
-                onPress={() => {
-                  resetPassword({ variables: { email, code, newPassword } });
-                }}
-                loading={resetting}
-                disabled={code.length < 6}
-                className="mt-1"
-                variant="secondary">
-                Update Password
-              </Button>
+              <View className="mt-5">
+                <Btn
+                  onPress={() => {
+                    resetPassword({ variables: { email, code, newPassword } });
+                  }}
+                  loading={resetting}
+                  disabled={code.length < 6 && newPassword.length === 0}
+                  text="Update Password"
+                />
+              </View>
             </>
           )}
         </>
