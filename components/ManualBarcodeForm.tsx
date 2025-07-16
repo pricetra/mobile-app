@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import Button from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Input } from '@/components/ui/Input';
+import Btn from './ui/Btn';
 
 export default function ManualBarcodeForm({ onSubmit }: { onSubmit: (barcode: string) => void }) {
   const [barcode, setBarcode] = useState('');
@@ -29,13 +30,12 @@ export default function ManualBarcodeForm({ onSubmit }: { onSubmit: (barcode: st
 
       <Checkbox label="Exact Match" checked={exact} onCheckedChange={setExact} />
 
-      <Button
+      <Btn
+        disabled={barcode.trim().length < 4}
+        onPress={() => onSubmit(barcode.trim())}
+        text="Search"
         className="mt-5"
-        variant="secondary"
-        disabled={barcode.trim().length === 0}
-        onPress={() => onSubmit(barcode.trim())}>
-        Search
-      </Button>
+      />
     </View>
   );
 }

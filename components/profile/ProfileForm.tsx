@@ -10,6 +10,7 @@ import { TouchableOpacity, View, Image as NativeImage, Platform } from 'react-na
 import Label from '../ui/Label';
 import Textarea from '../ui/Textarea';
 
+import Btn from '@/components/ui/Btn';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
@@ -22,7 +23,6 @@ import {
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
 import { diffObjects } from '@/lib/utils';
-import Btn from '@/components/ui/Btn';
 
 export type ProfileFormProps = {
   user: User;
