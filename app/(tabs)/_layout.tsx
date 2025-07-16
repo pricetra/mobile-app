@@ -29,6 +29,13 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}>
       <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ size, color }) => <Feather name="home" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="grocery-list"
         options={{
           title: 'Groceries',
@@ -48,13 +55,6 @@ export default function TabLayout() {
           tabBarShowLabel: false,
           tabBarStyle: { display: 'none' },
           animation: 'shift',
-        }}
-      />
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ size, color }) => <Feather name="home" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
