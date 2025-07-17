@@ -6,23 +6,20 @@ import { useCallback, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 
 import ManualBarcodeForm from '@/components/ManualBarcodeForm';
-import ProductForm from '@/components/product-form/ProductForm';
 import ScannerButton from '@/components/scanner/ScannerButton';
 import Button from '@/components/ui/Button';
-import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { barcodeTypes } from '@/constants/barcodeTypes';
 import { BarcodeScanDocument } from '@/graphql/types/graphql';
 
 export default function ScanScreen() {
   const [renderCameraComponent, setRenderCameraComponent] = useState(false);
-  const [camera, setCamera] = useState<CameraView | null>(null);
+  const [, setCamera] = useState<CameraView | null>(null);
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
   const [barcodeScan, { loading: barcodeScanLoading }] = useLazyQuery(BarcodeScanDocument);
   const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
-  const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
   const router = useRouter();
 
   useFocusEffect(
@@ -57,7 +54,7 @@ export default function ScanScreen() {
     }).then(({ error, data }) => {
       if (error || !data) {
         setRenderCameraComponent(false);
-        return setOpenCreateProductModal(true);
+        return router.replace(`/(tabs)/(scan)/create-product?upc=${barcode.replaceAll('*', '')}`);
       }
       router.push(`/(tabs)/(products)/${data.barcodeScan.id}`);
     });
@@ -77,31 +74,6 @@ export default function ScanScreen() {
           }}
         />
       </ModalFormMini>
-
-      {scannedCode && (
-        <ModalFormFull
-          visible={openCreateProductModal}
-          onRequestClose={() => {
-            setOpenCreateProductModal(false);
-            setRenderCameraComponent(true);
-          }}
-          title="Create Product">
-          <ProductForm
-            upc={scannedCode.replaceAll('*', '')}
-            onCancel={({ resetForm }) => {
-              resetForm();
-              setOpenCreateProductModal(false);
-              setRenderCameraComponent(true);
-            }}
-            onSuccess={({ id }, { resetForm }) => {
-              resetForm();
-              router.push(`/(tabs)/(products)/${id}`);
-              setOpenCreateProductModal(false);
-            }}
-            onError={(err) => Alert.alert(err.name, err.message)}
-          />
-        </ModalFormFull>
-      )}
 
       {renderCameraComponent && (
         <CameraView

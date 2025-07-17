@@ -205,10 +205,10 @@ export default function ProductForm({
 
   function renderImageSelection() {
     if (imageUri) {
-      return <Image src={imageUri} className="size-28 rounded-lg" />;
+      return <Image src={imageUri} className="size-28 rounded-xl" />;
     }
     return (
-      <View className="flex size-28 items-center justify-center rounded-md bg-gray-400">
+      <View className="flex size-28 items-center justify-center rounded-xl bg-gray-400">
         <Feather name="camera" color="white" size={35} />
       </View>
     );
@@ -280,9 +280,9 @@ export default function ProductForm({
       enableReinitialize
       initialValues={
         {
-          name: product?.name ?? '',
-          description: product?.description ?? '',
-          brand: product?.brand ?? '',
+          name: product?.name,
+          description: product?.description,
+          brand: product?.brand,
           code: product?.code ?? upc ?? '',
           weight: product?.weight,
         } as CreateProduct
@@ -318,7 +318,7 @@ export default function ProductForm({
               <TouchableOpacity
                 disabled={analyzingImage}
                 onPress={() => onPressAutofill(formik)}
-                className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-emerald-300 bg-emerald-50 px-5 py-3">
+                className="flex flex-row items-center gap-3 rounded-xl border-[1px] border-emerald-300 bg-emerald-50 px-5 py-3">
                 {analyzingImage ? (
                   <AntDesign
                     name="loading1"
@@ -336,7 +336,7 @@ export default function ProductForm({
                 onPress={() => {
                   formik.setFieldValue('name', titleCase(formik.values.name));
                 }}
-                className="flex flex-row items-center gap-3 rounded-lg border-[1px] border-purple-300 bg-purple-50 px-5 py-3">
+                className="flex flex-row items-center gap-3 rounded-xl border-[1px] border-purple-300 bg-purple-50 px-5 py-3">
                 <MaterialCommunityIcons name="format-text" size={20} color="#9333ea" />
                 <Text className="text-sm color-purple-600">Title Case</Text>
               </TouchableOpacity>
@@ -362,11 +362,10 @@ export default function ProductForm({
                   Linking.openURL(
                     `https://www.google.com/search?udm=2&q=${encodeURIComponent(query)}`
                   );
-                }}>
-                <View className="flex size-28 items-center justify-center gap-2 rounded-md bg-sky-100/50">
-                  <Feather name="globe" color="#3b82f6" size={35} />
-                  <Text className="px-2 text-center text-xs text-blue-500">Search for Images</Text>
-                </View>
+                }}
+                className="flex size-28 items-center justify-center gap-2 rounded-xl bg-sky-100/50">
+                <Feather name="globe" color="#3b82f6" size={35} />
+                <Text className="px-2 text-center text-xs text-blue-500">Search for Images</Text>
               </TouchableOpacity>
             </View>
           </View>

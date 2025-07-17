@@ -45,11 +45,25 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="scan"
+        name="(scan)/index"
         options={{
           title: 'Scan',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />
+          ),
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
+          animation: 'shift',
+        }}
+      />
+      <Tabs.Screen
+        name="(scan)/create-product"
+        options={{
+          href: null,
+          title: 'Extract from Image',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="cube-scan" size={size} color={color} />
           ),
           headerShown: false,
           tabBarShowLabel: false,
