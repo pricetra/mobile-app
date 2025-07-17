@@ -25,8 +25,10 @@ export default function BrandSelector({
   const [adding, setAdding] = useState(false);
 
   useEffect(() => {
+    if (brandsLoading) return;
+    if (!brands.find((b) => b.brand === value)) addNewBrand(value);
     setBrandInputRaw(value);
-  }, [value]);
+  }, [value, brands, brandsLoading]);
 
   function addNewBrand(brand: string) {
     if (!brands) return;

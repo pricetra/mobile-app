@@ -16,7 +16,6 @@ import {
   RegisterExpoPushTokenDocument,
   User,
 } from '@/graphql/types/graphql';
-import { NotificationHandler } from '@/hooks/useNotificationObserver';
 
 export type UserListsType = {
   allLists: List[];
@@ -146,7 +145,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
           });
         },
       }}>
-      <NotificationHandler>{children}</NotificationHandler>
+      {children}
     </UserAuthContext.Provider>
   );
 }

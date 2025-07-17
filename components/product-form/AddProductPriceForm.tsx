@@ -59,7 +59,7 @@ export default function AddProductPriceForm({
       variables: {
         lat: location.coords.latitude,
         lon: location.coords.longitude,
-        radiusMeters: 500, // TODO: Ideally use 500 meters as the radius
+        radiusMeters: 10000, // TODO: Ideally use 500 meters as the radius
       },
     });
   }, [location]);

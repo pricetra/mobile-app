@@ -1,9 +1,10 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import Fontisto from '@expo/vector-icons/Fontisto';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Text, View, TouchableOpacity } from 'react-native';
 
 import ProductForm from '@/components/product-form/ProductForm';
 import ScannerButton from '@/components/scanner/ScannerButton';
@@ -22,10 +23,16 @@ export default function CreateProductScreen() {
     ExtractProductFieldsDocument
   );
   const { upc } = useLocalSearchParams<{ upc?: string }>();
+  const [popover, setPopover] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
       setRenderCameraComponent(true);
+      setPopover(true);
+
+      setTimeout(() => {
+        setPopover(false);
+      }, 5_000);
 
       return () => {
         setRenderCameraComponent(false);
@@ -97,8 +104,33 @@ export default function CreateProductScreen() {
           autofocus="off"
           ref={(ref) => setCamera(ref)}
           onMountError={(e) => Alert.alert('Camera mount error', e.message)}>
-          <View className="bottom-safe-or-5 absolute w-full gap-5 p-3">
-            <View className="flex flex-row items-center justify-between">
+          <View className="top-safe-or-5 absolute w-full p-3">
+            <View className="flex flex-row items-center justify-between gap-5">
+              <View className="rounded-xl bg-black/50 px-4 py-3 backdrop-blur-lg">
+                <Text className="text-xl font-bold color-white">Extract Product Details</Text>
+              </View>
+            </View>
+          </View>
+
+          <View className="bottom-safe-or-5 absolute flex w-full flex-col items-center gap-5 p-3">
+            {popover && (
+              <TouchableOpacity
+                onPress={() => setPopover(false)}
+                className="rounded-xl bg-pricetraGreenDark px-3 py-2">
+                <Text className="text-sm text-white">
+                  Align product inside the view finder and press to capture image and extract
+                  details
+                </Text>
+                <Fontisto
+                  name="caret-down"
+                  size={15}
+                  color="#5fae23"
+                  className="absolute -bottom-[10px] left-1/2"
+                />
+              </TouchableOpacity>
+            )}
+
+            <View className="flex w-full flex-row items-center justify-between gap-5">
               <ScannerButton onPress={() => router.back()}>
                 <MaterialIcons name="arrow-back" size={25} color="white" />
               </ScannerButton>

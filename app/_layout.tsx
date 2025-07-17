@@ -25,6 +25,7 @@ import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { NAV_THEME } from '@/lib/constants';
+import { NotificationHandler } from '@/hooks/useNotificationObserver';
 
 dayjs.extend(LocalizedFormat);
 dayjs.extend(relativeTime);
@@ -63,22 +64,24 @@ function RootStack() {
       {jwt && (
         <ApolloWrapper jwt={jwt}>
           <UserContextProvider jwt={jwt}>
-            <DrawerProvider>
-              <SearchContextProvider>
-                <AutocompleteDropdownContextProvider>
-                  <AppDrawer />
+            <NotificationHandler>
+              <DrawerProvider>
+                <SearchContextProvider>
+                  <AutocompleteDropdownContextProvider>
+                    <AppDrawer />
 
-                  <WelcomeModal />
+                    <WelcomeModal />
 
-                  <HeaderProvider>
-                    <Stack>
-                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                      <Stack.Screen name="+not-found" />
-                    </Stack>
-                  </HeaderProvider>
-                </AutocompleteDropdownContextProvider>
-              </SearchContextProvider>
-            </DrawerProvider>
+                    <HeaderProvider>
+                      <Stack>
+                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                        <Stack.Screen name="+not-found" />
+                      </Stack>
+                    </HeaderProvider>
+                  </AutocompleteDropdownContextProvider>
+                </SearchContextProvider>
+              </DrawerProvider>
+            </NotificationHandler>
           </UserContextProvider>
         </ApolloWrapper>
       )}
