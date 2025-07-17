@@ -99,7 +99,7 @@ export default function CreateProductScreen() {
           onMountError={(e) => Alert.alert('Camera mount error', e.message)}>
           <View className="bottom-safe-or-5 absolute w-full gap-5 p-3">
             <View className="flex flex-row items-center justify-between">
-              <ScannerButton onPress={() => router.replace('/(tabs)/(scan)')}>
+              <ScannerButton onPress={() => router.back()}>
                 <MaterialIcons name="arrow-back" size={25} color="white" />
               </ScannerButton>
 
