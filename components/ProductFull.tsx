@@ -35,7 +35,7 @@ export default function ProductFull({
             </TouchableOpacity>
           </View>
         )}
-        <Image src={product.image} className="size-full rounded-lg" />
+        <Image src={product.image} className="size-full rounded-xl" />
       </View>
 
       <View className="p-5">

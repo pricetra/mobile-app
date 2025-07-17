@@ -34,7 +34,7 @@ export default function ProductItem({ product }: ProductItemProps) {
         )}
         <Image
           src={createCloudinaryUrl(product.code, 500)}
-          className="rounded-lg"
+          className="rounded-xl"
           style={{ width: width / 3, height: width / 3 }}
         />
       </View>
