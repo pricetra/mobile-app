@@ -1,8 +1,9 @@
 import { Feather } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 
+import ProductSpecs from './ProductSpecs';
 import SelectedStock from './SelectedStock';
 import ModalFormMini from './ui/ModalFormMini';
 
@@ -63,7 +64,20 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
                     )
                     .map(({ approximatePrice, ...stock }, i) => (
                       <TouchableOpacity
-                        onPress={() => {}}
+                        onPress={() => {
+                          if (approximatePrice) {
+                            Alert.alert(
+                              'This is a stock approximation',
+                              'Stock approximations are calculated algorithmically and do not necessarily show the exact price at the location.'
+                            );
+                            return;
+                          }
+                          if (stock.id === 0) {
+                            alert('Stock not recorded for this branch');
+                            return;
+                          }
+                          setSelectedStock(stock);
+                        }}
                         className="mb-5"
                         key={`${stock.id}-${i}`}>
                         <StockFull stock={stock} approximatePrice={approximatePrice} />
@@ -107,6 +121,10 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
                 )}
               </>
             ),
+          },
+          {
+            title: 'Specifications',
+            content: <ProductSpecs product={product} />,
           },
         ]}
         renderHeader={(section, _i, isActive) => (
