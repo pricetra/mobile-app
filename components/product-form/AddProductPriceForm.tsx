@@ -23,7 +23,7 @@ import {
   Price,
   Product,
 } from '@/graphql/types/graphql';
-import useCurrentLocation from '@/hooks/useCurrentLocation';
+import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export type AddProductPriceFormProps = {
@@ -47,7 +47,7 @@ export default function AddProductPriceForm({
     refetchQueries: [GetProductStocksDocument, FavoriteBranchesWithPricesDocument],
   });
   const [branchId, setBranchId] = useState<string>();
-  const { location, getCurrentLocation } = useCurrentLocation();
+  const { location, getCurrentLocation } = useLocationService();
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {

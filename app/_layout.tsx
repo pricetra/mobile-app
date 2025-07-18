@@ -21,11 +21,12 @@ import AuthModalProvider from '@/context/AuthModalContext';
 import { DrawerProvider } from '@/context/DrawerContext';
 import { HeaderProvider } from '@/context/HeaderContext';
 import JwtStoreProvider, { JwtStoreContext } from '@/context/JwtStoreContext';
+import LocationContextProvider from '@/context/LocationContext';
 import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
-import { NAV_THEME } from '@/lib/constants';
 import { NotificationHandler } from '@/hooks/useNotificationObserver';
+import { NAV_THEME } from '@/lib/constants';
 
 dayjs.extend(LocalizedFormat);
 dayjs.extend(relativeTime);
@@ -65,22 +66,24 @@ function RootStack() {
         <ApolloWrapper jwt={jwt}>
           <UserContextProvider jwt={jwt}>
             <NotificationHandler>
-              <DrawerProvider>
-                <SearchContextProvider>
-                  <AutocompleteDropdownContextProvider>
-                    <AppDrawer />
+              <LocationContextProvider>
+                <DrawerProvider>
+                  <SearchContextProvider>
+                    <AutocompleteDropdownContextProvider>
+                      <AppDrawer />
 
-                    <WelcomeModal />
+                      <WelcomeModal />
 
-                    <HeaderProvider>
-                      <Stack>
-                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                        <Stack.Screen name="+not-found" />
-                      </Stack>
-                    </HeaderProvider>
-                  </AutocompleteDropdownContextProvider>
-                </SearchContextProvider>
-              </DrawerProvider>
+                      <HeaderProvider>
+                        <Stack>
+                          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                          <Stack.Screen name="+not-found" />
+                        </Stack>
+                      </HeaderProvider>
+                    </AutocompleteDropdownContextProvider>
+                  </SearchContextProvider>
+                </DrawerProvider>
+              </LocationContextProvider>
             </NotificationHandler>
           </UserContextProvider>
         </ApolloWrapper>

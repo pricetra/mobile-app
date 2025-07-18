@@ -24,6 +24,7 @@ import ProductForm from '@/components/product-form/ProductForm';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
+import { useCurrentLocation } from '@/context/LocationContext';
 import { UserAuthContext } from '@/context/UserContext';
 import {
   AddToListDocument,
@@ -33,7 +34,6 @@ import {
   GetAllProductListsByListIdDocument,
   GetProductStocksDocument,
   ListType,
-  LocationInput,
   Product,
   ProductDocument,
   ProductList,
@@ -42,17 +42,14 @@ import {
   StockDocument,
   UserRole,
 } from '@/graphql/types/graphql';
-import useCurrentLocation from '@/hooks/useCurrentLocation';
 import { isRoleAuthorized } from '@/lib/roles';
 import { incompleteProductFields } from '@/lib/utils';
-
-const DEFAULT_SEARCH_RADIUS = 32187; // ~20 miles
 
 export default function ProductScreen() {
   const navigation = useNavigation();
   const { lists, user } = useContext(UserAuthContext);
   const { productId, stockId } = useLocalSearchParams<{ productId: string; stockId?: string }>();
-  const { location } = useCurrentLocation();
+  const { currentLocation } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
     useLazyQuery(ProductDocument, {
       fetchPolicy: 'network-only',
@@ -135,20 +132,8 @@ export default function ProductScreen() {
   }, [productError]);
 
   function fetchProductStocksWithLocation(productId: string) {
-    let locationInput: LocationInput = {
-      latitude: user.address!.latitude,
-      longitude: user.address!.longitude,
-      radiusMeters: DEFAULT_SEARCH_RADIUS,
-    };
-    if (location) {
-      locationInput = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        radiusMeters: DEFAULT_SEARCH_RADIUS,
-      };
-    }
     return getProductStocks({
-      variables: { productId: +productId, location: locationInput },
+      variables: { productId: +productId, location: currentLocation },
     });
   }
 

@@ -21,7 +21,7 @@ import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
 import { FindStoreDocument, LocationInput, PaginatorInput } from '@/graphql/types/graphql';
-import useCurrentLocation from '@/hooks/useCurrentLocation';
+import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export default function SelectedStoreScreen() {
@@ -31,7 +31,7 @@ export default function SelectedStoreScreen() {
   const { search, handleSearch, setSearching } = useContext(SearchContext);
   const [openModal, setOpenModal] = useState(false);
   const [findStore, { data: storeData, loading: storeLoading }] = useLazyQuery(FindStoreDocument);
-  const { location, getCurrentLocation } = useCurrentLocation();
+  const { location, getCurrentLocation } = useLocationService();
   const [locationInput, setLocationInput] = useState<LocationInput>({
     latitude: user.address!.latitude,
     longitude: user.address!.longitude,

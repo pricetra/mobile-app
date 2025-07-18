@@ -27,7 +27,7 @@ import {
   GetAllListsDocument,
   BulkAddBranchesToListDocument,
 } from '@/graphql/types/graphql';
-import useCurrentLocation from '@/hooks/useCurrentLocation';
+import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export enum WelcomePageType {
@@ -45,7 +45,7 @@ export default function WelcomeModal() {
     UpdateProfileDocument,
     { refetchQueries: [MeDocument] }
   );
-  const { getCurrentGeocodeAddress } = useCurrentLocation();
+  const { getCurrentGeocodeAddress } = useLocationService();
   const [locating, setLocating] = useState(false);
   const [newAddress, setNewAddress] = useState<Address>();
   const [getBranches, { data: branchesData, loading: branchesLoading }] = useLazyQuery(

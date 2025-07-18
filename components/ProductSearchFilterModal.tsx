@@ -6,7 +6,7 @@ import { TouchableOpacity, View, Text, Alert, ActivityIndicator } from 'react-na
 import Btn from './ui/Btn';
 import Input from './ui/Input';
 
-import useCurrentLocation from '@/hooks/useCurrentLocation';
+import useLocationService from '@/hooks/useLocationService';
 
 export type SearchFilterReturnType = {
   address?: string;
@@ -30,7 +30,7 @@ export default function ProductSearchFilterModal({
   const [address, setAddress] = useState(addressInit);
   const [locating, setLocating] = useState(false);
   const [radius, setRadius] = useState(radiusInit);
-  const { getCurrentGeocodeAddress } = useCurrentLocation();
+  const { getCurrentGeocodeAddress } = useLocationService();
   const [submitting, setSubmitting] = useState(false);
 
   async function submitForm() {
@@ -110,7 +110,7 @@ export default function ProductSearchFilterModal({
         keyboardType="decimal-pad"
         value={radius}
         onChangeText={setRadius}
-        label="Search Radius"
+        label="Search Radius (mi)"
       />
 
       <View className="mt-5 flex flex-row items-center gap-3">

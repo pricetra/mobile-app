@@ -15,38 +15,27 @@ import TabSubHeaderProductFilter, {
 } from '@/components/ui/TabSubHeaderProductFilter';
 import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
+import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import {
-  AllProductsDocument,
-  LocationInput,
-  Product,
-  ProductSearch,
-} from '@/graphql/types/graphql';
-import useCurrentLocation from '@/hooks/useCurrentLocation';
-
-const DEFAULT_SEARCH_RADIUS = 160_934; // ~100 miles
+import { AllProductsDocument, Product, ProductSearch } from '@/graphql/types/graphql';
+import useLocationService from '@/hooks/useLocationService';
 
 export default function HomeScreen() {
   const { user } = useAuth();
+  const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
   const [getAllProducts, { data, error, loading, fetchMore }] = useLazyQuery(AllProductsDocument);
   const { search, searching, setSearching } = useContext(SearchContext);
-  const { location, getCurrentLocation } = useCurrentLocation();
+  const { location, getCurrentLocation } = useLocationService();
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
-  const [searchRadius, setSearchRadius] = useState(DEFAULT_SEARCH_RADIUS);
-  const [locationInput, setLocationInput] = useState<LocationInput>({
-    latitude: user.address!.latitude,
-    longitude: user.address!.longitude,
-    radiusMeters: searchRadius,
-  });
   const [address, setAddress] = useState(user.address?.fullAddress);
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
 
   const searchVariables = {
     query: search,
-    location: locationInput,
+    location: currentLocation,
     category: categoryFilterInput?.category,
     categoryId: categoryFilterInput?.categoryId,
   } as ProductSearch;
@@ -66,7 +55,7 @@ export default function HomeScreen() {
 
   const loadProducts = useCallback(
     async (page = 1, force = false) => {
-      if (!locationInput) return Promise.resolve();
+      if (!currentLocation) return Promise.resolve();
 
       try {
         return await getAllProducts({
@@ -80,7 +69,7 @@ export default function HomeScreen() {
         if (searching) setSearching(false);
       }
     },
-    [locationInput, searchVariables, searching, setSearching, getAllProducts]
+    [currentLocation, searchVariables, searching, setSearching, getAllProducts]
   );
 
   const loadMore = useCallback(() => {
@@ -107,19 +96,19 @@ export default function HomeScreen() {
   // Initial load and dependency changes
   useEffect(() => {
     loadProducts(1);
-  }, [locationInput]);
+  }, [currentLocation]);
   useEffect(() => {
     loadProducts(1, true);
   }, [search, categoryFilterInput]);
 
   useEffect(() => {
     if (!location) return;
-    setLocationInput({
+    setCurrentLocation({
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      radiusMeters: searchRadius,
+      radiusMeters: currentLocation?.radiusMeters ?? DEFAULT_SEARCH_RADIUS,
     });
-  }, [location, searchRadius]);
+  }, [location]);
 
   return (
     <SafeAreaView>
@@ -129,17 +118,22 @@ export default function HomeScreen() {
         onRequestClose={() => setOpenFiltersModal(false)}>
         <ProductSearchFilterModal
           addressInit={address}
-          radiusInit={Math.round(convert(searchRadius).from('m').to('mi')).toString()}
+          radiusInit={Math.round(
+            convert(currentLocation?.radiusMeters ?? DEFAULT_SEARCH_RADIUS)
+              .from('m')
+              .to('mi')
+          ).toString()}
           onSubmit={({ address, location, radius }) => {
-            if (radius) setSearchRadius(Math.round(convert(radius).from('mi').to('m')));
+            const newLocation = { ...currentLocation };
+            if (radius) newLocation.radiusMeters = Math.round(convert(radius).from('mi').to('m'));
             if (location && address) {
               setAddress(address);
-              setLocationInput({
+              setCurrentLocation({
                 latitude: location.latitude,
                 longitude: location.longitude,
                 radiusMeters: radius
                   ? Math.round(convert(radius).from('mi').to('m'))
-                  : searchRadius,
+                  : DEFAULT_SEARCH_RADIUS,
               });
             }
             setOpenFiltersModal(false);

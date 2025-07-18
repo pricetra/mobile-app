@@ -1,7 +1,7 @@
 import * as Location from 'expo-location';
 import { useState } from 'react';
 
-export default function useCurrentLocation() {
+export default function useLocationService() {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [location, setLocation] = useState<Location.LocationObject>();
 
