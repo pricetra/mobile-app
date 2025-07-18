@@ -26,7 +26,7 @@ export default function StockFull({ stock, approximatePrice }: StockFullProps) {
       <View className="flex flex-1 flex-row gap-4">
         <Image
           src={createCloudinaryUrl(stock.store.logo, 500, 500)}
-          className="size-[60px] rounded-lg"
+          className="size-[60px] rounded-xl"
         />
         <View
           style={{

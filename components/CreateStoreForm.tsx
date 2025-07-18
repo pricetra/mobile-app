@@ -97,9 +97,9 @@ export default function CreateStoreForm({
     <View>
       <TouchableOpacity onPress={selectLogo} className="mb-3">
         {logoFileUri ? (
-          <Image source={{ uri: logoFileUri }} className="size-[93px] rounded-lg" />
+          <Image source={{ uri: logoFileUri }} className="size-[93px] rounded-xl" />
         ) : (
-          <View className="flex size-[93px] items-center justify-center rounded-md bg-gray-400">
+          <View className="flex size-[93px] items-center justify-center rounded-xl bg-gray-400">
             <Feather name="camera" color="white" size={35} />
           </View>
         )}

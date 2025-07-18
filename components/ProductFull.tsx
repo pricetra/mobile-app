@@ -79,7 +79,7 @@ export function ProductFullLoading() {
   return (
     <View className="flex flex-col gap-3">
       <View className="p-5" style={{ width, height: width }}>
-        <Skeleton className="h-full w-full rounded-lg bg-gray-400" />
+        <Skeleton className="h-full w-full rounded-xl bg-gray-400" />
       </View>
 
       <View className="p-5">

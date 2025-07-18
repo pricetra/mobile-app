@@ -97,7 +97,7 @@ export function ProductLoadingItem() {
   return (
     <View className="flex max-w-full flex-row gap-2">
       <View style={{ width: width / 3, height: width / 3 }}>
-        <Skeleton className="size-full rounded-lg" />
+        <Skeleton className="size-full rounded-xl" />
       </View>
       <View className="max-w-full flex-1 gap-2 p-2">
         <Skeleton className="h-6 w-full" />
