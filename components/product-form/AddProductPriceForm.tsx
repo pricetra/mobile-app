@@ -14,6 +14,7 @@ import Button from '@/components/ui/Button';
 import Combobox from '@/components/ui/Combobox';
 import Image from '@/components/ui/Image';
 import Label from '@/components/ui/Label';
+import { useAuth } from '@/context/UserContext';
 import {
   CreatePrice,
   CreatePriceDocument,
@@ -22,9 +23,11 @@ import {
   GetProductStocksDocument,
   Price,
   Product,
+  UserRole,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
+import { isRoleAuthorized } from '@/lib/roles';
 
 export type AddProductPriceFormProps = {
   product: Product;
@@ -39,6 +42,7 @@ export default function AddProductPriceForm({
   onSuccess,
   onError,
 }: AddProductPriceFormProps) {
+  const { user } = useAuth();
   const [findBranchesByDistance, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
     FindBranchesByDistanceDocument,
     { fetchPolicy: 'no-cache' }
@@ -59,10 +63,10 @@ export default function AddProductPriceForm({
       variables: {
         lat: location.coords.latitude,
         lon: location.coords.longitude,
-        radiusMeters: 10000, // TODO: Ideally use 500 meters as the radius
+        radiusMeters: isRoleAuthorized(UserRole.Admin, user.role) ? 8046 : 500,
       },
     });
-  }, [location]);
+  }, [location, user]);
 
   useEffect(() => {
     if (!branchesData) return;
