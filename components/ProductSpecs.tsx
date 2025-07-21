@@ -22,7 +22,7 @@ export default function ProductSpecs({ product }: ProductSpecsProps) {
         { name: 'Category ID', value: product.categoryId.toString() },
       ].map(({ name, value }) => (
         <View
-          className="flex flex-row gap-3 border-b border-gray-100 py-5 last:border-0"
+          className="flex flex-row flex-wrap gap-3 border-b border-gray-100 py-5 last:border-0"
           key={name}>
           <Text className="font-bold">{name}:</Text>
           <Text

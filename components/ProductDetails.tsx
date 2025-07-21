@@ -45,6 +45,9 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
         sections={[
           {
             title: 'Favorite Branches',
+            badge: favBranchesPriceData
+              .filter((d) => d.approximatePrice || d.stock?.latestPriceId)
+              .length.toString(),
             content: (
               <View>
                 {favBranchesPriceData.length > 0 ? (
@@ -91,6 +94,7 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
           },
           {
             title: 'Available at',
+            badge: stocks.length.toString(),
             content: (
               <>
                 {stocks.length > 0 ? (
@@ -128,8 +132,17 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
           },
         ]}
         renderHeader={(section, _i, isActive) => (
-          <View className="flex flex-row items-center justify-between px-5 py-3">
-            <Text className="flex-1 text-xl font-extrabold">{section.title}</Text>
+          <View className="flex flex-row items-center justify-between gap-5 px-5 py-3">
+            <View className="flex flex-1 flex-row items-center justify-between gap-3">
+              <Text className="text-xl font-extrabold">{section.title}</Text>
+
+              {section.badge && (
+                <Text className="size-6 rounded-full bg-pricetraGreenHeavyDark py-1 text-center text-xs font-bold color-white">
+                  {section.badge}
+                </Text>
+              )}
+            </View>
+
             {isActive ? (
               <Feather name="chevron-up" size={24} color="black" />
             ) : (
