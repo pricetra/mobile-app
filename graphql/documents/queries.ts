@@ -222,6 +222,7 @@ export const ALL_PRODUCTS_QUERY = gql(`
               countryCode
               country
               zipCode
+              distance
             }
           }
           latestPriceId
@@ -336,6 +337,7 @@ export const GET_PRODUCT_STOCKS_QUERY = gql(`
           countryCode
           country
           zipCode
+          distance
         }
       }
       latestPriceId
@@ -446,6 +448,7 @@ export const ALL_BRANCHES_QUERY = gql(`
           countryCode
           country
           zipCode
+          distance
         }
       }
       paginator {

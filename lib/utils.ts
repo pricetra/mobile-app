@@ -1,11 +1,11 @@
 import { type ClassValue, clsx } from 'clsx';
 import convert from 'convert-units';
+import dayjs from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
 import { postgresArrayToArray, postgresArrayToNumericArray } from './strings';
 
 import { Category, Price, Product } from '@/graphql/types/graphql';
-import dayjs from 'dayjs';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -46,7 +46,7 @@ export function diffObjects<T extends Record<string, any>>(obj1: T, obj2: T): Pa
 }
 
 export function toPrecision(n: number, p: number): string {
-  return n < 1 ? n.toFixed(p - 1) : n.toPrecision(p);
+  return parseFloat(n < 1 ? n.toFixed(p - 1) : n.toPrecision(p)).toString();
 }
 
 export function metersToMiles(m: number) {
