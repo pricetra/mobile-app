@@ -6,10 +6,15 @@ import { LocationInput } from '@/graphql/types/graphql';
 
 export const DEFAULT_SEARCH_RADIUS = 160_934; // ~100 miles
 
+export type LocationInputWithFullAddress = {
+  locationInput: LocationInput;
+  fullAddress: string;
+};
+
 export type LocationContextType = {
-  currentLocation?: LocationInput;
-  setCurrentLocation: (location?: LocationInput) => void;
-  resetCurrentLocation: () => LocationInput | undefined;
+  currentLocation: LocationInputWithFullAddress;
+  setCurrentLocation: (location?: LocationInputWithFullAddress) => void;
+  resetCurrentLocation: () => LocationInputWithFullAddress | undefined;
 };
 
 export const LocationContext = createContext({} as LocationContextType);
@@ -20,15 +25,18 @@ export type LocationContextProviderProps = {
 
 export default function LocationContextProvider({ children }: LocationContextProviderProps) {
   const { user } = useAuth();
-  const [currentLocation, setCurrentLocation] = useState<LocationInput>();
+  const [currentLocation, setCurrentLocation] = useState<LocationInputWithFullAddress>();
 
   function resetCurrentLocation() {
     if (!user.address) return;
     const newLocation = {
-      latitude: user.address?.latitude,
-      longitude: user.address?.longitude,
-      radiusMeters: DEFAULT_SEARCH_RADIUS,
-    } as LocationInput;
+      locationInput: {
+        latitude: user.address?.latitude,
+        longitude: user.address?.longitude,
+        radiusMeters: DEFAULT_SEARCH_RADIUS,
+      },
+      fullAddress: user.address.fullAddress,
+    } as LocationInputWithFullAddress;
     setCurrentLocation(newLocation);
     return newLocation;
   }
@@ -37,11 +45,16 @@ export default function LocationContextProvider({ children }: LocationContextPro
     resetCurrentLocation();
   }, [user.address]);
 
+  if (!currentLocation) return <></>;
+
   return (
     <LocationContext.Provider
       value={{
         currentLocation,
-        setCurrentLocation,
+        setCurrentLocation: (l) => {
+          if (!l) return resetCurrentLocation();
+          setCurrentLocation(l);
+        },
         resetCurrentLocation,
       }}>
       {children}

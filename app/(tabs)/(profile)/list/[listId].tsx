@@ -1,6 +1,6 @@
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, View, Text } from 'react-native';
 
 import { ListIconRenderer } from '../index';
@@ -13,17 +13,26 @@ import TextRNR from '@/components/ui/Text';
 import { useAuth } from '@/context/UserContext';
 import { List, ListType } from '@/graphql/types/graphql';
 
-export enum ListScreenViewType {
-  Products = 'Products',
-  Branches = 'Branches',
+export enum ListScreenTabType {
+  Products = 'products',
+  Branches = 'branches',
 }
 
 export default function ListScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
-  const { listId } = useLocalSearchParams<{ listId: string; type?: ListType }>();
-  const [list, setList] = useState<List>();
-  const [viewState, setViewState] = useState(ListScreenViewType.Products);
+  const { listId, tab } = useLocalSearchParams<{
+    listId: string;
+    type?: ListType;
+    tab?: ListScreenTabType;
+  }>();
+  const [, setList] = useState<List>();
+  const [viewState, setViewState] = useState(ListScreenTabType.Products);
+
+  useEffect(() => {
+    if (!tab) return;
+    setViewState(tab);
+  }, [tab]);
 
   useFocusEffect(
     useCallback(() => {
@@ -64,23 +73,23 @@ export default function ListScreen() {
       <View>
         <Tabs
           value={viewState}
-          onValueChange={(s) => setViewState(s as ListScreenViewType)}
+          onValueChange={(s) => setViewState(s as ListScreenTabType)}
           className="mx-auto w-full max-w-[400px] flex-col gap-1.5">
           <View className="p-2 shadow-sm shadow-black/10">
             <TabsList className="w-full flex-row">
-              <TabsTrigger value={ListScreenViewType.Products} className="flex-1">
+              <TabsTrigger value={ListScreenTabType.Products} className="flex-1">
                 <TextRNR>Products</TextRNR>
               </TabsTrigger>
-              <TabsTrigger value={ListScreenViewType.Branches} className="flex-1">
+              <TabsTrigger value={ListScreenTabType.Branches} className="flex-1">
                 <TextRNR>Branches</TextRNR>
               </TabsTrigger>
             </TabsList>
           </View>
 
-          <TabsContent value={ListScreenViewType.Products}>
+          <TabsContent value={ListScreenTabType.Products}>
             <ProductListView listId={listId} />
           </TabsContent>
-          <TabsContent value={ListScreenViewType.Branches}>
+          <TabsContent value={ListScreenTabType.Branches}>
             <BranchListView listId={listId} />
           </TabsContent>
         </Tabs>

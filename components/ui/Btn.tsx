@@ -41,9 +41,9 @@ export default function Btn({
       disabled={disabled || loading}
       activeOpacity={0.5}
       className={cn(
-        'relative flex flex-row items-center justify-center bg-pricetraGreenHeavyDark',
+        'relative flex flex-row items-center justify-center gap-3 bg-pricetraGreenHeavyDark',
         bgColor,
-        size === 'sm' ? 'px-5 py-4' : '',
+        size === 'sm' ? 'px-5 py-2' : '',
         size === 'md' ? 'px-9 py-3' : '',
         size === 'lg' ? 'px-11 py-5' : '',
         rounded === 'xl' ? 'rounded-xl' : '',

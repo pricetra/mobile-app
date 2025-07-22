@@ -118,7 +118,7 @@ export default function ProductScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [productId, stockId])
+    }, [productId, stockId, currentLocation])
   );
 
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function ProductScreen() {
 
   function fetchProductStocksWithLocation(productId: string) {
     return getProductStocks({
-      variables: { productId: +productId, location: currentLocation },
+      variables: { productId: +productId, location: currentLocation.locationInput },
     });
   }
 

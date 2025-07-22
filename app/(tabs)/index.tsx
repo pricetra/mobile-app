@@ -35,7 +35,7 @@ export default function HomeScreen() {
 
   const searchVariables = {
     query: search,
-    location: currentLocation,
+    location: currentLocation.locationInput,
     category: categoryFilterInput?.category,
     categoryId: categoryFilterInput?.categoryId,
   } as ProductSearch;
@@ -104,11 +104,14 @@ export default function HomeScreen() {
   useEffect(() => {
     if (!location) return;
     setCurrentLocation({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      radiusMeters: currentLocation?.radiusMeters ?? DEFAULT_SEARCH_RADIUS,
+      locationInput: {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        radiusMeters: currentLocation.locationInput.radiusMeters,
+      },
+      fullAddress: address ?? currentLocation.fullAddress,
     });
-  }, [location]);
+  }, [location, address]);
 
   return (
     <SafeAreaView>
@@ -119,21 +122,28 @@ export default function HomeScreen() {
         <ProductSearchFilterModal
           addressInit={address}
           radiusInit={Math.round(
-            convert(currentLocation?.radiusMeters ?? DEFAULT_SEARCH_RADIUS)
+            convert(currentLocation.locationInput.radiusMeters ?? DEFAULT_SEARCH_RADIUS)
               .from('m')
               .to('mi')
           ).toString()}
           onSubmit={({ address, location, radius }) => {
+            if (!currentLocation) return;
             const newLocation = { ...currentLocation };
-            if (radius) newLocation.radiusMeters = Math.round(convert(radius).from('mi').to('m'));
+            if (radius)
+              newLocation.locationInput.radiusMeters = Math.round(
+                convert(radius).from('mi').to('m')
+              );
             if (location && address) {
               setAddress(address);
               setCurrentLocation({
-                latitude: location.latitude,
-                longitude: location.longitude,
-                radiusMeters: radius
-                  ? Math.round(convert(radius).from('mi').to('m'))
-                  : DEFAULT_SEARCH_RADIUS,
+                locationInput: {
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                  radiusMeters: radius
+                    ? Math.round(convert(radius).from('mi').to('m'))
+                    : DEFAULT_SEARCH_RADIUS,
+                },
+                fullAddress: address,
               });
             }
             setOpenFiltersModal(false);

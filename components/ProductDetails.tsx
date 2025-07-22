@@ -1,14 +1,21 @@
-import { Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import convert from 'convert-units';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 
+import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
 import SelectedStock from './SelectedStock';
 import ModalFormMini from './ui/ModalFormMini';
 
 import StockFull from '@/components/StockFull';
+import Btn from '@/components/ui/Btn';
+import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
+import { useAuth } from '@/context/UserContext';
 import { BranchListWithPrices, Product, Stock } from '@/graphql/types/graphql';
+import { metersToMiles } from '@/lib/utils';
 
 export type StockWithApproximatePrice = Stock & {
   approximatePrice?: number;
@@ -21,8 +28,11 @@ export type ProductDetailsProps = {
 };
 
 export function ProductDetails({ favBranchesPriceData, stocks, product }: ProductDetailsProps) {
+  const { lists } = useAuth();
+  const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const [activeSections, setActiveSections] = useState<number[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock>();
+  const [openFiltersModal, setOpenFiltersModal] = useState(false);
 
   useEffect(() => {
     if (stocks.length === 0) return;
@@ -38,6 +48,35 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
         {selectedStock && <SelectedStock stock={selectedStock} />}
       </ModalFormMini>
 
+      <ModalFormMini
+        title="Search Filters"
+        visible={openFiltersModal}
+        onRequestClose={() => setOpenFiltersModal(false)}>
+        <ProductSearchFilterModal
+          addressInit={currentLocation.fullAddress}
+          radiusInit={Math.round(
+            convert(currentLocation.locationInput.radiusMeters ?? DEFAULT_SEARCH_RADIUS)
+              .from('m')
+              .to('mi')
+          ).toString()}
+          onSubmit={({ address, location, radius }) => {
+            if (!location || !address) return;
+            setCurrentLocation({
+              locationInput: {
+                latitude: location.latitude,
+                longitude: location.longitude,
+                radiusMeters: radius
+                  ? Math.round(convert(radius).from('mi').to('m'))
+                  : DEFAULT_SEARCH_RADIUS,
+              },
+              fullAddress: address,
+            });
+            setOpenFiltersModal(false);
+          }}
+          onCloseModal={() => setOpenFiltersModal(false)}
+        />
+      </ModalFormMini>
+
       <Accordion
         activeSections={activeSections}
         onChange={setActiveSections}
@@ -50,6 +89,23 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
               .length.toString(),
             content: (
               <View>
+                <View className="mb-5 flex flex-row items-center justify-between gap-5">
+                  <View className="flex-1" />
+
+                  <Btn
+                    text="Favorites"
+                    size="sm"
+                    rounded="full"
+                    className="bg-black"
+                    icon={
+                      <MaterialCommunityIcons name="star-cog-outline" size={15} color="white" />
+                    }
+                    onPress={() =>
+                      router.push(`/(tabs)/(profile)/list/${lists.favorites.id}?tab=branches`)
+                    }
+                  />
+                </View>
+
                 {favBranchesPriceData.length > 0 ? (
                   favBranchesPriceData
                     .map(
@@ -96,7 +152,30 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
             title: 'Available at',
             badge: stocks.length.toString(),
             content: (
-              <>
+              <View>
+                <View className="mb-5 flex flex-row items-center justify-between gap-5">
+                  <View className="flex flex-1 flex-row items-center gap-2">
+                    <AntDesign name="infocirlce" size={12} color="#6b7280" />
+
+                    <Text className="flex-1 text-xs color-gray-500">
+                      Showing results within{' '}
+                      <Text className="font-bold italic">
+                        {metersToMiles(currentLocation.locationInput.radiusMeters ?? 0)} miles
+                      </Text>{' '}
+                      of <Text className="font-bold italic">{currentLocation.fullAddress}</Text>
+                    </Text>
+                  </View>
+
+                  <Btn
+                    text="Filters"
+                    size="sm"
+                    rounded="full"
+                    className="bg-black"
+                    icon={<Ionicons name="filter" size={15} color="white" />}
+                    onPress={() => setOpenFiltersModal(true)}
+                  />
+                </View>
+
                 {stocks.length > 0 ? (
                   stocks.map((s) => (
                     <TouchableOpacity
@@ -111,7 +190,7 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
                     No stocks and prices found for this product.
                   </Text>
                 )}
-              </>
+              </View>
             ),
           },
           {
