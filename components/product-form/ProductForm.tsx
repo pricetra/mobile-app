@@ -68,6 +68,7 @@ export default function ProductForm({
   const [category, setCategory] = useState<Category>();
   const loading = updateLoading || createLoading || imageUploading;
   const [isPLU, setIsPLU] = useState(false);
+  const isUpdateProduct = product !== undefined && product.id !== undefined && product.id !== 0;
 
   // Check for PLU codes (Produce)
   useEffect(() => {
@@ -138,7 +139,7 @@ export default function ProductForm({
 
     const imageAdded = imageUri && imageUpdated;
     input.categoryId = selectedCategory.id;
-    if (product) {
+    if (isUpdateProduct) {
       const filteredInput = diffObjects(input, product);
       if (Object.keys(filteredInput).length === 0 && !imageAdded) return;
 
@@ -171,36 +172,37 @@ export default function ProductForm({
           }
         })
         .catch((e) => onError(e, formik));
-    } else {
-      createProduct({
-        variables: {
-          input,
-        },
-      })
-        .then(({ data, errors }) => {
-          if (errors) return onError(errors.at(0) as ApolloError, formik);
-          if (!data) return;
-
-          if (imageAdded) {
-            setImageUploading(true);
-            uploadToCloudinary({
-              file: imageUri,
-              public_id: data.createProduct.code,
-              tags: ['PRODUCT'],
-              onSuccess: () => {
-                resetImageAndCategory();
-                onSuccess(data.createProduct as Product, formik);
-              },
-              onError: (e) => onError(e as unknown as ApolloError, formik),
-              onFinally: () => setImageUploading(false),
-            });
-          } else {
-            resetImageAndCategory();
-            onSuccess(data.createProduct as Product, formik);
-          }
-        })
-        .catch((e) => onError(e, formik));
+      return;
     }
+
+    createProduct({
+      variables: {
+        input,
+      },
+    })
+      .then(({ data, errors }) => {
+        if (errors) return onError(errors.at(0) as ApolloError, formik);
+        if (!data) return;
+
+        if (imageAdded) {
+          setImageUploading(true);
+          uploadToCloudinary({
+            file: imageUri,
+            public_id: data.createProduct.code,
+            tags: ['PRODUCT'],
+            onSuccess: () => {
+              resetImageAndCategory();
+              onSuccess(data.createProduct as Product, formik);
+            },
+            onError: (e) => onError(e as unknown as ApolloError, formik),
+            onFinally: () => setImageUploading(false),
+          });
+        } else {
+          resetImageAndCategory();
+          onSuccess(data.createProduct as Product, formik);
+        }
+      })
+      .catch((e) => onError(e, formik));
   }
 
   function renderImageSelection() {
@@ -410,7 +412,7 @@ export default function ProductForm({
               <Btn
                 onPress={() => formik.handleSubmit()}
                 loading={loading}
-                text={product ? 'Update' : 'Create'}
+                text={isUpdateProduct ? 'Update' : 'Create'}
                 size="md"
               />
             </View>
