@@ -31,7 +31,7 @@ export default function RegisterScreen() {
           <Btn
             onPress={() => setScreen(AuthScreenType.LOGIN, email)}
             text="Login"
-            size="sm"
+            size="md"
             bgColor="bg-transparent border-[1px] border-gray-400"
             color="text-gray-600"
           />
