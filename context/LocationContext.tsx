@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { View } from 'react-native';
 
 import { useAuth } from './UserContext';
 
@@ -45,7 +46,7 @@ export default function LocationContextProvider({ children }: LocationContextPro
     resetCurrentLocation();
   }, [user.address]);
 
-  if (!currentLocation) return <></>;
+  if (!currentLocation) return <View className="h-full w-full flex-1 bg-white" />;
 
   return (
     <LocationContext.Provider
