@@ -1,5 +1,6 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
+import convert from 'convert-units';
 import { useEffect, useState } from 'react';
 import {
   Modal,
@@ -13,10 +14,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import Btn from '../ui/Btn';
-import Input from '../ui/Input';
-
+import Btn from '@/components/ui/Btn';
 import Image from '@/components/ui/Image';
+import Input from '@/components/ui/Input';
 import { useAuth } from '@/context/UserContext';
 import {
   MeDocument,
@@ -48,10 +48,8 @@ export default function WelcomeModal() {
   const { getCurrentGeocodeAddress } = useLocationService();
   const [locating, setLocating] = useState(false);
   const [newAddress, setNewAddress] = useState<Address>();
-  const [getBranches, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
-    FindBranchesByDistanceDocument,
-    { fetchPolicy: 'no-cache' }
-  );
+  const [getBranches, { data: branchesData, loading: branchesLoading, error: branchesError }] =
+    useLazyQuery(FindBranchesByDistanceDocument, { fetchPolicy: 'no-cache' });
   const [selectedBranches, setSelectedBranches] = useState<Branch[]>([]);
   const [addBranchesToList] = useMutation(BulkAddBranchesToListDocument, {
     refetchQueries: [GetAllListsDocument],
@@ -74,6 +72,11 @@ export default function WelcomeModal() {
 
     setAddressInput(profileData.updateProfile.address.fullAddress);
   }, [profileData]);
+
+  useEffect(() => {
+    if (!branchesError) return;
+    Alert.alert('Error fetching branches', branchesError.message);
+  }, [branchesError]);
 
   return (
     <Modal visible={openWelcomeModal} animationType="slide" transparent>
@@ -173,15 +176,16 @@ export default function WelcomeModal() {
                             variables: {
                               input: { address: addressInput?.trim() },
                             },
-                          }).then(({ data }) => {
-                            const address = (data?.updateProfile?.address ??
-                              user.address) as Address;
+                          }).then(({ data, errors }) => {
+                            if (!data || errors) return;
+
+                            const address = (data.updateProfile.address ?? user.address) as Address;
                             setNewAddress(address);
                             getBranches({
                               variables: {
                                 lat: address.latitude,
                                 lon: address.longitude,
-                                radiusMeters: 9000, // ~5 miles
+                                radiusMeters: Math.round(convert(5).from('mi').to('m')),
                               },
                             });
                             setPage(WelcomePageType.BRANCHES);
