@@ -45,7 +45,7 @@ export default function Btn({
         bgColor,
         size === 'sm' ? 'px-5 py-2' : '',
         size === 'md' ? 'px-9 py-3' : '',
-        size === 'lg' ? 'px-11 py-5' : '',
+        size === 'lg' ? 'gap-5 px-11 py-5' : '',
         rounded === 'xl' ? 'rounded-xl' : '',
         rounded === 'full' ? 'rounded-full' : '',
         props.className

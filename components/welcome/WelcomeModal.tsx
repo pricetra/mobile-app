@@ -92,12 +92,12 @@ export default function WelcomeModal() {
                     information from you. This won't take long.
                   </Text>
 
-                  <TouchableOpacity
+                  <Btn
                     onPress={() => setPage(WelcomePageType.ADDRESS)}
-                    className="flex flex-row items-center justify-center gap-5 rounded-xl bg-pricetraGreenHeavyDark px-7 py-5">
-                    <Octicons name="location" size={28} color="white" />
-                    <Text className="text-lg font-bold color-white">Add Your Address</Text>
-                  </TouchableOpacity>
+                    text="Add Your Address"
+                    size="lg"
+                    icon={<Octicons name="location" size={28} color="white" />}
+                  />
                 </View>
               )}
 
