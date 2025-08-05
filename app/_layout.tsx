@@ -66,24 +66,22 @@ function RootStack() {
         <ApolloWrapper jwt={jwt}>
           <UserContextProvider jwt={jwt}>
             <NotificationHandler>
-              <LocationContextProvider>
-                <DrawerProvider>
-                  <SearchContextProvider>
-                    <AutocompleteDropdownContextProvider>
-                      <AppDrawer />
-
-                      <WelcomeModal />
-
+              <DrawerProvider>
+                <SearchContextProvider>
+                  <AutocompleteDropdownContextProvider>
+                    <AppDrawer />
+                    <WelcomeModal />
+                    <LocationContextProvider>
                       <HeaderProvider>
                         <Stack>
                           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                           <Stack.Screen name="+not-found" />
                         </Stack>
                       </HeaderProvider>
-                    </AutocompleteDropdownContextProvider>
-                  </SearchContextProvider>
-                </DrawerProvider>
-              </LocationContextProvider>
+                    </LocationContextProvider>
+                  </AutocompleteDropdownContextProvider>
+                </SearchContextProvider>
+              </DrawerProvider>
             </NotificationHandler>
           </UserContextProvider>
         </ApolloWrapper>
