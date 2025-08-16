@@ -15,7 +15,13 @@ export default function ProductSpecs({ product }: ProductSpecsProps) {
         { name: 'UPC/PLU Code', value: product.code },
         { name: 'Product Name', value: product.name },
         { name: 'Brand', value: product.brand },
-        { name: 'Weight', value: product.weight ?? 'N/A' },
+        {
+          name: 'Weight',
+          value:
+            product.weightValue && product.weightType
+              ? `${product.weightValue} ${product.weightType}`
+              : 'N/A',
+        },
         { name: 'Image URL', value: product.image },
         { name: 'Views', value: product.views.toString() },
         { name: 'Category', value: product.category?.name },

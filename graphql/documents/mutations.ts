@@ -158,7 +158,8 @@ export const CREATE_PRODUCT_MUTATION = gql(`
         expandedPathname
         path
       }
-      weight
+      weightValue
+      weightType
       lowestRecordedPrice
       highestRecordedPrice
       createdAt
@@ -186,7 +187,8 @@ export const UPDATE_PRODUCT_MUTATION = gql(`
         expandedPathname
         path
       }
-      weight
+      weightValue
+      weightType
       lowestRecordedPrice
       highestRecordedPrice
       createdAt

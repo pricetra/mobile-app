@@ -44,10 +44,12 @@ export default function ProductFull({
             {product.brand && product.brand !== 'N/A' && (
               <Text className="font-semibold">{product.brand}</Text>
             )}
-            {product.weight && (
+            {product.weightValue && product.weightType && (
               <>
                 <Entypo name="dot-single" size={20} color="black" />
-                <Text>{product.weight}</Text>
+                <Text>
+                  {product.weightValue} {product.weightType}
+                </Text>
               </>
             )}
           </View>

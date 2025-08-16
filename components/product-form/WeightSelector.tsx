@@ -37,7 +37,8 @@ export default function WeightSelector({ value, onChangeText, editable }: Weight
 
   useEffect(() => {
     if (!measurement || !unit) return;
-    onChangeText(`${measurement} ${unit.id}`);
+    const value = `${measurement} ${unit.id}`.trim();
+    onChangeText(value);
   }, [measurement, unit]);
 
   return (
@@ -64,6 +65,7 @@ export default function WeightSelector({ value, onChangeText, editable }: Weight
               dataSet={measurementUnits.map((u) => ({ id: u, title: u }))}
               textInputProps={{
                 autoCorrect: false,
+                placeholder: 'Unit',
               }}
               inputContainerStylesExtras={{
                 minWidth: 85,

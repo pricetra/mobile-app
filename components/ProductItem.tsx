@@ -45,10 +45,12 @@ export default function ProductItem({ product }: ProductItemProps) {
               <Text className="text-xs">{product.brand}</Text>
             )}
 
-            {product.weight && product.weight.length > 0 && (
+            {product.weightValue && product.weightType && (
               <>
                 <Entypo name="dot-single" size={12} color="black" />
-                <Text className="text-xs">{product.weight}</Text>
+                <Text className="text-xs">
+                  {product.weightValue} {product.weightType}
+                </Text>
               </>
             )}
           </View>

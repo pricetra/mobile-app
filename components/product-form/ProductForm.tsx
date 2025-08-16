@@ -139,6 +139,9 @@ export default function ProductForm({
 
     const imageAdded = imageUri && imageUpdated;
     input.categoryId = selectedCategory.id;
+
+    if (input.weight === '') input.weight = undefined;
+
     if (isUpdateProduct) {
       const filteredInput = diffObjects(input, product);
       if (Object.keys(filteredInput).length === 0 && !imageAdded) return;
@@ -286,7 +289,10 @@ export default function ProductForm({
           description: product?.description,
           brand: product?.brand,
           code: product?.code ?? upc ?? '',
-          weight: product?.weight,
+          weight:
+            product?.weightValue && product?.weightType
+              ? `${product.weightValue} ${product.weightType}`
+              : undefined,
         } as CreateProduct
       }
       onSubmit={submit}>

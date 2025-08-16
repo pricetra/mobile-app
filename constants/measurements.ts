@@ -5,20 +5,13 @@ export const measurementUnits = [
   'oz',
   'lb',
   'g',
+  'l',
   'ml',
   'kg',
   'gal',
   'qt',
   'pt',
   'cup',
-  'can',
-  'pkg',
-  'slice',
-  'pc',
-  'stick',
-  'clove',
-  'bag',
-  'bunch',
 ];
 
-export const defaultMeasurementUnit: AutocompleteDropdownItem = { id: 'oz', title: 'oz' };
+export const defaultMeasurementUnit: AutocompleteDropdownItem = { id: '', title: '' };
