@@ -3,7 +3,7 @@ import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { View, ScrollView, SafeAreaView, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView, SafeAreaView, TouchableOpacity, Text, Alert } from 'react-native';
 
 import CreateStoreForm from '@/components/CreateStoreForm';
 import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
@@ -60,6 +60,7 @@ export default function CreateStoreScreen() {
           <CreateStoreForm
             onSuccess={(_data) => setOpenModal(false)}
             onCloseModal={() => setOpenModal(false)}
+            onError={(err) => Alert.alert('Could not create store', err.message)}
           />
         </ModalFormMini>
 

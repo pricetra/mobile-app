@@ -1,8 +1,7 @@
 import { ApolloError, useMutation } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
-import { randomUUID } from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View, Image, TouchableOpacity } from 'react-native';
 
 import Btn from './ui/Btn';
@@ -30,32 +29,13 @@ export default function CreateStoreForm({
   const [logoFileUri, setLogoFileUri] = useState<string>();
   const [logoBase64, setLogoBase64] = useState<string>();
 
-  const [createStore, { data, error, loading }] = useMutation(CreateStoreDocument, {
+  const [createStore, { loading }] = useMutation(CreateStoreDocument, {
     refetchQueries: [AllStoresDocument],
   });
-
-  useEffect(() => {
-    if (!data) return;
-
-    if (onSuccess) {
-      onSuccess(data);
-    }
-    setName(undefined);
-    setWebsite(undefined);
-    setLogoFileUri(undefined);
-  }, [data]);
-
-  useEffect(() => {
-    if (!error) return;
-    if (onError) {
-      onError(error);
-    }
-  }, [error]);
 
   function create() {
     if (!name || !website || !logoFileUri || !logoBase64) return;
 
-    const upload_id = randomUUID();
     createStore({
       variables: {
         input: {
@@ -64,7 +44,18 @@ export default function CreateStoreForm({
           logoBase64,
         },
       },
-    });
+    })
+      .then(({ data }) => {
+        if (!data) return;
+
+        if (onSuccess) onSuccess(data);
+        setName(undefined);
+        setWebsite(undefined);
+        setLogoFileUri(undefined);
+      })
+      .catch((err) => {
+        if (onError) onError(err);
+      });
   }
 
   async function selectLogo() {
@@ -83,7 +74,7 @@ export default function CreateStoreForm({
     if (!picture || !picture.uri || !picture.base64) return alert('could not process image');
 
     setLogoFileUri(picture.uri);
-    setLogoBase64(picture.base64);
+    setLogoBase64(`data:image/jpeg;base64,${picture.base64}`);
   }
 
   return (

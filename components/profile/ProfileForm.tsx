@@ -70,7 +70,7 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
 
     setImageUpdated(true);
     setImageUri(picture.uri);
-    setImageBase64(picture.base64);
+    setImageBase64(`data:image/jpeg;base64,${picture.base64}`);
   }
 
   function submit(input: UpdateUser) {

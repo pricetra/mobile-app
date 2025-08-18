@@ -66,7 +66,7 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
 
     setImageUpdated(true);
     setImageUri(picture.uri);
-    setImageBase64(picture.base64);
+    setImageBase64(`data:image/jpeg;base64,${picture.base64}`);
   }
 
   function submit(input: UpdateUserFull) {
