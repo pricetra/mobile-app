@@ -942,3 +942,9 @@ export const EXTRACT_PRODUCT_FIELDS_QUERY = gql(`
     }
   }
 `);
+
+export const CHECK_APP_VERSION_QUERY = gql(`
+  query CheckAppVersion($platform: AuthDeviceType!, $version: String!) {
+    checkAppVersion(platform: $platform, version: $version)
+  }
+`);

@@ -3,11 +3,13 @@ import { Image } from 'expo-image';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, View } from 'react-native';
 
 import { JwtStoreContext } from './JwtStoreContext';
 
 import {
+  AuthDeviceType,
+  CheckAppVersionDocument,
   GetAllListsDocument,
   List,
   ListType,
@@ -16,6 +18,9 @@ import {
   RegisterExpoPushTokenDocument,
   User,
 } from '@/graphql/types/graphql';
+import { version } from '@/package.json';
+
+const MINUTE = 1000 * 60;
 
 export type UserListsType = {
   allLists: List[];
@@ -43,6 +48,13 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   const [user, setUser] = useState<User>();
   const [userLists, setUserLists] = useState<UserListsType>();
   const router = useRouter();
+  const [checkAppVersion, { data: appVersionCheckData }] = useLazyQuery(CheckAppVersionDocument, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      platform: Platform.OS as AuthDeviceType,
+      version,
+    },
+  });
   const [me, { data: meData, error: meError }] = useLazyQuery(MeDocument, {
     fetchPolicy: 'no-cache',
   });
@@ -96,7 +108,32 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   }, [listData]);
 
   useEffect(() => {
-    if (!jwt) return;
+    if (!appVersionCheckData || appVersionCheckData.checkAppVersion) return;
+
+    Alert.alert(
+      'Update Required',
+      'The app version you are using is outdated. Please update to the latest version to continue using the app.',
+      [
+        {
+          text: 'Update',
+          onPress: () => {
+            // TODO: Redirect to app store or download page
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  }, [appVersionCheckData]);
+
+  useEffect(() => {
+    checkAppVersion();
+    setInterval(() => {
+      checkAppVersion();
+    }, MINUTE * 30);
+  }, []);
+
+  useEffect(() => {
+    if (!jwt || !appVersionCheckData?.checkAppVersion) return;
 
     const ctx = {
       headers: {
@@ -112,7 +149,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
       })
       .catch((_e) => removeStoredJwtAndRedirect())
       .finally(() => setLoading(false));
-  }, [jwt]);
+  }, [jwt, appVersionCheckData]);
 
   if (loading)
     return (
