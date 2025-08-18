@@ -1,7 +1,6 @@
 import { ApolloError, useMutation } from '@apollo/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
-import { randomUUID } from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
@@ -21,7 +20,7 @@ import {
   UpdateUser,
   MeDocument,
 } from '@/graphql/types/graphql';
-import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
+import { createCloudinaryUrl } from '@/lib/files';
 import { diffObjects } from '@/lib/utils';
 
 export type ProfileFormProps = {
@@ -36,13 +35,12 @@ const MAX_BIRTH_DATE = dayjs(new Date()).subtract(10, 'year').toDate();
 
 export default function ProfileForm({ user, onCancel, onSuccess, onError }: ProfileFormProps) {
   const [imageUri, setImageUri] = useState<string>();
+  const [imageBase64, setImageBase64] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
-  const [imageUploading, setImageUploading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [updateProfile, { loading: updateLoading }] = useMutation(UpdateProfileDocument, {
+  const [updateProfile, { loading }] = useMutation(UpdateProfileDocument, {
     refetchQueries: [GetAllUsersDocument, MeDocument],
   });
-  const loading = updateLoading || imageUploading;
 
   useEffect(() => {
     if (!user) return;
@@ -60,7 +58,7 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
-      base64: false,
+      base64: true,
       allowsMultipleSelection: false,
       cameraType: ImagePicker.CameraType.back,
     });
@@ -68,14 +66,15 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
     if (result.canceled || result.assets.length === 0) return;
 
     const picture = result.assets.at(0);
-    if (!picture || !picture.uri) return alert('could not process image');
+    if (!picture || !picture.uri || !picture.base64) return alert('could not process image');
 
     setImageUpdated(true);
     setImageUri(picture.uri);
+    setImageBase64(picture.base64);
   }
 
   function submit(input: UpdateUser) {
-    if (imageUri && imageUpdated) input.avatar = randomUUID();
+    if (imageUri && imageBase64 && imageUpdated) input.avatarBase64 = imageBase64;
 
     const filteredInput = diffObjects<UpdateUser>(input, user as any);
     if (Object.keys(filteredInput).length === 0) return;
@@ -89,19 +88,7 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
         if (errors) return onError(errors.at(0) as ApolloError);
         if (!data) return;
 
-        if (imageUri && imageUpdated) {
-          setImageUploading(true);
-          uploadToCloudinary({
-            file: imageUri,
-            public_id: input.avatar ?? randomUUID(),
-            tags: ['USER_PROFILE'],
-            onSuccess: () => onSuccess(data.updateProfile as User),
-            onError: (e) => onError(e as unknown as ApolloError),
-            onFinally: () => setImageUploading(false),
-          });
-        } else {
-          onSuccess(data.updateProfile as User);
-        }
+        onSuccess(data.updateProfile as User);
       })
       .catch((e) => onError(e));
   }

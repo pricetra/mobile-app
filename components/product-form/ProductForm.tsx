@@ -28,7 +28,6 @@ import {
   ProductDocument,
   ExtractProductFieldsDocument,
 } from '@/graphql/types/graphql';
-import { uploadToCloudinary } from '@/lib/files';
 import { titleCase } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
 
@@ -49,8 +48,8 @@ export default function ProductForm({
 }: ProductFormProps) {
   const [analyzingImage, setAnalyzingImage] = useState(false);
   const [imageUri, setImageUri] = useState<string>();
+  const [imageBase64, setImageBase64] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
-  const [imageUploading, setImageUploading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>();
   const { data: brandsData, loading: brandsLoading } = useQuery(AllBrandsDocument, {
     fetchPolicy: 'network-only',
@@ -66,7 +65,7 @@ export default function ProductForm({
   });
   const [selectedCategory, setSelectedCategory] = useState<Category>();
   const [category, setCategory] = useState<Category>();
-  const loading = updateLoading || createLoading || imageUploading;
+  const loading = updateLoading || createLoading;
   const [isPLU, setIsPLU] = useState(false);
   const isUpdateProduct = product !== undefined && product.id !== undefined && product.id !== 0;
 
@@ -113,7 +112,7 @@ export default function ProductForm({
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
-      base64: false,
+      base64: true,
       allowsMultipleSelection: false,
       cameraType: ImagePicker.CameraType.back,
     });
@@ -121,14 +120,16 @@ export default function ProductForm({
     if (result.canceled || result.assets.length === 0) return;
 
     const picture = result.assets.at(0);
-    if (!picture || !picture.uri) return alert('could not process image');
+    if (!picture || !picture.base64 || !picture.uri) return alert('could not process image');
 
     setImageUpdated(true);
     setImageUri(picture.uri);
+    setImageBase64(`data:image/jpeg;base64,${picture.base64}`);
   }
 
   function resetImageAndCategory() {
     setImageUri(undefined);
+    setImageBase64(undefined);
     setImageUpdated(false);
     setCategory(undefined);
     setSelectedCategory(undefined);
@@ -137,10 +138,13 @@ export default function ProductForm({
   function submit(input: CreateProduct, formik: FormikHelpers<CreateProduct>) {
     if (!selectedCategory) return alert('Please select a valid category');
 
-    const imageAdded = imageUri && imageUpdated;
+    const imageAdded = imageUri && imageBase64 && imageUpdated;
     input.categoryId = selectedCategory.id;
 
     if (input.weight === '') input.weight = undefined;
+    if (!input.description) input.description = '';
+
+    if (imageAdded) input.imageBase64 = imageBase64;
 
     if (isUpdateProduct) {
       const filteredInput = diffObjects(input, product);
@@ -156,23 +160,8 @@ export default function ProductForm({
           if (errors) return onError(errors.at(0) as ApolloError, formik);
           if (!data) return;
 
-          if (imageAdded) {
-            setImageUploading(true);
-            uploadToCloudinary({
-              file: imageUri,
-              public_id: data.updateProduct.code,
-              tags: ['PRODUCT'],
-              onSuccess: () => {
-                resetImageAndCategory();
-                onSuccess(data.updateProduct as Product, formik);
-              },
-              onError: (e) => onError(e as unknown as ApolloError, formik),
-              onFinally: () => setImageUploading(false),
-            });
-          } else {
-            resetImageAndCategory();
-            onSuccess(data.updateProduct as Product, formik);
-          }
+          resetImageAndCategory();
+          onSuccess(data.updateProduct as Product, formik);
         })
         .catch((e) => onError(e, formik));
       return;
@@ -187,23 +176,8 @@ export default function ProductForm({
         if (errors) return onError(errors.at(0) as ApolloError, formik);
         if (!data) return;
 
-        if (imageAdded) {
-          setImageUploading(true);
-          uploadToCloudinary({
-            file: imageUri,
-            public_id: data.createProduct.code,
-            tags: ['PRODUCT'],
-            onSuccess: () => {
-              resetImageAndCategory();
-              onSuccess(data.createProduct as Product, formik);
-            },
-            onError: (e) => onError(e as unknown as ApolloError, formik),
-            onFinally: () => setImageUploading(false),
-          });
-        } else {
-          resetImageAndCategory();
-          onSuccess(data.createProduct as Product, formik);
-        }
+        resetImageAndCategory();
+        onSuccess(data.createProduct as Product, formik);
       })
       .catch((e) => onError(e, formik));
   }

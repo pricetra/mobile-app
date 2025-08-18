@@ -13,7 +13,6 @@ import {
   CreateStoreDocument,
   CreateStoreMutation,
 } from '@/graphql/types/graphql';
-import { uploadToCloudinary } from '@/lib/files';
 
 export type CreateStoreFormProps = {
   onSuccess?: (data: CreateStoreMutation) => void;
@@ -29,6 +28,7 @@ export default function CreateStoreForm({
   const [name, setName] = useState<string>();
   const [website, setWebsite] = useState<string>();
   const [logoFileUri, setLogoFileUri] = useState<string>();
+  const [logoBase64, setLogoBase64] = useState<string>();
 
   const [createStore, { data, error, loading }] = useMutation(CreateStoreDocument, {
     refetchQueries: [AllStoresDocument],
@@ -53,25 +53,17 @@ export default function CreateStoreForm({
   }, [error]);
 
   function create() {
-    if (!name || !website || !logoFileUri) return;
+    if (!name || !website || !logoFileUri || !logoBase64) return;
 
     const upload_id = randomUUID();
-    uploadToCloudinary({
-      file: logoFileUri,
-      public_id: upload_id,
-      tags: ['COMPANY_LOGO'],
-      onSuccess: (_res) => {
-        createStore({
-          variables: {
-            input: {
-              name,
-              website,
-              logo: upload_id,
-            },
-          },
-        });
+    createStore({
+      variables: {
+        input: {
+          name,
+          website,
+          logoBase64,
+        },
       },
-      onError: (err) => alert(err),
     });
   }
 
@@ -88,9 +80,10 @@ export default function CreateStoreForm({
     if (result.canceled || result.assets.length === 0) return;
 
     const picture = result.assets.at(0);
-    if (!picture || !picture.uri) return alert('could not process image');
+    if (!picture || !picture.uri || !picture.base64) return alert('could not process image');
 
     setLogoFileUri(picture.uri);
+    setLogoBase64(picture.base64);
   }
 
   return (

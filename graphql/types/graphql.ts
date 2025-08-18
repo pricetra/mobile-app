@@ -194,8 +194,9 @@ export type CreateProduct = {
   color?: InputMaybe<Scalars['String']['input']>;
   description: Scalars['String']['input'];
   highestRecordedPrice?: InputMaybe<Scalars['Float']['input']>;
-  image?: InputMaybe<Scalars['String']['input']>;
+  imageBase64?: InputMaybe<Scalars['String']['input']>;
   imageFile?: InputMaybe<Scalars['Upload']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
   lowestRecordedPrice?: InputMaybe<Scalars['Float']['input']>;
   model?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -210,7 +211,7 @@ export type CreateStock = {
 };
 
 export type CreateStore = {
-  logo: Scalars['String']['input'];
+  logoBase64?: InputMaybe<Scalars['String']['input']>;
   logoFile?: InputMaybe<Scalars['Upload']['input']>;
   name: Scalars['String']['input'];
   website: Scalars['String']['input'];
@@ -868,7 +869,7 @@ export type UpdateProduct = {
   color?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   highestRecordedPrice?: InputMaybe<Scalars['Float']['input']>;
-  image?: InputMaybe<Scalars['String']['input']>;
+  imageBase64?: InputMaybe<Scalars['String']['input']>;
   imageFile?: InputMaybe<Scalars['Upload']['input']>;
   lowestRecordedPrice?: InputMaybe<Scalars['Float']['input']>;
   model?: InputMaybe<Scalars['String']['input']>;
@@ -879,7 +880,7 @@ export type UpdateProduct = {
 
 export type UpdateUser = {
   address?: InputMaybe<Scalars['String']['input']>;
-  avatar?: InputMaybe<Scalars['String']['input']>;
+  avatarBase64?: InputMaybe<Scalars['String']['input']>;
   avatarFile?: InputMaybe<Scalars['Upload']['input']>;
   bio?: InputMaybe<Scalars['String']['input']>;
   birthDate?: InputMaybe<Scalars['Time']['input']>;
@@ -889,7 +890,7 @@ export type UpdateUser = {
 export type UpdateUserFull = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   address?: InputMaybe<Scalars['String']['input']>;
-  avatar?: InputMaybe<Scalars['String']['input']>;
+  avatarBase64?: InputMaybe<Scalars['String']['input']>;
   avatarFile?: InputMaybe<Scalars['Upload']['input']>;
   bio?: InputMaybe<Scalars['String']['input']>;
   birthDate?: InputMaybe<Scalars['Time']['input']>;

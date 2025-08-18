@@ -1,5 +1,4 @@
 import { ApolloError, useMutation } from '@apollo/client';
-import { randomUUID } from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
@@ -18,7 +17,7 @@ import {
   UserRole,
   UpdateUserByIdDocument,
 } from '@/graphql/types/graphql';
-import { createCloudinaryUrl, uploadToCloudinary } from '@/lib/files';
+import { createCloudinaryUrl } from '@/lib/files';
 import { enumToNormalizedString } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
 
@@ -33,12 +32,11 @@ export type ProductFormProps = {
 
 export default function UserForm({ user, onCancel, onSuccess, onError }: ProductFormProps) {
   const [imageUri, setImageUri] = useState<string>();
+  const [imageBase64, setImageBase64] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
-  const [imageUploading, setImageUploading] = useState(false);
-  const [updateProfile, { loading: updateLoading }] = useMutation(UpdateUserByIdDocument, {
+  const [updateProfile, { loading }] = useMutation(UpdateUserByIdDocument, {
     refetchQueries: [GetAllUsersDocument],
   });
-  const loading = updateLoading || imageUploading;
 
   useEffect(() => {
     if (!user) return;
@@ -56,7 +54,7 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
-      base64: false,
+      base64: true,
       allowsMultipleSelection: false,
       cameraType: ImagePicker.CameraType.back,
     });
@@ -64,14 +62,15 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
     if (result.canceled || result.assets.length === 0) return;
 
     const picture = result.assets.at(0);
-    if (!picture || !picture.uri) return alert('could not process image');
+    if (!picture || !picture.uri || !picture.base64) return alert('could not process image');
 
     setImageUpdated(true);
     setImageUri(picture.uri);
+    setImageBase64(picture.base64);
   }
 
   function submit(input: UpdateUserFull) {
-    if (imageUri && imageUpdated) input.avatar = randomUUID();
+    if (imageUri && imageBase64 && imageUpdated) input.avatarBase64 = imageBase64;
 
     const filteredInput = diffObjects(input, user as any);
     if (Object.keys(filteredInput).length === 0) return;
@@ -86,19 +85,7 @@ export default function UserForm({ user, onCancel, onSuccess, onError }: Product
         if (errors) return onError(errors.at(0) as ApolloError);
         if (!data) return;
 
-        if (imageUri && imageUpdated) {
-          setImageUploading(true);
-          uploadToCloudinary({
-            file: imageUri,
-            public_id: input.avatar ?? randomUUID(),
-            tags: ['USER_PROFILE'],
-            onSuccess: () => onSuccess(data.updateUserById),
-            onError: (e) => onError(e as unknown as ApolloError),
-            onFinally: () => setImageUploading(false),
-          });
-        } else {
-          onSuccess(data.updateUserById);
-        }
+        onSuccess(data.updateUserById);
       })
       .catch((e) => onError(e));
   }
