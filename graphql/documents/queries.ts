@@ -229,6 +229,9 @@ export const ALL_PRODUCTS_QUERY = gql(`
           latestPriceId
           latestPrice {
             id
+            productId
+            branchId
+            storeId
             amount
             currencyCode
             createdAt
@@ -346,6 +349,9 @@ export const GET_PRODUCT_STOCKS_QUERY = gql(`
       latestPriceId
       latestPrice {
         id
+        productId
+        branchId
+        storeId
         amount
         currencyCode
         sale
@@ -663,6 +669,9 @@ export const GET_ALL_LISTS = gql`
           latestPriceId
           latestPrice {
             id
+            productId
+            branchId
+            storeId
             amount
             currencyCode
             createdAt
@@ -735,6 +744,9 @@ export const GET_STOCK_BY_ID = gql(`
       latestPriceId
       latestPrice {
         id
+        productId
+        branchId
+        storeId
         amount
         currencyCode
         sale
@@ -795,6 +807,9 @@ export const GET_FAVORITE_BRANCHES_WITH_PRICE_DATA_QUERY = gql(`
         latestPriceId
         latestPrice {
           id
+          productId
+          branchId
+          storeId
           amount
           currencyCode
           createdAt
@@ -802,6 +817,16 @@ export const GET_FAVORITE_BRANCHES_WITH_PRICE_DATA_QUERY = gql(`
           originalPrice
           condition
           expiresAt
+          createdBy {
+            id
+            name
+            avatar
+          }
+          updatedBy {
+            id
+            name
+            avatar
+          }
         }
       }
       approximatePrice
@@ -879,6 +904,9 @@ export const GET_ALL_PRODUCT_LISTS_BY_LIST_ID = gql(`
         latestPriceId
         latestPrice {
           id
+          productId
+          branchId
+          storeId
           amount
           currencyCode
           createdAt
@@ -946,5 +974,50 @@ export const EXTRACT_PRODUCT_FIELDS_QUERY = gql(`
 export const CHECK_APP_VERSION_QUERY = gql(`
   query CheckAppVersion($platform: AuthDeviceType!, $version: String!) {
     checkAppVersion(platform: $platform, version: $version)
+  }
+`);
+
+export const PRICE_CHANGE_HISTORY_QUERY = gql(`
+  query PriceChangeHistory($productId: ID!, $stockId: ID!, $paginator: PaginatorInput!, $filters: PriceHistoryFilter) {
+    priceChangeHistory(
+      productId: $productId
+      stockId: $stockId
+      paginator: $paginator
+      filters: $filters
+    ) {
+      prices {
+        id
+        productId
+        stockId
+        branchId
+        storeId
+        amount
+        originalPrice
+        sale
+        expiresAt
+        condition
+        unitType
+        currencyCode
+        createdBy {
+          id
+          name
+          avatar
+        }
+        updatedBy {
+          id
+          name
+          avatar
+        }
+        createdAt
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
+      }
+    }
   }
 `);

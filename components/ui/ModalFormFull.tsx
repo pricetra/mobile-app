@@ -34,7 +34,7 @@ export default function ModalFormFull({
                   {TitleComponent ? (
                     <View className="px-5 py-3">{TitleComponent}</View>
                   ) : (
-                    <Text className="flex flex-1 flex-row items-center gap-2 px-7 py-3 text-xl font-bold">
+                    <Text className="flex flex-1 flex-row items-center gap-2 px-5 py-3 text-xl font-bold">
                       {title}
                     </Text>
                   )}

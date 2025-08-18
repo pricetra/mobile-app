@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 
+import FullStockView from './FullStockView';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
-import SelectedStock from './SelectedStock';
 import ModalFormMini from './ui/ModalFormMini';
 
 import StockFull from '@/components/StockFull';
@@ -45,7 +45,7 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
         visible={selectedStock !== undefined}
         onRequestClose={() => setSelectedStock(undefined)}
         title="Stock">
-        {selectedStock && <SelectedStock stock={selectedStock} />}
+        {selectedStock && <FullStockView stock={selectedStock} />}
       </ModalFormMini>
 
       <ModalFormMini
@@ -112,8 +112,9 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
                       (data) =>
                         ({
                           id: data.stock?.id ?? 0,
+                          productId: data.stock?.productId,
                           latestPriceId: data.stock?.latestPrice?.id ?? 0,
-                          latestPrice: data.stock?.latestPrice,
+                          latestPrice: { ...data.stock?.latestPrice },
                           branchId: data.branchId,
                           branch: data.branch,
                           store: data.branch?.store,

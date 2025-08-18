@@ -6,7 +6,6 @@ import {
   View,
   Text,
   Pressable,
-  SafeAreaView,
   FlatList,
 } from 'react-native';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
@@ -35,13 +34,13 @@ export default function ModalFormMini({
         <KeyboardAvoidingView
           behavior="position"
           className="max-h-screen-safe-offset-0 absolute bottom-0 left-0 h-fit w-full">
-          <SafeAreaView
+          <View
             style={{ backgroundColor: '#fff', borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
             <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100 pt-2">
               {TitleComponent ? (
                 <View className="px-5 py-3">{TitleComponent}</View>
               ) : (
-                <Text className="flex flex-1 flex-row items-center gap-2 px-7 py-5 text-2xl font-bold">
+                <Text className="flex flex-1 flex-row items-center gap-2 px-5 py-5 text-2xl font-bold">
                   {title}
                 </Text>
               )}
@@ -63,7 +62,7 @@ export default function ModalFormMini({
               className={cn('px-5', className)}
               nestedScrollEnabled
             />
-          </SafeAreaView>
+          </View>
         </KeyboardAvoidingView>
       </AutocompleteDropdownContextProvider>
     </Modal>
