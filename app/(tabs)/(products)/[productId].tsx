@@ -16,6 +16,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import FullStockView from '@/components/FullStockView';
 import { ProductDetails } from '@/components/ProductDetails';
 import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import SelectedStock from '@/components/SelectedStock';
@@ -81,6 +82,7 @@ export default function ProductScreen() {
   const [favProductList, setFavProductList] = useState<ProductList>();
   const [watchProductList, setWatchProductList] = useState<ProductList>();
   const [openWatchModal, setOpenWatchModal] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<Stock>();
 
   useFocusEffect(
     useCallback(() => {
@@ -348,11 +350,20 @@ export default function ProductScreen() {
           onEditButtonPress={() => setOpenEditModal(true)}
         />
 
+        <ModalFormMini
+          visible={selectedStock !== undefined}
+          onRequestClose={() => setSelectedStock(undefined)}
+          title="Stock">
+          {selectedStock && <FullStockView stock={selectedStock} />}
+        </ModalFormMini>
+
         {stockId && stockData && (
           <View className="mb-5 p-5">
-            <View className="rounded-xl bg-gray-50 p-5">
+            <TouchableOpacity
+              className="rounded-xl bg-gray-50 p-5"
+              onPress={() => setSelectedStock(stockData.stock as Stock)}>
               <SelectedStock stock={stockData.stock as Stock} />
-            </View>
+            </TouchableOpacity>
           </View>
         )}
 

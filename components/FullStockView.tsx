@@ -18,7 +18,6 @@ export type FullStockViewProps = {
 };
 
 export default function FullStockView({ stock }: FullStockViewProps) {
-  const [limit, setLimit] = useState(20);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<PriceHistoryFilter | undefined>({
     orderBy: OrderByType.Desc,
@@ -33,13 +32,13 @@ export default function FullStockView({ stock }: FullStockViewProps) {
         productId: stock.productId,
         stockId: stock.id,
         paginator: {
-          limit,
+          limit: 20,
           page,
         },
         filters,
       },
     });
-  }, [limit, page, filters]);
+  }, [page, filters]);
 
   return (
     <View>
