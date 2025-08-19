@@ -12,6 +12,7 @@ import {
   Stock,
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
+import { currencyFormat } from '@/lib/strings';
 
 export type FullStockViewProps = {
   stock: Stock;
@@ -58,7 +59,7 @@ export default function FullStockView({ stock }: FullStockViewProps) {
               className="mb-7 flex flex-row items-center justify-between gap-3"
               key={`price-${i}`}>
               <View className="flex flex-col gap-1">
-                <Text className="text-lg font-black">${p.amount}</Text>
+                <Text className="text-lg font-black">{currencyFormat(p.amount)}</Text>
                 <View className="flex flex-row items-center gap-1">
                   <Image
                     source={

@@ -28,7 +28,7 @@ import {
   ProductDocument,
   ExtractProductFieldsDocument,
 } from '@/graphql/types/graphql';
-import { titleCase } from '@/lib/strings';
+import { buildBase64ImageString, titleCase } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
 
 export type ProductFormProps = {
@@ -124,7 +124,7 @@ export default function ProductForm({
 
     setImageUpdated(true);
     setImageUri(picture.uri);
-    setImageBase64(`data:image/jpeg;base64,${picture.base64}`);
+    setImageBase64(buildBase64ImageString(picture));
   }
 
   function resetImageAndCategory() {
@@ -267,6 +267,7 @@ export default function ProductForm({
             product?.weightValue && product?.weightType
               ? `${product.weightValue} ${product.weightType}`
               : undefined,
+          quantityValue: product?.quantityValue ?? '1',
         } as CreateProduct
       }
       onSubmit={submit}>
@@ -361,12 +362,26 @@ export default function ProductForm({
             />
           </View>
 
-          <WeightSelector
-            onChangeText={formik.handleChange('weight')}
-            onBlur={formik.handleBlur('weight')}
-            value={formik.values.weight ?? ''}
-            editable={!loading}
-          />
+          <View className="flex flex-row items-center justify-center gap-7">
+            <View className="flex-[1]">
+              <Input
+                onChangeText={formik.handleChange('quantityValue')}
+                onBlur={formik.handleBlur('quantityValue')}
+                value={formik.values.quantityValue?.toString() ?? '1'}
+                label="Quantity"
+                keyboardType="number-pad"
+              />
+            </View>
+
+            <View className="flex-[2]">
+              <WeightSelector
+                onChangeText={formik.handleChange('weight')}
+                onBlur={formik.handleBlur('weight')}
+                value={formik.values.weight ?? ''}
+                editable={!loading}
+              />
+            </View>
+          </View>
 
           <Textarea
             onChangeText={formik.handleChange('description')}

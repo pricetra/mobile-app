@@ -106,7 +106,6 @@ export default function CreateStoreForm({
           autoCapitalize="none"
           textContentType="URL"
           keyboardType="default"
-          autoCorrect={false}
           autoComplete="url"
           editable={!loading}
         />

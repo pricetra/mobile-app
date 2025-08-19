@@ -1,3 +1,5 @@
+import * as ImagePicker from 'expo-image-picker';
+
 export function titleCase(str: string) {
   return str
     .toLowerCase()
@@ -27,4 +29,8 @@ export function currencyFormat(v: number): string {
       maximumFractionDigits: 2,
     }).format(v)
   );
+}
+
+export function buildBase64ImageString(picture: ImagePicker.ImagePickerAsset): string {
+  return `data:${picture.mimeType};base64,${picture.base64}`;
 }

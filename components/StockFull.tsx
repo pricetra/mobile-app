@@ -11,15 +11,28 @@ import { isSaleExpired, metersToMiles } from '@/lib/utils';
 export type StockFullProps = {
   stock: Stock;
   approximatePrice?: number;
+  quantityValue?: number;
+  quantityType?: string;
 };
 
-export default function StockFull({ stock, approximatePrice }: StockFullProps) {
+export default function StockFull({
+  stock,
+  approximatePrice,
+  quantityValue,
+  quantityType,
+}: StockFullProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
   const isExpired = useMemo(
     () => (stock.latestPrice ? isSaleExpired(stock.latestPrice) : false),
     [stock.latestPrice]
   );
+  const calculatedAmount = useMemo(() => {
+    if (!stock?.latestPrice) return 0;
+    return !isExpired
+      ? stock.latestPrice.amount
+      : (stock.latestPrice.originalPrice ?? stock.latestPrice.amount);
+  }, [stock?.latestPrice, isExpired]);
 
   return (
     <View className="flex flex-row justify-between gap-5">
@@ -80,10 +93,12 @@ export default function StockFull({ stock, approximatePrice }: StockFullProps) {
         )}
 
         {stock?.latestPrice?.amount && (
-          <Text className="text-xl font-black">
-            {!isExpired
-              ? currencyFormat(stock.latestPrice.amount)
-              : currencyFormat(stock.latestPrice?.originalPrice ?? stock.latestPrice.amount)}
+          <Text className="text-xl font-black">{currencyFormat(calculatedAmount)}</Text>
+        )}
+
+        {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
+          <Text className="text-right text-[10px] color-gray-500">
+            {`${currencyFormat(calculatedAmount / quantityValue)}/${quantityType}`}
           </Text>
         )}
 

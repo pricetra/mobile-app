@@ -362,7 +362,11 @@ export default function ProductScreen() {
             <TouchableOpacity
               className="rounded-xl bg-gray-50 p-5"
               onPress={() => setSelectedStock(stockData.stock as Stock)}>
-              <SelectedStock stock={stockData.stock as Stock} />
+              <SelectedStock
+                stock={stockData.stock as Stock}
+                quantityValue={productData.product.quantityValue}
+                quantityType={productData.product.quantityType}
+              />
             </TouchableOpacity>
           </View>
         )}

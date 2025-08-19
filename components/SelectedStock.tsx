@@ -7,14 +7,17 @@ import { Stock } from '@/graphql/types/graphql';
 
 export type SelectedStockProps = {
   stock: Stock;
+  quantityValue?: number;
+  quantityType?: string;
 };
 
-export default function SelectedStock({ stock }: SelectedStockProps) {
+export default function SelectedStock(props: SelectedStockProps) {
+  const { stock } = props;
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
   return (
     <View className="flex flex-col gap-2">
-      <StockFull stock={stock} />
+      <StockFull {...props} />
 
       {stock.updatedBy && (
         <View className="mt-4">

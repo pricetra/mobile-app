@@ -140,7 +140,12 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
                         }}
                         className="mb-5"
                         key={`${stock.id}-${i}`}>
-                        <StockFull stock={stock} approximatePrice={approximatePrice} />
+                        <StockFull
+                          stock={stock}
+                          approximatePrice={approximatePrice}
+                          quantityValue={product.quantityValue}
+                          quantityType={product.quantityType}
+                        />
                       </TouchableOpacity>
                     ))
                 ) : (
@@ -183,7 +188,11 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
                       onPress={() => setSelectedStock(s)}
                       className="mb-5"
                       key={s.id}>
-                      <StockFull stock={s as Stock} />
+                      <StockFull
+                        stock={s as Stock}
+                        quantityValue={product.quantityValue}
+                        quantityType={product.quantityType}
+                      />
                     </TouchableOpacity>
                   ))
                 ) : (

@@ -44,6 +44,8 @@ export const BARCODE_SCAN_QUERY = gql`
       }
       weightValue
       weightType
+      quantityValue
+      quantityType
       lowestRecordedPrice
       highestRecordedPrice
       createdAt
@@ -243,6 +245,8 @@ export const ALL_PRODUCTS_QUERY = gql(`
         }
         weightValue
         weightType
+        quantityValue
+        quantityType
         lowestRecordedPrice
         highestRecordedPrice
         createdAt
@@ -293,6 +297,8 @@ export const PRODUCT_BY_ID_QUERY = gql(`
       }
       weightValue
       weightType
+      quantityValue
+      quantityType
       lowestRecordedPrice
       highestRecordedPrice
       createdAt
@@ -656,6 +662,8 @@ export const GET_ALL_LISTS = gql`
           }
           weightValue
           weightType
+          quantityValue
+          quantityType
           lowestRecordedPrice
           highestRecordedPrice
           createdAt
@@ -869,6 +877,8 @@ export const GET_ALL_PRODUCT_LISTS_BY_LIST_ID = gql(`
         }
         weightValue
         weightType
+        quantityValue
+        quantityType
         lowestRecordedPrice
         highestRecordedPrice
         createdAt
@@ -960,6 +970,7 @@ export const EXTRACT_PRODUCT_FIELDS_QUERY = gql(`
       brand
       name
       weight
+      quantity
       categoryId
       category {
         id

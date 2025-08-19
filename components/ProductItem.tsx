@@ -21,6 +21,12 @@ export default function ProductItem({ product }: ProductItemProps) {
     () => (product.stock?.latestPrice ? isSaleExpired(product.stock.latestPrice) : false),
     [product.stock?.latestPrice]
   );
+  const calculatedAmount = useMemo(() => {
+    if (!product.stock?.latestPrice) return 0;
+    return !isExpired
+      ? product.stock.latestPrice.amount
+      : (product.stock.latestPrice.originalPrice ?? product.stock.latestPrice.amount);
+  }, [product.stock?.latestPrice, isExpired]);
 
   return (
     <View className="flex max-w-full flex-row gap-2">
@@ -77,13 +83,12 @@ export default function ProductItem({ product }: ProductItemProps) {
                       {currencyFormat(product.stock.latestPrice.originalPrice)}
                     </Text>
                   )}
-                <Text className="font-black">
-                  {!isExpired
-                    ? currencyFormat(product.stock.latestPrice.amount)
-                    : currencyFormat(
-                        product.stock.latestPrice.originalPrice ?? product.stock.latestPrice.amount
-                      )}
-                </Text>
+                <Text className="font-black">{currencyFormat(calculatedAmount)}</Text>
+                {product.quantityValue > 1 && (
+                  <Text className="text-right text-[10px] color-gray-500">
+                    {`${currencyFormat(calculatedAmount / product.quantityValue)}/${product.quantityType}`}
+                  </Text>
+                )}
               </View>
             )}
           </View>
