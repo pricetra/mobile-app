@@ -90,7 +90,7 @@ export function ProductLoadingItemHorizontal() {
       <View style={{ width: width / 3, height: width / 3 }}>
         <Skeleton className="size-full rounded-xl" />
       </View>
-      <View className="max-w-full flex-1 gap-2 p-2">
+      <View className="max-w-full flex-1 gap-2">
         <Skeleton className="h-6 w-full" />
         <Skeleton className="h-6 w-full" />
         <Skeleton className="mt-5 h-6 w-[100px]" />
