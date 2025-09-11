@@ -15,7 +15,9 @@ import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
   const { setScreen, email: screenEmail } = useContext(AuthModalContext);
-  const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument);
+  const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument, {
+    fetchPolicy: 'no-cache',
+  });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
