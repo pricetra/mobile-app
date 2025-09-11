@@ -1,3 +1,4 @@
+import { Entypo, Feather } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
@@ -13,22 +14,22 @@ export type BranchProductItemProps = {
 export default function BranchProductItem({ branch }: BranchProductItemProps) {
   return (
     <View>
-      <View className="flex flex-row justify-between gap-5">
+      <View className="flex flex-row items-center justify-between gap-5">
         <View className="flex flex-1 flex-row items-center gap-4">
           <Image
             src={createCloudinaryUrl(branch.store?.logo ?? '', 500, 500)}
             className="size-[40px] rounded-lg"
           />
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              gap: 4,
-              paddingRight: 60,
-              flexWrap: 'wrap',
-            }}>
-            <View className="flex w-full flex-row flex-wrap items-center gap-3">
+          <View className="flex flex-col items-center gap-1">
+            <View className="flex w-full flex-row items-center gap-1">
               <Text className="text-md font-bold">{branch.store?.name}</Text>
+
+              {branch.address?.distance && (
+                <>
+                  <Entypo name="dot-single" size={15} color="black" />
+                  <Text className="text-sm">{metersToMiles(branch.address.distance)} mi</Text>
+                </>
+              )}
             </View>
 
             <View className="w-full">
@@ -40,9 +41,7 @@ export default function BranchProductItem({ branch }: BranchProductItemProps) {
         </View>
 
         <View>
-          {branch.address?.distance && (
-            <Text className="mt-1 text-sm">{metersToMiles(branch.address.distance)} mi</Text>
-          )}
+          <Feather name="chevron-right" size={20} color="black" />
         </View>
       </View>
     </View>
@@ -52,7 +51,7 @@ export default function BranchProductItem({ branch }: BranchProductItemProps) {
 export function BranchProductItemLoading() {
   return (
     <View>
-      <View className="flex flex-row justify-between gap-5">
+      <View className="flex flex-row items-center justify-between gap-5">
         <View className="flex flex-1 flex-row items-center gap-4">
           <Skeleton className="size-[40px] rounded-lg" />
           <View
@@ -71,10 +70,6 @@ export function BranchProductItemLoading() {
               <Skeleton className="h-3 w-40 rounded-md" />
             </View>
           </View>
-        </View>
-
-        <View>
-          <Skeleton className="mt-1 h-4 w-12 rounded-md" />
         </View>
       </View>
     </View>

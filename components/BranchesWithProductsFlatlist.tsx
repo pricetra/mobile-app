@@ -1,6 +1,7 @@
 import { QueryResult } from '@apollo/client';
+import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   FlatList,
   Platform,
@@ -9,12 +10,15 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
+  Text,
+  useWindowDimensions,
 } from 'react-native';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import { RenderProductLoadingItems } from './ProductItem';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 
+import { SearchContext } from '@/context/SearchContext';
 import {
   Branch,
   BranchesWithProductsQuery,
@@ -40,7 +44,9 @@ export default function BranchesWithProductsFlatlist({
   setPage,
   style,
 }: BranchesWithProductsFlatlistProps) {
+  const { width } = useWindowDimensions();
   const [refreshing, setRefreshing] = useState(false);
+  const { search } = useContext(SearchContext);
 
   return (
     <FlatList
@@ -65,7 +71,7 @@ export default function BranchesWithProductsFlatlist({
               keyExtractor={({ id }, i) => `${id}-${i}`}
               renderItem={({ item: product }) => (
                 <TouchableOpacity
-                  className="mr-5"
+                  className="mr-4"
                   onPress={() => {
                     router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`);
                   }}>
@@ -73,6 +79,19 @@ export default function BranchesWithProductsFlatlist({
                 </TouchableOpacity>
               )}
               style={{ padding: 15 }}
+              ListFooterComponent={() => (
+                <TouchableOpacity
+                  className="mx-5 flex flex-col items-center justify-center gap-3 rounded-lg bg-gray-100"
+                  style={{ width: width / 3, height: width / 3 }}
+                  onPress={() => {
+                    router.push(
+                      `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?searchQuery=${encodeURIComponent(search ?? '')}`
+                    );
+                  }}>
+                  <AntDesign name="arrowright" size={24} color="black" />
+                  <Text>Show All</Text>
+                </TouchableOpacity>
+              )}
             />
           </View>
         ) : (
@@ -92,18 +111,6 @@ export default function BranchesWithProductsFlatlist({
           progressBackgroundColor="#111827"
         />
       }
-      onEndReached={() => {
-        if (!paginator || !paginator.next) return;
-        setPage(paginator.next);
-      }}
-      onEndReachedThreshold={5}
-      ListFooterComponent={() => (
-        <>
-          {branches.length > 0 && paginator?.next && (
-            <RenderProductLoadingItems count={5} noPadding />
-          )}
-        </>
-      )}
       style={style}
     />
   );
@@ -126,7 +133,7 @@ export function BranchesWithProductsFlatlistLoading() {
             data={Array(5).fill(0)}
             keyExtractor={(_, i) => `product-loading-${i}`}
             renderItem={() => (
-              <View className="mr-5">
+              <View className="mr-4">
                 <ProductLoadingItemHorizontal />
               </View>
             )}
