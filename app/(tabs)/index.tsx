@@ -5,8 +5,9 @@ import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, SafeAreaView, Platform, Text } from 'react-native';
 
-import ProductFlatlist from '@/components/ProductFlatlist';
-import { RenderProductLoadingItems } from '@/components/ProductItem';
+import BranchesWithProductsFlatlist, {
+  BranchesWithProductsFlatlistLoading,
+} from '@/components/BranchesWithProductsFlatlist';
 import ProductSearchFilterModal from '@/components/ProductSearchFilterModal';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
@@ -18,14 +19,16 @@ import { useHeader } from '@/context/HeaderContext';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import { AllProductsDocument, Product, ProductSearch } from '@/graphql/types/graphql';
+import { Branch, BranchesWithProductsDocument, ProductSearch } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 
 export default function HomeScreen() {
   const { user } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
-  const [getAllProducts, { data, error, loading, fetchMore }] = useLazyQuery(AllProductsDocument);
+  const [getAllProducts, { data, error, loading, fetchMore }] = useLazyQuery(
+    BranchesWithProductsDocument
+  );
   const { search, searching, setSearching } = useContext(SearchContext);
   const { location, getCurrentLocation } = useLocationService();
   const { setSubHeader } = useHeader();
@@ -61,7 +64,8 @@ export default function HomeScreen() {
         return await getAllProducts({
           variables: {
             paginator: { limit: LIMIT, page },
-            search: { ...searchVariables },
+            productLimit: 10,
+            filters: { ...searchVariables },
           },
           fetchPolicy: force ? 'no-cache' : undefined,
         });
@@ -73,9 +77,9 @@ export default function HomeScreen() {
   );
 
   const loadMore = useCallback(() => {
-    if (!data?.allProducts.paginator) return;
+    if (!data?.branchesWithProducts.paginator) return;
 
-    const { next } = data.allProducts.paginator;
+    const { next } = data.branchesWithProducts.paginator;
     if (!next) return;
 
     return fetchMore({
@@ -86,8 +90,11 @@ export default function HomeScreen() {
       updateQuery: (prev, { fetchMoreResult }) => ({
         ...prev,
         allProducts: {
-          ...fetchMoreResult.allProducts,
-          products: [...prev.allProducts.products, ...fetchMoreResult.allProducts.products],
+          ...fetchMoreResult.branchesWithProducts,
+          products: [
+            ...prev.branchesWithProducts.branches,
+            ...fetchMoreResult.branchesWithProducts.branches,
+          ],
         },
       }),
     });
@@ -152,7 +159,7 @@ export default function HomeScreen() {
         />
       </ModalFormMini>
 
-      {(loading || searching) && <RenderProductLoadingItems count={10} />}
+      {(loading || searching) && <BranchesWithProductsFlatlistLoading />}
 
       {error && (
         <SafeAreaView>
@@ -165,22 +172,22 @@ export default function HomeScreen() {
         </SafeAreaView>
       )}
 
-      {data?.allProducts?.products?.length === 0 && (
+      {data?.branchesWithProducts?.branches.length === 0 && (
         <View className="flex items-center justify-center px-5 py-36">
           <Text className="text-center">No products found</Text>
         </View>
       )}
 
-      {data?.allProducts?.products && (
-        <ProductFlatlist
-          products={data.allProducts.products as Product[]}
-          paginator={data?.allProducts.paginator}
+      {data?.branchesWithProducts?.branches && (
+        <BranchesWithProductsFlatlist
+          branches={data.branchesWithProducts.branches as Branch[]}
+          paginator={data?.branchesWithProducts.paginator}
           handleRefresh={async () => {
             await getCurrentLocation({});
             return loadProducts(1, true);
           }}
           setPage={loadMore}
-          style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0 }}
+          style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0, paddingTop: 10 }}
         />
       )}
     </SafeAreaView>

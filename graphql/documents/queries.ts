@@ -1032,3 +1032,103 @@ export const PRICE_CHANGE_HISTORY_QUERY = gql(`
     }
   }
 `);
+
+export const BRANCHES_WITH_PRODUCTS_QUERY = gql(`
+  query BranchesWithProducts($paginator: PaginatorInput!, $productLimit: Int!, $filters: ProductSearch) {
+    branchesWithProducts(
+      paginator: $paginator
+      productLimit: $productLimit
+      filters: $filters
+    ) {
+      branches {
+        id
+        name
+        storeId
+        store {
+          id
+          name
+          logo
+        }
+        address {
+          id
+          distance
+          latitude
+          longitude
+          mapsLink
+          fullAddress
+          street
+          city
+          administrativeDivision
+          countryCode
+          country
+          zipCode
+        }
+        products {
+          id
+          name
+          image
+          description
+          url
+          brand
+          code
+          color
+          model
+          categoryId
+          category {
+            id
+            name
+            expandedPathname
+            path
+          }
+          stock {
+            id
+            productId
+            storeId
+            branchId
+            latestPriceId
+            latestPrice {
+              id
+              productId
+              branchId
+              storeId
+              amount
+              currencyCode
+              createdAt
+              sale
+              originalPrice
+              condition
+              expiresAt
+            }
+          }
+          weightValue
+          weightType
+          quantityValue
+          quantityType
+          lowestRecordedPrice
+          highestRecordedPrice
+          createdAt
+          updatedAt
+          createdBy {
+            id
+            name
+            avatar
+          }
+          updatedBy {
+            id
+            name
+            avatar
+          }
+          views
+        }
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
+      }
+    }
+  }
+`);

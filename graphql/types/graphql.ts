@@ -77,6 +77,7 @@ export type Branch = {
   createdById?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  products?: Maybe<Array<Product>>;
   store?: Maybe<Store>;
   storeId: Scalars['ID']['output'];
   updatedBy?: Maybe<UpdatedByUser>;
@@ -316,6 +317,7 @@ export type Mutation = {
   updateGroceryListItem: GroceryListItem;
   updatePasswordWithResetCode: Scalars['Boolean']['output'];
   updateProduct: Product;
+  updateProductNutritionData: ProductNutrition;
   updateProfile: User;
   updateUserById: User;
   verifyEmail: User;
@@ -459,6 +461,11 @@ export type MutationUpdatePasswordWithResetCodeArgs = {
 export type MutationUpdateProductArgs = {
   id: Scalars['ID']['input'];
   input: UpdateProduct;
+};
+
+
+export type MutationUpdateProductNutritionDataArgs = {
+  productId: Scalars['ID']['input'];
 };
 
 
@@ -640,6 +647,128 @@ export type ProductList = {
   userId: Scalars['ID']['output'];
 };
 
+export type ProductNutriment = {
+  __typename?: 'ProductNutriment';
+  alcohol?: Maybe<Scalars['Float']['output']>;
+  alcohol100g?: Maybe<Scalars['Float']['output']>;
+  alcoholServing?: Maybe<Scalars['Float']['output']>;
+  alcoholUnit?: Maybe<Scalars['String']['output']>;
+  alcoholValue?: Maybe<Scalars['Float']['output']>;
+  calcium?: Maybe<Scalars['Float']['output']>;
+  calcium100g?: Maybe<Scalars['Float']['output']>;
+  calciumLabel?: Maybe<Scalars['String']['output']>;
+  calciumServing?: Maybe<Scalars['Float']['output']>;
+  calciumUnit?: Maybe<Scalars['String']['output']>;
+  calciumValue?: Maybe<Scalars['Float']['output']>;
+  carbohydrates?: Maybe<Scalars['Float']['output']>;
+  carbohydrates100g?: Maybe<Scalars['Float']['output']>;
+  carbohydratesServing?: Maybe<Scalars['Float']['output']>;
+  carbohydratesUnit?: Maybe<Scalars['String']['output']>;
+  carbohydratesValue?: Maybe<Scalars['Float']['output']>;
+  cholesterol100g?: Maybe<Scalars['Float']['output']>;
+  energy?: Maybe<Scalars['Float']['output']>;
+  energy100g?: Maybe<Scalars['Float']['output']>;
+  energyKcal?: Maybe<Scalars['Float']['output']>;
+  energyKcal100g?: Maybe<Scalars['Float']['output']>;
+  energyKcalServing?: Maybe<Scalars['Float']['output']>;
+  energyKcalUnit?: Maybe<Scalars['String']['output']>;
+  energyKcalValue?: Maybe<Scalars['Float']['output']>;
+  energyServing?: Maybe<Scalars['Float']['output']>;
+  energyUnit?: Maybe<Scalars['String']['output']>;
+  energyValue?: Maybe<Scalars['Float']['output']>;
+  fat?: Maybe<Scalars['Float']['output']>;
+  fat100g?: Maybe<Scalars['Float']['output']>;
+  fatServing?: Maybe<Scalars['Float']['output']>;
+  fatUnit?: Maybe<Scalars['String']['output']>;
+  fatValue?: Maybe<Scalars['Float']['output']>;
+  fiber?: Maybe<Scalars['Float']['output']>;
+  fiber100g?: Maybe<Scalars['Float']['output']>;
+  fiberServing?: Maybe<Scalars['Float']['output']>;
+  fiberUnit?: Maybe<Scalars['String']['output']>;
+  fiberValue?: Maybe<Scalars['Float']['output']>;
+  iron?: Maybe<Scalars['Float']['output']>;
+  iron100g?: Maybe<Scalars['Float']['output']>;
+  ironLabel?: Maybe<Scalars['String']['output']>;
+  ironServing?: Maybe<Scalars['Float']['output']>;
+  ironUnit?: Maybe<Scalars['String']['output']>;
+  ironValue?: Maybe<Scalars['Float']['output']>;
+  monounsaturatedFat100g?: Maybe<Scalars['Float']['output']>;
+  novaGroup?: Maybe<Scalars['Float']['output']>;
+  novaGroup100g?: Maybe<Scalars['Float']['output']>;
+  novaGroupServing?: Maybe<Scalars['Float']['output']>;
+  nutritionScoreFr?: Maybe<Scalars['Float']['output']>;
+  nutritionScoreFr100g?: Maybe<Scalars['Float']['output']>;
+  nutritionScoreFrServing?: Maybe<Scalars['Float']['output']>;
+  nutritionScoreUk?: Maybe<Scalars['Float']['output']>;
+  nutritionScoreUk100g?: Maybe<Scalars['Float']['output']>;
+  nutritionScoreUkServing?: Maybe<Scalars['Float']['output']>;
+  polyunsaturatedFat100g?: Maybe<Scalars['Float']['output']>;
+  potassium100g?: Maybe<Scalars['Float']['output']>;
+  proteins?: Maybe<Scalars['Float']['output']>;
+  proteins100g?: Maybe<Scalars['Float']['output']>;
+  proteinsServing?: Maybe<Scalars['Float']['output']>;
+  proteinsUnit?: Maybe<Scalars['String']['output']>;
+  proteinsValue?: Maybe<Scalars['Float']['output']>;
+  salt?: Maybe<Scalars['Float']['output']>;
+  salt100g?: Maybe<Scalars['Float']['output']>;
+  saltServing?: Maybe<Scalars['Float']['output']>;
+  saltUnit?: Maybe<Scalars['String']['output']>;
+  saltValue?: Maybe<Scalars['Float']['output']>;
+  saturatedFat?: Maybe<Scalars['Float']['output']>;
+  saturatedFat100g?: Maybe<Scalars['Float']['output']>;
+  saturatedFatServing?: Maybe<Scalars['Float']['output']>;
+  saturatedFatUnit?: Maybe<Scalars['String']['output']>;
+  saturatedFatValue?: Maybe<Scalars['Float']['output']>;
+  sodium?: Maybe<Scalars['Float']['output']>;
+  sodium100g?: Maybe<Scalars['Float']['output']>;
+  sodiumServing?: Maybe<Scalars['Float']['output']>;
+  sodiumUnit?: Maybe<Scalars['String']['output']>;
+  sodiumValue?: Maybe<Scalars['Float']['output']>;
+  sugars?: Maybe<Scalars['Float']['output']>;
+  sugars100g?: Maybe<Scalars['Float']['output']>;
+  sugarsServing?: Maybe<Scalars['Float']['output']>;
+  sugarsUnit?: Maybe<Scalars['String']['output']>;
+  sugarsValue?: Maybe<Scalars['Float']['output']>;
+  transFat?: Maybe<Scalars['Float']['output']>;
+  transFat100g?: Maybe<Scalars['Float']['output']>;
+  transFatLabel?: Maybe<Scalars['String']['output']>;
+  transFatServing?: Maybe<Scalars['Float']['output']>;
+  transFatUnit?: Maybe<Scalars['String']['output']>;
+  transFatValue?: Maybe<Scalars['Float']['output']>;
+  vitaminA?: Maybe<Scalars['Float']['output']>;
+  vitaminA100g?: Maybe<Scalars['Float']['output']>;
+  vitaminALabel?: Maybe<Scalars['String']['output']>;
+  vitaminAServing?: Maybe<Scalars['Float']['output']>;
+  vitaminAUnit?: Maybe<Scalars['String']['output']>;
+  vitaminAValue?: Maybe<Scalars['Float']['output']>;
+  vitaminC?: Maybe<Scalars['Float']['output']>;
+  vitaminC100g?: Maybe<Scalars['Float']['output']>;
+  vitaminCLabel?: Maybe<Scalars['String']['output']>;
+  vitaminCServing?: Maybe<Scalars['Float']['output']>;
+  vitaminCUnit?: Maybe<Scalars['String']['output']>;
+  vitaminCValue?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ProductNutrition = {
+  __typename?: 'ProductNutrition';
+  createdAt: Scalars['Time']['output'];
+  glutenFree?: Maybe<Scalars['Boolean']['output']>;
+  halal?: Maybe<Scalars['Boolean']['output']>;
+  id: Scalars['ID']['output'];
+  ingredientList?: Maybe<Array<Scalars['String']['output']>>;
+  ingredients?: Maybe<Scalars['String']['output']>;
+  kosher?: Maybe<Scalars['Boolean']['output']>;
+  lactoseFree?: Maybe<Scalars['Boolean']['output']>;
+  nutriments?: Maybe<ProductNutriment>;
+  openfoodfactsUpdatedAt: Scalars['String']['output'];
+  servingSize?: Maybe<Scalars['String']['output']>;
+  servingSizeUnit?: Maybe<Scalars['String']['output']>;
+  servingSizeValue?: Maybe<Scalars['Float']['output']>;
+  updatedAt: Scalars['Time']['output'];
+  vegan?: Maybe<Scalars['Boolean']['output']>;
+  vegetarian?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type ProductSearch = {
   branchId?: InputMaybe<Scalars['ID']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
@@ -656,6 +785,7 @@ export type Query = {
   allProducts: PaginatedProducts;
   allStores: Array<Store>;
   barcodeScan: Product;
+  branchesWithProducts: PaginatedBranches;
   checkAppVersion: Scalars['Boolean']['output'];
   defaultGroceryListItems: Array<GroceryListItem>;
   extractProductFields: ProductExtractionResponse;
@@ -669,6 +799,7 @@ export type Query = {
   getAllUsers: PaginatedUsers;
   getCategories: Array<Category>;
   getFavoriteBranchesWithPrices: Array<BranchListWithPrices>;
+  getProductNutritionData: ProductNutrition;
   getProductStocks: Array<Stock>;
   googleOAuth: Auth;
   groceryList: GroceryList;
@@ -704,6 +835,13 @@ export type QueryAllProductsArgs = {
 export type QueryBarcodeScanArgs = {
   barcode: Scalars['String']['input'];
   searchMode?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryBranchesWithProductsArgs = {
+  filters?: InputMaybe<ProductSearch>;
+  paginator: PaginatorInput;
+  productLimit: Scalars['Int']['input'];
 };
 
 
@@ -765,6 +903,11 @@ export type QueryGetCategoriesArgs = {
 
 
 export type QueryGetFavoriteBranchesWithPricesArgs = {
+  productId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetProductNutritionDataArgs = {
   productId: Scalars['ID']['input'];
 };
 
@@ -954,7 +1097,7 @@ export type User = {
   addressId?: Maybe<Scalars['ID']['output']>;
   authDevice?: Maybe<AuthDeviceType>;
   authPlatform?: Maybe<AuthPlatformType>;
-  authStateId?: Maybe<Scalars['ID']['output']>;
+  authStateId?: Maybe<Scalars['String']['output']>;
   avatar?: Maybe<Scalars['String']['output']>;
   bio?: Maybe<Scalars['String']['output']>;
   birthDate?: Maybe<Scalars['Time']['output']>;
@@ -1033,7 +1176,7 @@ export type VerifyEmailMutationVariables = Exact<{
 }>;
 
 
-export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, role: UserRole } };
+export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, role: UserRole } };
 
 export type ResendVerificationMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -1052,7 +1195,7 @@ export type UpdateProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, role: UserRole, addressId?: number | null, birthDate?: any | null, phoneNumber?: string | null, bio?: string | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, role: UserRole, addressId?: number | null, birthDate?: any | null, phoneNumber?: string | null, bio?: string | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
 
 export type CreateStoreMutationVariables = Exact<{
   input: CreateStore;
@@ -1176,7 +1319,7 @@ export type RegisterExpoPushTokenMutationVariables = Exact<{
 }>;
 
 
-export type RegisterExpoPushTokenMutation = { __typename?: 'Mutation', registerExpoPushToken: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
+export type RegisterExpoPushTokenMutation = { __typename?: 'Mutation', registerExpoPushToken: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
 
 export type GetAllCountriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1191,7 +1334,7 @@ export type BarcodeScanQueryVariables = Exact<{
 
 export type BarcodeScanQuery = { __typename?: 'Query', barcodeScan: { __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weightValue?: number | null, weightType?: string | null, quantityValue: number, quantityType: string, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null } };
 
-export type UserFieldsFragment = { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, role: UserRole } & { ' $fragmentName'?: 'UserFieldsFragment' };
+export type UserFieldsFragment = { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, role: UserRole } & { ' $fragmentName'?: 'UserFieldsFragment' };
 
 export type LoginInternalQueryVariables = Exact<{
   email: Scalars['String']['input'];
@@ -1201,7 +1344,7 @@ export type LoginInternalQueryVariables = Exact<{
 }>;
 
 
-export type LoginInternalQuery = { __typename?: 'Query', login: { __typename?: 'Auth', token: string, user: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } } };
+export type LoginInternalQuery = { __typename?: 'Query', login: { __typename?: 'Auth', token: string, user: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } } };
 
 export type GoogleOAuthQueryVariables = Exact<{
   accessToken: Scalars['String']['input'];
@@ -1210,12 +1353,12 @@ export type GoogleOAuthQueryVariables = Exact<{
 }>;
 
 
-export type GoogleOAuthQuery = { __typename?: 'Query', googleOAuth: { __typename?: 'Auth', token: string, isNewUser?: boolean | null, user: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } } };
+export type GoogleOAuthQuery = { __typename?: 'Query', googleOAuth: { __typename?: 'Auth', token: string, isNewUser?: boolean | null, user: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: number | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, birthDate?: any | null, phoneNumber?: string | null, bio?: string | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', id: number, name: string, email: string, avatar?: string | null, createdAt: any, updatedAt: any, active: boolean, authPlatform?: AuthPlatformType | null, authStateId?: string | null, expoPushToken?: string | null, role: UserRole, addressId?: number | null, birthDate?: any | null, phoneNumber?: string | null, bio?: string | null, address?: { __typename?: 'Address', id: number, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string } | null } };
 
 export type AllProductsQueryVariables = Exact<{
   paginator: PaginatorInput;
@@ -1379,6 +1522,15 @@ export type PriceChangeHistoryQueryVariables = Exact<{
 
 export type PriceChangeHistoryQuery = { __typename?: 'Query', priceChangeHistory: { __typename?: 'PaginatedPriceHistory', prices: Array<{ __typename?: 'Price', id: number, productId: number, stockId: number, branchId: number, storeId: number, amount: number, originalPrice?: number | null, sale: boolean, expiresAt?: any | null, condition?: string | null, unitType: string, currencyCode: string, createdAt: any, createdBy?: { __typename?: 'CreatedByUser', id: number, name: string, avatar?: string | null } | null, updatedBy?: { __typename?: 'UpdatedByUser', id: number, name: string, avatar?: string | null } | null }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
 
+export type BranchesWithProductsQueryVariables = Exact<{
+  paginator: PaginatorInput;
+  productLimit: Scalars['Int']['input'];
+  filters?: InputMaybe<ProductSearch>;
+}>;
+
+
+export type BranchesWithProductsQuery = { __typename?: 'Query', branchesWithProducts: { __typename?: 'PaginatedBranches', branches: Array<{ __typename?: 'Branch', id: number, name: string, storeId: number, store?: { __typename?: 'Store', id: number, name: string, logo: string } | null, address: { __typename?: 'Address', id: number, distance?: number | null, latitude: number, longitude: number, mapsLink: string, fullAddress: string, street?: string | null, city: string, administrativeDivision: string, countryCode: string, country?: string | null, zipCode: string }, products?: Array<{ __typename?: 'Product', id: number, name: string, image: string, description: string, url?: string | null, brand: string, code: string, color?: string | null, model?: string | null, categoryId: number, weightValue?: number | null, weightType?: string | null, quantityValue: number, quantityType: string, lowestRecordedPrice?: number | null, highestRecordedPrice?: number | null, createdAt: any, updatedAt: any, views: number, category?: { __typename?: 'Category', id: number, name: string, expandedPathname: string, path: string } | null, stock?: { __typename?: 'Stock', id: number, productId: number, storeId: number, branchId: number, latestPriceId: number, latestPrice?: { __typename?: 'Price', id: number, productId: number, branchId: number, storeId: number, amount: number, currencyCode: string, createdAt: any, sale: boolean, originalPrice?: number | null, condition?: string | null, expiresAt?: any | null } | null } | null, createdBy?: { __typename?: 'CreatedByUser', id: number, name: string, avatar?: string | null } | null, updatedBy?: { __typename?: 'UpdatedByUser', id: number, name: string, avatar?: string | null } | null }> | null }>, paginator: { __typename?: 'Paginator', next?: number | null, page: number, prev?: number | null, limit: number, total: number, numPages: number } } };
+
 export const UserFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"authPlatform"}},{"kind":"Field","name":{"kind":"Name","value":"authStateId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<UserFieldsFragment, unknown>;
 export const UpdateUserByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateUserFull"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"birthDate"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateUserByIdMutation, UpdateUserByIdMutationVariables>;
 export const GetAllUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"paginator"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginatorInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UserFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getAllUsers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"paginator"},"value":{"kind":"Variable","name":{"kind":"Name","value":"paginator"}}},{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}},{"kind":"Field","name":{"kind":"Name","value":"birthDate"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"paginator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"next"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"prev"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"numPages"}}]}}]}}]}}]} as unknown as DocumentNode<GetAllUsersQuery, GetAllUsersQueryVariables>;
@@ -1430,3 +1582,4 @@ export const GetAllBranchListsByListIdDocument = {"kind":"Document","definitions
 export const ExtractProductFieldsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ExtractProductFields"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"base64Image"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"extractProductFields"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"base64Image"},"value":{"kind":"Variable","name":{"kind":"Name","value":"base64Image"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"brand"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"categoryId"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"expandedPathname"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}}]}}]}}]} as unknown as DocumentNode<ExtractProductFieldsQuery, ExtractProductFieldsQueryVariables>;
 export const CheckAppVersionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckAppVersion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"platform"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuthDeviceType"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"version"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"checkAppVersion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"platform"},"value":{"kind":"Variable","name":{"kind":"Name","value":"platform"}}},{"kind":"Argument","name":{"kind":"Name","value":"version"},"value":{"kind":"Variable","name":{"kind":"Name","value":"version"}}}]}]}}]} as unknown as DocumentNode<CheckAppVersionQuery, CheckAppVersionQueryVariables>;
 export const PriceChangeHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PriceChangeHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"productId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"stockId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"paginator"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginatorInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PriceHistoryFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priceChangeHistory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"productId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"productId"}}},{"kind":"Argument","name":{"kind":"Name","value":"stockId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"stockId"}}},{"kind":"Argument","name":{"kind":"Name","value":"paginator"},"value":{"kind":"Variable","name":{"kind":"Name","value":"paginator"}}},{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"prices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"productId"}},{"kind":"Field","name":{"kind":"Name","value":"stockId"}},{"kind":"Field","name":{"kind":"Name","value":"branchId"}},{"kind":"Field","name":{"kind":"Name","value":"storeId"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"originalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"sale"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"condition"}},{"kind":"Field","name":{"kind":"Name","value":"unitType"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"paginator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"next"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"prev"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"numPages"}}]}}]}}]}}]} as unknown as DocumentNode<PriceChangeHistoryQuery, PriceChangeHistoryQueryVariables>;
+export const BranchesWithProductsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BranchesWithProducts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"paginator"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginatorInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"productLimit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ProductSearch"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"branchesWithProducts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"paginator"},"value":{"kind":"Variable","name":{"kind":"Name","value":"paginator"}}},{"kind":"Argument","name":{"kind":"Name","value":"productLimit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"productLimit"}}},{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"branches"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"storeId"}},{"kind":"Field","name":{"kind":"Name","value":"store"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}}]}},{"kind":"Field","name":{"kind":"Name","value":"address"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"distance"}},{"kind":"Field","name":{"kind":"Name","value":"latitude"}},{"kind":"Field","name":{"kind":"Name","value":"longitude"}},{"kind":"Field","name":{"kind":"Name","value":"mapsLink"}},{"kind":"Field","name":{"kind":"Name","value":"fullAddress"}},{"kind":"Field","name":{"kind":"Name","value":"street"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"administrativeDivision"}},{"kind":"Field","name":{"kind":"Name","value":"countryCode"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"zipCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"brand"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"model"}},{"kind":"Field","name":{"kind":"Name","value":"categoryId"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"expandedPathname"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}},{"kind":"Field","name":{"kind":"Name","value":"stock"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"productId"}},{"kind":"Field","name":{"kind":"Name","value":"storeId"}},{"kind":"Field","name":{"kind":"Name","value":"branchId"}},{"kind":"Field","name":{"kind":"Name","value":"latestPriceId"}},{"kind":"Field","name":{"kind":"Name","value":"latestPrice"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"productId"}},{"kind":"Field","name":{"kind":"Name","value":"branchId"}},{"kind":"Field","name":{"kind":"Name","value":"storeId"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"sale"}},{"kind":"Field","name":{"kind":"Name","value":"originalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"condition"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"weightValue"}},{"kind":"Field","name":{"kind":"Name","value":"weightType"}},{"kind":"Field","name":{"kind":"Name","value":"quantityValue"}},{"kind":"Field","name":{"kind":"Name","value":"quantityType"}},{"kind":"Field","name":{"kind":"Name","value":"lowestRecordedPrice"}},{"kind":"Field","name":{"kind":"Name","value":"highestRecordedPrice"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"}}]}},{"kind":"Field","name":{"kind":"Name","value":"views"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"paginator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"next"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"prev"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"numPages"}}]}}]}}]}}]} as unknown as DocumentNode<BranchesWithProductsQuery, BranchesWithProductsQueryVariables>;

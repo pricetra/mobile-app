@@ -27,7 +27,11 @@ export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
   const { search, handleSearch, setSearching } = useContext(SearchContext);
-  const { storeId, branchId } = useLocalSearchParams<{ storeId: string; branchId: string }>();
+  const { storeId, branchId, searchQuery } = useLocalSearchParams<{
+    storeId: string;
+    branchId: string;
+    searchQuery?: string;
+  }>();
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
   });
@@ -42,6 +46,11 @@ export default function SelectedBranchScreen() {
   const [removeBranchFromList] = useMutation(RemoveBranchFromListDocument, {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
+
+  useEffect(() => {
+    if (!searchQuery || searchQuery.trim().length === 0) return;
+    handleSearch(searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     getAllProducts({
@@ -97,6 +106,7 @@ export default function SelectedBranchScreen() {
           paginator: { limit: LIMIT, page: 1 },
           search: {
             branchId: +branchId,
+            query: search,
           },
         },
       });
@@ -107,7 +117,7 @@ export default function SelectedBranchScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [storeId, branchId])
+    }, [storeId, branchId, search])
   );
 
   useEffect(() => {
