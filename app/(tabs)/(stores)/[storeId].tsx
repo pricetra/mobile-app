@@ -149,9 +149,15 @@ export default function SelectedStoreScreen() {
                   <TouchableOpacity
                     onPress={() => router.push(`/(stores)/${b.storeId}/branch/${b.id}`)}
                     key={b.id}
-                    className="mb-7">
-                    <Text className="font-bold">{b.name}</Text>
-                    <Text className="text-sm color-gray-700">{b.address?.fullAddress}</Text>
+                    className="mb-8 flex flex-row items-center justify-between gap-3">
+                    <View className="flex flex-1 flex-col gap-1">
+                      <Text className="font-bold">{b.name}</Text>
+                      <Text className="text-sm color-gray-700">{b.address?.fullAddress}</Text>
+                    </View>
+
+                    <View>
+                      <Feather name="chevron-right" size={20} color="black" />
+                    </View>
                   </TouchableOpacity>
                 ))
               ) : (

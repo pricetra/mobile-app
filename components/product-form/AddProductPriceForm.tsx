@@ -16,6 +16,7 @@ import Image from '@/components/ui/Image';
 import Label from '@/components/ui/Label';
 import { useAuth } from '@/context/UserContext';
 import {
+  BranchesWithProductsDocument,
   CreatePrice,
   CreatePriceDocument,
   FavoriteBranchesWithPricesDocument,
@@ -48,7 +49,11 @@ export default function AddProductPriceForm({
     { fetchPolicy: 'no-cache' }
   );
   const [createPrice, { loading }] = useMutation(CreatePriceDocument, {
-    refetchQueries: [GetProductStocksDocument, FavoriteBranchesWithPricesDocument],
+    refetchQueries: [
+      GetProductStocksDocument,
+      FavoriteBranchesWithPricesDocument,
+      BranchesWithProductsDocument,
+    ],
   });
   const [branchId, setBranchId] = useState<string>();
   const { location, getCurrentLocation } = useLocationService();
