@@ -1043,6 +1043,7 @@ export const BRANCHES_WITH_PRODUCTS_QUERY = gql(`
       branches {
         id
         name
+        storeId
         store {
           id
           name
