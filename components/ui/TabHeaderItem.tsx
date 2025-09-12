@@ -6,6 +6,7 @@ import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } 
 
 import TabHeaderSearchBar from './TabHeaderSearchBar';
 
+import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +24,7 @@ const navHeight = 2 * padding + logoHeight;
 const iconColor = '#333';
 
 export default function TabHeaderItem({ leftNav, rightNav, showSearch }: TabHeaderItemProps) {
+  const { subHeader } = useHeader();
   const { search, handleSearch } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
   const [openSearch, setOpenSearch] = useState(false);
@@ -84,6 +86,7 @@ export default function TabHeaderItem({ leftNav, rightNav, showSearch }: TabHead
           </>
         )}
       </View>
+      <View>{subHeader ? subHeader : <></>}</View>
     </SafeAreaView>
   );
 }

@@ -115,6 +115,7 @@ export default function SelectedBranchScreen() {
       });
       return () => {
         setSearching(false);
+        setSubHeader(undefined);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
