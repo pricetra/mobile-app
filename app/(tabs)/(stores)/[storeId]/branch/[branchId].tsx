@@ -9,7 +9,9 @@ import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
 import Image from '@/components/ui/Image';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
+import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
 import { LIMIT } from '@/constants/constants';
+import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
 import {
@@ -46,6 +48,7 @@ export default function SelectedBranchScreen() {
   const [removeBranchFromList] = useMutation(RemoveBranchFromListDocument, {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
+  const { setSubHeader } = useHeader();
 
   useEffect(() => {
     if (!searchQuery || searchQuery.trim().length === 0) return;
@@ -111,7 +114,6 @@ export default function SelectedBranchScreen() {
         },
       });
       return () => {
-        handleSearch(null);
         setSearching(false);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
@@ -176,11 +178,19 @@ export default function SelectedBranchScreen() {
         />
       ),
     });
+
+    setSubHeader(
+      <TabSubHeaderProductFilter
+        selectedCategoryId={undefined}
+        onSelectCategory={(c) => {}}
+        onFiltersButtonPressed={() => {}}
+      />
+    );
   }, [favorite, branchLoading]);
 
-  useEffect(() => {
-    handleSearch(null);
-  }, []);
+  // useEffect(() => {
+  //   handleSearch(null);
+  // }, []);
 
   if (productsLoading) {
     return <RenderProductLoadingItems count={10} />;
