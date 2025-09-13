@@ -42,7 +42,7 @@ export default function SelectedBranchScreen() {
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
   });
-  const [favorite, setFavorite] = useState(false);
+  const [favorite, setFavorite] = useState<boolean>();
   const [
     getAllProducts,
     { data: productsData, loading: productsLoading, fetchMore: fetchMoreProducts },
@@ -166,6 +166,7 @@ export default function SelectedBranchScreen() {
             rightNav={
               <TouchableOpacity
                 onPress={() => {
+                  if (favorite === undefined) return;
                   if (!favorite) {
                     setFavorite(true);
                     addBranchToList({
@@ -187,7 +188,9 @@ export default function SelectedBranchScreen() {
                   });
                 }}
                 className="flex flex-row items-center gap-2 p-2">
-                <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                {favorite !== undefined && (
+                  <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                )}
               </TouchableOpacity>
             }
           />
