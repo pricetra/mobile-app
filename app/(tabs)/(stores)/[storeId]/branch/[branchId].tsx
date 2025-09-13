@@ -136,72 +136,74 @@ export default function SelectedBranchScreen() {
     }, [storeId, branchId])
   );
 
-  useEffect(() => {
-    if (branchLoading || !branchData) return;
+  useFocusEffect(
+    useCallback(() => {
+      if (branchLoading || !branchData) return;
 
-    navigation.setOptions({
-      header: (props: BottomTabHeaderProps) => (
-        <TabHeaderItem
-          {...props}
-          showSearch
-          leftNav={
-            <View className="flex flex-row items-center gap-2">
-              <Image
-                src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
-                className="size-[30px] rounded-lg"
-              />
-              <View className="flex flex-col justify-center gap-[1px]">
-                <Text className="font-bold" numberOfLines={1}>
-                  {branchData.findStore.name}
-                </Text>
-                {branchData.findBranch.address && (
-                  <Text className="w-[80%] text-xs" numberOfLines={1}>
-                    {branchData.findBranch.address.fullAddress}
+      navigation.setOptions({
+        header: (props: BottomTabHeaderProps) => (
+          <TabHeaderItem
+            {...props}
+            showSearch
+            leftNav={
+              <View className="flex flex-row items-center gap-2">
+                <Image
+                  src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
+                  className="size-[30px] rounded-lg"
+                />
+                <View className="flex flex-col justify-center gap-[1px]">
+                  <Text className="font-bold" numberOfLines={1}>
+                    {branchData.findStore.name}
                   </Text>
-                )}
+                  {branchData.findBranch.address && (
+                    <Text className="w-[80%] text-xs" numberOfLines={1}>
+                      {branchData.findBranch.address.fullAddress}
+                    </Text>
+                  )}
+                </View>
               </View>
-            </View>
-          }
-          rightNav={
-            <TouchableOpacity
-              onPress={() => {
-                if (!favorite) {
-                  setFavorite(true);
-                  addBranchToList({
+            }
+            rightNav={
+              <TouchableOpacity
+                onPress={() => {
+                  if (!favorite) {
+                    setFavorite(true);
+                    addBranchToList({
+                      variables: {
+                        branchId: +branchId,
+                        listId: lists.favorites.id,
+                      },
+                    }).catch(() => setFavorite(false));
+                    return;
+                  }
+                  setFavorite(false);
+                  removeBranchFromList({
                     variables: {
-                      branchId: +branchId,
+                      branchListId: lists.favorites.branchList?.find(
+                        (b) => b.branchId.toString() === branchId
+                      )?.id!,
                       listId: lists.favorites.id,
                     },
-                  }).catch(() => setFavorite(false));
-                  return;
-                }
-                setFavorite(false);
-                removeBranchFromList({
-                  variables: {
-                    branchListId: lists.favorites.branchList?.find(
-                      (b) => b.branchId.toString() === branchId
-                    )?.id!,
-                    listId: lists.favorites.id,
-                  },
-                });
-              }}
-              className="flex flex-row items-center gap-2 p-2">
-              <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
-            </TouchableOpacity>
-          }
-        />
-      ),
-    });
+                  });
+                }}
+                className="flex flex-row items-center gap-2 p-2">
+                <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+              </TouchableOpacity>
+            }
+          />
+        ),
+      });
 
-    setSubHeader(
-      <TabSubHeaderProductFilter
-        selectedCategoryId={categoryFilterInput?.id}
-        onSelectCategory={(c) => setCategoryFilterInput(c)}
-        onFiltersButtonPressed={() => {}}
-        hideFiltersButton
-      />
-    );
-  }, [favorite, branchData, categoryFilterInput]);
+      setSubHeader(
+        <TabSubHeaderProductFilter
+          selectedCategoryId={categoryFilterInput?.id}
+          onSelectCategory={(c) => setCategoryFilterInput(c)}
+          onFiltersButtonPressed={() => {}}
+          hideFiltersButton
+        />
+      );
+    }, [favorite, branchData, categoryFilterInput])
+  );
 
   if (productsLoading || !productsData) {
     return <RenderProductLoadingItems count={10} />;
