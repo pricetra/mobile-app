@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client';
 import convert from 'convert-units';
 import { useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { View, SafeAreaView, Platform, Text } from 'react-native';
 
 import BranchesWithProductsFlatlist, {
@@ -41,12 +41,16 @@ export default function HomeScreen() {
   const [address, setAddress] = useState(user.address?.fullAddress);
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
 
-  const searchVariables = {
-    query: search,
-    location: currentLocation.locationInput,
-    category: categoryFilterInput?.category,
-    categoryId: categoryFilterInput?.categoryId,
-  } as ProductSearch;
+  const searchVariables = useMemo(
+    () =>
+      ({
+        query: search,
+        location: currentLocation.locationInput,
+        category: categoryFilterInput?.category,
+        categoryId: categoryFilterInput?.categoryId,
+      }) as ProductSearch,
+    [search, currentLocation, categoryFilterInput]
+  );
 
   useFocusEffect(
     useCallback(() => {
