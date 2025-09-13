@@ -21,26 +21,30 @@ export type TabSubHeaderProductFilterProps = {
   selectedCategoryId?: string;
   onSelectCategory: (category: PartialCategory) => void;
   onFiltersButtonPressed: () => void;
+  hideFiltersButton?: boolean;
 };
 
 export default function TabSubHeaderProductFilter({
   selectedCategoryId,
   onSelectCategory,
   onFiltersButtonPressed,
+  hideFiltersButton = false,
 }: TabSubHeaderProductFilterProps) {
   return (
     <ScrollView horizontal>
       <View className="flex flex-row items-center justify-start gap-2 px-5 py-3">
-        <Button
-          className="mr-4 rounded-full px-4"
-          variant="secondary"
-          size="sm"
-          onPress={onFiltersButtonPressed}>
-          <View className="flex flex-row items-center justify-center gap-2">
-            <Ionicons name="filter" size={15} color="white" />
-            <Text className="text-sm font-bold text-white">Filters</Text>
-          </View>
-        </Button>
+        {!hideFiltersButton && (
+          <Button
+            className="mr-4 rounded-full px-4"
+            variant="secondary"
+            size="sm"
+            onPress={onFiltersButtonPressed}>
+            <View className="flex flex-row items-center justify-center gap-2">
+              <Ionicons name="filter" size={15} color="white" />
+              <Text className="text-sm font-bold text-white">Filters</Text>
+            </View>
+          </Button>
+        )}
 
         <View className="ml-1 mr-[15vh] flex flex-row items-center gap-2">
           {categories.map((c, i) => (
