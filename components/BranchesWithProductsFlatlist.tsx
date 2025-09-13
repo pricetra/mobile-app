@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
-import { RenderProductLoadingItems } from './ProductItem';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 
 import { SearchContext } from '@/context/SearchContext';

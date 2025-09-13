@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client';
 import convert from 'convert-units';
 import { useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { View, SafeAreaView, Platform, Text } from 'react-native';
 
 import BranchesWithProductsFlatlist, {
@@ -22,12 +22,17 @@ import { useAuth } from '@/context/UserContext';
 import { Branch, BranchesWithProductsDocument, ProductSearch } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 
+const PRODUCT_LIMIT = 10;
+
 export default function HomeScreen() {
   const { user } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
   const [getAllProducts, { data, error, loading, fetchMore }] = useLazyQuery(
-    BranchesWithProductsDocument
+    BranchesWithProductsDocument,
+    {
+      fetchPolicy: 'network-only',
+    }
   );
   const { search, searching, setSearching } = useContext(SearchContext);
   const { location, getCurrentLocation } = useLocationService();
@@ -36,12 +41,16 @@ export default function HomeScreen() {
   const [address, setAddress] = useState(user.address?.fullAddress);
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
 
-  const searchVariables = {
-    query: search,
-    location: currentLocation.locationInput,
-    category: categoryFilterInput?.category,
-    categoryId: categoryFilterInput?.categoryId,
-  } as ProductSearch;
+  const searchVariables = useMemo(
+    () =>
+      ({
+        query: search,
+        location: currentLocation.locationInput,
+        category: categoryFilterInput?.category,
+        categoryId: categoryFilterInput?.categoryId,
+      }) as ProductSearch,
+    [search, currentLocation, categoryFilterInput]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -56,25 +65,21 @@ export default function HomeScreen() {
     }, [categoryFilterInput])
   );
 
-  const loadProducts = useCallback(
-    async (page = 1, force = false) => {
-      if (!currentLocation) return Promise.resolve();
+  async function loadProducts(page = 1) {
+    if (!currentLocation) return Promise.resolve();
 
-      try {
-        return await getAllProducts({
-          variables: {
-            paginator: { limit: LIMIT, page },
-            productLimit: 10,
-            filters: { ...searchVariables },
-          },
-          fetchPolicy: force ? 'no-cache' : undefined,
-        });
-      } finally {
-        if (searching) setSearching(false);
-      }
-    },
-    [currentLocation, searchVariables, searching, setSearching, getAllProducts]
-  );
+    try {
+      return await getAllProducts({
+        variables: {
+          paginator: { limit: LIMIT, page },
+          productLimit: PRODUCT_LIMIT,
+          filters: { ...searchVariables },
+        },
+      });
+    } finally {
+      if (searching) setSearching(false);
+    }
+  }
 
   const loadMore = useCallback(() => {
     if (!data?.branchesWithProducts.paginator) return;
@@ -85,8 +90,10 @@ export default function HomeScreen() {
     return fetchMore({
       variables: {
         paginator: { limit: LIMIT, page: next },
+        productLimit: PRODUCT_LIMIT,
         ...searchVariables,
       },
+      // TODO: Fix
       updateQuery: (prev, { fetchMoreResult }) => ({
         ...prev,
         allProducts: {
@@ -98,15 +105,12 @@ export default function HomeScreen() {
         },
       }),
     });
-  }, [data, fetchMore, searchVariables]);
+  }, [data, searchVariables]);
 
   // Initial load and dependency changes
   useEffect(() => {
     loadProducts(1);
-  }, [currentLocation]);
-  useEffect(() => {
-    loadProducts(1, true);
-  }, [search, categoryFilterInput]);
+  }, [search, categoryFilterInput, currentLocation]);
 
   useEffect(() => {
     if (!location) return;
@@ -159,7 +163,7 @@ export default function HomeScreen() {
         />
       </ModalFormMini>
 
-      {(loading || searching) && <BranchesWithProductsFlatlistLoading />}
+      {loading && <BranchesWithProductsFlatlistLoading />}
 
       {error && (
         <SafeAreaView>
@@ -184,7 +188,7 @@ export default function HomeScreen() {
           paginator={data?.branchesWithProducts.paginator}
           handleRefresh={async () => {
             await getCurrentLocation({});
-            return loadProducts(1, true);
+            return loadProducts(1);
           }}
           setPage={loadMore}
           style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0, paddingTop: 10 }}

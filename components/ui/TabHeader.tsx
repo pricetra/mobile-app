@@ -24,7 +24,7 @@ const iconColor = '#333';
 export default function TabHeader(props: TabHeaderProps) {
   const { subHeader } = useHeader();
   const { openDrawer } = useDrawer();
-  const { search, handleSearch } = useContext(SearchContext);
+  const { search, handleSearch, setSearching, searching } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
   const [openSearch, setOpenSearch] = useState(false);
 
@@ -52,6 +52,7 @@ export default function TabHeader(props: TabHeaderProps) {
             onBackPressed={() => {
               updateSearch(null);
               setOpenSearch(false);
+              if (searching) setSearching(false);
             }}
             logoHeight={logoHeight}
             padding={padding}
