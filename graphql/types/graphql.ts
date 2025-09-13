@@ -775,6 +775,8 @@ export type ProductSearch = {
   categoryId?: InputMaybe<Scalars['ID']['input']>;
   location?: InputMaybe<LocationInput>;
   query?: InputMaybe<Scalars['String']['input']>;
+  sale?: InputMaybe<Scalars['Boolean']['input']>;
+  sortByPrice?: InputMaybe<Scalars['String']['input']>;
   storeId?: InputMaybe<Scalars['ID']['input']>;
 };
 
