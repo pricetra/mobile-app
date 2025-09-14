@@ -61,8 +61,7 @@ export default function SelectedBranchScreen() {
     () =>
       ({
         query: search,
-        category: categoryFilterInput?.category,
-        categoryId: categoryFilterInput?.categoryId,
+        categoryId: categoryFilterInput?.id,
         branchId: +branchId,
         storeId: +storeId,
       }) as ProductSearch,
@@ -73,7 +72,7 @@ export default function SelectedBranchScreen() {
     if (!categoryId) return;
     setCategoryFilterInput((c) => ({
       ...c,
-      id: categoryId,
+      id: categoryId !== 'undefined' ? categoryId : undefined,
     }));
   }, [categoryId]);
 

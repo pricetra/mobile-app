@@ -96,12 +96,11 @@ export default function BranchesWithProductsFlatlist({
                         if (categoryFilterInput.id) {
                           params.append('categoryId', encodeURIComponent(categoryFilterInput.id));
                         }
-
-                        if (categoryFilterInput.category) {
-                          params.append(
-                            'category',
-                            encodeURIComponent(categoryFilterInput.category)
-                          );
+                        if (
+                          !categoryFilterInput.id &&
+                          categoryFilterInput.name.toLowerCase() === 'all'
+                        ) {
+                          params.append('categoryId', 'undefined');
                         }
                       }
                       router.push(

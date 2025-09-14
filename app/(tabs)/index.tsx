@@ -46,8 +46,7 @@ export default function HomeScreen() {
       ({
         query: search,
         location: currentLocation.locationInput,
-        category: categoryFilterInput?.category,
-        categoryId: categoryFilterInput?.categoryId,
+        categoryId: categoryFilterInput?.id,
       }) as ProductSearch,
     [search, currentLocation, categoryFilterInput]
   );
