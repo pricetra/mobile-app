@@ -44,15 +44,26 @@ export default function ProductItemHorizontal({ product }: ProductItemHorizontal
       </View>
       <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
         <View className="flex flex-col gap-1">
+          <View className="mb-1 flex flex-row items-center gap-1">
+            {product.weightValue && product.weightType && (
+              <View className="rounded-full bg-green-300/30 px-2 py-1">
+                <Text className="text-[9px] color-black">
+                  {product.weightValue} {product.weightType}
+                </Text>
+              </View>
+            )}
+            {product.quantityValue && product.quantityType && (
+              <View className="rounded-full bg-blue-300/30 px-2 py-1">
+                <Text className="text-[9px] color-black">
+                  {product.quantityValue} {product.quantityType}
+                </Text>
+              </View>
+            )}
+          </View>
+
           <View className="flex flex-row flex-wrap items-center gap-2">
             {product.brand && product.brand !== 'N/A' && (
               <Text className="text-[10px]">{product.brand}</Text>
-            )}
-
-            {product.weightValue && product.weightType && (
-              <Text className="text-[10px]">
-                {product.weightValue} {product.weightType}
-              </Text>
             )}
           </View>
           <Text numberOfLines={2}>{product.name}</Text>

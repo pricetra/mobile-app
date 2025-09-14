@@ -33,11 +33,13 @@ import {
   FavoriteBranchesWithPricesDocument,
   GetAllListsDocument,
   GetAllProductListsByListIdDocument,
+  GetProductNutritionDataDocument,
   GetProductStocksDocument,
   ListType,
   Product,
   ProductDocument,
   ProductList,
+  ProductNutrition,
   RemoveFromListWithProductIdDocument,
   Stock,
   StockDocument,
@@ -63,6 +65,10 @@ export default function ProductScreen() {
   });
   const [getFavBranchesPrices, { data: favBranchesPriceData }] = useLazyQuery(
     FavoriteBranchesWithPricesDocument,
+    { fetchPolicy: 'network-only' }
+  );
+  const [getProductNutritionData, { data: productNutritionData }] = useLazyQuery(
+    GetProductNutritionDataDocument,
     { fetchPolicy: 'network-only' }
   );
   const [openPriceModal, setOpenPriceModal] = useState(false);
@@ -113,6 +119,7 @@ export default function ProductScreen() {
           productId: +productId,
         },
       });
+      getProductNutritionData({ variables: { productId: +productId } });
       return () => {
         setFavProductList(undefined);
         setWatchProductList(undefined);
@@ -343,12 +350,14 @@ export default function ProductScreen() {
             progressBackgroundColor="#111827"
           />
         }>
-        <ProductFull
-          product={productData.product as Product}
-          hideDescription
-          hideEditButton
-          onEditButtonPress={() => setOpenEditModal(true)}
-        />
+        <View className="mt-5">
+          <ProductFull
+            product={productData.product as Product}
+            hideDescription
+            hideEditButton
+            onEditButtonPress={() => setOpenEditModal(true)}
+          />
+        </View>
 
         <ModalFormMini
           visible={selectedStock !== undefined}
@@ -377,6 +386,9 @@ export default function ProductScreen() {
             (favBranchesPriceData?.getFavoriteBranchesWithPrices ?? []) as BranchListWithPrices[]
           }
           product={productData.product}
+          productNutrition={
+            productNutritionData?.getProductNutritionData as ProductNutrition | undefined
+          }
         />
 
         <View className="h-[100px]" />

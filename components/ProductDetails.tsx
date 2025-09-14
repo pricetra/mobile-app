@@ -6,6 +6,7 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 
 import FullStockView from './FullStockView';
+import NutritionFacts from './NutritionFacts';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
 import ModalFormMini from './ui/ModalFormMini';
@@ -14,7 +15,7 @@ import StockFull from '@/components/StockFull';
 import Btn from '@/components/ui/Btn';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/UserContext';
-import { BranchListWithPrices, Product, Stock } from '@/graphql/types/graphql';
+import { BranchListWithPrices, Product, ProductNutrition, Stock } from '@/graphql/types/graphql';
 import { metersToMiles } from '@/lib/utils';
 
 export type StockWithApproximatePrice = Stock & {
@@ -25,9 +26,15 @@ export type ProductDetailsProps = {
   favBranchesPriceData: BranchListWithPrices[];
   product: Product;
   stocks: Stock[];
+  productNutrition?: ProductNutrition;
 };
 
-export function ProductDetails({ favBranchesPriceData, stocks, product }: ProductDetailsProps) {
+export function ProductDetails({
+  favBranchesPriceData,
+  stocks,
+  product,
+  productNutrition,
+}: ProductDetailsProps) {
   const { lists } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const [activeSections, setActiveSections] = useState<number[]>([]);
@@ -203,6 +210,22 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
               </View>
             ),
           },
+          productNutrition &&
+            (productNutrition.nutriments || productNutrition.ingredientList) && {
+              title: 'Nutrition Facts',
+              content: (
+                <View>
+                  {productNutrition.nutriments && <NutritionFacts {...productNutrition} />}
+
+                  <View className="mt-7">
+                    <Text className="mb-1.5 text-xl font-bold">Ingredients</Text>
+                    {productNutrition.ingredientText && (
+                      <Text>{productNutrition.ingredientText}</Text>
+                    )}
+                  </View>
+                </View>
+              ),
+            },
           {
             title: 'Description',
             content: (
@@ -219,27 +242,31 @@ export function ProductDetails({ favBranchesPriceData, stocks, product }: Produc
             title: 'Specifications',
             content: <ProductSpecs product={product} />,
           },
-        ]}
-        renderHeader={(section, _i, isActive) => (
-          <View className="flex flex-row items-center justify-between gap-5 px-5 py-3">
-            <View className="flex flex-1 flex-row items-center justify-between gap-3">
-              <Text className="text-xl font-extrabold">{section.title}</Text>
+        ].filter((x) => x !== undefined)}
+        renderHeader={(section, _i, isActive) =>
+          section ? (
+            <View className="flex flex-row items-center justify-between gap-5 px-5 py-3">
+              <View className="flex flex-1 flex-row items-center justify-between gap-3">
+                <Text className="text-xl font-extrabold">{section.title}</Text>
 
-              {section.badge && (
-                <Text className="size-6 rounded-full bg-pricetraGreenHeavyDark py-1 text-center text-xs font-bold color-white">
-                  {section.badge}
-                </Text>
+                {section.badge && (
+                  <Text className="size-6 rounded-full bg-pricetraGreenHeavyDark py-1 text-center text-xs font-bold color-white">
+                    {section.badge}
+                  </Text>
+                )}
+              </View>
+
+              {isActive ? (
+                <Feather name="chevron-up" size={24} color="black" />
+              ) : (
+                <Feather name="chevron-down" size={24} color="black" />
               )}
             </View>
-
-            {isActive ? (
-              <Feather name="chevron-up" size={24} color="black" />
-            ) : (
-              <Feather name="chevron-down" size={24} color="black" />
-            )}
-          </View>
-        )}
-        renderContent={(section, i) => <View className="px-5 py-3">{section.content}</View>}
+          ) : (
+            <></>
+          )
+        }
+        renderContent={(section, i) => <View className="px-5 py-3">{section?.content}</View>}
         keyExtractor={(_props, i) => i}
         sectionContainerStyle={{ marginBottom: 20, width: '100%', height: 'auto' }}
         containerStyle={{ marginTop: 20 }}
