@@ -83,14 +83,14 @@ export default function BranchesWithProductsFlatlist({
                   className="mx-5 flex flex-col items-start justify-center"
                   style={{ width: width / 3, height: width / 2 }}>
                   <TouchableOpacity
-                    className="flex size-24 flex-col items-center justify-center gap-1 rounded-xl border-[1px] border-pricetraGreenHeavyDark/20 bg-pricetraGreenHeavyDark/5"
+                    className="flex size-24 flex-col items-center justify-center gap-1 rounded-xl border-[1px] border-gray-200 bg-gray-50"
                     onPress={() => {
                       router.push(
                         `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?searchQuery=${encodeURIComponent(search ?? '')}`
                       );
                     }}>
-                    <AntDesign name="arrowright" size={25} color="#396a12" />
-                    <Text className="text-xs color-pricetraGreenHeavyDark">Show All</Text>
+                    <AntDesign name="arrowright" size={25} color="#4b5563" />
+                    <Text className="text-xs color-gray-600">Show All</Text>
                   </TouchableOpacity>
                 </View>
               )}
