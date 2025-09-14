@@ -16,6 +16,7 @@ import {
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
+import { PartialCategory } from './ui/TabSubHeaderProductFilter';
 
 import { SearchContext } from '@/context/SearchContext';
 import {
@@ -34,6 +35,7 @@ export type BranchesWithProductsFlatlistProps = {
   >>;
   setPage: (page: number) => void;
   style?: StyleProp<ViewStyle>;
+  categoryFilterInput?: PartialCategory;
 };
 
 export default function BranchesWithProductsFlatlist({
@@ -42,6 +44,7 @@ export default function BranchesWithProductsFlatlist({
   handleRefresh,
   setPage,
   style,
+  categoryFilterInput,
 }: BranchesWithProductsFlatlistProps) {
   const { width } = useWindowDimensions();
   const [refreshing, setRefreshing] = useState(false);
@@ -85,8 +88,24 @@ export default function BranchesWithProductsFlatlist({
                   <TouchableOpacity
                     className="flex size-24 flex-col items-center justify-center gap-1 rounded-xl border-[1px] border-gray-200 bg-gray-50"
                     onPress={() => {
+                      const params = new URLSearchParams();
+                      if (search && search.length > 0) {
+                        params.append('searchQuery', encodeURIComponent(search));
+                      }
+                      if (categoryFilterInput) {
+                        if (categoryFilterInput.id) {
+                          params.append('categoryId', encodeURIComponent(categoryFilterInput.id));
+                        }
+
+                        if (categoryFilterInput.category) {
+                          params.append(
+                            'category',
+                            encodeURIComponent(categoryFilterInput.category)
+                          );
+                        }
+                      }
                       router.push(
-                        `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?searchQuery=${encodeURIComponent(search ?? '')}`
+                        `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`
                       );
                     }}>
                     <AntDesign name="arrowright" size={25} color="#4b5563" />

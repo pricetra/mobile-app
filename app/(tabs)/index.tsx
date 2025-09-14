@@ -192,6 +192,7 @@ export default function HomeScreen() {
           }}
           setPage={loadMore}
           style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0, paddingTop: 10 }}
+          categoryFilterInput={categoryFilterInput}
         />
       )}
     </SafeAreaView>
