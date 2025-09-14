@@ -79,17 +79,20 @@ export default function BranchesWithProductsFlatlist({
               )}
               style={{ padding: 15 }}
               ListFooterComponent={() => (
-                <TouchableOpacity
-                  className="mx-5 flex flex-col items-center justify-center gap-3 rounded-lg bg-gray-100"
-                  style={{ width: width / 3, height: width / 3 }}
-                  onPress={() => {
-                    router.push(
-                      `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?searchQuery=${encodeURIComponent(search ?? '')}`
-                    );
-                  }}>
-                  <AntDesign name="arrowright" size={24} color="black" />
-                  <Text>Show All</Text>
-                </TouchableOpacity>
+                <View
+                  className="mx-5 flex flex-col items-start justify-center"
+                  style={{ width: width / 3, height: width / 2 }}>
+                  <TouchableOpacity
+                    className="flex size-24 flex-col items-center justify-center gap-1 rounded-xl border-[1px] border-pricetraGreenHeavyDark/20 bg-pricetraGreenHeavyDark/5"
+                    onPress={() => {
+                      router.push(
+                        `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?searchQuery=${encodeURIComponent(search ?? '')}`
+                      );
+                    }}>
+                    <AntDesign name="arrowright" size={25} color="#396a12" />
+                    <Text className="text-xs color-pricetraGreenHeavyDark">Show All</Text>
+                  </TouchableOpacity>
+                </View>
               )}
             />
           </View>

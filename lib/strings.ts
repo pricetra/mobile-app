@@ -21,7 +21,7 @@ export function formatNutrient(value?: number | null): string {
   if (value == null) return '0';
 
   // Round to 2 decimals max
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(value);
