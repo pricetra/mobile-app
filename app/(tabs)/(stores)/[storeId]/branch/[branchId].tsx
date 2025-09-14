@@ -43,10 +43,10 @@ export default function SelectedBranchScreen() {
     fetchPolicy: 'network-only',
   });
   const [favorite, setFavorite] = useState<boolean>();
-  const [
-    getAllProducts,
-    { data: productsData, loading: productsLoading, fetchMore: fetchMoreProducts },
-  ] = useLazyQuery(AllProductsDocument, { fetchPolicy: 'network-only' });
+  const [getAllProducts, { data: productsData, loading: productsLoading }] = useLazyQuery(
+    AllProductsDocument,
+    { fetchPolicy: 'network-only' }
+  );
   const [addBranchToList] = useMutation(AddBranchToListDocument, {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
@@ -54,6 +54,7 @@ export default function SelectedBranchScreen() {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
   const { setSubHeader } = useHeader();
+  const [page, setPage] = useState(1);
 
   const searchVariables = useMemo(
     () =>
@@ -81,36 +82,13 @@ export default function SelectedBranchScreen() {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (!branchData || !searchVariables.branchId || !searchVariables.storeId) return;
-
     getAllProducts({
       variables: {
-        paginator: { limit: LIMIT, page: 1 },
+        paginator: { limit: LIMIT, page },
         search: { ...searchVariables },
       },
     });
-  }, [branchData, searchVariables]);
-
-  const loadMore = useCallback(() => {
-    if (!productsData?.allProducts.paginator) return;
-
-    const { next } = productsData.allProducts.paginator;
-    if (!next) return;
-
-    return fetchMoreProducts({
-      variables: {
-        paginator: { limit: LIMIT, page: next },
-        search: { ...searchVariables },
-      },
-      updateQuery: (prev, { fetchMoreResult }) => ({
-        ...prev,
-        allProducts: {
-          ...fetchMoreResult.allProducts,
-          products: [...prev.allProducts.products, ...fetchMoreResult.allProducts.products],
-        },
-      }),
-    });
-  }, [productsData, fetchMoreProducts]);
+  }, [searchVariables, page]);
 
   useFocusEffect(
     useCallback(() => {
@@ -208,17 +186,19 @@ export default function SelectedBranchScreen() {
     }, [favorite, branchData, categoryFilterInput])
   );
 
-  if (productsLoading || !productsData) {
+  if (productsLoading) {
     return <RenderProductLoadingItems count={10} />;
   }
 
-  if (productsData.allProducts.products.length === 0) {
+  if (productsData && productsData.allProducts.products.length === 0) {
     return (
       <View className="flex items-center justify-center px-5 py-36">
         <Text className="text-center">No products found</Text>
       </View>
     );
   }
+
+  if (!productsData) return <></>;
 
   const products = (productsData?.allProducts.products as Product[]) || [];
   return (
@@ -228,12 +208,12 @@ export default function SelectedBranchScreen() {
       handleRefresh={async () => {
         return getAllProducts({
           variables: {
-            paginator: { limit: LIMIT, page: 1 },
+            paginator: { limit: LIMIT, page },
             search: { ...searchVariables },
           },
         });
       }}
-      setPage={loadMore}
+      setPage={setPage}
     />
   );
 }
