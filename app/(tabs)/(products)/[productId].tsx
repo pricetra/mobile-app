@@ -350,12 +350,14 @@ export default function ProductScreen() {
             progressBackgroundColor="#111827"
           />
         }>
-        <ProductFull
-          product={productData.product as Product}
-          hideDescription
-          hideEditButton
-          onEditButtonPress={() => setOpenEditModal(true)}
-        />
+        <View className="mt-5">
+          <ProductFull
+            product={productData.product as Product}
+            hideDescription
+            hideEditButton
+            onEditButtonPress={() => setOpenEditModal(true)}
+          />
+        </View>
 
         <ModalFormMini
           visible={selectedStock !== undefined}

@@ -25,7 +25,7 @@ export default function ProductFull({
 
   return (
     <View className="flex flex-col gap-3">
-      <View className="relative p-5" style={{ width, height: width }}>
+      <View className="relative mx-auto p-5" style={{ width: width / 1.5, height: width / 1.5 }}>
         {!hideEditButton && onEditButtonPress && (
           <View className="absolute right-7 top-7 z-50">
             <TouchableOpacity onPress={onEditButtonPress}>
@@ -40,19 +40,29 @@ export default function ProductFull({
 
       <View className="p-5">
         <View className="flex flex-col gap-2">
+          <View className="mb-5 flex flex-row items-center gap-3">
+            {product.weightValue && product.weightType && (
+              <View className="rounded-full bg-green-300/30 px-3 py-1">
+                <Text className="text-sm color-black">
+                  {product.weightValue} {product.weightType}
+                </Text>
+              </View>
+            )}
+            {product.quantityValue && product.quantityType && (
+              <View className="rounded-full bg-blue-300/30 px-3 py-1">
+                <Text className="text-sm color-black">
+                  {product.quantityValue} {product.quantityType}
+                </Text>
+              </View>
+            )}
+          </View>
+
           <View className="flex flex-row flex-wrap items-center gap-1">
             {product.brand && product.brand !== 'N/A' && (
               <Text className="font-semibold">{product.brand}</Text>
             )}
-            {product.weightValue && product.weightType && (
-              <>
-                <Entypo name="dot-single" size={20} color="black" />
-                <Text>
-                  {product.weightValue} {product.weightType}
-                </Text>
-              </>
-            )}
           </View>
+
           <Text className="text-2xl font-bold">{product.name}</Text>
           {product.category && (
             <View className="flex flex-row flex-wrap items-center gap-1">
@@ -80,7 +90,7 @@ export function ProductFullLoading() {
   const { width } = useWindowDimensions();
   return (
     <View className="flex flex-col gap-3">
-      <View className="p-5" style={{ width, height: width }}>
+      <View className="mx-auto p-5" style={{ width, height: width / 1.5 }}>
         <Skeleton className="h-full w-full rounded-xl bg-gray-400" />
       </View>
 
