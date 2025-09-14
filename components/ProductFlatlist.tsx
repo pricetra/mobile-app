@@ -11,8 +11,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import PaginationSimple from './PaginationSimple';
 import ProductItem from './ProductItem';
+import PaginationSimple from './ui/PaginationSimple';
 
 import {
   AllProductsQuery,

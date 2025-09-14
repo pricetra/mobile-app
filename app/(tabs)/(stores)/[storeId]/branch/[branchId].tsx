@@ -3,7 +3,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 
 import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
@@ -202,18 +202,22 @@ export default function SelectedBranchScreen() {
 
   const products = (productsData?.allProducts.products as Product[]) || [];
   return (
-    <ProductFlatlist
-      products={products}
-      paginator={productsData?.allProducts.paginator}
-      handleRefresh={async () => {
-        return getAllProducts({
-          variables: {
-            paginator: { limit: LIMIT, page },
-            search: { ...searchVariables },
-          },
-        });
-      }}
-      setPage={setPage}
-    />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1">
+      <ProductFlatlist
+        products={products}
+        paginator={productsData?.allProducts.paginator}
+        handleRefresh={async () => {
+          return getAllProducts({
+            variables: {
+              paginator: { limit: LIMIT, page },
+              search: { ...searchVariables },
+            },
+          });
+        }}
+        setPage={setPage}
+      />
+    </KeyboardAvoidingView>
   );
 }

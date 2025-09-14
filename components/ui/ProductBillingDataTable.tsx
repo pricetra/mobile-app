@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { FlatList, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import Pagination from './Pagination';
+import PaginationSimple from './PaginationSimple';
 import { Skeleton } from './Skeleton';
 
 import {
@@ -83,7 +83,7 @@ export default function ProductBillingDataTable({
             return (
               <TableRow
                 key={item.id}
-                className={cn('active:bg-[#cfcfcf]', index % 2 && 'bg-gray-100', 'pl-0 pr-5')}>
+                className={cn('active:bg-gray-100', index % 2 && 'bg-gray-50', 'pl-0 pr-5')}>
                 <TableCell style={{ width: MIN_COLUMN_WIDTHS[0] }}>
                   {loading ? <Skeleton className="h-[20px] w-[50px]" /> : <Text>{item.id}</Text>}
                 </TableCell>
@@ -122,7 +122,7 @@ export default function ProductBillingDataTable({
           ListFooterComponent={() => (
             <TableFooter className="mb-[150px] w-screen p-5">
               {paginator && curPage && onPageChange && (
-                <Pagination paginator={paginator} curPage={curPage} onPageChange={onPageChange} />
+                <PaginationSimple paginator={paginator} onPageChange={onPageChange} />
               )}
             </TableFooter>
           )}

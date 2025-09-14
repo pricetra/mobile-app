@@ -1,7 +1,8 @@
 import * as TablePrimitive from '@rn-primitives/table';
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+
 import { TextClassContext } from '@/components/ui/Text';
+import { cn } from '@/lib/utils';
 
 const Table = React.forwardRef<TablePrimitive.RootRef, TablePrimitive.RootProps>(
   ({ className, ...props }, ref) => (
@@ -18,7 +19,7 @@ const TableHeader = React.forwardRef<TablePrimitive.HeaderRef, TablePrimitive.He
   ({ className, ...props }, ref) => (
     <TablePrimitive.Header
       ref={ref}
-      className={cn('border-[#bdbdbd] [&_tr]:border-b', className)}
+      className={cn('border-gray-200 [&_tr]:border-b', className)}
       {...props}
     />
   )
@@ -29,7 +30,7 @@ const TableBody = React.forwardRef<TablePrimitive.BodyRef, TablePrimitive.BodyPr
   ({ className, style, ...props }, ref) => (
     <TablePrimitive.Body
       ref={ref}
-      className={cn('flex-1 border-[#bdbdbd] [&_tr:last-child]:border-0', className)}
+      className={cn('flex-1 border-gray-200 [&_tr:last-child]:border-0', className)}
       style={[{ minHeight: 2 }, style]}
       {...props}
     />
@@ -53,7 +54,7 @@ const TableRow = React.forwardRef<TablePrimitive.RowRef, TablePrimitive.RowProps
     <TablePrimitive.Row
       ref={ref}
       className={cn(
-        'flex-row border-b border-[#bdbdbd] web:transition-colors web:hover:bg-muted/50 web:data-[state=selected]:bg-muted',
+        'flex-row border-b border-gray-200 web:transition-colors web:hover:bg-muted/50 web:data-[state=selected]:bg-muted',
         className
       )}
       {...props}
@@ -64,11 +65,11 @@ TableRow.displayName = 'TableRow';
 
 const TableHead = React.forwardRef<TablePrimitive.HeadRef, TablePrimitive.HeadProps>(
   ({ className, ...props }, ref) => (
-    <TextClassContext.Provider value='text-muted-foreground'>
+    <TextClassContext.Provider value="text-muted-foreground">
       <TablePrimitive.Head
         ref={ref}
         className={cn(
-          'h-12 px-4 text-left justify-center font-medium [&:has([role=checkbox])]:pr-0',
+          'h-12 justify-center px-4 text-left font-medium [&:has([role=checkbox])]:pr-0',
           className
         )}
         {...props}
