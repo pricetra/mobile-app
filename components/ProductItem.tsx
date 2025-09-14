@@ -1,4 +1,3 @@
-import { Entypo } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import { View, Text, useWindowDimensions } from 'react-native';
 
