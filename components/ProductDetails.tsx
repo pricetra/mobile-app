@@ -217,12 +217,15 @@ export function ProductDetails({
                 <View>
                   {productNutrition.nutriments && <NutritionFacts {...productNutrition} />}
 
-                  <View className="mt-7">
-                    <Text className="mb-1.5 text-xl font-bold">Ingredients</Text>
-                    {productNutrition.ingredientText && (
-                      <Text>{productNutrition.ingredientText}</Text>
+                  {productNutrition.ingredientList &&
+                    productNutrition.ingredientList.length > 0 && (
+                      <View className="mt-7">
+                        <Text className="mb-1.5 text-xl font-bold">Ingredients</Text>
+                        <Text>
+                          {productNutrition.ingredientList.map((i) => i.toUpperCase()).join(', ')}
+                        </Text>
+                      </View>
                     )}
-                  </View>
                 </View>
               ),
             },

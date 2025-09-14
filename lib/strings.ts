@@ -17,6 +17,16 @@ export function postgresArrayToNumericArray(rawArray: string): number[] {
   return strArray.map((v) => parseInt(v, 10));
 }
 
+export function formatNutrient(value?: number | null): string {
+  if (value == null) return '0';
+
+  // Round to 2 decimals max
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
 export function enumToNormalizedString(e: any): string {
   return titleCase(e.toString().split('_').join(' '));
 }
