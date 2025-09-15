@@ -1,8 +1,9 @@
+import { useMutation } from '@apollo/client';
 import { AntDesign, Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Linking } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 
 import FullStockView from './FullStockView';
@@ -15,7 +16,14 @@ import StockFull from '@/components/StockFull';
 import Btn from '@/components/ui/Btn';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/UserContext';
-import { BranchListWithPrices, Product, ProductNutrition, Stock } from '@/graphql/types/graphql';
+import {
+  BranchListWithPrices,
+  GetProductNutritionDataDocument,
+  Product,
+  ProductNutrition,
+  Stock,
+  UpdateProductNutritionDataDocument,
+} from '@/graphql/types/graphql';
 import { metersToMiles } from '@/lib/utils';
 
 export type StockWithApproximatePrice = Stock & {
@@ -40,6 +48,15 @@ export function ProductDetails({
   const [activeSections, setActiveSections] = useState<number[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock>();
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
+  const [updateProductNutrition, { loading: updatingProductNutrition }] = useMutation(
+    UpdateProductNutritionDataDocument,
+    {
+      variables: {
+        productId: product.id,
+      },
+      refetchQueries: [GetProductNutritionDataDocument],
+    }
+  );
 
   useEffect(() => {
     if (stocks.length === 0) return;
@@ -215,6 +232,30 @@ export function ProductDetails({
               title: 'Nutrition Facts',
               content: (
                 <View>
+                  <View className="mb-10 flex flex-row items-center justify-end gap-2">
+                    <Btn
+                      text="Edit"
+                      size="sm"
+                      rounded="full"
+                      className="bg-gray-700"
+                      icon={<Feather name="edit" size={15} color="white" />}
+                      onPress={() => {
+                        Linking.openURL(
+                          `https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=${product.code}`
+                        );
+                      }}
+                    />
+
+                    <Btn
+                      text="Refetch"
+                      size="sm"
+                      rounded="full"
+                      icon={<Ionicons name="refresh" size={17} color="white" />}
+                      onPress={() => updateProductNutrition()}
+                      loading={updatingProductNutrition}
+                    />
+                  </View>
+
                   {productNutrition.nutriments && <NutritionFacts {...productNutrition} />}
 
                   {productNutrition.ingredientList &&
