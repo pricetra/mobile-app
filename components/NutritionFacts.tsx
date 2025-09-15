@@ -1,13 +1,9 @@
 import { View, Text } from 'react-native';
 
 import { ProductNutrition } from '@/graphql/types/graphql';
+import { formatNutrient } from '@/lib/strings';
 
-export default function NutritionFacts({
-  nutriments,
-  servingSize,
-  servingSizeUnit,
-  servingSizeValue,
-}: ProductNutrition) {
+export default function NutritionFacts({ nutriments, servingSize }: ProductNutrition) {
   if (!nutriments) return;
   return (
     <View className="mx-auto w-72 border border-black bg-white p-3">
@@ -20,7 +16,9 @@ export default function NutritionFacts({
       <View className="flex-row items-end justify-between">
         <Text className="text-lg font-bold text-black">Calories</Text>
         <Text className="text-2xl font-extrabold text-black">
-          {nutriments.energyKcalServing ?? nutriments.energyKcal100g}
+          {formatNutrient(
+            Math.round(nutriments.energyKcalServing ?? nutriments.energyKcal100g ?? 0)
+          )}
         </Text>
       </View>
 
@@ -134,7 +132,7 @@ function Row({
     <View className="flex-row justify-between">
       <Text className={`text-xs text-black ${bold ? 'font-bold' : ''}`}>{label}</Text>
       <Text className={`text-xs text-black ${bold ? 'font-bold' : ''}`}>
-        {value}
+        {formatNutrient(value)}
         {unit}
       </Text>
     </View>
@@ -155,7 +153,7 @@ function RowSub({
     <View className="flex-row justify-between pl-4">
       <Text className="text-xs text-black">{label}</Text>
       <Text className="text-xs text-black">
-        {value.toPrecision(2)}
+        {formatNutrient(value)}
         {unit}
       </Text>
     </View>

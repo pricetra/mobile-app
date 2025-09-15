@@ -5,17 +5,17 @@ import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
 const categories: PartialCategory[] = [
-  { id: undefined, name: 'All', category: undefined },
-  { id: '464', name: 'Milk', category: 'Milk' },
-  { id: '478', name: 'Eggs', categoryId: '478' },
-  { id: '509', name: 'Produce', category: 'Produce' },
-  { id: '490', name: 'Bread', category: 'Bread' },
-  { id: '635', name: 'Pasta', category: 'Pasta' },
-  { id: '965', name: 'Rice', category: 'Rice' },
-  { id: '474', name: 'Butter', category: 'Butter' },
+  { id: undefined, name: 'All' },
+  { id: '464', name: 'Milk' },
+  { id: '478', name: 'Eggs' },
+  { id: '509', name: 'Produce' },
+  { id: '490', name: 'Bread' },
+  { id: '635', name: 'Pasta' },
+  { id: '965', name: 'Rice' },
+  { id: '474', name: 'Butter' },
 ];
 
-export type PartialCategory = { id?: string; name: string; category?: string; categoryId?: string };
+export type PartialCategory = { id?: string; name: string };
 
 export type TabSubHeaderProductFilterProps = {
   selectedCategoryId?: string;

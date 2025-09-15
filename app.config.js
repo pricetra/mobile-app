@@ -1,9 +1,11 @@
+import pkg from './package.json';
+
 const IS_DEV = process.env.APP_VARIANT === 'development';
 
 export default {
   name: IS_DEV ? 'Pricetra (Dev)' : 'Pricetra',
   slug: 'pricetra',
-  version: '1.0.24',
+  version: pkg.version,
   orientation: 'portrait',
   scheme: 'pricetra',
   userInterfaceStyle: 'automatic',

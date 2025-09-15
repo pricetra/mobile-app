@@ -366,3 +366,14 @@ export const REGISTER_EXPO_PUSH_TOKEN = gql(`
     }
   }
 `);
+
+export const UPDATE_PRODUCT_NUTRITION_MUTATION = gql(`
+  mutation UpdateProductNutritionData($productId: ID!) {
+    updateProductNutritionData(productId: $productId) {
+      productId
+      openfoodfactsUpdatedAt
+      createdAt
+      updatedAt
+    }
+  }
+`);

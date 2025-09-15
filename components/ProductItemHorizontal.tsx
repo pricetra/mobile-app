@@ -42,7 +42,7 @@ export default function ProductItemHorizontal({ product }: ProductItemHorizontal
           style={{ width: width / 3, height: width / 3 }}
         />
       </View>
-      <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
+      <View className="flex max-w-full flex-1 flex-col justify-between gap-2">
         <View className="flex flex-col gap-1">
           <View className="mb-1 flex flex-row items-center gap-1">
             {product.weightValue && product.weightType && (

@@ -1,4 +1,4 @@
-import { Entypo, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
@@ -21,14 +21,15 @@ export default function BranchProductItem({ branch }: BranchProductItemProps) {
             className="size-[40px] rounded-lg"
           />
           <View className="flex flex-col items-center gap-1">
-            <View className="flex w-full flex-row items-center gap-1">
+            <View className="flex w-full flex-row items-center gap-3">
               <Text className="text-md font-bold">{branch.store?.name}</Text>
 
               {branch.address?.distance && (
-                <>
-                  <Entypo name="dot-single" size={15} color="black" />
-                  <Text className="text-sm">{metersToMiles(branch.address.distance)} mi</Text>
-                </>
+                <View className="rounded-full bg-pricetraGreenDark/10 px-2 py-0.5">
+                  <Text className="text-xs color-pricetraGreenHeavyDark">
+                    {metersToMiles(branch.address.distance)} mi
+                  </Text>
+                </View>
               )}
             </View>
 

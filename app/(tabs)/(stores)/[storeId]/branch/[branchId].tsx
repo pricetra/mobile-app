@@ -3,7 +3,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 
 import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
@@ -33,20 +33,21 @@ export default function SelectedBranchScreen() {
   const { lists } = useAuth();
   const { search, handleSearch, setSearching } = useContext(SearchContext);
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
-  const { storeId, branchId, searchQuery, categoryId } = useLocalSearchParams<{
+  const { storeId, branchId, searchQuery, categoryId, category } = useLocalSearchParams<{
     storeId: string;
     branchId: string;
     searchQuery?: string;
     categoryId?: string;
+    category?: string;
   }>();
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
   });
   const [favorite, setFavorite] = useState<boolean>();
-  const [
-    getAllProducts,
-    { data: productsData, loading: productsLoading, fetchMore: fetchMoreProducts },
-  ] = useLazyQuery(AllProductsDocument, { fetchPolicy: 'network-only' });
+  const [getAllProducts, { data: productsData, loading: productsLoading }] = useLazyQuery(
+    AllProductsDocument,
+    { fetchPolicy: 'network-only' }
+  );
   const [addBranchToList] = useMutation(AddBranchToListDocument, {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
@@ -54,13 +55,13 @@ export default function SelectedBranchScreen() {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
   const { setSubHeader } = useHeader();
+  const [page, setPage] = useState(1);
 
   const searchVariables = useMemo(
     () =>
       ({
         query: search,
-        category: categoryFilterInput?.category,
-        categoryId: categoryFilterInput?.categoryId,
+        categoryId: categoryFilterInput?.id,
         branchId: +branchId,
         storeId: +storeId,
       }) as ProductSearch,
@@ -71,9 +72,17 @@ export default function SelectedBranchScreen() {
     if (!categoryId) return;
     setCategoryFilterInput((c) => ({
       ...c,
-      categoryId,
+      id: categoryId !== 'undefined' ? categoryId : undefined,
     }));
   }, [categoryId]);
+
+  useEffect(() => {
+    if (!category) return;
+    setCategoryFilterInput((c) => ({
+      ...c,
+      category,
+    }));
+  }, [category]);
 
   useEffect(() => {
     if (!searchQuery || searchQuery.trim().length === 0) return;
@@ -81,36 +90,13 @@ export default function SelectedBranchScreen() {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (!branchData || !searchVariables.branchId || !searchVariables.storeId) return;
-
     getAllProducts({
       variables: {
-        paginator: { limit: LIMIT, page: 1 },
+        paginator: { limit: LIMIT, page },
         search: { ...searchVariables },
       },
     });
-  }, [branchData, searchVariables]);
-
-  const loadMore = useCallback(() => {
-    if (!productsData?.allProducts.paginator) return;
-
-    const { next } = productsData.allProducts.paginator;
-    if (!next) return;
-
-    return fetchMoreProducts({
-      variables: {
-        paginator: { limit: LIMIT, page: next },
-        search: { ...searchVariables },
-      },
-      updateQuery: (prev, { fetchMoreResult }) => ({
-        ...prev,
-        allProducts: {
-          ...fetchMoreResult.allProducts,
-          products: [...prev.allProducts.products, ...fetchMoreResult.allProducts.products],
-        },
-      }),
-    });
-  }, [productsData, fetchMoreProducts]);
+  }, [searchVariables, page]);
 
   useFocusEffect(
     useCallback(() => {
@@ -208,11 +194,11 @@ export default function SelectedBranchScreen() {
     }, [favorite, branchData, categoryFilterInput])
   );
 
-  if (productsLoading || !productsData) {
+  if (productsLoading) {
     return <RenderProductLoadingItems count={10} />;
   }
 
-  if (productsData.allProducts.products.length === 0) {
+  if (productsData && productsData.allProducts.products.length === 0) {
     return (
       <View className="flex items-center justify-center px-5 py-36">
         <Text className="text-center">No products found</Text>
@@ -220,20 +206,26 @@ export default function SelectedBranchScreen() {
     );
   }
 
+  if (!productsData) return <></>;
+
   const products = (productsData?.allProducts.products as Product[]) || [];
   return (
-    <ProductFlatlist
-      products={products}
-      paginator={productsData?.allProducts.paginator}
-      handleRefresh={async () => {
-        return getAllProducts({
-          variables: {
-            paginator: { limit: LIMIT, page: 1 },
-            search: { ...searchVariables },
-          },
-        });
-      }}
-      setPage={loadMore}
-    />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1">
+      <ProductFlatlist
+        products={products}
+        paginator={productsData?.allProducts.paginator}
+        handleRefresh={async () => {
+          return getAllProducts({
+            variables: {
+              paginator: { limit: LIMIT, page },
+              search: { ...searchVariables },
+            },
+          });
+        }}
+        setPage={setPage}
+      />
+    </KeyboardAvoidingView>
   );
 }

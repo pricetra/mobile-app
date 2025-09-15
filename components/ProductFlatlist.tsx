@@ -11,7 +11,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import ProductItem, { RenderProductLoadingItems } from './ProductItem';
+import ProductItem from './ProductItem';
+import PaginationSimple from './ui/PaginationSimple';
 
 import {
   AllProductsQuery,
@@ -26,7 +27,6 @@ export type ProductFlatlistProps = {
   handleRefresh: () => Promise<void | QueryResult<AllProductsQuery, QueryAllProductsArgs>>;
   setPage: (page: number) => void;
   style?: StyleProp<ViewStyle>;
-  onItemLongPress?: (product: Product) => void;
   onItemPress?: (product: Product) => void;
 };
 
@@ -36,7 +36,6 @@ export default function ProductFlatlist({
   handleRefresh,
   setPage,
   style,
-  onItemLongPress,
   onItemPress,
 }: ProductFlatlistProps) {
   const [refreshing, setRefreshing] = useState(false);
@@ -47,7 +46,7 @@ export default function ProductFlatlist({
       keyExtractor={({ id }, i) => `${id}-${i}`}
       indicatorStyle="black"
       renderItem={({ item }) => (
-        <View className="mb-10">
+        <View className="p-5">
           <TouchableOpacity
             onPress={() => {
               if (onItemPress) onItemPress(item);
@@ -70,18 +69,10 @@ export default function ProductFlatlist({
           progressBackgroundColor="#111827"
         />
       }
-      onEndReached={() => {
-        if (!paginator || !paginator.next) return;
-        setPage(paginator.next);
-      }}
-      onEndReachedThreshold={5}
-      className="p-5"
       ListFooterComponent={() => (
-        <>
-          {products.length > 0 && paginator?.next && (
-            <RenderProductLoadingItems count={5} noPadding />
-          )}
-        </>
+        <View className="mb-20 mt-5 p-5">
+          {paginator && <PaginationSimple paginator={paginator} onPageChange={setPage} />}
+        </View>
       )}
       style={style}
     />

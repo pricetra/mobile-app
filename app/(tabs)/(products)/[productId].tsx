@@ -40,7 +40,7 @@ import {
   ProductDocument,
   ProductList,
   ProductNutrition,
-  RemoveFromListWithProductIdDocument,
+  RemoveFromListDocument,
   Stock,
   StockDocument,
   UserRole,
@@ -79,12 +79,9 @@ export default function ProductScreen() {
   const [addToList, { loading: addToListLoading }] = useMutation(AddToListDocument, {
     refetchQueries: [GetAllListsDocument, GetAllProductListsByListIdDocument],
   });
-  const [removeFromList, { loading: removeFromListLoading }] = useMutation(
-    RemoveFromListWithProductIdDocument,
-    {
-      refetchQueries: [GetAllListsDocument, GetAllProductListsByListIdDocument],
-    }
-  );
+  const [removeFromList, { loading: removeFromListLoading }] = useMutation(RemoveFromListDocument, {
+    refetchQueries: [GetAllListsDocument, GetAllProductListsByListIdDocument],
+  });
   const [favProductList, setFavProductList] = useState<ProductList>();
   const [watchProductList, setWatchProductList] = useState<ProductList>();
   const [openWatchModal, setOpenWatchModal] = useState(false);
@@ -174,15 +171,17 @@ export default function ProductScreen() {
 
   function remove(type: ListType.WatchList | ListType.Favorites, cb: (p: ProductList) => void) {
     const listId = type === ListType.Favorites ? lists.favorites.id : lists.watchList.id;
+    const productListId = type === ListType.Favorites ? favProductList?.id : watchProductList?.id;
+    if (!productListId) return;
+
     removeFromList({
       variables: {
         listId,
-        productId: +productId,
-        stockId: stockId ? +stockId : undefined,
+        productListId,
       },
     }).then(({ data, errors }) => {
       if (!data || errors) return;
-      cb(data.removeFromListWithProductId);
+      cb(data.removeFromList);
     });
   }
 

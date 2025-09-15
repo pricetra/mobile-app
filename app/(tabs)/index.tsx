@@ -46,8 +46,7 @@ export default function HomeScreen() {
       ({
         query: search,
         location: currentLocation.locationInput,
-        category: categoryFilterInput?.category,
-        categoryId: categoryFilterInput?.categoryId,
+        categoryId: categoryFilterInput?.id,
       }) as ProductSearch,
     [search, currentLocation, categoryFilterInput]
   );
@@ -192,6 +191,7 @@ export default function HomeScreen() {
           }}
           setPage={loadMore}
           style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0, paddingTop: 10 }}
+          categoryFilterInput={categoryFilterInput}
         />
       )}
     </SafeAreaView>
