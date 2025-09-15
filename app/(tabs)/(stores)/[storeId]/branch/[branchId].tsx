@@ -107,6 +107,9 @@ export default function SelectedBranchScreen() {
           branchId: +branchId,
           storeId: +storeId,
         },
+      }).then(() => {
+        if (page === 1) return;
+        setPage(1);
       });
 
       setFavorite(
