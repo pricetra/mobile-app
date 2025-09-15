@@ -19,7 +19,10 @@
     "eas:publish:prod:ios": "eas build --platform ios --auto-submit --profile production",
     "eas:publish:prod:android": "eas build --platform android --auto-submit --profile production",
     "doctor": "expo-doctor",
-    "install-check": "expo install --check"
+    "install-check": "expo install --check",
+    "bump-version": "node bumpVersion.js",
+    "bump-version:minor": "node bumpVersion.js minor",
+    "bump-version:major": "node bumpVersion.js major"
   },
   "dependencies": {
     "@apollo/client": "^3.13.1",
