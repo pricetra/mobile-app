@@ -14,7 +14,7 @@ export default function HistoricPriceItem({ stock, price }: HistoricPriceItemPro
   return (
     <View className="mb-7 flex flex-row items-center justify-between gap-3">
       <View className="flex flex-col gap-1">
-        {stock.latestPrice?.sale && (
+        {price.sale && (
           <View className="w-[70px]">
             <Text className="inline-block rounded-md bg-red-700 px-1 py-0.5 text-center text-[8px] font-bold color-white">
               SALE Reported
@@ -22,17 +22,16 @@ export default function HistoricPriceItem({ stock, price }: HistoricPriceItemPro
           </View>
         )}
 
-        {stock?.latestPrice?.sale && stock.latestPrice.originalPrice && (
+        {price.sale && price.originalPrice && (
           <Text className="text line-through color-red-700">
-            {currencyFormat(stock.latestPrice.originalPrice)}
+            {currencyFormat(price.originalPrice)}
           </Text>
         )}
         <Text className="text-xl font-black">{currencyFormat(price.amount)}</Text>
 
-        {stock.latestPrice?.sale && stock.latestPrice?.expiresAt && (
+        {price.sale && price.expiresAt && (
           <Text className="bg-yellow-200 text-xs italic">
-            Valid until{' '}
-            <Text className="font-bold">{dayjs(stock.latestPrice.expiresAt).format('LL')}</Text>
+            Valid until <Text className="font-bold">{dayjs(price.expiresAt).format('LL')}</Text>
           </Text>
         )}
 
