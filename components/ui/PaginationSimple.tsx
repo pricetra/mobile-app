@@ -56,6 +56,7 @@ export default function PaginationSimple({ paginator, onPageChange }: PaginatorP
           onChangeText={handleSubmit}
           keyboardType="numeric"
           className="h-10 w-14 rounded-lg border border-gray-300 text-center text-gray-800"
+          readOnly={!paginator.prev && !paginator.next}
         />
         <Text className="ml-2 text-gray-600">of {paginator.numPages}</Text>
       </View>

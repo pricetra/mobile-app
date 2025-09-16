@@ -49,37 +49,42 @@ export default function StockFull({
             paddingRight: 60,
             flexWrap: 'wrap',
           }}>
+          {stock.latestPrice?.sale && !isExpired && (
+            <View className="w-[35px]">
+              <Text className="inline-block rounded-md bg-red-700 px-1.5 py-1 text-center text-[9px] font-bold color-white">
+                SALE
+              </Text>
+            </View>
+          )}
+
           <View className="flex w-full flex-row flex-wrap items-center gap-3">
             <Text className="text-lg font-bold">{stock.store.name}</Text>
 
-            {stock.latestPrice?.sale && !isExpired && (
-              <View className="w-[35px]">
-                <Text className="inline-block rounded-md bg-red-700 px-1.5 py-1 text-center text-[9px] font-bold color-white">
-                  SALE
+            {stock.branch.address?.distance && (
+              <View className="rounded-full bg-pricetraGreenDark/10 px-2 py-0.5">
+                <Text className="text-xs color-pricetraGreenHeavyDark">
+                  {metersToMiles(stock.branch.address.distance)} mi
                 </Text>
               </View>
             )}
           </View>
 
           <View className="w-full">
-            <Text className="text-xs">{stock.branch.address?.fullAddress}</Text>
-
-            {stock.branch.address?.distance && (
-              <Text className="mt-1 text-xs">
-                {metersToMiles(stock.branch.address.distance)} mi
-              </Text>
-            )}
+            <Text className="text-xs">
+              {stock.branch.address?.street}, {stock.branch.address?.city}
+            </Text>
           </View>
 
           <View className="mt-1 flex flex-col gap-1">
-            {!isExpired && stock.latestPrice?.expiresAt && (
-              <Text className="text-xs italic">
-                Valid until {dayjs(stock.latestPrice.expiresAt).format('LL')}
+            {stock.latestPrice?.sale && !isExpired && stock.latestPrice?.expiresAt && (
+              <Text className="bg-yellow-200 text-xs italic">
+                Valid until{' '}
+                <Text className="font-bold">{dayjs(stock.latestPrice.expiresAt).format('LL')}</Text>
               </Text>
             )}
 
             {!isExpired && stock.latestPrice?.condition && (
-              <Text className="text-xs italic color-gray-700">*{stock.latestPrice.condition}</Text>
+              <Text className="bg-yellow-200 text-xs italic">*{stock.latestPrice.condition}</Text>
             )}
           </View>
         </View>

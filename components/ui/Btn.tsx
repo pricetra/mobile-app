@@ -21,6 +21,7 @@ export type BtnProps = TouchableOpacityProps & {
   size?: 'sm' | 'md' | 'lg';
   iconColor?: ColorValue;
   rounded?: 'full' | 'xl';
+  iconRight?: boolean;
 };
 
 export default function Btn({
@@ -33,6 +34,7 @@ export default function Btn({
   color = 'color-white',
   iconColor = 'white',
   rounded = 'xl',
+  iconRight,
   ...props
 }: BtnProps) {
   return (
@@ -41,8 +43,9 @@ export default function Btn({
       disabled={disabled || loading}
       activeOpacity={0.5}
       className={cn(
-        'relative flex flex-row items-center justify-center gap-3 bg-pricetraGreenHeavyDark',
+        'relative flex items-center justify-center gap-3 bg-pricetraGreenHeavyDark',
         bgColor,
+        iconRight ? 'flex-row-reverse' : 'flex-row',
         size === 'sm' ? 'px-5 py-2' : '',
         size === 'md' ? 'px-9 py-3' : '',
         size === 'lg' ? 'gap-5 px-11 py-5' : '',

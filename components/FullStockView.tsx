@@ -1,18 +1,21 @@
 import { useLazyQuery } from '@apollo/client';
-import dayjs from 'dayjs';
+import { AntDesign } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
 
+import HistoricPriceItem from './HistoricPriceItem';
 import SelectedStock from './SelectedStock';
+import PaginationSimple from './ui/PaginationSimple';
 
+import Btn from '@/components/ui/Btn';
 import {
   OrderByType,
+  Price,
   PriceChangeHistoryDocument,
   PriceHistoryFilter,
   Stock,
 } from '@/graphql/types/graphql';
-import { createCloudinaryUrl } from '@/lib/files';
-import { currencyFormat } from '@/lib/strings';
 
 export type FullStockViewProps = {
   stock: Stock;
@@ -33,7 +36,7 @@ export default function FullStockView({ stock }: FullStockViewProps) {
         productId: stock.productId,
         stockId: stock.id,
         paginator: {
-          limit: 20,
+          limit: 10,
           page,
         },
         filters,
@@ -47,6 +50,22 @@ export default function FullStockView({ stock }: FullStockViewProps) {
         <SelectedStock stock={stock} />
       </View>
 
+      <View className="mt-5 flex flex-row justify-between gap-3">
+        <Btn
+          text="Visit Store Page"
+          onPress={() => router.push(`/(tabs)/(stores)/${stock.storeId}/branch/${stock.branchId}`)}
+          bgColor="bg-gray-800"
+          size="sm"
+        />
+        <Btn
+          text="View Stock"
+          onPress={() => router.push(`/(tabs)/(products)/${stock.productId}?stockId=${stock.id}`)}
+          iconRight
+          icon={<AntDesign name="arrowright" size={20} color="white" />}
+          size="sm"
+        />
+      </View>
+
       <View className="mb-5 mt-10 border-b-[1px] border-gray-100" />
 
       <Text className="text-xl font-black">Price change history</Text>
@@ -55,33 +74,17 @@ export default function FullStockView({ stock }: FullStockViewProps) {
         {priceHistoryData &&
           priceHistoryData.priceChangeHistory.prices.length > 0 &&
           priceHistoryData.priceChangeHistory.prices.map((p, i) => (
-            <View
-              className="mb-7 flex flex-row items-center justify-between gap-3"
-              key={`price-${i}`}>
-              <View className="flex flex-col gap-1">
-                <Text className="text-lg font-black">{currencyFormat(p.amount)}</Text>
-                <View className="flex flex-row items-center gap-1">
-                  <Image
-                    source={
-                      p.createdBy?.avatar
-                        ? {
-                            uri: createCloudinaryUrl(p.createdBy.avatar, 100, 100),
-                          }
-                        : require('@/assets/images/no_avatar.jpg')
-                    }
-                    className="size-[17px] rounded-full"
-                  />
-                  <View>
-                    <Text className="text-xs">{p.createdBy?.name}</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View>
-                <Text className="mt-0.5 text-sm italic">{dayjs(p.createdAt).fromNow()}</Text>
-              </View>
-            </View>
+            <HistoricPriceItem stock={stock} price={p as Price} key={`price-${i}`} />
           ))}
+
+        {priceHistoryData?.priceChangeHistory?.paginator && (
+          <View className="mt-5">
+            <PaginationSimple
+              paginator={priceHistoryData.priceChangeHistory.paginator}
+              onPageChange={setPage}
+            />
+          </View>
+        )}
       </View>
 
       <View className="h-[200px]" />
