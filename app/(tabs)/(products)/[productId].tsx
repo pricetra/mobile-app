@@ -362,7 +362,9 @@ export default function ProductScreen() {
           visible={selectedStock !== undefined}
           onRequestClose={() => setSelectedStock(undefined)}
           title="Stock">
-          {selectedStock && <FullStockView stock={selectedStock} />}
+          {selectedStock && (
+            <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
+          )}
         </ModalFormFull>
 
         {stockId && stockData && (

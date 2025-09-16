@@ -70,7 +70,9 @@ export function ProductDetails({
         visible={selectedStock !== undefined}
         onRequestClose={() => setSelectedStock(undefined)}
         title="Stock">
-        {selectedStock && <FullStockView stock={selectedStock} />}
+        {selectedStock && (
+          <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
+        )}
       </ModalFormFull>
 
       <ModalFormMini
