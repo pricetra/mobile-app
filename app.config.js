@@ -11,7 +11,7 @@ export default {
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
-    icon: IS_DEV ? './assets/images/icon_dev.png' : './assets/images/icon.png',
+    icon: IS_DEV ? './assets/images/icon_dev.png' : './assets/images/icon_white.png',
     supportsTablet: true,
     bundleIdentifier: IS_DEV ? 'com.pricetra.mobileApp.dev' : 'com.pricetra.mobileApp',
     infoPlist: {
