@@ -10,6 +10,7 @@ import FullStockView from './FullStockView';
 import NutritionFacts from './NutritionFacts';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
+import ModalFormFull from './ui/ModalFormFull';
 import ModalFormMini from './ui/ModalFormMini';
 
 import StockFull from '@/components/StockFull';
@@ -65,12 +66,12 @@ export function ProductDetails({
 
   return (
     <>
-      <ModalFormMini
+      <ModalFormFull
         visible={selectedStock !== undefined}
         onRequestClose={() => setSelectedStock(undefined)}
         title="Stock">
         {selectedStock && <FullStockView stock={selectedStock} />}
-      </ModalFormMini>
+      </ModalFormFull>
 
       <ModalFormMini
         title="Search Filters"
