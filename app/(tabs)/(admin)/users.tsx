@@ -3,13 +3,14 @@ import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, ScrollView, SafeAreaView, TouchableOpacity, Alert, Text } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Alert, Text } from 'react-native';
 
 import AdminProductBilling from '@/components/profile/AdminProductBilling';
 import ProfileLarge, { ProfileLargeLoading } from '@/components/profile/ProfileLarge';
 import ProfileMini from '@/components/profile/ProfileMini';
 import UserForm from '@/components/profile/UserForm';
 import ModalFormFull from '@/components/ui/ModalFormFull';
+import PaginationSimple from '@/components/ui/PaginationSimple';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
@@ -22,11 +23,11 @@ export default function UsersScreen() {
   const navigation = useNavigation();
   const { user } = useContext(UserAuthContext);
   const { search } = useContext(SearchContext);
-  const [loadUsers, { data: users, loading, fetchMore }] = useLazyQuery(GetAllUsersDocument);
+  const [loadUsers, { data: users, loading }] = useLazyQuery(GetAllUsersDocument);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openUserModal, setOpenUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User>();
-  const limit = 50;
+  const limit = 10;
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<UserFilter>();
 
@@ -105,7 +106,7 @@ export default function UsersScreen() {
   }, [search]);
 
   return (
-    <SafeAreaView>
+    <ScrollView className="h-full p-5">
       {selectedUser && (
         <>
           <ModalFormFull
@@ -131,37 +132,43 @@ export default function UsersScreen() {
         </>
       )}
 
-      <ScrollView className="h-full p-5">
-        <View className="mb-20">
-          {loading && (
-            <View className="w-full">
-              {Array(10)
-                .fill(0)
-                .map((_, i) => (
-                  <View className="mb-7" key={i}>
-                    <ProfileLargeLoading />
-                  </View>
-                ))}
-            </View>
-          )}
-          {users &&
-            users.getAllUsers.users.map((u) => (
-              <TouchableOpacity
-                key={u.id}
-                onPress={() => {
-                  setSelectedUser(u);
-                  setOpenUserModal(true);
-                }}
-                onLongPress={() => {
-                  setSelectedUser(u);
-                  setOpenEditModal(true);
-                }}
-                className="mb-7">
-                <ProfileLarge user={u} />
-              </TouchableOpacity>
-            ))}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <View className="mb-20">
+        {loading && (
+          <View className="w-full">
+            {Array(10)
+              .fill(0)
+              .map((_, i) => (
+                <View className="mb-7" key={i}>
+                  <ProfileLargeLoading />
+                </View>
+              ))}
+          </View>
+        )}
+        {users &&
+          users.getAllUsers.users.map((u) => (
+            <TouchableOpacity
+              key={u.id}
+              onPress={() => {
+                setSelectedUser(u);
+                setOpenUserModal(true);
+              }}
+              onLongPress={() => {
+                setSelectedUser(u);
+                setOpenEditModal(true);
+              }}
+              className="mb-7">
+              <ProfileLarge user={u} />
+            </TouchableOpacity>
+          ))}
+
+        {users?.getAllUsers?.paginator && (
+          <View className="mt-5">
+            <PaginationSimple paginator={users.getAllUsers.paginator} onPageChange={setPage} />
+          </View>
+        )}
+      </View>
+
+      <View className="h-[200px]" />
+    </ScrollView>
   );
 }
