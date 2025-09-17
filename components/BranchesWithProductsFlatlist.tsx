@@ -61,7 +61,12 @@ export default function BranchesWithProductsFlatlist({
             <View className="px-5 py-3">
               <TouchableOpacity
                 onPress={() => {
-                  router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`);
+                  const params = new URLSearchParams();
+                  params.append('categoryId', String(undefined));
+                  params.append('page', String(1));
+                  router.push(
+                    `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`
+                  );
                 }}>
                 <BranchProductItem branch={branch} />
               </TouchableOpacity>
@@ -92,17 +97,8 @@ export default function BranchesWithProductsFlatlist({
                       if (search && search.length > 0) {
                         params.append('searchQuery', encodeURIComponent(search));
                       }
-                      if (categoryFilterInput) {
-                        if (categoryFilterInput.id) {
-                          params.append('categoryId', encodeURIComponent(categoryFilterInput.id));
-                        }
-                        if (
-                          !categoryFilterInput.id &&
-                          categoryFilterInput.name.toLowerCase() === 'all'
-                        ) {
-                          params.append('categoryId', 'undefined');
-                        }
-                      }
+                      params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
+                      params.append('page', String(1));
                       router.push(
                         `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`
                       );
