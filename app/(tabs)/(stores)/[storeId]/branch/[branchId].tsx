@@ -33,12 +33,20 @@ export default function SelectedBranchScreen() {
   const { lists } = useAuth();
   const { search, handleSearch, setSearching } = useContext(SearchContext);
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
-  const { storeId, branchId, searchQuery, categoryId, category } = useLocalSearchParams<{
+  const {
+    storeId,
+    branchId,
+    searchQuery,
+    categoryId,
+    category,
+    page: pageParam,
+  } = useLocalSearchParams<{
     storeId: string;
     branchId: string;
     searchQuery?: string;
     categoryId?: string;
     category?: string;
+    page?: string;
   }>();
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
@@ -69,10 +77,21 @@ export default function SelectedBranchScreen() {
   );
 
   useEffect(() => {
-    if (!categoryId) return;
+    if (!pageParam) return;
+    try {
+      const p = parseInt(pageParam, 10);
+      setPage(p);
+    } catch {}
+  }, [pageParam]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [categoryFilterInput]);
+
+  useEffect(() => {
     setCategoryFilterInput((c) => ({
       ...c,
-      id: categoryId !== 'undefined' ? categoryId : undefined,
+      id: categoryId !== String(undefined) ? categoryId : undefined,
     }));
   }, [categoryId]);
 

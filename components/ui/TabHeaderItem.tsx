@@ -27,7 +27,7 @@ export default function TabHeaderItem({ leftNav, rightNav, showSearch }: TabHead
   const { subHeader } = useHeader();
   const { search, handleSearch } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
-  const [openSearch, setOpenSearch] = useState(false);
+  const [openSearch, setOpenSearch] = useState(search !== '' || false);
 
   const iconStyles: StyleProp<ViewStyle> = {
     paddingVertical: padding,
