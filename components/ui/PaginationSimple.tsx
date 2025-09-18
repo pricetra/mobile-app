@@ -33,7 +33,6 @@ export default function PaginationSimple({ paginator, onPageChange }: PaginatorP
     if (pageNum > paginator.numPages) return;
 
     onPageChange(pageNum);
-    setPageInput(String(pageNum));
   };
 
   return (
@@ -53,7 +52,8 @@ export default function PaginationSimple({ paginator, onPageChange }: PaginatorP
       <View className="flex-row items-center">
         <TextInput
           value={pageInput}
-          onChangeText={handleSubmit}
+          onEndEditing={() => handleSubmit(pageInput)}
+          onChangeText={setPageInput}
           keyboardType="numeric"
           className="h-10 w-14 rounded-lg border border-gray-300 text-center text-gray-800"
           readOnly={!paginator.prev && !paginator.next}

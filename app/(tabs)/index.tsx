@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import convert from 'convert-units';
 import { useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
@@ -14,26 +14,32 @@ import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabSubHeaderProductFilter, {
   PartialCategory,
 } from '@/components/ui/TabSubHeaderProductFilter';
-import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import { Branch, BranchesWithProductsDocument, ProductSearch } from '@/graphql/types/graphql';
+import {
+  AllStoresDocument,
+  Branch,
+  BranchesWithProductsDocument,
+  ProductSearch,
+} from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 
+const BRANCH_LIMIT = 15;
 const PRODUCT_LIMIT = 10;
 
 export default function HomeScreen() {
   const { user } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
-  const [getAllProducts, { data, error, loading, fetchMore }] = useLazyQuery(
-    BranchesWithProductsDocument,
-    {
-      fetchPolicy: 'network-only',
-    }
-  );
+  const [getAllProducts, { data, error, loading }] = useLazyQuery(BranchesWithProductsDocument, {
+    fetchPolicy: 'network-only',
+  });
+  const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument, {
+    fetchPolicy: 'cache-first',
+  });
+  const [page, setPage] = useState(1);
   const { search, searching, setSearching } = useContext(SearchContext);
   const { location, getCurrentLocation } = useLocationService();
   const { setSubHeader } = useHeader();
@@ -70,7 +76,7 @@ export default function HomeScreen() {
     try {
       return await getAllProducts({
         variables: {
-          paginator: { limit: LIMIT, page },
+          paginator: { limit: BRANCH_LIMIT, page },
           productLimit: PRODUCT_LIMIT,
           filters: { ...searchVariables },
         },
@@ -80,36 +86,14 @@ export default function HomeScreen() {
     }
   }
 
-  const loadMore = useCallback(() => {
-    if (!data?.branchesWithProducts.paginator) return;
-
-    const { next } = data.branchesWithProducts.paginator;
-    if (!next) return;
-
-    return fetchMore({
-      variables: {
-        paginator: { limit: LIMIT, page: next },
-        productLimit: PRODUCT_LIMIT,
-        ...searchVariables,
-      },
-      // TODO: Fix
-      updateQuery: (prev, { fetchMoreResult }) => ({
-        ...prev,
-        allProducts: {
-          ...fetchMoreResult.branchesWithProducts,
-          products: [
-            ...prev.branchesWithProducts.branches,
-            ...fetchMoreResult.branchesWithProducts.branches,
-          ],
-        },
-      }),
-    });
-  }, [data, searchVariables]);
-
   // Initial load and dependency changes
   useEffect(() => {
     loadProducts(1);
   }, [search, categoryFilterInput, currentLocation]);
+
+  useEffect(() => {
+    loadProducts(page);
+  }, [page]);
 
   useEffect(() => {
     if (!location) return;
@@ -189,9 +173,10 @@ export default function HomeScreen() {
             await getCurrentLocation({});
             return loadProducts(1);
           }}
-          setPage={loadMore}
+          setPage={setPage}
           style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0, paddingTop: 10 }}
           categoryFilterInput={categoryFilterInput}
+          stores={allStoresData?.allStores}
         />
       )}
     </SafeAreaView>

@@ -1,20 +1,24 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+} from 'react-native';
 
 import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
 import Image from '@/components/ui/Image';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
-import TabSubHeaderProductFilter, {
-  PartialCategory,
-} from '@/components/ui/TabSubHeaderProductFilter';
+import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
 import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
-import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
 import {
   AddBranchToListDocument,
@@ -27,19 +31,33 @@ import {
   RemoveBranchFromListDocument,
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
+import { extractUndefined, stringToNumber, toBoolean } from '@/lib/utils';
+
+export type BranchQueryParams = {
+  storeId: string;
+  branchId: string;
+  query?: string;
+  categoryId?: string;
+  category?: string;
+  page?: string;
+  sale?: string;
+  sortByPrice?: string;
+};
 
 export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
-  const { search, handleSearch, setSearching } = useContext(SearchContext);
-  const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
-  const { storeId, branchId, searchQuery, categoryId, category } = useLocalSearchParams<{
-    storeId: string;
-    branchId: string;
-    searchQuery?: string;
-    categoryId?: string;
-    category?: string;
-  }>();
+  const params = useLocalSearchParams<BranchQueryParams>();
+  const {
+    storeId,
+    branchId,
+    query,
+    categoryId,
+    category,
+    page = String(1),
+    sale,
+    sortByPrice,
+  } = params;
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
   });
@@ -55,44 +73,38 @@ export default function SelectedBranchScreen() {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
   const { setSubHeader } = useHeader();
-  const [page, setPage] = useState(1);
 
   const searchVariables = useMemo(
     () =>
       ({
-        query: search,
-        categoryId: categoryFilterInput?.id,
+        query: extractUndefined(query),
+        category,
+        categoryId: stringToNumber(categoryId),
         branchId: +branchId,
         storeId: +storeId,
+        sale: sale ? toBoolean(sale) : undefined,
+        sortByPrice,
       }) as ProductSearch,
-    [search, categoryFilterInput, branchId, storeId]
+    [query, category, categoryId, branchId, storeId, sale, sortByPrice]
   );
 
-  useEffect(() => {
-    if (!categoryId) return;
-    setCategoryFilterInput((c) => ({
-      ...c,
-      id: categoryId !== 'undefined' ? categoryId : undefined,
-    }));
-  }, [categoryId]);
+  const [searchText, setSearchText] = useState<string>();
+
+  function handleSearch(s?: string) {
+    router.setParams({
+      ...params,
+      query: s ?? undefined,
+    });
+  }
 
   useEffect(() => {
-    if (!category) return;
-    setCategoryFilterInput((c) => ({
-      ...c,
-      category,
-    }));
-  }, [category]);
-
-  useEffect(() => {
-    if (!searchQuery || searchQuery.trim().length === 0) return;
-    handleSearch(searchQuery);
-  }, [searchQuery]);
+    setSearchText(query);
+  }, [query]);
 
   useEffect(() => {
     getAllProducts({
       variables: {
-        paginator: { limit: LIMIT, page },
+        paginator: { limit: LIMIT, page: +page },
         search: { ...searchVariables },
       },
     });
@@ -107,16 +119,12 @@ export default function SelectedBranchScreen() {
           branchId: +branchId,
           storeId: +storeId,
         },
-      }).then(() => {
-        if (page === 1) return;
-        setPage(1);
       });
 
       setFavorite(
         lists.favorites.branchList?.some((b) => b.branchId.toString() === branchId) ?? false
       );
       return () => {
-        setSearching(false);
         setSubHeader(undefined);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
@@ -133,7 +141,7 @@ export default function SelectedBranchScreen() {
         header: (props: BottomTabHeaderProps) => (
           <TabHeaderItem
             {...props}
-            showSearch
+            showSearch={false}
             leftNav={
               <View className="flex flex-row items-center gap-2">
                 <Image
@@ -153,48 +161,104 @@ export default function SelectedBranchScreen() {
               </View>
             }
             rightNav={
-              <TouchableOpacity
-                onPress={() => {
-                  if (favorite === undefined) return;
-                  if (!favorite) {
-                    setFavorite(true);
-                    addBranchToList({
+              <>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (favorite === undefined) return;
+                    if (!favorite) {
+                      setFavorite(true);
+                      addBranchToList({
+                        variables: {
+                          branchId: +branchId,
+                          listId: lists.favorites.id,
+                        },
+                      }).catch(() => setFavorite(false));
+                      return;
+                    }
+                    setFavorite(false);
+                    removeBranchFromList({
                       variables: {
-                        branchId: +branchId,
+                        branchListId: lists.favorites.branchList?.find(
+                          (b) => b.branchId.toString() === branchId
+                        )?.id!,
                         listId: lists.favorites.id,
                       },
-                    }).catch(() => setFavorite(false));
-                    return;
-                  }
-                  setFavorite(false);
-                  removeBranchFromList({
-                    variables: {
-                      branchListId: lists.favorites.branchList?.find(
-                        (b) => b.branchId.toString() === branchId
-                      )?.id!,
-                      listId: lists.favorites.id,
-                    },
-                  });
-                }}
-                className="flex flex-row items-center gap-2 p-2">
-                {favorite !== undefined && (
-                  <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
-                )}
-              </TouchableOpacity>
+                    });
+                  }}
+                  className="flex flex-row items-center gap-2 p-2">
+                  {favorite !== undefined && (
+                    <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
+                  <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+                </TouchableOpacity>
+              </>
             }
           />
         ),
       });
 
       setSubHeader(
-        <TabSubHeaderProductFilter
-          selectedCategoryId={categoryFilterInput?.id}
-          onSelectCategory={(c) => setCategoryFilterInput(c)}
-          onFiltersButtonPressed={() => {}}
-          hideFiltersButton
-        />
+        <View className="flex flex-col">
+          <View className="px-5 pt-2">
+            <View className="relative">
+              <Ionicons
+                name="search"
+                color="#6b7280"
+                size={20}
+                className="absolute left-5 top-3 z-[1]"
+              />
+              <TextInput
+                placeholder={`Search ${branchData.findBranch.name}`}
+                value={searchText ?? ''}
+                onEndEditing={() => {
+                  handleSearch(searchText ?? undefined);
+                }}
+                onChangeText={setSearchText}
+                inputMode="search"
+                className="rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3 pl-[50px] pr-[80px] color-black placeholder:color-gray-500 focus:bg-transparent"
+              />
+
+              {(searchText ?? '').length > 0 && (
+                <View className="absolute right-5 top-3 z-[1] flex flex-row items-center justify-end gap-2">
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSearchText('');
+                      handleSearch(undefined);
+                    }}>
+                    <Feather name="x-circle" size={20} color="#6b7280" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleSearch(searchText ?? undefined);
+                    }}
+                    className="size-[20px] rounded-full bg-pricetraGreenHeavyDark p-[2px]">
+                    <Feather name="arrow-right" size={15} color="white" />
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </View>
+
+          <TabSubHeaderProductFilter
+            selectedCategoryId={extractUndefined(categoryId)}
+            onSelectCategory={(c) => {
+              router.setParams({
+                ...params,
+                page: 1,
+                categoryId: String(c.id ?? undefined),
+              });
+            }}
+            onFiltersButtonPressed={() => {}}
+            hideFiltersButton
+          />
+        </View>
       );
-    }, [favorite, branchData, categoryFilterInput])
+    }, [favorite, branchData, categoryId, searchText])
   );
 
   if (productsLoading) {
@@ -222,12 +286,17 @@ export default function SelectedBranchScreen() {
         handleRefresh={async () => {
           return getAllProducts({
             variables: {
-              paginator: { limit: LIMIT, page },
+              paginator: { limit: LIMIT, page: +page },
               search: { ...searchVariables },
             },
           });
         }}
-        setPage={setPage}
+        setPage={(p) => {
+          router.setParams({
+            ...params,
+            page: String(p),
+          });
+        }}
       />
     </KeyboardAvoidingView>
   );

@@ -358,12 +358,14 @@ export default function ProductScreen() {
           />
         </View>
 
-        <ModalFormMini
+        <ModalFormFull
           visible={selectedStock !== undefined}
           onRequestClose={() => setSelectedStock(undefined)}
           title="Stock">
-          {selectedStock && <FullStockView stock={selectedStock} />}
-        </ModalFormMini>
+          {selectedStock && (
+            <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
+          )}
+        </ModalFormFull>
 
         {stockId && stockData && (
           <View className="mb-5 p-5">

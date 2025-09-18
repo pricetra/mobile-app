@@ -12,10 +12,12 @@ import {
   ViewStyle,
   Text,
   useWindowDimensions,
+  Image,
 } from 'react-native';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
+import PaginationSimple from './ui/PaginationSimple';
 import { PartialCategory } from './ui/TabSubHeaderProductFilter';
 
 import { SearchContext } from '@/context/SearchContext';
@@ -24,7 +26,9 @@ import {
   BranchesWithProductsQuery,
   Paginator,
   QueryBranchesWithProductsArgs,
+  Store,
 } from '@/graphql/types/graphql';
+import { createCloudinaryUrl } from '@/lib/files';
 
 export type BranchesWithProductsFlatlistProps = {
   branches: Branch[];
@@ -36,6 +40,7 @@ export type BranchesWithProductsFlatlistProps = {
   setPage: (page: number) => void;
   style?: StyleProp<ViewStyle>;
   categoryFilterInput?: PartialCategory;
+  stores?: Store[];
 };
 
 export default function BranchesWithProductsFlatlist({
@@ -45,6 +50,7 @@ export default function BranchesWithProductsFlatlist({
   setPage,
   style,
   categoryFilterInput,
+  stores,
 }: BranchesWithProductsFlatlistProps) {
   const { width } = useWindowDimensions();
   const [refreshing, setRefreshing] = useState(false);
@@ -55,13 +61,47 @@ export default function BranchesWithProductsFlatlist({
       data={branches}
       keyExtractor={({ id }, i) => `${id}-${i}`}
       indicatorStyle="black"
+      ListHeaderComponent={
+        !search && !categoryFilterInput?.id && stores ? (
+          <View className="mb-14 mt-5 flex flex-row flex-wrap items-center justify-center gap-2">
+            {stores.slice(0, 9).map(({ id, name, logo }) => (
+              <TouchableOpacity
+                key={`store-${id}`}
+                onPress={() => router.push(`/(tabs)/(stores)/${id}`)}
+                style={{ width: width / 6 }}
+                className="mb-2 flex flex-col items-center gap-2">
+                <Image
+                  src={createCloudinaryUrl(logo, 300, 300)}
+                  className="size-[40px] rounded-lg"
+                />
+                <Text numberOfLines={1}>{name}</Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              onPress={() => router.push(`/(tabs)/(stores)`)}
+              style={{ width: width / 6 }}
+              className="mb-2 flex flex-col items-center gap-2 rounded-xl border-[1px] border-gray-200 bg-gray-50 px-2 py-7">
+              <Text className="text-xs color-gray-700" numberOfLines={1}>
+                See All
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <></>
+        )
+      }
       renderItem={({ item: branch }) =>
         branch.products?.length ? (
           <View className="mb-5">
             <View className="px-5 py-3">
               <TouchableOpacity
                 onPress={() => {
-                  router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`);
+                  const params = new URLSearchParams();
+                  params.append('categoryId', String(undefined));
+                  params.append('page', String(1));
+                  router.push(
+                    `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`
+                  );
                 }}>
                 <BranchProductItem branch={branch} />
               </TouchableOpacity>
@@ -90,19 +130,10 @@ export default function BranchesWithProductsFlatlist({
                     onPress={() => {
                       const params = new URLSearchParams();
                       if (search && search.length > 0) {
-                        params.append('searchQuery', encodeURIComponent(search));
+                        params.append('query', encodeURIComponent(search));
                       }
-                      if (categoryFilterInput) {
-                        if (categoryFilterInput.id) {
-                          params.append('categoryId', encodeURIComponent(categoryFilterInput.id));
-                        }
-                        if (
-                          !categoryFilterInput.id &&
-                          categoryFilterInput.name.toLowerCase() === 'all'
-                        ) {
-                          params.append('categoryId', 'undefined');
-                        }
-                      }
+                      params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
+                      params.append('page', String(1));
                       router.push(
                         `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`
                       );
@@ -117,6 +148,15 @@ export default function BranchesWithProductsFlatlist({
         ) : (
           <></>
         )
+      }
+      ListFooterComponent={
+        <View className="px-5">
+          {paginator && (paginator.next || paginator.prev) && (
+            <PaginationSimple paginator={paginator} onPageChange={setPage} />
+          )}
+
+          <View className="h-[100px]" />
+        </View>
       }
       refreshControl={
         <RefreshControl

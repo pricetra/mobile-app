@@ -1,7 +1,7 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router';
-import { ReactNode, useContext, useState } from 'react';
+import { ReactNode, useContext, useEffect, useState } from 'react';
 import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
 import TabHeaderSearchBar from './TabHeaderSearchBar';
@@ -14,6 +14,7 @@ export type TabHeaderItemProps = BottomTabHeaderProps & {
   leftNav?: ReactNode;
   rightNav?: ReactNode;
   showSearch?: boolean;
+  onSearchChange?: (query: string | null | undefined) => void;
 };
 
 const iconSize = 20;
@@ -23,7 +24,12 @@ const navHeight = 2 * padding + logoHeight;
 
 const iconColor = '#333';
 
-export default function TabHeaderItem({ leftNav, rightNav, showSearch }: TabHeaderItemProps) {
+export default function TabHeaderItem({
+  leftNav,
+  rightNav,
+  showSearch,
+  onSearchChange,
+}: TabHeaderItemProps) {
   const { subHeader } = useHeader();
   const { search, handleSearch } = useContext(SearchContext);
   const [searchText, setSearchText] = useState(search);
@@ -38,6 +44,16 @@ export default function TabHeaderItem({ leftNav, rightNav, showSearch }: TabHead
     setSearchText(text);
     handleSearch(text);
   }
+
+  useEffect(() => {
+    if (!search || search === '' || !showSearch) return;
+    setOpenSearch(true);
+  }, [search]);
+
+  useEffect(() => {
+    if (!onSearchChange) return;
+    onSearchChange(search);
+  }, [search]);
 
   return (
     <SafeAreaView

@@ -19,9 +19,10 @@ import {
 
 export type FullStockViewProps = {
   stock: Stock;
+  closeModal: () => void;
 };
 
-export default function FullStockView({ stock }: FullStockViewProps) {
+export default function FullStockView({ stock, closeModal }: FullStockViewProps) {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<PriceHistoryFilter | undefined>({
     orderBy: OrderByType.Desc,
@@ -53,13 +54,19 @@ export default function FullStockView({ stock }: FullStockViewProps) {
       <View className="mt-5 flex flex-row justify-between gap-3">
         <Btn
           text="Visit Store Page"
-          onPress={() => router.push(`/(tabs)/(stores)/${stock.storeId}/branch/${stock.branchId}`)}
+          onPress={() => {
+            router.push(`/(tabs)/(stores)/${stock.storeId}/branch/${stock.branchId}`);
+            closeModal();
+          }}
           bgColor="bg-gray-800"
           size="sm"
         />
         <Btn
           text="View Stock"
-          onPress={() => router.push(`/(tabs)/(products)/${stock.productId}?stockId=${stock.id}`)}
+          onPress={() => {
+            router.push(`/(tabs)/(products)/${stock.productId}?stockId=${stock.id}`);
+            closeModal();
+          }}
           iconRight
           icon={<AntDesign name="arrowright" size={20} color="white" />}
           size="sm"
