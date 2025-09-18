@@ -12,11 +12,11 @@ import {
   ViewStyle,
   Text,
   useWindowDimensions,
-  Image,
 } from 'react-native';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
+import StoreMini, { StoreMiniShowMore } from './StoreMini';
 import PaginationSimple from './ui/PaginationSimple';
 import { PartialCategory } from './ui/TabSubHeaderProductFilter';
 
@@ -28,7 +28,6 @@ import {
   QueryBranchesWithProductsArgs,
   Store,
 } from '@/graphql/types/graphql';
-import { createCloudinaryUrl } from '@/lib/files';
 
 export type BranchesWithProductsFlatlistProps = {
   branches: Branch[];
@@ -64,27 +63,10 @@ export default function BranchesWithProductsFlatlist({
       ListHeaderComponent={
         !search && !categoryFilterInput?.id && stores ? (
           <View className="mb-14 mt-5 flex flex-row flex-wrap items-center justify-center gap-2">
-            {stores.slice(0, 9).map(({ id, name, logo }) => (
-              <TouchableOpacity
-                key={`store-${id}`}
-                onPress={() => router.push(`/(tabs)/(stores)/${id}`)}
-                style={{ width: width / 6 }}
-                className="mb-2 flex flex-col items-center gap-2">
-                <Image
-                  src={createCloudinaryUrl(logo, 300, 300)}
-                  className="size-[40px] rounded-lg"
-                />
-                <Text numberOfLines={1}>{name}</Text>
-              </TouchableOpacity>
+            {stores.slice(0, 9).map((store) => (
+              <StoreMini key={`store-${store.id}`} store={store} />
             ))}
-            <TouchableOpacity
-              onPress={() => router.push(`/(tabs)/(stores)`)}
-              style={{ width: width / 6 }}
-              className="mb-2 flex flex-col items-center gap-2 rounded-xl border-[1px] border-gray-200 bg-gray-50 px-2 py-7">
-              <Text className="text-xs color-gray-700" numberOfLines={1}>
-                See All
-              </Text>
-            </TouchableOpacity>
+            <StoreMiniShowMore />
           </View>
         ) : (
           <></>

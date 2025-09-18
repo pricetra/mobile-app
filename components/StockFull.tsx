@@ -58,7 +58,9 @@ export default function StockFull({
           )}
 
           <View className="flex w-full flex-row flex-wrap items-center gap-3">
-            <Text className="text-lg font-bold">{stock.store.name}</Text>
+            <Text className="text-lg font-bold" numberOfLines={1}>
+              {stock.store.name}
+            </Text>
 
             {stock.branch.address?.distance && (
               <View className="rounded-full bg-pricetraGreenDark/10 px-2 py-0.5">
