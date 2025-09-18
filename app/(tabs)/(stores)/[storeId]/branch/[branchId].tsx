@@ -25,7 +25,7 @@ import {
   RemoveBranchFromListDocument,
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
-import { toBoolean } from '@/lib/utils';
+import { extractUndefined, stringToNumber, toBoolean } from '@/lib/utils';
 
 export type BranchQueryParams = {
   storeId: string;
@@ -41,7 +41,7 @@ export type BranchQueryParams = {
 export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
-  const { handleSearch } = useContext(SearchContext);
+  const { handleSearch, search } = useContext(SearchContext);
   const params = useLocalSearchParams<BranchQueryParams>();
   const {
     storeId,
@@ -72,9 +72,9 @@ export default function SelectedBranchScreen() {
   const searchVariables = useMemo(
     () =>
       ({
-        query,
+        query: extractUndefined(query),
         category,
-        categoryId: categoryId ? +categoryId : undefined,
+        categoryId: stringToNumber(categoryId),
         branchId: +branchId,
         storeId: +storeId,
         sale: sale ? toBoolean(sale) : undefined,
@@ -190,7 +190,7 @@ export default function SelectedBranchScreen() {
 
       setSubHeader(
         <TabSubHeaderProductFilter
-          selectedCategoryId={categoryId}
+          selectedCategoryId={extractUndefined(categoryId)}
           onSelectCategory={(c) => {
             router.setParams({
               ...params,

@@ -75,3 +75,17 @@ export function toBoolean(value?: string): boolean {
   if (!value) return false;
   return value.toLowerCase() === 'true';
 }
+
+export function stringToNumber(value?: string): number | undefined {
+  if (!value) return undefined;
+
+  const numVal = parseInt(value, 10);
+  if (isNaN(numVal)) return undefined;
+  return numVal;
+}
+
+export function extractUndefined(value?: string): string | undefined {
+  if (!value) return undefined;
+  if (value.toLowerCase() === String(undefined)) return undefined;
+  return value;
+}
