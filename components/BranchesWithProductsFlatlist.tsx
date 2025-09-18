@@ -16,6 +16,7 @@ import {
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
+import PaginationSimple from './ui/PaginationSimple';
 import { PartialCategory } from './ui/TabSubHeaderProductFilter';
 
 import { SearchContext } from '@/context/SearchContext';
@@ -113,6 +114,15 @@ export default function BranchesWithProductsFlatlist({
         ) : (
           <></>
         )
+      }
+      ListFooterComponent={
+        <View className="px-5">
+          {paginator && (paginator.next || paginator.prev) && (
+            <PaginationSimple paginator={paginator} onPageChange={setPage} />
+          )}
+
+          <View className="h-[100px]" />
+        </View>
       }
       refreshControl={
         <RefreshControl
