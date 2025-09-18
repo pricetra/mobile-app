@@ -1,9 +1,16 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+} from 'react-native';
 
 import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
@@ -12,7 +19,6 @@ import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
 import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
-import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
 import {
   AddBranchToListDocument,
@@ -41,7 +47,6 @@ export type BranchQueryParams = {
 export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
-  const { handleSearch, search } = useContext(SearchContext);
   const params = useLocalSearchParams<BranchQueryParams>();
   const {
     storeId,
@@ -83,8 +88,17 @@ export default function SelectedBranchScreen() {
     [query, category, categoryId, branchId, storeId, sale, sortByPrice]
   );
 
+  const [searchText, setSearchText] = useState<string>();
+
+  function handleSearch(s?: string) {
+    router.setParams({
+      ...params,
+      query: s ?? undefined,
+    });
+  }
+
   useEffect(() => {
-    handleSearch(query ?? null);
+    setSearchText(query);
   }, [query]);
 
   useEffect(() => {
@@ -127,15 +141,7 @@ export default function SelectedBranchScreen() {
         header: (props: BottomTabHeaderProps) => (
           <TabHeaderItem
             {...props}
-            onSearchChange={(s) => {
-              if (s === query) return;
-              router.setParams({
-                ...params,
-                page: 1,
-                query: s ?? undefined,
-              });
-            }}
-            showSearch
+            showSearch={false}
             leftNav={
               <View className="flex flex-row items-center gap-2">
                 <Image
@@ -189,20 +195,63 @@ export default function SelectedBranchScreen() {
       });
 
       setSubHeader(
-        <TabSubHeaderProductFilter
-          selectedCategoryId={extractUndefined(categoryId)}
-          onSelectCategory={(c) => {
-            router.setParams({
-              ...params,
-              page: 1,
-              categoryId: String(c.id ?? undefined),
-            });
-          }}
-          onFiltersButtonPressed={() => {}}
-          hideFiltersButton
-        />
+        <View className="flex flex-col">
+          <View className="px-5 pt-2">
+            <View className="relative">
+              <Ionicons
+                name="search"
+                color="#6b7280"
+                size={20}
+                className="absolute left-5 top-3 z-[1]"
+              />
+              <TextInput
+                placeholder={`Search ${branchData.findBranch.name}`}
+                value={searchText ?? ''}
+                onEndEditing={() => {
+                  handleSearch(searchText ?? undefined);
+                }}
+                onChangeText={setSearchText}
+                inputMode="search"
+                className="rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3 pl-[50px] pr-[80px] color-black placeholder:color-gray-500 focus:bg-transparent"
+              />
+
+              {(searchText ?? '').length > 0 && (
+                <View className="absolute right-5 top-3 z-[1] flex flex-row items-center justify-end gap-2">
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSearchText('');
+                      handleSearch(undefined);
+                    }}>
+                    <Feather name="x-circle" size={20} color="#6b7280" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      handleSearch(searchText ?? undefined);
+                    }}
+                    className="size-[20px] rounded-full bg-pricetraGreenHeavyDark p-[2px]">
+                    <Feather name="arrow-right" size={15} color="white" />
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </View>
+
+          <TabSubHeaderProductFilter
+            selectedCategoryId={extractUndefined(categoryId)}
+            onSelectCategory={(c) => {
+              router.setParams({
+                ...params,
+                page: 1,
+                categoryId: String(c.id ?? undefined),
+              });
+            }}
+            onFiltersButtonPressed={() => {}}
+            hideFiltersButton
+          />
+        </View>
       );
-    }, [favorite, branchData, categoryId, query])
+    }, [favorite, branchData, categoryId, searchText])
   );
 
   if (productsLoading) {

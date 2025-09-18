@@ -30,7 +30,6 @@ export default function TabSubHeaderProductFilter({
   onFiltersButtonPressed,
   hideFiltersButton = false,
 }: TabSubHeaderProductFilterProps) {
-  console.log(typeof selectedCategoryId, selectedCategoryId, categories);
   return (
     <ScrollView horizontal>
       <View className="flex flex-row items-center justify-start gap-2 px-5 py-3">
