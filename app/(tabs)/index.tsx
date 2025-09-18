@@ -34,9 +34,9 @@ export default function HomeScreen() {
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
   const [getAllProducts, { data, error, loading }] = useLazyQuery(BranchesWithProductsDocument, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'no-cache', // This is required for cache key related bugs
   });
-  const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument, {
+  const { data: allStoresData } = useQuery(AllStoresDocument, {
     fetchPolicy: 'cache-first',
   });
   const [page, setPage] = useState(1);
