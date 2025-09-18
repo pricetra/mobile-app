@@ -95,7 +95,7 @@ export default function BranchesWithProductsFlatlist({
                     onPress={() => {
                       const params = new URLSearchParams();
                       if (search && search.length > 0) {
-                        params.append('searchQuery', encodeURIComponent(search));
+                        params.append('query', encodeURIComponent(search));
                       }
                       params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
                       params.append('page', String(1));

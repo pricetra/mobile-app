@@ -9,9 +9,7 @@ import ProductFlatlist from '@/components/ProductFlatlist';
 import { RenderProductLoadingItems } from '@/components/ProductItem';
 import Image from '@/components/ui/Image';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
-import TabSubHeaderProductFilter, {
-  PartialCategory,
-} from '@/components/ui/TabSubHeaderProductFilter';
+import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
 import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
@@ -27,27 +25,34 @@ import {
   RemoveBranchFromListDocument,
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
+import { toBoolean } from '@/lib/utils';
+
+export type BranchQueryParams = {
+  storeId: string;
+  branchId: string;
+  query?: string;
+  categoryId?: string;
+  category?: string;
+  page?: string;
+  sale?: string;
+  sortByPrice?: string;
+};
 
 export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
-  const { search, handleSearch, setSearching } = useContext(SearchContext);
-  const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
+  const { handleSearch } = useContext(SearchContext);
+  const params = useLocalSearchParams<BranchQueryParams>();
   const {
     storeId,
     branchId,
-    searchQuery,
+    query,
     categoryId,
     category,
-    page: pageParam,
-  } = useLocalSearchParams<{
-    storeId: string;
-    branchId: string;
-    searchQuery?: string;
-    categoryId?: string;
-    category?: string;
-    page?: string;
-  }>();
+    page = String(1),
+    sale,
+    sortByPrice,
+  } = params;
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
   });
@@ -63,55 +68,29 @@ export default function SelectedBranchScreen() {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
   const { setSubHeader } = useHeader();
-  const [page, setPage] = useState(1);
 
   const searchVariables = useMemo(
     () =>
       ({
-        query: search,
-        categoryId: categoryFilterInput?.id,
+        query,
+        category,
+        categoryId: categoryId ? +categoryId : undefined,
         branchId: +branchId,
         storeId: +storeId,
+        sale: sale ? toBoolean(sale) : undefined,
+        sortByPrice,
       }) as ProductSearch,
-    [search, categoryFilterInput, branchId, storeId]
+    [query, category, categoryId, branchId, storeId, sale, sortByPrice]
   );
 
   useEffect(() => {
-    if (!pageParam) return;
-    try {
-      const p = parseInt(pageParam, 10);
-      setPage(p);
-    } catch {}
-  }, [pageParam]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [categoryFilterInput]);
-
-  useEffect(() => {
-    setCategoryFilterInput((c) => ({
-      ...c,
-      id: categoryId !== String(undefined) ? categoryId : undefined,
-    }));
-  }, [categoryId]);
-
-  useEffect(() => {
-    if (!category) return;
-    setCategoryFilterInput((c) => ({
-      ...c,
-      category,
-    }));
-  }, [category]);
-
-  useEffect(() => {
-    if (!searchQuery || searchQuery.trim().length === 0) return;
-    handleSearch(searchQuery);
-  }, [searchQuery]);
+    handleSearch(query ?? null);
+  }, [query]);
 
   useEffect(() => {
     getAllProducts({
       variables: {
-        paginator: { limit: LIMIT, page },
+        paginator: { limit: LIMIT, page: +page },
         search: { ...searchVariables },
       },
     });
@@ -126,16 +105,12 @@ export default function SelectedBranchScreen() {
           branchId: +branchId,
           storeId: +storeId,
         },
-      }).then(() => {
-        if (page === 1) return;
-        setPage(1);
       });
 
       setFavorite(
         lists.favorites.branchList?.some((b) => b.branchId.toString() === branchId) ?? false
       );
       return () => {
-        setSearching(false);
         setSubHeader(undefined);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
@@ -152,6 +127,14 @@ export default function SelectedBranchScreen() {
         header: (props: BottomTabHeaderProps) => (
           <TabHeaderItem
             {...props}
+            onSearchChange={(s) => {
+              if (s === query) return;
+              router.setParams({
+                ...params,
+                page: 1,
+                query: s ?? undefined,
+              });
+            }}
             showSearch
             leftNav={
               <View className="flex flex-row items-center gap-2">
@@ -207,13 +190,19 @@ export default function SelectedBranchScreen() {
 
       setSubHeader(
         <TabSubHeaderProductFilter
-          selectedCategoryId={categoryFilterInput?.id}
-          onSelectCategory={(c) => setCategoryFilterInput(c)}
+          selectedCategoryId={categoryId}
+          onSelectCategory={(c) => {
+            router.setParams({
+              ...params,
+              page: 1,
+              categoryId: String(c.id ?? undefined),
+            });
+          }}
           onFiltersButtonPressed={() => {}}
           hideFiltersButton
         />
       );
-    }, [favorite, branchData, categoryFilterInput])
+    }, [favorite, branchData, categoryId, query])
   );
 
   if (productsLoading) {
@@ -241,12 +230,17 @@ export default function SelectedBranchScreen() {
         handleRefresh={async () => {
           return getAllProducts({
             variables: {
-              paginator: { limit: LIMIT, page },
+              paginator: { limit: LIMIT, page: +page },
               search: { ...searchVariables },
             },
           });
         }}
-        setPage={setPage}
+        setPage={(p) => {
+          router.setParams({
+            ...params,
+            page: String(p),
+          });
+        }}
       />
     </KeyboardAvoidingView>
   );

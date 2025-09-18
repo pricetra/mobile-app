@@ -3,7 +3,7 @@ import convert from 'convert-units';
 import dayjs from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
-import { postgresArrayToArray, postgresArrayToNumericArray } from './strings';
+import { postgresArrayToNumericArray } from './strings';
 
 import { Category, Price, Product } from '@/graphql/types/graphql';
 
@@ -69,4 +69,9 @@ export function incompleteProductFields(product: Product): string[] {
 
 export function isSaleExpired(price: Price) {
   return dayjs(price.expiresAt).isBefore(new Date());
+}
+
+export function toBoolean(value?: string): boolean {
+  if (!value) return false;
+  return value.toLowerCase() === 'true';
 }
