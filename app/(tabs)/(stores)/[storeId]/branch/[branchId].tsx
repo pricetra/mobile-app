@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -161,34 +161,41 @@ export default function SelectedBranchScreen() {
               </View>
             }
             rightNav={
-              <TouchableOpacity
-                onPress={() => {
-                  if (favorite === undefined) return;
-                  if (!favorite) {
-                    setFavorite(true);
-                    addBranchToList({
+              <>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (favorite === undefined) return;
+                    if (!favorite) {
+                      setFavorite(true);
+                      addBranchToList({
+                        variables: {
+                          branchId: +branchId,
+                          listId: lists.favorites.id,
+                        },
+                      }).catch(() => setFavorite(false));
+                      return;
+                    }
+                    setFavorite(false);
+                    removeBranchFromList({
                       variables: {
-                        branchId: +branchId,
+                        branchListId: lists.favorites.branchList?.find(
+                          (b) => b.branchId.toString() === branchId
+                        )?.id!,
                         listId: lists.favorites.id,
                       },
-                    }).catch(() => setFavorite(false));
-                    return;
-                  }
-                  setFavorite(false);
-                  removeBranchFromList({
-                    variables: {
-                      branchListId: lists.favorites.branchList?.find(
-                        (b) => b.branchId.toString() === branchId
-                      )?.id!,
-                      listId: lists.favorites.id,
-                    },
-                  });
-                }}
-                className="flex flex-row items-center gap-2 p-2">
-                {favorite !== undefined && (
-                  <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
-                )}
-              </TouchableOpacity>
+                    });
+                  }}
+                  className="flex flex-row items-center gap-2 p-2">
+                  {favorite !== undefined && (
+                    <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
+                  <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+                </TouchableOpacity>
+              </>
             }
           />
         ),
