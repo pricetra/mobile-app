@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import convert from 'convert-units';
 import { useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
@@ -18,7 +18,12 @@ import { useHeader } from '@/context/HeaderContext';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import { Branch, BranchesWithProductsDocument, ProductSearch } from '@/graphql/types/graphql';
+import {
+  AllStoresDocument,
+  Branch,
+  BranchesWithProductsDocument,
+  ProductSearch,
+} from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 
 const BRANCH_LIMIT = 15;
@@ -30,6 +35,9 @@ export default function HomeScreen() {
   const bottomTabBarHeight = 45;
   const [getAllProducts, { data, error, loading }] = useLazyQuery(BranchesWithProductsDocument, {
     fetchPolicy: 'network-only',
+  });
+  const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument, {
+    fetchPolicy: 'cache-first',
   });
   const [page, setPage] = useState(1);
   const { search, searching, setSearching } = useContext(SearchContext);
@@ -168,6 +176,7 @@ export default function HomeScreen() {
           setPage={setPage}
           style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0, paddingTop: 10 }}
           categoryFilterInput={categoryFilterInput}
+          stores={allStoresData?.allStores}
         />
       )}
     </SafeAreaView>
