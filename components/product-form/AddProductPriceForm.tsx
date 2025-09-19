@@ -29,6 +29,7 @@ import {
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 import { isRoleAuthorized } from '@/lib/roles';
+import { transform } from 'lodash';
 
 export type AddProductPriceFormProps = {
   product: Product;
@@ -56,6 +57,7 @@ export default function AddProductPriceForm({
     ],
   });
   const [branchId, setBranchId] = useState<string>();
+  const [priceUnit, setPriceUnit] = useState<string>('item');
   const { location, getCurrentLocation } = useLocationService();
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -156,7 +158,6 @@ export default function AddProductPriceForm({
               branchId: +branchId,
               amount: 0.0,
               sale: false,
-              unitType: 'item',
               expiresAt: dayjs(new Date()).add(7, 'day').toDate(),
             } as CreatePrice
           }
@@ -165,6 +166,7 @@ export default function AddProductPriceForm({
               variables: {
                 input: {
                   ...input,
+                  unitType: priceUnit,
                   branchId: +branchId,
                 },
               },
@@ -177,30 +179,50 @@ export default function AddProductPriceForm({
           }}>
           {(formik) => (
             <View className="flex flex-col gap-5">
-              <CurrencyInput
-                value={formik.values.amount}
-                onChangeValue={(v) => {
-                  formik.setFieldValue('amount', v ?? 0);
-                }}
-                onBlur={formik.handleBlur('amount')}
-                prefix="$"
-                delimiter=","
-                separator="."
-                precision={2}
-                minValue={0}
-                maxValue={1000}
-                renderTextInput={(props) => (
-                  <TextInput
-                    {...props}
-                    style={{
-                      fontSize: 50,
-                      textAlign: 'center',
-                      letterSpacing: 5,
-                      fontWeight: '900',
+              <View className="flex flex-row items-center justify-center gap-5">
+                <CurrencyInput
+                  value={formik.values.amount}
+                  onChangeValue={(v) => {
+                    formik.setFieldValue('amount', v ?? 0);
+                  }}
+                  onBlur={formik.handleBlur('amount')}
+                  prefix="$"
+                  delimiter=","
+                  separator="."
+                  precision={2}
+                  minValue={0}
+                  maxValue={1000}
+                  renderTextInput={(props) => (
+                    <TextInput
+                      {...props}
+                      style={{
+                        fontSize: 50,
+                        textAlign: 'center',
+                        letterSpacing: 5,
+                        fontWeight: '900',
+                      }}
+                    />
+                  )}
+                />
+
+                <View className="flex flex-row items-center gap-3">
+                  <Text className="text-4xl color-gray-300">/</Text>
+                  <Combobox
+                    showClear={false}
+                    initialValue={priceUnit}
+                    onSelectItem={(i) => setPriceUnit(i?.id ?? 'item')}
+                    dataSet={['item', 'lb'].map((x) => ({ id: x, title: x }))}
+                    textInputProps={{
+                      autoCorrect: false,
+                      placeholder: 'Unit',
+                    }}
+                    inputContainerStylesExtras={{
+                      minWidth: 85,
+                      borderColor: 'transparent',
                     }}
                   />
-                )}
-              />
+                </View>
+              </View>
 
               <Checkbox
                 label="Sale"
