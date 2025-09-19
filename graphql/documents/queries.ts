@@ -241,6 +241,7 @@ export const ALL_PRODUCTS_QUERY = gql(`
             originalPrice
             condition
             expiresAt
+            unitType
           }
         }
         weightValue
@@ -364,6 +365,7 @@ export const GET_PRODUCT_STOCKS_QUERY = gql(`
         originalPrice
         condition
         expiresAt
+        unitType
       }
       createdAt
       updatedAt
@@ -687,6 +689,7 @@ export const GET_ALL_LISTS = gql`
             originalPrice
             condition
             expiresAt
+            unitType
           }
         }
         stockId
@@ -762,6 +765,7 @@ export const GET_STOCK_BY_ID = gql(`
         condition
         expiresAt
         createdAt
+        unitType
       }
       createdAt
       updatedAt
@@ -825,6 +829,7 @@ export const GET_FAVORITE_BRANCHES_WITH_PRICE_DATA_QUERY = gql(`
           originalPrice
           condition
           expiresAt
+          unitType
           createdBy {
             id
             name
@@ -924,6 +929,7 @@ export const GET_ALL_PRODUCT_LISTS_BY_LIST_ID = gql(`
           originalPrice
           condition
           expiresAt
+          unitType
         }
       }
     }
@@ -1098,6 +1104,7 @@ export const BRANCHES_WITH_PRODUCTS_QUERY = gql(`
               originalPrice
               condition
               expiresAt
+              unitType
             }
           }
           weightValue
