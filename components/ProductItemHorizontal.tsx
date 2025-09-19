@@ -6,7 +6,7 @@ import { Skeleton } from './ui/Skeleton';
 import Image from '@/components/ui/Image';
 import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
-import { currencyFormat } from '@/lib/strings';
+import { currencyFormat, getPriceUnit } from '@/lib/strings';
 import { isSaleExpired } from '@/lib/utils';
 
 export type ProductItemHorizontalProps = {
@@ -79,7 +79,12 @@ export default function ProductItemHorizontal({ product }: ProductItemHorizontal
                     {currencyFormat(product.stock.latestPrice.originalPrice)}
                   </Text>
                 )}
-              <Text className="text-lg font-black">{currencyFormat(calculatedAmount)}</Text>
+              <View className="flex flex-row items-center justify-start gap-1">
+                <Text className="text-lg font-black">{currencyFormat(calculatedAmount)}</Text>
+                <Text className="text-xs color-gray-500">
+                  {getPriceUnit(product.stock.latestPrice)}
+                </Text>
+              </View>
               {product.quantityValue > 1 && (
                 <Text className="text-[10px] color-gray-500">
                   {`${currencyFormat(calculatedAmount / product.quantityValue)}/${product.quantityType}`}
