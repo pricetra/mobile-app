@@ -3,7 +3,7 @@ import { View, Text, Image } from 'react-native';
 
 import { Price, Stock } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
-import { currencyFormat } from '@/lib/strings';
+import { currencyFormat, getPriceUnit } from '@/lib/strings';
 
 export type HistoricPriceItemProps = {
   stock: Stock;
@@ -27,7 +27,10 @@ export default function HistoricPriceItem({ stock, price }: HistoricPriceItemPro
             {currencyFormat(price.originalPrice)}
           </Text>
         )}
-        <Text className="text-xl font-black">{currencyFormat(price.amount)}</Text>
+        <View className="flex flex-row items-center justify-start gap-1">
+          <Text className="text-xl font-black">{currencyFormat(price.amount)}</Text>
+          <Text className="text-xs color-gray-500">{getPriceUnit(price)}</Text>
+        </View>
 
         {price.sale && price.expiresAt && (
           <Text className="bg-yellow-200 text-xs italic">

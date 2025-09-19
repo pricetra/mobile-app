@@ -5,7 +5,7 @@ import { View, Text } from 'react-native';
 import Image from '@/components/ui/Image';
 import { Stock } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
-import { currencyFormat } from '@/lib/strings';
+import { currencyFormat, getPriceUnit } from '@/lib/strings';
 import { isSaleExpired, metersToMiles } from '@/lib/utils';
 
 export type StockFullProps = {
@@ -100,7 +100,10 @@ export default function StockFull({
         )}
 
         {stock?.latestPrice?.amount && (
-          <Text className="text-xl font-black">{currencyFormat(calculatedAmount)}</Text>
+          <View className="flex flex-row items-center justify-start gap-1">
+            <Text className="text-xl font-black">{currencyFormat(calculatedAmount)}</Text>
+            <Text className="text-xs color-gray-500">{getPriceUnit(stock.latestPrice)}</Text>
+          </View>
         )}
 
         {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
