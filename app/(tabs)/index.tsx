@@ -3,7 +3,7 @@ import convert from 'convert-units';
 import { useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { View, SafeAreaView, Platform, Text } from 'react-native';
+import { View, SafeAreaView, Platform, Text, StyleProp, ViewStyle } from 'react-native';
 
 import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
@@ -46,6 +46,10 @@ export default function HomeScreen() {
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
   const [address, setAddress] = useState(user.address?.fullAddress);
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
+  const style: StyleProp<ViewStyle> = {
+    marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
+    paddingTop: 10,
+  };
 
   const searchVariables = useMemo(
     () =>
@@ -146,14 +150,14 @@ export default function HomeScreen() {
         />
       </ModalFormMini>
 
-      {loading && <BranchesWithProductsFlatlistLoading />}
+      {loading && <BranchesWithProductsFlatlistLoading style={style} />}
 
       {error && (
         <SafeAreaView>
           <View className="p-5">
             <Alert icon={AlertTriangle} variant="destructive" className="max-w-xl">
               <AlertTitle>Error!</AlertTitle>
-              <AlertDescription>{error.message}</AlertDescription>
+              <AlertDescription>{error?.message}</AlertDescription>
             </Alert>
           </View>
         </SafeAreaView>
@@ -174,7 +178,7 @@ export default function HomeScreen() {
             return loadProducts(1);
           }}
           setPage={setPage}
-          style={{ marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0, paddingTop: 10 }}
+          style={style}
           categoryFilterInput={categoryFilterInput}
           stores={allStoresData?.allStores}
         />

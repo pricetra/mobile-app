@@ -162,7 +162,7 @@ export default function BranchesWithProductsFlatlist({
   );
 }
 
-export function BranchesWithProductsFlatlistLoading() {
+export function BranchesWithProductsFlatlistLoading({ style }: { style?: StyleProp<ViewStyle> }) {
   return (
     <FlatList
       data={Array(5).fill(0)}
@@ -187,7 +187,7 @@ export function BranchesWithProductsFlatlistLoading() {
           />
         </View>
       )}
-      style={{ marginBottom: Platform.OS === 'ios' ? 80 : 0, paddingTop: 10 }}
+      style={style}
     />
   );
 }
