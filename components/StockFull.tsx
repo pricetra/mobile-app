@@ -79,14 +79,20 @@ export default function StockFull({
 
           <View className="mt-1 flex flex-col gap-1">
             {stock.latestPrice?.sale && !isExpired && stock.latestPrice?.expiresAt && (
-              <Text className="bg-yellow-200 text-xs italic">
-                Valid until{' '}
-                <Text className="font-bold">{dayjs(stock.latestPrice.expiresAt).format('LL')}</Text>
+              <Text>
+                <Text className="bg-yellow-200 text-xs italic">
+                  Valid until{' '}
+                  <Text className="font-bold">
+                    {dayjs(stock.latestPrice.expiresAt).format('LL')}
+                  </Text>
+                </Text>
               </Text>
             )}
 
             {!isExpired && stock.latestPrice?.condition && (
-              <Text className="bg-yellow-200 text-xs italic">*{stock.latestPrice.condition}</Text>
+              <Text>
+                <Text className="bg-yellow-200 text-xs italic">*{stock.latestPrice.condition}</Text>
+              </Text>
             )}
           </View>
         </View>
