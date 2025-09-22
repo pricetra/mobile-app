@@ -750,6 +750,7 @@ export const GET_STOCK_BY_ID = gql(`
           countryCode
           country
           zipCode
+          distance
         }
       }
       latestPriceId
