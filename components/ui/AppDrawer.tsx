@@ -105,19 +105,23 @@ export default function AppDrawer() {
             <ScrollView>
               <View className="flex w-full flex-1 flex-col gap-2 p-2">
                 <DrawerMenuItem
-                  onPress={() => toRoute(() => router.push('/'))}
+                  onPress={() => toRoute(() => router.push('/', { relativeToDirectory: false }))}
                   text="Home"
                   icon={({ color, size }) => <Feather name="home" size={size} color={color} />}
                 />
                 <DrawerMenuItem
-                  onPress={() => toRoute(() => router.push('/scan'))}
+                  onPress={() =>
+                    toRoute(() => router.push('/scan', { relativeToDirectory: false }))
+                  }
                   text="Scan"
                   icon={({ color, size }) => (
                     <MaterialCommunityIcons name="barcode-scan" size={size} color={color} />
                   )}
                 />
                 <DrawerMenuItem
-                  onPress={() => toRoute(() => router.push('/(tabs)/(stores)'))}
+                  onPress={() =>
+                    toRoute(() => router.push('/(tabs)/(stores)', { relativeToDirectory: false }))
+                  }
                   text="Stores"
                   icon={({ color, size }) => (
                     <MaterialIcons name="storefront" size={size} color={color} />
@@ -132,7 +136,11 @@ export default function AppDrawer() {
                 />
                 {isRoleAuthorized(UserRole.Admin, user.role) && (
                   <DrawerMenuItem
-                    onPress={() => toRoute(() => router.push('/(tabs)/(admin)/users'))}
+                    onPress={() =>
+                      toRoute(() =>
+                        router.push('/(tabs)/(admin)/users', { relativeToDirectory: false })
+                      )
+                    }
                     text="Users"
                     icon={({ color, size }) => <Feather name="users" size={size} color={color} />}
                   />
@@ -142,7 +150,9 @@ export default function AppDrawer() {
 
             <View className="flex flex-col gap-2 border-t-[1px] border-gray-100 px-2 pt-5">
               <DrawerMenuItem
-                onPress={() => toRoute(() => router.push('/(tabs)/(profile)'))}
+                onPress={() =>
+                  toRoute(() => router.push('/(tabs)/(profile)', { relativeToDirectory: false }))
+                }
                 text="Profile"
                 icon={({ color, size }) => <Feather name="user" size={size} color={color} />}
               />
