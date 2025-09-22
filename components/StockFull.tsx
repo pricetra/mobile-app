@@ -6,7 +6,7 @@ import Image from '@/components/ui/Image';
 import { Stock } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
-import { isSaleExpired, metersToMiles } from '@/lib/utils';
+import { cn, isSaleExpired, metersToMiles } from '@/lib/utils';
 
 export type StockFullProps = {
   stock: Stock;
@@ -46,8 +46,8 @@ export default function StockFull({
             display: 'flex',
             flexDirection: 'row',
             gap: 4,
-            paddingRight: 60,
             flexWrap: 'wrap',
+            flex: 1,
           }}>
           {stock.latestPrice?.sale && !isExpired && (
             <View className="w-[35px]">
@@ -57,8 +57,10 @@ export default function StockFull({
             </View>
           )}
 
-          <View className="flex w-full flex-row flex-wrap items-center gap-3">
-            <Text className="text-lg font-bold" numberOfLines={1}>
+          <View className="flex w-full flex-row flex-wrap items-center">
+            <Text
+              className={cn('text-lg font-bold', stock.branch.address.distance ? 'mr-2.5' : '')}
+              numberOfLines={1}>
               {stock.store.name}
             </Text>
 
