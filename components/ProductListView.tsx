@@ -40,11 +40,11 @@ export default function ProductListView({ listId }: ProductListViewProps) {
           <TouchableOpacity
             key={pList.id}
             className="mb-10"
-            onPress={() =>
-              router.push(
-                `/(tabs)/(products)/${product.id}${pList.stockId ? `?stockId=${pList.stockId}` : ''}`
-              )
-            }>
+            onPress={() => {
+              const params = new URLSearchParams();
+              if (pList.stockId) params.append('stockId', pList.stockId.toString());
+              router.push(`/(tabs)/(products)/${product.id}?${params.toString()}`);
+            }}>
             <ProductItem product={product} />
           </TouchableOpacity>
         );

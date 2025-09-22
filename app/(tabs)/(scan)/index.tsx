@@ -56,7 +56,7 @@ export default function ScanScreen() {
         setRenderCameraComponent(false);
         return router.replace(`/(tabs)/(scan)/create-product?upc=${barcode.replaceAll('*', '')}`);
       }
-      router.push(`/(tabs)/(products)/${data.barcodeScan.id}`);
+      router.push(`/(tabs)/(products)/${data.barcodeScan.id}`, { relativeToDirectory: false });
     });
   }
 

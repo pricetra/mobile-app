@@ -38,7 +38,11 @@ export default function BranchListView({ listId }: BranchListViewProps) {
           <TouchableOpacity
             key={bList.id}
             className="mb-7"
-            onPress={() => router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`)}>
+            onPress={() =>
+              router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`, {
+                relativeToDirectory: false,
+              })
+            }>
             <BranchItemWithLogo branch={branch} />
           </TouchableOpacity>
         );

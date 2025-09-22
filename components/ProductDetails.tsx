@@ -128,7 +128,9 @@ export function ProductDetails({
                       <MaterialCommunityIcons name="star-cog-outline" size={15} color="white" />
                     }
                     onPress={() =>
-                      router.push(`/(tabs)/(profile)/list/${lists.favorites.id}?tab=branches`)
+                      router.push(`/(tabs)/(profile)/list/${lists.favorites.id}?tab=branches`, {
+                        relativeToDirectory: false,
+                      })
                     }
                   />
                 </View>

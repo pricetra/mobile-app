@@ -14,7 +14,7 @@ export default function StoreMini({ store: { id, name, logo } }: StoreMiniProps)
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(`/(tabs)/(stores)/${id}`)}
+      onPress={() => router.push(`/(tabs)/(stores)/${id}`, { relativeToDirectory: false })}
       style={{ width: width / 6 }}
       className="mb-2 flex flex-col items-center gap-2">
       <Image src={createCloudinaryUrl(logo, 300, 300)} className="size-[40px] rounded-lg" />
@@ -30,7 +30,7 @@ export function StoreMiniShowMore() {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(`/(tabs)/(stores)`)}
+      onPress={() => router.push(`/(tabs)/(stores)`, { relativeToDirectory: false })}
       style={{ width: width / 6 }}
       className="mb-2 flex flex-col items-center gap-1 rounded-xl border-[1px] border-gray-200 bg-gray-50 px-2 py-3">
       <Feather name="arrow-right" size={20} color="#374151" />

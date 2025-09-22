@@ -50,7 +50,9 @@ export default function ProductFlatlist({
           <TouchableOpacity
             onPress={() => {
               if (onItemPress) onItemPress(item);
-              router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`);
+              router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`, {
+                relativeToDirectory: false,
+              });
             }}>
             <ProductItem product={item} />
           </TouchableOpacity>

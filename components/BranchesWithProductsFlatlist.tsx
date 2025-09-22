@@ -82,7 +82,8 @@ export default function BranchesWithProductsFlatlist({
                   params.append('categoryId', String(undefined));
                   params.append('page', String(1));
                   router.push(
-                    `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`
+                    `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
+                    { relativeToDirectory: false }
                   );
                 }}>
                 <BranchProductItem branch={branch} />
@@ -97,7 +98,9 @@ export default function BranchesWithProductsFlatlist({
                 <TouchableOpacity
                   className="mr-4"
                   onPress={() => {
-                    router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`);
+                    router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`, {
+                      relativeToDirectory: false,
+                    });
                   }}>
                   <ProductItemHorizontal product={product} />
                 </TouchableOpacity>
@@ -117,7 +120,8 @@ export default function BranchesWithProductsFlatlist({
                       params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
                       params.append('page', String(1));
                       router.push(
-                        `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`
+                        `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
+                        { relativeToDirectory: false }
                       );
                     }}>
                     <AntDesign name="arrowright" size={25} color="#4b5563" />

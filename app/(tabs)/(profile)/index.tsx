@@ -103,7 +103,9 @@ export default function ProfileScreen() {
 
         <View className="mt-5 flex flex-col gap-1">
           <TouchableOpacity
-            onPress={() => router.push('/(tabs)/(profile)/my-scan-data')}
+            onPress={() =>
+              router.push('/(tabs)/(profile)/my-scan-data', { relativeToDirectory: false })
+            }
             className="flex flex-row items-center justify-between gap-5 px-0 py-1">
             <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
               <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">
@@ -119,7 +121,7 @@ export default function ProfileScreen() {
 
           {isRoleAuthorized(UserRole.Admin, user.role) && (
             <TouchableOpacity
-              onPress={() => router.push('/(tabs)/(admin)/users')}
+              onPress={() => router.push('/(tabs)/(admin)/users', { relativeToDirectory: false })}
               className="flex flex-row items-center justify-between gap-5 px-0 py-1">
               <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
                 <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">
@@ -187,7 +189,9 @@ export default function ProfileScreen() {
             {lists.allLists.map((list) => (
               <TouchableOpacity
                 key={list.id}
-                onPress={() => router.push(`/(tabs)/(profile)/list/${list.id}`)}
+                onPress={() =>
+                  router.push(`/(tabs)/(profile)/list/${list.id}`, { relativeToDirectory: false })
+                }
                 className="flex flex-row items-center justify-between gap-5 px-0 py-2">
                 <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
                   <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">

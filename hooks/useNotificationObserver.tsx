@@ -15,7 +15,9 @@ export function useNotificationObserver() {
       const productId = data['productId'];
       const stockId = data['stockId'];
       if (productId && stockId) {
-        router.push(`/(tabs)/(products)/${productId}?stockId=${stockId}`);
+        router.push(`/(tabs)/(products)/${productId}?stockId=${stockId}`, {
+          relativeToDirectory: false,
+        });
       }
     }
 

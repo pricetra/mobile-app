@@ -63,7 +63,7 @@ export default function TabHeader(props: TabHeaderProps) {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => router.push('/(tabs)/')}
+              onPress={() => router.push('/(tabs)/', { relativeToDirectory: false })}
               className="flex w-full flex-1 items-center justify-center"
               style={iconStyles}>
               {process.env.NODE_ENV === 'development' ? (

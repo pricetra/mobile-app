@@ -55,7 +55,9 @@ export default function FullStockView({ stock, closeModal }: FullStockViewProps)
         <Btn
           text="Visit Store Page"
           onPress={() => {
-            router.push(`/(tabs)/(stores)/${stock.storeId}/branch/${stock.branchId}`);
+            router.push(`/(tabs)/(stores)/${stock.storeId}/branch/${stock.branchId}`, {
+              relativeToDirectory: false,
+            });
             closeModal();
           }}
           bgColor="bg-gray-800"
@@ -64,7 +66,9 @@ export default function FullStockView({ stock, closeModal }: FullStockViewProps)
         <Btn
           text="View Stock"
           onPress={() => {
-            router.push(`/(tabs)/(products)/${stock.productId}?stockId=${stock.id}`);
+            router.push(`/(tabs)/(products)/${stock.productId}?stockId=${stock.id}`, {
+              relativeToDirectory: false,
+            });
             closeModal();
           }}
           iconRight
