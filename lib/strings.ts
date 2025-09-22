@@ -1,5 +1,6 @@
-import { Price } from '@/graphql/types/graphql';
 import * as ImagePicker from 'expo-image-picker';
+
+import { Price } from '@/graphql/types/graphql';
 
 export function titleCase(str: string) {
   return str
@@ -48,4 +49,9 @@ export function buildBase64ImageString(picture: ImagePicker.ImagePickerAsset): s
 
 export function getPriceUnit(price: Price): string {
   return price.unitType !== 'item' ? `/ ${price.unitType}` : '';
+}
+
+export function getPriceUnitOrEach(price: Price): string {
+  const unit = price.unitType === 'item' ? 'pk' : price.unitType;
+  return `/ ${unit.substring(0, 2)}`;
 }
