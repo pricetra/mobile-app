@@ -27,6 +27,7 @@ export default function TabHeaderItemSearchBar({
         onChangeText={setSearchText}
         inputMode="search"
         className="rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3 pl-[50px] pr-[80px] color-black placeholder:color-gray-500 focus:bg-transparent"
+        enterKeyHint="search"
       />
 
       {(searchText ?? '').length > 0 && (

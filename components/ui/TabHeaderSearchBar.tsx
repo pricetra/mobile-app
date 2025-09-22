@@ -50,6 +50,7 @@ export default function TabHeaderSearchBar({
         onChangeText={setText}
         value={text}
         inputMode="search"
+        returnKeyType="search"
       />
 
       {text.length > 0 && (

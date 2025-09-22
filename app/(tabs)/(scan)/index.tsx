@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -11,6 +11,7 @@ import ProductForm, {
 } from '@/components/product-form/ProductForm';
 import ScannerButton from '@/components/scanner/ScannerButton';
 import Button from '@/components/ui/Button';
+import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { barcodeTypes } from '@/constants/barcodeTypes';
 import { useAuth } from '@/context/UserContext';
@@ -21,7 +22,6 @@ import {
   UserRole,
 } from '@/graphql/types/graphql';
 import { isRoleAuthorized } from '@/lib/roles';
-import ModalFormFull from '@/components/ui/ModalFormFull';
 
 export default function ScanScreen() {
   const { user } = useAuth();
