@@ -6,6 +6,8 @@ export type SearchContextType = {
   search?: string | null; // Set to undefined on initialization. null when no input is provided or cancelled.
   setSearching: (searching: boolean) => void;
   handleSearch: (search: string | null) => void;
+  searchOpen: boolean;
+  setSearchOpen: (v: boolean) => void;
 };
 
 export const SearchContext = createContext({} as SearchContextType);
@@ -17,6 +19,7 @@ export type SearchContextProviderProps = {
 export default function SearchContextProvider({ children }: SearchContextProviderProps) {
   const [searching, setSearching] = useState(false);
   const [search, setSearch] = useState<string | null>();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const debouncedSetSearch = useCallback(
     _.debounce((search: string | null) => {
@@ -42,6 +45,8 @@ export default function SearchContextProvider({ children }: SearchContextProvide
         search,
         setSearching,
         handleSearch,
+        searchOpen,
+        setSearchOpen,
       }}>
       {children}
     </SearchContext.Provider>

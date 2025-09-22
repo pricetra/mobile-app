@@ -1,9 +1,19 @@
 import { useLazyQuery, useQuery } from '@apollo/client';
+import { FontAwesome6, Octicons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { View, SafeAreaView, Platform, Text, StyleProp, ViewStyle } from 'react-native';
+import {
+  View,
+  SafeAreaView,
+  Platform,
+  Text,
+  StyleProp,
+  ViewStyle,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
 import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
@@ -22,6 +32,7 @@ import {
   AllStoresDocument,
   Branch,
   BranchesWithProductsDocument,
+  MySearchHistoryDocument,
   ProductSearch,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
@@ -39,8 +50,17 @@ export default function HomeScreen() {
   const { data: allStoresData } = useQuery(AllStoresDocument, {
     fetchPolicy: 'cache-first',
   });
+  const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(MySearchHistoryDocument, {
+    fetchPolicy: 'network-only',
+    variables: {
+      paginator: {
+        page: 1,
+        limit: 10,
+      },
+    },
+  });
   const [page, setPage] = useState(1);
-  const { search, searching, setSearching } = useContext(SearchContext);
+  const { search, searching, setSearching, searchOpen, handleSearch } = useContext(SearchContext);
   const { location, getCurrentLocation } = useLocationService();
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
@@ -61,17 +81,45 @@ export default function HomeScreen() {
     [search, currentLocation, categoryFilterInput]
   );
 
+  useEffect(() => {
+    if (!searchOpen) return;
+    getSearchHistory();
+  }, [searchOpen]);
+
   useFocusEffect(
     useCallback(() => {
       setSubHeader(
-        <TabSubHeaderProductFilter
-          selectedCategoryId={categoryFilterInput?.id}
-          onSelectCategory={(c) => setCategoryFilterInput(c)}
-          onFiltersButtonPressed={() => setOpenFiltersModal(true)}
-        />
+        <>
+          {searchOpen && searchHistoryData && (
+            <ScrollView horizontal>
+              <View className="flex flex-row items-center justify-start gap-2 px-5 py-1">
+                <View className="mr-5 flex flex-row items-center gap-2">
+                  <Octicons name="history" size={15} color="black" />
+                  <Text className="font-bold">History</Text>
+                </View>
+
+                {searchHistoryData.mySearchHistory.searches.map(({ id, searchTerm }) => (
+                  <TouchableOpacity
+                    className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
+                    key={`sh-${id}`}
+                    onPress={() => handleSearch(searchTerm)}>
+                    <FontAwesome6 name="up-right-from-square" size={10} color="#6b7280" />
+                    <Text className="text-sm color-gray-500">{searchTerm}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          )}
+
+          <TabSubHeaderProductFilter
+            selectedCategoryId={categoryFilterInput?.id}
+            onSelectCategory={(c) => setCategoryFilterInput(c)}
+            onFiltersButtonPressed={() => setOpenFiltersModal(true)}
+          />
+        </>
       );
       return () => setSubHeader(undefined);
-    }, [categoryFilterInput])
+    }, [categoryFilterInput, searchOpen, searchHistoryData])
   );
 
   async function loadProducts(page = 1) {

@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
 import TabHeaderSearchBar from './TabHeaderSearchBar';
@@ -24,8 +24,8 @@ const iconColor = '#333';
 export default function TabHeader(props: TabHeaderProps) {
   const { subHeader } = useHeader();
   const { openDrawer } = useDrawer();
-  const { search, handleSearch, setSearching, searching } = useContext(SearchContext);
-  const [openSearch, setOpenSearch] = useState(false);
+  const { search, handleSearch, setSearching, searching, searchOpen, setSearchOpen } =
+    useContext(SearchContext);
 
   const iconStyles: StyleProp<ViewStyle> = {
     paddingVertical: padding,
@@ -41,11 +41,11 @@ export default function TabHeader(props: TabHeaderProps) {
       <View
         className="w-full flex-row items-center justify-center gap-3"
         style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
-        {openSearch ? (
+        {searchOpen ? (
           <TabHeaderSearchBar
             onBackPressed={() => {
               handleSearch(null);
-              setOpenSearch(false);
+              setSearchOpen(false);
               if (searching) setSearching(false);
             }}
             logoHeight={logoHeight}
@@ -79,7 +79,7 @@ export default function TabHeader(props: TabHeaderProps) {
               )}
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setOpenSearch(true)} style={iconStyles}>
+            <TouchableOpacity onPress={() => setSearchOpen(true)} style={iconStyles}>
               <Ionicons name="search" color={iconColor} size={iconSize} />
             </TouchableOpacity>
           </>
