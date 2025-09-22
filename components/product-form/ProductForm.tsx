@@ -107,24 +107,12 @@ export default function ProductForm({
   }, [brandsData]);
 
   async function selectImage() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-      base64: true,
-      allowsMultipleSelection: false,
-      cameraType: ImagePicker.CameraType.back,
-    });
-
-    if (result.canceled || result.assets.length === 0) return;
-
-    const picture = result.assets.at(0);
-    if (!picture || !picture.base64 || !picture.uri) return alert('could not process image');
+    const picture = await selectImageForProductExtraction();
+    if (!picture) return alert('could not process image');
 
     setImageUpdated(true);
-    setImageUri(picture.uri);
-    setImageBase64(buildBase64ImageString(picture));
+    setImageUri(picture.imageUri);
+    setImageBase64(picture.base64);
   }
 
   function resetImageAndCategory() {
@@ -418,4 +406,29 @@ export default function ProductForm({
       )}
     </Formik>
   );
+}
+
+export async function selectImageForProductExtraction(useCamera: boolean = false) {
+  const options: ImagePicker.ImagePickerOptions = {
+    mediaTypes: ['images'],
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 1,
+    base64: true,
+    allowsMultipleSelection: false,
+    cameraType: ImagePicker.CameraType.back,
+  };
+  const result = await (useCamera
+    ? ImagePicker.launchCameraAsync(options)
+    : ImagePicker.launchImageLibraryAsync(options));
+
+  if (result.canceled || result.assets.length === 0) return undefined;
+
+  const picture = result.assets.at(0);
+  if (!picture || !picture.base64 || !picture.uri) return undefined;
+
+  return {
+    imageUri: picture.uri,
+    base64: buildBase64ImageString(picture),
+  };
 }

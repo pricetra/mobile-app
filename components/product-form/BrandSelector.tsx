@@ -32,7 +32,7 @@ export default function BrandSelector({
 
   function addNewBrand(brand: string) {
     if (!brands) return;
-    setBrands([...brands, { brand: brand.trim(), products: 0 }]);
+    setBrands([...brands, { brand: brand?.trim(), products: 0 }]);
   }
 
   return (
