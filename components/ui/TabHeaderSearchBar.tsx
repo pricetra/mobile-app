@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { StyleProp, TextInput, TouchableOpacity, ViewStyle } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleProp, TextInput, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 export type TabHeaderSearchBarProps = {
   onBackPressed: () => void;
@@ -22,6 +23,11 @@ export default function TabHeaderSearchBar({
   updateSearch,
   searchText,
 }: TabHeaderSearchBarProps) {
+  const [text, setText] = useState(searchText ?? '');
+  useEffect(() => {
+    setText(searchText ?? '');
+  }, [searchText]);
+
   return (
     <>
       <TouchableOpacity onPress={onBackPressed} style={iconStyles}>
@@ -39,11 +45,32 @@ export default function TabHeaderSearchBar({
           paddingRight: padding,
           marginRight: padding,
         }}
-        clearButtonMode="while-editing"
-        className="placeholder:color-slate-400"
-        onChangeText={updateSearch}
-        value={searchText ?? ''}
+        className="flex-1 placeholder:color-slate-400"
+        onEndEditing={() => updateSearch(text)}
+        onChangeText={setText}
+        value={text}
+        inputMode="search"
       />
+
+      {text.length > 0 && (
+        <View className="flex flex-row items-center justify-end gap-2 pr-5">
+          {/* <TouchableOpacity
+            onPress={() => {
+              setText('');
+              updateSearch(null);
+            }}>
+            <Feather name="x-circle" size={20} color="#999" />
+          </TouchableOpacity> */}
+
+          <TouchableOpacity
+            onPress={() => {
+              updateSearch(text);
+            }}
+            className="flex size-[30px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark">
+            <Ionicons name="search" size={17} color="white" />
+          </TouchableOpacity>
+        </View>
+      )}
     </>
   );
 }

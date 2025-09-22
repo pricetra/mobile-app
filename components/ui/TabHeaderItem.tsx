@@ -32,18 +32,12 @@ export default function TabHeaderItem({
 }: TabHeaderItemProps) {
   const { subHeader } = useHeader();
   const { search, handleSearch } = useContext(SearchContext);
-  const [searchText, setSearchText] = useState(search);
   const [openSearch, setOpenSearch] = useState(false);
 
   const iconStyles: StyleProp<ViewStyle> = {
     paddingVertical: padding,
     paddingHorizontal: padding + 5,
   };
-
-  function updateSearch(text: string | null) {
-    setSearchText(text);
-    handleSearch(text);
-  }
 
   useEffect(() => {
     if (!search || search === '' || !showSearch) return;
@@ -67,7 +61,7 @@ export default function TabHeaderItem({
         {openSearch ? (
           <TabHeaderSearchBar
             onBackPressed={() => {
-              updateSearch(null);
+              handleSearch(null);
               setOpenSearch(false);
             }}
             logoHeight={logoHeight}
@@ -75,8 +69,8 @@ export default function TabHeaderItem({
             iconStyles={iconStyles}
             iconColor={iconColor}
             iconSize={iconSize}
-            updateSearch={updateSearch}
-            searchText={searchText}
+            updateSearch={handleSearch}
+            searchText={search}
           />
         ) : (
           <>

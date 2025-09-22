@@ -36,7 +36,7 @@ export default function TabHeaderItemSearchBar({
               setSearchText('');
               handleSearch(undefined);
             }}>
-            <Feather name="x-circle" size={20} color="#6b7280" />
+            <Feather name="x-circle" size={20} color="#999" />
           </TouchableOpacity>
 
           <TouchableOpacity

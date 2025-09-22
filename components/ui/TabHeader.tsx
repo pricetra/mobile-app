@@ -25,18 +25,12 @@ export default function TabHeader(props: TabHeaderProps) {
   const { subHeader } = useHeader();
   const { openDrawer } = useDrawer();
   const { search, handleSearch, setSearching, searching } = useContext(SearchContext);
-  const [searchText, setSearchText] = useState(search);
   const [openSearch, setOpenSearch] = useState(false);
 
   const iconStyles: StyleProp<ViewStyle> = {
     paddingVertical: padding,
     paddingHorizontal: padding + 5,
   };
-
-  function updateSearch(text: string | null) {
-    setSearchText(text);
-    handleSearch(text);
-  }
 
   return (
     <SafeAreaView
@@ -50,7 +44,7 @@ export default function TabHeader(props: TabHeaderProps) {
         {openSearch ? (
           <TabHeaderSearchBar
             onBackPressed={() => {
-              updateSearch(null);
+              handleSearch(null);
               setOpenSearch(false);
               if (searching) setSearching(false);
             }}
@@ -59,8 +53,8 @@ export default function TabHeader(props: TabHeaderProps) {
             iconStyles={iconStyles}
             iconColor={iconColor}
             iconSize={iconSize}
-            updateSearch={updateSearch}
-            searchText={searchText}
+            updateSearch={handleSearch}
+            searchText={search}
           />
         ) : (
           <>

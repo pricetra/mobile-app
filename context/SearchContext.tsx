@@ -25,8 +25,12 @@ export default function SearchContextProvider({ children }: SearchContextProvide
     []
   );
 
-  const handleSearch = (search: string | null) => {
+  const handleSearch = (search: string | null, debounce: boolean = true) => {
     setSearching(true);
+    if (!debounce) {
+      setSearch(search?.trim() ?? null);
+      return;
+    }
     debouncedSetSearch.cancel();
     debouncedSetSearch(search);
   };

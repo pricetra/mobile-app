@@ -61,7 +61,7 @@ export default function BranchesWithProductsFlatlist({
       keyExtractor={({ id }, i) => `${id}-${i}`}
       indicatorStyle="black"
       ListHeaderComponent={
-        !search && !categoryFilterInput?.id && stores ? (
+        !search && paginator?.page === 1 && !categoryFilterInput?.id && stores ? (
           <View className="mb-14 mt-5 flex flex-row flex-wrap items-center justify-center gap-2">
             {stores.slice(0, 9).map((store) => (
               <StoreMini key={`store-${store.id}`} store={store} />
