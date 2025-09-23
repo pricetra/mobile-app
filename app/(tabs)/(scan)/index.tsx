@@ -74,61 +74,62 @@ export default function ScanScreen() {
     barcodeScan({
       variables: { barcode, searchMode },
     }).then(({ error, data }) => {
-      if (error || !data) {
-        setRenderCameraComponent(false);
-        const alertButtons: AlertButton[] = [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-            onPress: () => {
-              setRenderCameraComponent(true);
-            },
-          },
-          {
-            text: 'Take Picture',
-            style: 'default',
-            isPreferred: true,
-            onPress: () => {
-              selectImageForProductExtraction(true).then(async (pic) => {
-                if (!pic) return;
-
-                const { data, error } = await extractProductFields({
-                  variables: { base64Image: pic.base64 },
-                });
-                if (!data || error) {
-                  setOpenCreateProductModal(true);
-                  return;
-                }
-                const { weight, ...extraction } = data.extractProductFields;
-                const product = { ...extraction } as Product;
-                if (weight) {
-                  const parsedWeight = weight.split(' ');
-                  product.weightValue = +(parsedWeight.shift() ?? 0);
-                  product.weightType = parsedWeight.join(' ');
-                }
-                setExtractedProductData(product);
-                setOpenCreateProductModal(true);
-              });
-            },
-          },
-        ];
-
-        if (isRoleAuthorized(UserRole.Contributor, user.role)) {
-          alertButtons.splice(1, 0, {
-            text: 'Add Manually',
-            style: 'default',
-            onPress: () => setOpenCreateProductModal(true),
-          });
-        }
-
-        Alert.alert(
-          'The barcode you scanned does not exist in our database',
-          'You can help us record and track prices for this product by taking a picture',
-          alertButtons
-        );
+      if (!error && data) {
+        router.push(`/(tabs)/(products)/${data.barcodeScan.id}`, { relativeToDirectory: false });
         return;
       }
-      router.push(`/(tabs)/(products)/${data.barcodeScan.id}`, { relativeToDirectory: false });
+
+      setRenderCameraComponent(false);
+      const alertButtons: AlertButton[] = [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+          onPress: () => {
+            setRenderCameraComponent(true);
+          },
+        },
+        {
+          text: 'Take Picture',
+          style: 'default',
+          isPreferred: true,
+          onPress: async () => {
+            const pic = await selectImageForProductExtraction(true);
+            if (!pic) return;
+
+            const { data, error } = await extractProductFields({
+              variables: { base64Image: pic.base64 },
+            });
+            if (!data || error) {
+              setOpenCreateProductModal(true);
+              return;
+            }
+
+            const { weight, ...extraction } = data.extractProductFields;
+            const product = { ...extraction } as Product;
+            if (weight) {
+              const parsedWeight = weight.split(' ');
+              product.weightValue = +(parsedWeight.shift() ?? 0);
+              product.weightType = parsedWeight.join(' ');
+            }
+            setExtractedProductData(product);
+            setOpenCreateProductModal(true);
+          },
+        },
+      ];
+
+      if (isRoleAuthorized(UserRole.Contributor, user.role)) {
+        alertButtons.splice(1, 0, {
+          text: 'Add Manually',
+          style: 'default',
+          onPress: () => setOpenCreateProductModal(true),
+        });
+      }
+
+      Alert.alert(
+        'The barcode you scanned does not exist in our database',
+        'You can help us record and track prices for this product by taking a picture',
+        alertButtons
+      );
     });
   }
 
