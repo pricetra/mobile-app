@@ -94,44 +94,9 @@ export default function ScanScreen() {
             setRenderCameraComponent(true);
           },
         },
-        {
-          text: 'Take Picture',
-          style: 'default',
-          isPreferred: true,
-          onPress: async () => {
-            const pic = await selectImageForProductExtraction(true);
-            if (!pic) {
-              setRenderCameraComponent(true);
-              return;
-            }
-
-            const { data, error } = await extractProductFields({
-              variables: { base64Image: pic.base64 },
-            });
-            if (!data || error) {
-              Alert.alert(
-                'Error extracting product data',
-                'Please try again or add the product manually'
-              );
-              setOpenCreateProductModal(true);
-              return;
-            }
-
-            const { weight, ...extraction } = data.extractProductFields;
-            const product = { ...extraction } as Product;
-            if (weight) {
-              const parsedWeight = weight.split(' ');
-              product.weightValue = +(parsedWeight.shift() ?? 0);
-              product.weightType = parsedWeight.join(' ');
-            }
-            setExtractedProductData(product);
-            setOpenCreateProductModal(true);
-          },
-        },
       ];
-
       if (isRoleAuthorized(UserRole.Contributor, user.role)) {
-        alertButtons.splice(1, 0, {
+        alertButtons.push({
           text: 'Add Manually',
           style: 'default',
           onPress: () => {
@@ -139,6 +104,40 @@ export default function ScanScreen() {
           },
         });
       }
+      alertButtons.push({
+        text: 'Take Picture',
+        style: 'default',
+        isPreferred: true,
+        onPress: async () => {
+          const pic = await selectImageForProductExtraction(true);
+          if (!pic) {
+            setRenderCameraComponent(true);
+            return;
+          }
+
+          const { data, error } = await extractProductFields({
+            variables: { base64Image: pic.base64 },
+          });
+          if (!data || error) {
+            Alert.alert(
+              'Error extracting product data',
+              'Please try again or add the product manually'
+            );
+            setOpenCreateProductModal(true);
+            return;
+          }
+
+          const { weight, ...extraction } = data.extractProductFields;
+          const product = { ...extraction } as Product;
+          if (weight) {
+            const parsedWeight = weight.split(' ');
+            product.weightValue = +(parsedWeight.shift() ?? 0);
+            product.weightType = parsedWeight.join(' ');
+          }
+          setExtractedProductData(product);
+          setOpenCreateProductModal(true);
+        },
+      });
 
       Alert.alert(
         'The barcode you scanned does not exist in our database',
