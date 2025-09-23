@@ -46,7 +46,7 @@ export default function ScanScreen() {
   );
 
   const debouncedHandleBarcodeScan = useMemo(
-    () => debounce(handleBarcodeScan, 1000, { leading: true, trailing: false }),
+    () => debounce(_handleBarcodeScan, 1000, { leading: true, trailing: false }),
     []
   );
 
@@ -76,9 +76,7 @@ export default function ScanScreen() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
-  function handleBarcodeScan(barcode: string, searchMode?: boolean) {
-    console.log('Scanned barcode:', barcode);
-
+  function _handleBarcodeScan(barcode: string, searchMode?: boolean) {
     barcodeScan({
       variables: { barcode, searchMode },
     }).then(({ error, data }) => {
@@ -159,7 +157,7 @@ export default function ScanScreen() {
         <ManualBarcodeForm
           onSubmit={(barcode) => {
             setScannedCode(barcode);
-            handleBarcodeScan(barcode, true);
+            _handleBarcodeScan(barcode, true);
             setOpenManualBarcodeModal(false);
           }}
         />
@@ -219,7 +217,7 @@ export default function ScanScreen() {
           onBarcodeScanned={(res) => {
             if (res.data === scannedCode) return;
             setScannedCode(res.data);
-            handleBarcodeScan(res.data);
+            debouncedHandleBarcodeScan(res.data);
           }}>
           <View className="bottom-safe-or-5 absolute w-full gap-5 p-3">
             <View className="flex flex-row items-center justify-between">
@@ -230,7 +228,7 @@ export default function ScanScreen() {
               <ScannerButton
                 onPress={() => {
                   if (!scannedCode) return;
-                  handleBarcodeScan(scannedCode);
+                  _handleBarcodeScan(scannedCode);
                 }}
                 onLongPress={() => setOpenManualBarcodeModal(true)}>
                 {barcodeScanLoading ? (
