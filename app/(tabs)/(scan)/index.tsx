@@ -2,7 +2,8 @@ import { useLazyQuery } from '@apollo/client';
 import { MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { debounce } from 'lodash';
+import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, AlertButton, Text, View } from 'react-native';
 
 import ManualBarcodeForm from '@/components/ManualBarcodeForm';
@@ -44,6 +45,11 @@ export default function ScanScreen() {
     }
   );
 
+  const debouncedHandleBarcodeScan = useMemo(
+    () => debounce(handleBarcodeScan, 1000, { leading: true, trailing: false }),
+    []
+  );
+
   useFocusEffect(
     useCallback(() => {
       setRenderCameraComponent(true);
@@ -71,6 +77,8 @@ export default function ScanScreen() {
   }
 
   function handleBarcodeScan(barcode: string, searchMode?: boolean) {
+    console.log('Scanned barcode:', barcode);
+
     barcodeScan({
       variables: { barcode, searchMode },
     }).then(({ error, data }) => {
@@ -94,12 +102,19 @@ export default function ScanScreen() {
           isPreferred: true,
           onPress: async () => {
             const pic = await selectImageForProductExtraction(true);
-            if (!pic) return;
+            if (!pic) {
+              setRenderCameraComponent(true);
+              return;
+            }
 
             const { data, error } = await extractProductFields({
               variables: { base64Image: pic.base64 },
             });
             if (!data || error) {
+              Alert.alert(
+                'Error extracting product data',
+                'Please try again or add the product manually'
+              );
               setOpenCreateProductModal(true);
               return;
             }
@@ -121,7 +136,9 @@ export default function ScanScreen() {
         alertButtons.splice(1, 0, {
           text: 'Add Manually',
           style: 'default',
-          onPress: () => setOpenCreateProductModal(true),
+          onPress: () => {
+            setOpenCreateProductModal(true);
+          },
         });
       }
 
