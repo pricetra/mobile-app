@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { StyleProp, TextInput, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Keyboard, StyleProp, TextInput, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 export type TabHeaderSearchBarProps = {
   onBackPressed: () => void;
@@ -66,6 +66,7 @@ export default function TabHeaderSearchBar({
           <TouchableOpacity
             onPress={() => {
               updateSearch(text);
+              Keyboard.dismiss();
             }}
             className="flex size-[30px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark">
             <Ionicons name="search" size={17} color="white" />

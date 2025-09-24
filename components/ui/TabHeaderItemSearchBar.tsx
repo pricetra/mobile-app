@@ -1,6 +1,6 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, TextInput, TouchableOpacity, View } from 'react-native';
 
 export type TabHeaderItemSearchBarProps = {
   handleSearch: (s?: string) => void;
@@ -36,6 +36,7 @@ export default function TabHeaderItemSearchBar({
             onPress={() => {
               setSearchText('');
               handleSearch(undefined);
+              Keyboard.dismiss();
             }}>
             <Feather name="x-circle" size={20} color="#999" />
           </TouchableOpacity>
@@ -43,6 +44,7 @@ export default function TabHeaderItemSearchBar({
           <TouchableOpacity
             onPress={() => {
               handleSearch(searchText ?? undefined);
+              Keyboard.dismiss();
             }}
             className="size-[20px] rounded-full bg-pricetraGreenHeavyDark p-[2px]">
             <Feather name="arrow-right" size={15} color="white" />
