@@ -58,18 +58,17 @@ export default function ProductFull({
           </View>
 
           <View className="flex flex-row flex-wrap items-center gap-1">
-            {product.brand && product.brand !== 'N/A' && (
-              <Text className="font-semibold">{product.brand}</Text>
-            )}
+            {product.brand && product.brand !== 'N/A' && <Text>{product.brand}</Text>}
           </View>
 
-          <Text className="text-2xl font-bold">{product.name}</Text>
+          <Text className="text-2xl font-semibold">{product.name}</Text>
+
           {product.category && (
             <View className="flex flex-row flex-wrap items-center gap-1">
               {categoriesFromChild(product.category).map((c, i) => (
                 <Fragment key={c.id}>
-                  {i !== 0 && <Entypo name="chevron-right" size={10} color="black" />}
-                  <Text className="text-sm">{c.name}</Text>
+                  {i !== 0 && <Entypo name="chevron-right" size={10} color="#4b5563" />}
+                  <Text className="text-sm text-gray-600">{c.name}</Text>
                 </Fragment>
               ))}
             </View>

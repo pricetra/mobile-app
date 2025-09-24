@@ -116,7 +116,6 @@ export default function HomeScreen() {
           <TabSubHeaderProductFilter
             selectedCategoryId={categoryFilterInput?.id}
             onSelectCategory={(c) => setCategoryFilterInput(c)}
-            hideFiltersButton
             onFiltersButtonPressed={() => {}}
           />
         </>
