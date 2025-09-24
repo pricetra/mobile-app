@@ -65,7 +65,7 @@ export default function HomeScreen() {
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
   const [address, setAddress] = useState(user.address?.fullAddress);
-  const [openFiltersModal, setOpenFiltersModal] = useState(false);
+  const [openLocationModal, setOpenLocationModal] = useState(false);
   const style: StyleProp<ViewStyle> = {
     marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
     paddingTop: 10,
@@ -90,31 +90,34 @@ export default function HomeScreen() {
     useCallback(() => {
       setSubHeader(
         <>
-          {searchOpen && searchHistoryData && (
-            <ScrollView horizontal>
-              <View className="flex flex-row items-center justify-start gap-2 px-5 py-1">
-                <View className="mr-5 flex flex-row items-center gap-2">
-                  <Octicons name="history" size={15} color="black" />
-                  <Text className="font-bold">History</Text>
-                </View>
+          {searchOpen &&
+            searchHistoryData &&
+            searchHistoryData.mySearchHistory.paginator.total > 0 && (
+              <ScrollView horizontal>
+                <View className="flex flex-row items-center justify-start gap-2 px-5 py-1">
+                  <View className="ml-2 mr-5 flex flex-row items-center gap-2">
+                    <Octicons name="history" size={15} color="black" />
+                    <Text className="font-bold">History</Text>
+                  </View>
 
-                {searchHistoryData.mySearchHistory.searches.map(({ id, searchTerm }) => (
-                  <TouchableOpacity
-                    className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
-                    key={`sh-${id}`}
-                    onPress={() => handleSearch(searchTerm)}>
-                    <FontAwesome6 name="up-right-from-square" size={10} color="#6b7280" />
-                    <Text className="text-sm color-gray-500">{searchTerm}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
-          )}
+                  {searchHistoryData.mySearchHistory.searches.map(({ id, searchTerm }) => (
+                    <TouchableOpacity
+                      className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
+                      key={`sh-${id}`}
+                      onPress={() => handleSearch(searchTerm)}>
+                      <Text className="text-sm color-gray-500">{searchTerm}</Text>
+                      <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            )}
 
           <TabSubHeaderProductFilter
             selectedCategoryId={categoryFilterInput?.id}
             onSelectCategory={(c) => setCategoryFilterInput(c)}
-            onFiltersButtonPressed={() => setOpenFiltersModal(true)}
+            hideFiltersButton
+            onFiltersButtonPressed={() => {}}
           />
         </>
       );
@@ -162,9 +165,9 @@ export default function HomeScreen() {
   return (
     <SafeAreaView>
       <ModalFormMini
-        title="Search Filters"
-        visible={openFiltersModal}
-        onRequestClose={() => setOpenFiltersModal(false)}>
+        title="Change Location"
+        visible={openLocationModal}
+        onRequestClose={() => setOpenLocationModal(false)}>
         <ProductSearchFilterModal
           addressInit={address}
           radiusInit={Math.round(
@@ -192,9 +195,9 @@ export default function HomeScreen() {
                 fullAddress: address,
               });
             }
-            setOpenFiltersModal(false);
+            setOpenLocationModal(false);
           }}
-          onCloseModal={() => setOpenFiltersModal(false)}
+          onCloseModal={() => setOpenLocationModal(false)}
         />
       </ModalFormMini>
 
@@ -229,6 +232,7 @@ export default function HomeScreen() {
           style={style}
           categoryFilterInput={categoryFilterInput}
           stores={allStoresData?.allStores}
+          onLocationButtonPressed={() => setOpenLocationModal(true)}
         />
       )}
     </SafeAreaView>

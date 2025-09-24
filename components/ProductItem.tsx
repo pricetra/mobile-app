@@ -64,10 +64,10 @@ export default function ProductItem({ product }: ProductItemProps) {
 
           <View className="flex flex-row flex-wrap items-center gap-1">
             {product.brand && product.brand !== 'N/A' && (
-              <Text className="text-xs">{product.brand}</Text>
+              <Text className="text-xs text-gray-600">{product.brand}</Text>
             )}
           </View>
-          <Text className="font-bold" numberOfLines={3}>
+          <Text className="font-semibold" numberOfLines={3}>
             {product.name}
           </Text>
           {product.category && <Text className="mt-2 text-xs">{product.category.name}</Text>}

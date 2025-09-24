@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client';
-import { AntDesign, Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,7 @@ import FullStockView from './FullStockView';
 import NutritionFacts from './NutritionFacts';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
+import LocationChangeButton from './ui/LocationChangeButton';
 import ModalFormFull from './ui/ModalFormFull';
 import ModalFormMini from './ui/ModalFormMini';
 
@@ -25,7 +26,6 @@ import {
   Stock,
   UpdateProductNutritionDataDocument,
 } from '@/graphql/types/graphql';
-import { metersToMiles } from '@/lib/utils';
 
 export type StockWithApproximatePrice = Stock & {
   approximatePrice?: number;
@@ -76,7 +76,7 @@ export function ProductDetails({
       </ModalFormFull>
 
       <ModalFormMini
-        title="Search Filters"
+        title="Change Location"
         visible={openFiltersModal}
         onRequestClose={() => setOpenFiltersModal(false)}>
         <ProductSearchFilterModal
@@ -188,27 +188,8 @@ export function ProductDetails({
             badge: stocks.length.toString(),
             content: (
               <View>
-                <View className="mb-5 flex flex-row items-center justify-between gap-5">
-                  <View className="flex flex-1 flex-row items-center gap-2">
-                    <AntDesign name="infocirlce" size={12} color="#6b7280" />
-
-                    <Text className="flex-1 text-xs color-gray-500">
-                      Showing results within{' '}
-                      <Text className="font-bold italic">
-                        {metersToMiles(currentLocation.locationInput.radiusMeters ?? 0)} miles
-                      </Text>{' '}
-                      of <Text className="font-bold italic">{currentLocation.fullAddress}</Text>
-                    </Text>
-                  </View>
-
-                  <Btn
-                    text="Filters"
-                    size="sm"
-                    rounded="full"
-                    className="bg-black"
-                    icon={<Ionicons name="filter" size={15} color="white" />}
-                    onPress={() => setOpenFiltersModal(true)}
-                  />
+                <View className="mb-10 flex flex-row items-center justify-between gap-5">
+                  <LocationChangeButton onPress={() => setOpenFiltersModal(true)} />
                 </View>
 
                 {stocks.length > 0 ? (

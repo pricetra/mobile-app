@@ -63,7 +63,7 @@ export default function ProductItemHorizontal({ product }: ProductItemHorizontal
 
           <View className="flex flex-row flex-wrap items-center gap-2">
             {product.brand && product.brand !== 'N/A' && (
-              <Text className="text-[10px]">{product.brand}</Text>
+              <Text className="text-[10px] text-gray-600">{product.brand}</Text>
             )}
           </View>
           <Text numberOfLines={2}>{product.name}</Text>

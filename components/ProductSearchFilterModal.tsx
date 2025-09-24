@@ -124,7 +124,7 @@ export default function ProductSearchFilterModal({
         />
 
         <View className="flex-1">
-          <Btn onPress={submitForm} loading={submitting} size="md" text="Apply Filters" />
+          <Btn onPress={submitForm} loading={submitting} size="md" text="Set Location" />
         </View>
       </View>
 

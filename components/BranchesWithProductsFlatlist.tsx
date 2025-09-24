@@ -17,7 +17,9 @@ import {
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 import StoreMini, { StoreMiniShowMore } from './StoreMini';
+import LocationChangeButton from './ui/LocationChangeButton';
 import PaginationSimple from './ui/PaginationSimple';
+import { Skeleton } from './ui/Skeleton';
 import { PartialCategory } from './ui/TabSubHeaderProductFilter';
 
 import { SearchContext } from '@/context/SearchContext';
@@ -40,6 +42,7 @@ export type BranchesWithProductsFlatlistProps = {
   style?: StyleProp<ViewStyle>;
   categoryFilterInput?: PartialCategory;
   stores?: Store[];
+  onLocationButtonPressed: () => void;
 };
 
 export default function BranchesWithProductsFlatlist({
@@ -50,6 +53,7 @@ export default function BranchesWithProductsFlatlist({
   style,
   categoryFilterInput,
   stores,
+  onLocationButtonPressed,
 }: BranchesWithProductsFlatlistProps) {
   const { width } = useWindowDimensions();
   const [refreshing, setRefreshing] = useState(false);
@@ -61,16 +65,22 @@ export default function BranchesWithProductsFlatlist({
       keyExtractor={({ id }, i) => `${id}-${i}`}
       indicatorStyle="black"
       ListHeaderComponent={
-        !search && paginator?.page === 1 && !categoryFilterInput?.id && stores ? (
-          <View className="mb-14 mt-5 flex flex-row flex-wrap items-center justify-center gap-2">
-            {stores.slice(0, 9).map((store) => (
-              <StoreMini key={`store-${store.id}`} store={store} />
-            ))}
-            <StoreMiniShowMore />
+        <>
+          {!search && paginator?.page === 1 && !categoryFilterInput?.id && stores && (
+            <View className="mb-10 mt-5 flex flex-row flex-wrap items-center justify-center gap-2">
+              {stores.slice(0, 9).map((store) => (
+                <StoreMini key={`store-${store.id}`} store={store} />
+              ))}
+              <StoreMiniShowMore />
+            </View>
+          )}
+
+          <View className="mb-8 mt-5 flex flex-row px-5">
+            <LocationChangeButton onPress={onLocationButtonPressed} />
+
+            <View className="flex-1" />
           </View>
-        ) : (
-          <></>
-        )
+        </>
       }
       renderItem={({ item: branch }) =>
         branch.products?.length ? (
@@ -168,6 +178,11 @@ export function BranchesWithProductsFlatlistLoading({ style }: { style?: StylePr
       data={Array(5).fill(0)}
       keyExtractor={(_, i) => `branch-loading-${i}`}
       indicatorStyle="black"
+      ListHeaderComponent={
+        <View className="mb-8 mt-5 flex flex-row px-5">
+          <Skeleton className="h-14 w-60 rounded-full bg-gray-200" />
+        </View>
+      }
       renderItem={() => (
         <View className="mb-5">
           <View className="px-5 py-3">
