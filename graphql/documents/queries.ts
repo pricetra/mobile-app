@@ -324,60 +324,70 @@ export const PRODUCT_BY_ID_QUERY = gql(`
 `);
 
 export const GET_PRODUCT_STOCKS_QUERY = gql(`
-  query GetProductStocks($productId: ID!, $location: LocationInput) {
-    getProductStocks(productId: $productId, location: $location) {
-      id
-      productId
-      storeId
-      store {
-        id
-        name
-        logo
-      }
-      branchId
-      branch {
-        id
-        name
-        address {
-          id
-          latitude
-          longitude
-          mapsLink
-          fullAddress
-          street
-          city
-          administrativeDivision
-          countryCode
-          country
-          zipCode
-          distance
-        }
-      }
-      latestPriceId
-      latestPrice {
+  query GetProductStocks($paginator: PaginatorInput!, $productId: ID!, $location: LocationInput) {
+    getProductStocks(paginator: $paginator, productId: $productId, location: $location) {
+      stocks {
         id
         productId
-        branchId
         storeId
-        amount
-        currencyCode
-        sale
-        originalPrice
-        condition
-        expiresAt
-        unitType
+        store {
+          id
+          name
+          logo
+        }
+        branchId
+        branch {
+          id
+          name
+          address {
+            id
+            latitude
+            longitude
+            mapsLink
+            fullAddress
+            street
+            city
+            administrativeDivision
+            countryCode
+            country
+            zipCode
+            distance
+          }
+        }
+        latestPriceId
+        latestPrice {
+          id
+          productId
+          branchId
+          storeId
+          amount
+          currencyCode
+          sale
+          originalPrice
+          condition
+          expiresAt
+          unitType
+        }
+        createdAt
+        updatedAt
+        createdBy {
+          id
+          name
+          avatar
+        }
+        updatedBy {
+          id
+          name
+          avatar
+        }
       }
-      createdAt
-      updatedAt
-      createdBy {
-        id
-        name
-        avatar
-      }
-      updatedBy {
-        id
-        name
-        avatar
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
       }
     }
   }

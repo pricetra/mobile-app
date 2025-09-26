@@ -3,7 +3,7 @@ import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, ScrollView, SafeAreaView, TouchableOpacity, Text, Alert } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Text, Alert } from 'react-native';
 
 import CreateStoreForm from '@/components/CreateStoreForm';
 import StoreItem, { StoreItemLoading } from '@/components/StoreItem';

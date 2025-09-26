@@ -36,6 +36,7 @@ import {
   GetProductNutritionDataDocument,
   GetProductStocksDocument,
   ListType,
+  PaginatedStocks,
   Product,
   ProductDocument,
   ProductList,
@@ -139,7 +140,14 @@ export default function ProductScreen() {
 
   function fetchProductStocksWithLocation(productId: string) {
     return getProductStocks({
-      variables: { productId: +productId, location: currentLocation.locationInput },
+      variables: {
+        paginator: {
+          page: 1,
+          limit: 10,
+        },
+        productId: +productId,
+        location: currentLocation.locationInput,
+      },
     });
   }
 
@@ -382,7 +390,7 @@ export default function ProductScreen() {
         )}
 
         <ProductDetails
-          stocks={(stocksData?.getProductStocks ?? []) as Stock[]}
+          paginatedStocks={stocksData?.getProductStocks as PaginatedStocks | undefined}
           favBranchesPriceData={
             (favBranchesPriceData?.getFavoriteBranchesWithPrices ?? []) as BranchListWithPrices[]
           }

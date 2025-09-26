@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, Linking } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 
@@ -21,6 +21,7 @@ import { useAuth } from '@/context/UserContext';
 import {
   BranchListWithPrices,
   GetProductNutritionDataDocument,
+  PaginatedStocks,
   Product,
   ProductNutrition,
   Stock,
@@ -34,13 +35,13 @@ export type StockWithApproximatePrice = Stock & {
 export type ProductDetailsProps = {
   favBranchesPriceData: BranchListWithPrices[];
   product: Product;
-  stocks: Stock[];
+  paginatedStocks?: PaginatedStocks;
   productNutrition?: ProductNutrition;
 };
 
 export function ProductDetails({
   favBranchesPriceData,
-  stocks,
+  paginatedStocks,
   product,
   productNutrition,
 }: ProductDetailsProps) {
@@ -59,10 +60,20 @@ export function ProductDetails({
     }
   );
 
+  const availableFavoriteBranches = useMemo(
+    () => favBranchesPriceData.filter((d) => d.approximatePrice || d.stock?.latestPriceId),
+    [favBranchesPriceData]
+  );
+
   useEffect(() => {
-    if (stocks.length === 0) return;
-    setActiveSections([0]);
-  }, [stocks]);
+    if (availableFavoriteBranches.length === 0) return;
+    setActiveSections((prev) => [...prev, 0]);
+  }, [availableFavoriteBranches]);
+
+  useEffect(() => {
+    if (paginatedStocks?.paginator.total === 0) return;
+    setActiveSections((prev) => [...prev, 1]);
+  }, [paginatedStocks]);
 
   return (
     <>
@@ -111,9 +122,7 @@ export function ProductDetails({
         sections={[
           {
             title: 'Favorite Branches',
-            badge: favBranchesPriceData
-              .filter((d) => d.approximatePrice || d.stock?.latestPriceId)
-              .length.toString(),
+            badge: availableFavoriteBranches.length.toString(),
             content: (
               <View>
                 <View className="mb-5 flex flex-row items-center justify-between gap-5">
@@ -185,15 +194,15 @@ export function ProductDetails({
           },
           {
             title: 'Available at',
-            badge: stocks.length.toString(),
+            badge: paginatedStocks ? paginatedStocks.paginator.total.toString() : undefined,
             content: (
               <View>
                 <View className="mb-10 flex flex-row items-center justify-between gap-5">
                   <LocationChangeButton onPress={() => setOpenFiltersModal(true)} />
                 </View>
 
-                {stocks.length > 0 ? (
-                  stocks.map((s) => (
+                {paginatedStocks && paginatedStocks.stocks.length > 0 ? (
+                  paginatedStocks.stocks.map((s) => (
                     <TouchableOpacity
                       onPress={() => setSelectedStock(s)}
                       className="mb-5"
