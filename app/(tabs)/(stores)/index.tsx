@@ -2,19 +2,35 @@ import { useQuery } from '@apollo/client';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, ScrollView, SafeAreaView, TouchableOpacity, Text, Alert } from 'react-native';
 
 import CreateStoreForm from '@/components/CreateStoreForm';
 import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import PaginationSimple from '@/components/ui/PaginationSimple';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
+import { SearchContext } from '@/context/SearchContext';
 import { AllStoresDocument } from '@/graphql/types/graphql';
 
 export default function CreateStoreScreen() {
   const navigation = useNavigation();
-  const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument);
+  const [page, setPage] = useState(1);
+  const { search } = useContext(SearchContext);
+  const { data: allStoresData, loading: allStoresLoading } = useQuery(AllStoresDocument, {
+    variables: {
+      paginator: {
+        page,
+        limit: 20,
+      },
+      search,
+    },
+  });
   const [openModal, setOpenModal] = useState(false);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
 
   useFocusEffect(
     useCallback(() => {
@@ -22,6 +38,7 @@ export default function CreateStoreScreen() {
         header: (props: BottomTabHeaderProps) => (
           <TabHeaderItem
             {...props}
+            showSearch
             leftNav={
               <View className="flex flex-row items-center gap-3">
                 <View className="flex size-[35px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark/10">
@@ -75,11 +92,21 @@ export default function CreateStoreScreen() {
             </View>
           )}
           {allStoresData &&
-            allStoresData.allStores.map((c) => (
+            allStoresData.allStores.stores.map((c) => (
               <TouchableOpacity key={c.id} onPress={() => router.push(`/(stores)/${c.id}`)}>
                 <StoreItem {...c} />
               </TouchableOpacity>
             ))}
+
+          {allStoresData &&
+            (allStoresData.allStores.paginator.next || allStoresData.allStores.paginator.prev) && (
+              <View>
+                <PaginationSimple
+                  paginator={allStoresData?.allStores?.paginator}
+                  onPageChange={setPage}
+                />
+              </View>
+            )}
         </View>
       </ScrollView>
     </SafeAreaView>

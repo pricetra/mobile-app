@@ -384,16 +384,26 @@ export const GET_PRODUCT_STOCKS_QUERY = gql(`
 `);
 
 export const ALL_STORES_QUERY = gql(`
-  query AllStores {
-    allStores {
-      id
-      name
-      logo
-      website
-      createdBy {
+  query AllStores($paginator: PaginatorInput!, $search: String) {
+    allStores(paginator: $paginator, search: $search) {
+      stores {
         id
         name
-        avatar
+        logo
+        website
+        createdBy {
+          id
+          name
+          avatar
+        }
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
       }
     }
   }

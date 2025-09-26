@@ -49,6 +49,12 @@ export default function HomeScreen() {
   });
   const { data: allStoresData } = useQuery(AllStoresDocument, {
     fetchPolicy: 'cache-first',
+    variables: {
+      paginator: {
+        page: 1,
+        limit: 9,
+      },
+    },
   });
   const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(MySearchHistoryDocument, {
     fetchPolicy: 'network-only',
@@ -230,7 +236,7 @@ export default function HomeScreen() {
           setPage={setPage}
           style={style}
           categoryFilterInput={categoryFilterInput}
-          stores={allStoresData?.allStores}
+          stores={allStoresData?.allStores?.stores}
           onLocationButtonPressed={() => setOpenLocationModal(true)}
         />
       )}
