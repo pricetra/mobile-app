@@ -85,6 +85,7 @@ export default function SelectedBranchScreen() {
   function handleSearch(s?: string) {
     router.setParams({
       ...params,
+      page: String(1),
       query: s ?? undefined,
     });
   }
@@ -204,7 +205,7 @@ export default function SelectedBranchScreen() {
             onSelectCategory={(c) => {
               router.setParams({
                 ...params,
-                page: 1,
+                page: String(1),
                 categoryId: String(c.id ?? undefined),
               });
             }}
