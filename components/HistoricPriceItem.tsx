@@ -3,14 +3,14 @@ import { View, Text, Image } from 'react-native';
 
 import { Price, Stock } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
-import { currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
+import { currencyFormat } from '@/lib/strings';
 
 export type HistoricPriceItemProps = {
   stock: Stock;
   price: Price;
 };
 
-export default function HistoricPriceItem({ stock, price }: HistoricPriceItemProps) {
+export default function HistoricPriceItem({ price }: HistoricPriceItemProps) {
   return (
     <View className="mb-7 flex flex-row items-center justify-between gap-3">
       <View className="flex flex-col gap-1">
@@ -38,9 +38,9 @@ export default function HistoricPriceItem({ stock, price }: HistoricPriceItemPro
           </Text>
         )}
 
-        {stock.latestPrice?.condition && (
+        {price?.condition && (
           <Text>
-            <Text className="bg-yellow-200 text-xs italic">*{stock.latestPrice.condition}</Text>
+            <Text className="bg-yellow-200 text-xs italic">*{price.condition}</Text>
           </Text>
         )}
 
