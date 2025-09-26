@@ -42,6 +42,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome6 name="list-check" size={size - 2} color={color} />
           ), // https://icons.expo.fyi/Index
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
+          animation: 'shift',
         }}
       />
       <Tabs.Screen
@@ -64,6 +67,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons size={size} name="storefront" color={color} />
           ),
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
+          animation: 'shift',
         }}
       />
       <Tabs.Screen
@@ -116,6 +122,9 @@ export default function TabLayout() {
               />
             );
           },
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
+          animation: 'shift',
         }}
       />
       <Tabs.Screen

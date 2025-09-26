@@ -68,47 +68,45 @@ export default function CreateStoreScreen() {
   );
 
   return (
-    <SafeAreaView>
-      <ScrollView className="h-full p-5">
-        <ModalFormMini
-          visible={openModal}
-          onRequestClose={() => setOpenModal(false)}
-          title="Add Store">
-          <CreateStoreForm
-            onSuccess={(_data) => setOpenModal(false)}
-            onCloseModal={() => setOpenModal(false)}
-            onError={(err) => Alert.alert('Could not create store', err.message)}
-          />
-        </ModalFormMini>
+    <ScrollView className="h-full p-5">
+      <ModalFormMini
+        visible={openModal}
+        onRequestClose={() => setOpenModal(false)}
+        title="Add Store">
+        <CreateStoreForm
+          onSuccess={(_data) => setOpenModal(false)}
+          onCloseModal={() => setOpenModal(false)}
+          onError={(err) => Alert.alert('Could not create store', err.message)}
+        />
+      </ModalFormMini>
 
-        <View className="mb-20">
-          {allStoresLoading && (
+      <View className="mb-20">
+        {allStoresLoading && (
+          <View>
+            {Array(10)
+              .fill(0)
+              .map((_, i) => (
+                <StoreItemLoading key={i} />
+              ))}
+          </View>
+        )}
+        {allStoresData &&
+          allStoresData.allStores.stores.map((c) => (
+            <TouchableOpacity key={c.id} onPress={() => router.push(`/(stores)/${c.id}`)}>
+              <StoreItem {...c} />
+            </TouchableOpacity>
+          ))}
+
+        {allStoresData &&
+          (allStoresData.allStores.paginator.next || allStoresData.allStores.paginator.prev) && (
             <View>
-              {Array(10)
-                .fill(0)
-                .map((_, i) => (
-                  <StoreItemLoading key={i} />
-                ))}
+              <PaginationSimple
+                paginator={allStoresData?.allStores?.paginator}
+                onPageChange={setPage}
+              />
             </View>
           )}
-          {allStoresData &&
-            allStoresData.allStores.stores.map((c) => (
-              <TouchableOpacity key={c.id} onPress={() => router.push(`/(stores)/${c.id}`)}>
-                <StoreItem {...c} />
-              </TouchableOpacity>
-            ))}
-
-          {allStoresData &&
-            (allStoresData.allStores.paginator.next || allStoresData.allStores.paginator.prev) && (
-              <View>
-                <PaginationSimple
-                  paginator={allStoresData?.allStores?.paginator}
-                  onPageChange={setPage}
-                />
-              </View>
-            )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </ScrollView>
   );
 }

@@ -101,57 +101,30 @@ export default function ProfileScreen() {
       <View className="mt-10">
         <Text className="text-2xl font-bold">Navigation</Text>
 
-        <View className="mt-5 flex flex-col gap-1">
-          <TouchableOpacity
+        <View className="mt-5 flex flex-col">
+          <NavigationItem
             onPress={() =>
               router.push('/(tabs)/(profile)/my-scan-data', { relativeToDirectory: false })
             }
-            className="flex flex-row items-center justify-between gap-5 px-0 py-1">
-            <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
-              <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">
-                <MaterialIcons name="data-object" size={20} color="black" />
-              </View>
-              <View>
-                <Text className="text-lg font-bold">My Scan Data</Text>
-              </View>
-            </View>
-
-            <Feather name="chevron-right" size={24} color="black" />
-          </TouchableOpacity>
+            icon={<MaterialIcons name="data-object" size={20} color="black" />}
+            text="My Scan Data"
+          />
 
           {isRoleAuthorized(UserRole.Admin, user.role) && (
-            <TouchableOpacity
+            <NavigationItem
               onPress={() => router.push('/(tabs)/(admin)/users', { relativeToDirectory: false })}
-              className="flex flex-row items-center justify-between gap-5 px-0 py-1">
-              <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
-                <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">
-                  <Feather name="users" size={20} color="black" />
-                </View>
-                <View>
-                  <Text className="text-lg font-bold">Manage Users</Text>
-                </View>
-              </View>
-
-              <Feather name="chevron-right" size={24} color="black" />
-            </TouchableOpacity>
+              icon={<Feather name="users" size={20} color="black" />}
+              text="Manage Users"
+            />
           )}
 
-          <TouchableOpacity
+          <NavigationItem
             onPress={() => setOpenSettingsModal(true)}
-            className="flex flex-row items-center justify-between gap-5 px-0 py-1">
-            <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
-              <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">
-                <FontAwesome5 name="user-edit" size={17} color="black" />
-              </View>
-              <View>
-                <Text className="text-lg font-bold">Edit Profile</Text>
-              </View>
-            </View>
+            icon={<FontAwesome5 name="user-edit" size={17} color="black" />}
+            text="Edit Profile"
+          />
 
-            <Feather name="chevron-right" size={24} color="black" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
+          <NavigationItem
             onPress={() =>
               Alert.alert('Logout', 'Are you sure you want to logout?', [
                 {
@@ -166,18 +139,9 @@ export default function ProfileScreen() {
                 },
               ])
             }
-            className="flex flex-row items-center justify-between gap-5 px-0 py-1">
-            <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
-              <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100 color-red-500">
-                <Feather name="power" size={20} color="#ef4444" />
-              </View>
-              <View>
-                <Text className="text-lg font-bold">Logout</Text>
-              </View>
-            </View>
-
-            <Feather name="chevron-right" size={24} color="black" />
-          </TouchableOpacity>
+            icon={<Feather name="power" size={20} color="#ef4444" />}
+            text="Logout"
+          />
         </View>
       </View>
 
@@ -216,5 +180,32 @@ export default function ProfileScreen() {
 
       <View className="h-[200px]" />
     </ScrollView>
+  );
+}
+
+function NavigationItem({
+  onPress,
+  text,
+  icon,
+}: {
+  onPress: () => void;
+  text: string;
+  icon: React.ReactElement;
+}) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      className="mb-1 flex flex-row items-center justify-between gap-5">
+      <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
+        <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">
+          {icon}
+        </View>
+        <View>
+          <Text className="text-lg">{text}</Text>
+        </View>
+      </View>
+
+      <Feather name="chevron-right" size={24} color="black" />
+    </TouchableOpacity>
   );
 }
