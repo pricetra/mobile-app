@@ -29,7 +29,6 @@ import {
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 import { isRoleAuthorized } from '@/lib/roles';
-import { transform } from 'lodash';
 
 export type AddProductPriceFormProps = {
   product: Product;

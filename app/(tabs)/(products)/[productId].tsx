@@ -273,10 +273,9 @@ export default function ProductScreen() {
           onCancel={() => setOpenPriceModal(false)}
           onSuccess={(p) => {
             setOpenPriceModal(false);
-            Alert.alert(
-              'Price added',
-              `Price set to $${p.amount} at location ${p.branch?.address?.fullAddress}`
-            );
+            if (p.stockId) {
+              router.setParams({ stockId: p.stockId?.toString() });
+            }
           }}
           onError={(e) => alert(e.message)}
         />
