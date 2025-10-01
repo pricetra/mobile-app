@@ -109,7 +109,7 @@ export default function ScanScreen() {
         style: 'default',
         isPreferred: true,
         onPress: async () => {
-          const pic = await selectImageForProductExtraction(true);
+          const pic = await selectImageForProductExtraction(true, 0);
           if (!pic) {
             setRenderCameraComponent(true);
             return;

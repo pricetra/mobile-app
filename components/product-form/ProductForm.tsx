@@ -408,12 +408,15 @@ export default function ProductForm({
   );
 }
 
-export async function selectImageForProductExtraction(useCamera: boolean = false) {
+export async function selectImageForProductExtraction(
+  useCamera: boolean = false,
+  quality: number = 1
+) {
   const options: ImagePicker.ImagePickerOptions = {
     mediaTypes: ['images'],
     allowsEditing: true,
     aspect: [1, 1],
-    quality: 1,
+    quality,
     base64: true,
     allowsMultipleSelection: false,
     cameraType: ImagePicker.CameraType.back,
