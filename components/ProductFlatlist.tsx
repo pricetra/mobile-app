@@ -54,7 +54,7 @@ export default function ProductFlatlist({
                 relativeToDirectory: false,
               });
             }}>
-            <ProductItem product={item} />
+            <ProductItem product={item} hideStoreInfo />
           </TouchableOpacity>
         </View>
       )}

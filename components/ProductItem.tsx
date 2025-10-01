@@ -8,13 +8,14 @@ import Image from '@/components/ui/Image';
 import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
-import { isSaleExpired } from '@/lib/utils';
+import { cn, isSaleExpired } from '@/lib/utils';
 
 export type ProductItemProps = {
+  hideStoreInfo?: boolean;
   product: Product;
 };
 
-export default function ProductItem({ product }: ProductItemProps) {
+export default function ProductItem({ product, hideStoreInfo = false }: ProductItemProps) {
   const { width } = useWindowDimensions();
   const isExpired = useMemo(
     () => (product.stock?.latestPrice ? isSaleExpired(product.stock.latestPrice) : false),
@@ -43,7 +44,7 @@ export default function ProductItem({ product }: ProductItemProps) {
           style={{ width: width / 3, height: width / 3 }}
         />
       </View>
-      <View className="flex max-w-full flex-1 flex-col justify-between gap-2 px-2">
+      <View className="flex max-w-full flex-1 flex-col gap-3 px-2">
         <View className="flex flex-col gap-1">
           <View className="mb-1 flex flex-row items-center gap-1">
             {product.weightValue && product.weightType && (
@@ -67,22 +68,20 @@ export default function ProductItem({ product }: ProductItemProps) {
               <Text className="text-xs text-gray-600">{product.brand}</Text>
             )}
           </View>
-          <Text className="font-semibold" numberOfLines={3}>
-            {product.name}
-          </Text>
-          {product.category && <Text className="mt-2 text-xs">{product.category.name}</Text>}
+          <Text numberOfLines={3}>{product.name}</Text>
         </View>
 
         {product.stock && (
           <View className="flex flex-row items-center justify-between gap-2">
-            {product.stock.store && product.stock.branch && (
+            {!hideStoreInfo && product.stock.store && product.stock.branch && (
               <View className="flex-[2] gap-1">
                 <ProductStockMini stock={product.stock} />
               </View>
             )}
 
             {product.stock.latestPrice && (
-              <View className="flex-[1] flex-col items-end">
+              <View
+                className={cn('flex-[1] flex-col', hideStoreInfo ? 'items-start' : 'items-end')}>
                 {product.stock.latestPrice.sale &&
                   !isExpired &&
                   product.stock.latestPrice.originalPrice && (
@@ -92,9 +91,11 @@ export default function ProductItem({ product }: ProductItemProps) {
                   )}
                 <View className="flex flex-row items-center justify-start gap-1">
                   <Text className="font-black">{currencyFormat(calculatedAmount)}</Text>
-                  <Text className="text-xs color-gray-500">
-                    {getPriceUnit(product.stock.latestPrice)}
-                  </Text>
+                  {product.stock.latestPrice.unitType !== 'item' && (
+                    <Text className="text-xs color-gray-500">
+                      {getPriceUnit(product.stock.latestPrice)}
+                    </Text>
+                  )}
                 </View>
                 {product.quantityValue > 1 && (
                   <Text className="text-right text-[10px] color-gray-500">
