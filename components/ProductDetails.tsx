@@ -3,18 +3,18 @@ import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Linking, useWindowDimensions } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 
 import FullStockView from './FullStockView';
 import NutritionFacts from './NutritionFacts';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
+import StockItemMini from './StockItemMini';
 import LocationChangeButton from './ui/LocationChangeButton';
 import ModalFormFull from './ui/ModalFormFull';
 import ModalFormMini from './ui/ModalFormMini';
 
-import StockFull from '@/components/StockFull';
 import Btn from '@/components/ui/Btn';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/UserContext';
@@ -27,6 +27,7 @@ import {
   Stock,
   UpdateProductNutritionDataDocument,
 } from '@/graphql/types/graphql';
+import { cn } from '@/lib/utils';
 
 export type StockWithApproximatePrice = Stock & {
   approximatePrice?: number;
@@ -45,6 +46,7 @@ export function ProductDetails({
   product,
   productNutrition,
 }: ProductDetailsProps) {
+  const { width } = useWindowDimensions();
   const { lists } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const [activeSections, setActiveSections] = useState<number[]>([]);
@@ -126,15 +128,14 @@ export function ProductDetails({
             content: (
               <View>
                 <View className="mb-5 flex flex-row items-center justify-between gap-5">
-                  <View className="flex-1" />
-
                   <Btn
                     text="Favorites"
                     size="sm"
                     rounded="full"
-                    className="bg-black"
+                    className="bg-gray-200"
+                    color="black"
                     icon={
-                      <MaterialCommunityIcons name="star-cog-outline" size={15} color="white" />
+                      <MaterialCommunityIcons name="star-cog-outline" size={15} color="black" />
                     }
                     onPress={() =>
                       router.push(`/(tabs)/(profile)/list/${lists.favorites.id}?tab=branches`, {
@@ -142,10 +143,12 @@ export function ProductDetails({
                       })
                     }
                   />
+
+                  <View className="flex-1" />
                 </View>
 
-                {favBranchesPriceData.length > 0 ? (
-                  favBranchesPriceData
+                <View className="flex flex-row flex-wrap gap-5">
+                  {favBranchesPriceData
                     .map(
                       (data) =>
                         ({
@@ -176,19 +179,21 @@ export function ProductDetails({
                           }
                           setSelectedStock(stock);
                         }}
-                        className="mb-5"
+                        className={cn(
+                          'mb-2',
+                          !approximatePrice && stock.id === 0 ? 'opacity-50' : 'opacity-100'
+                        )}
+                        style={{ width: width / 2.5 }}
                         key={`${stock.id}-${i}`}>
-                        <StockFull
+                        <StockItemMini
                           stock={stock}
                           approximatePrice={approximatePrice}
                           quantityValue={product.quantityValue}
                           quantityType={product.quantityType}
                         />
                       </TouchableOpacity>
-                    ))
-                ) : (
-                  <Text className="py-5 text-center">You have no branches in your favorites</Text>
-                )}
+                    ))}
+                </View>
               </View>
             ),
           },
@@ -202,18 +207,21 @@ export function ProductDetails({
                 </View>
 
                 {paginatedStocks && paginatedStocks.stocks.length > 0 ? (
-                  paginatedStocks.stocks.map((s) => (
-                    <TouchableOpacity
-                      onPress={() => setSelectedStock(s)}
-                      className="mb-5"
-                      key={s.id}>
-                      <StockFull
-                        stock={s as Stock}
-                        quantityValue={product.quantityValue}
-                        quantityType={product.quantityType}
-                      />
-                    </TouchableOpacity>
-                  ))
+                  <View className="flex flex-row flex-wrap gap-2">
+                    {paginatedStocks.stocks.map((s) => (
+                      <TouchableOpacity
+                        onPress={() => setSelectedStock(s)}
+                        className="mb-4"
+                        key={s.id}
+                        style={{ width: width / 2.5 }}>
+                        <StockItemMini
+                          stock={s as Stock}
+                          quantityValue={product.quantityValue}
+                          quantityType={product.quantityType}
+                        />
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 ) : (
                   <Text className="py-5 text-center">
                     No stocks and prices found for this product.
