@@ -1,5 +1,5 @@
 import { Entypo } from '@expo/vector-icons';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { View, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
 
 import Image from './ui/Image';
@@ -22,21 +22,28 @@ export default function ProductFull({
   hideEditButton,
 }: ProductFullProps) {
   const { width } = useWindowDimensions();
+  const [imgAvailable, setImgAvailable] = useState(true);
 
   return (
     <View className="flex flex-col gap-3">
-      <View className="relative mx-auto p-5" style={{ width: width / 1.5, height: width / 1.5 }}>
-        {!hideEditButton && onEditButtonPress && (
-          <View className="absolute right-7 top-7 z-50">
-            <TouchableOpacity onPress={onEditButtonPress}>
-              <View className="rounded-full bg-black/60 px-4 py-2">
-                <Text className="text-center text-sm text-white">Edit</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        )}
-        <Image src={product.image} className="size-full rounded-xl" />
-      </View>
+      {imgAvailable && (
+        <View className="relative mx-auto p-5" style={{ width: width / 1.5, height: width / 1.5 }}>
+          {!hideEditButton && onEditButtonPress && (
+            <View className="absolute right-7 top-7 z-50">
+              <TouchableOpacity onPress={onEditButtonPress}>
+                <View className="rounded-full bg-black/60 px-4 py-2">
+                  <Text className="text-center text-sm text-white">Edit</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
+          <Image
+            src={product.image}
+            className="size-full rounded-xl"
+            onError={() => setImgAvailable(false)}
+          />
+        </View>
+      )}
 
       <View className="p-5">
         <View className="flex flex-col gap-2">
