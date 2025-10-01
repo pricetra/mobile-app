@@ -127,12 +127,15 @@ export default function ScanScreen() {
             return;
           }
 
-          const { weight, ...extraction } = data.extractProductFields;
+          const { weight, quantity, ...extraction } = data.extractProductFields;
           const product = { ...extraction } as Product;
           if (weight) {
             const parsedWeight = weight.split(' ');
             product.weightValue = +(parsedWeight.shift() ?? 0);
             product.weightType = parsedWeight.join(' ');
+          }
+          if (quantity) {
+            product.quantityValue = quantity;
           }
           setExtractedProductData(product);
           setOpenCreateProductModal(true);

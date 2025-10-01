@@ -228,7 +228,12 @@ export default function ProductForm({
     }
     formik.setFieldValue('brand', data.extractProductFields.brand);
     formik.setFieldValue('name', data.extractProductFields.name);
-    if (data.extractProductFields) formik.setFieldValue('weight', data.extractProductFields.weight);
+    if (data.extractProductFields.weight) {
+      formik.setFieldValue('weight', data.extractProductFields.weight);
+    }
+    if (data.extractProductFields.quantity) {
+      formik.setFieldValue('quantityValue', data.extractProductFields.quantity);
+    }
     if (data.extractProductFields.categoryId && data.extractProductFields.category) {
       setCategory({ ...data.extractProductFields.category });
       setSelectedCategory({ ...data.extractProductFields.category });
