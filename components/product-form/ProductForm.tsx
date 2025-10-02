@@ -413,10 +413,16 @@ export default function ProductForm({
   );
 }
 
+export type ExtractionImageSelectionType = {
+  imageUri: string;
+  base64: string;
+  base64EncodingOnly?: string;
+};
+
 export async function selectImageForProductExtraction(
   useCamera: boolean = false,
   quality: number = 1
-) {
+): Promise<ExtractionImageSelectionType | undefined> {
   const options: ImagePicker.ImagePickerOptions = {
     mediaTypes: ['images'],
     allowsEditing: true,
@@ -438,5 +444,6 @@ export async function selectImageForProductExtraction(
   return {
     imageUri: picture.uri,
     base64: buildBase64ImageString(picture),
+    base64EncodingOnly: picture.base64,
   };
 }

@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -8,6 +8,7 @@ import { ActivityIndicator, Alert, AlertButton, Text, View } from 'react-native'
 
 import ManualBarcodeForm from '@/components/ManualBarcodeForm';
 import ProductForm, {
+  ExtractionImageSelectionType,
   selectImageForProductExtraction,
 } from '@/components/product-form/ProductForm';
 import ScannerButton from '@/components/scanner/ScannerButton';
@@ -18,8 +19,11 @@ import { barcodeTypes } from '@/constants/barcodeTypes';
 import { useAuth } from '@/context/UserContext';
 import {
   BarcodeScanDocument,
+  CreateProduct,
+  CreateProductDocument,
   ExtractProductFieldsDocument,
   Product,
+  ProductExtractionResponse,
   UserRole,
 } from '@/graphql/types/graphql';
 import { isRoleAuthorized } from '@/lib/roles';
@@ -35,7 +39,6 @@ export default function ScanScreen() {
   const [scannedCode, setScannedCode] = useState<string>();
   const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
-  const [extractedProductData, setExtractedProductData] = useState<Product>();
 
   const [barcodeScan, { loading: barcodeScanLoading }] = useLazyQuery(BarcodeScanDocument);
   const [extractProductFields, { loading: extractingProduct }] = useLazyQuery(
@@ -44,6 +47,7 @@ export default function ScanScreen() {
       fetchPolicy: 'no-cache',
     }
   );
+  const [createProduct, { loading: creatingProduct }] = useMutation(CreateProductDocument);
 
   const debouncedHandleBarcodeScan = useMemo(
     () => debounce(_handleBarcodeScan, 1000, { leading: true, trailing: false }),
@@ -76,13 +80,53 @@ export default function ScanScreen() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
+  function toProductPage(productId: number) {
+    router.push(`/(tabs)/(products)/${productId}`, { relativeToDirectory: false });
+  }
+
+  async function handleExtraction(
+    barcode: string,
+    pic: ExtractionImageSelectionType,
+    { weight, quantity, ...extraction }: ProductExtractionResponse
+  ): Promise<Product> {
+    const product = { ...extraction } as Product;
+    if (weight) {
+      const parsedWeight = weight.split(' ');
+      product.weightValue = +(parsedWeight.shift() ?? 0);
+      product.weightType = parsedWeight.join(' ');
+    }
+    if (quantity) {
+      product.quantityValue = quantity;
+    }
+    const code = barcode.replaceAll('*', '');
+    const input = {
+      code,
+      brand: extraction.brand,
+      name: extraction.name,
+      categoryId: extraction.categoryId,
+      imageBase64: pic.base64,
+      description: '',
+      weight,
+      quantityValue: quantity,
+    } as CreateProduct;
+
+    // Create Product
+    const { data: createProductData, errors } = await createProduct({
+      variables: {
+        input,
+      },
+    });
+    if (errors || !createProductData) throw new Error('could not create product');
+
+    return createProductData.createProduct as Product;
+  }
+
   function _handleBarcodeScan(barcode: string, searchMode?: boolean) {
     barcodeScan({
       variables: { barcode, searchMode },
     }).then(({ error, data }) => {
       if (!error && data) {
-        router.push(`/(tabs)/(products)/${data.barcodeScan.id}`, { relativeToDirectory: false });
-        return;
+        return toProductPage(data.barcodeScan.id);
       }
 
       setRenderCameraComponent(false);
@@ -115,30 +159,28 @@ export default function ScanScreen() {
             return;
           }
 
-          const { data, error } = await extractProductFields({
+          extractProductFields({
             variables: { base64Image: pic.base64 },
-          });
-          if (!data || error) {
-            Alert.alert(
-              'Error extracting product data',
-              'Please try again or add the product manually'
-            );
-            setOpenCreateProductModal(true);
-            return;
-          }
+          })
+            .then(async ({ data }) => {
+              if (!data) throw new Error('could not extract data');
 
-          const { weight, quantity, ...extraction } = data.extractProductFields;
-          const product = { ...extraction } as Product;
-          if (weight) {
-            const parsedWeight = weight.split(' ');
-            product.weightValue = +(parsedWeight.shift() ?? 0);
-            product.weightType = parsedWeight.join(' ');
-          }
-          if (quantity) {
-            product.quantityValue = quantity;
-          }
-          setExtractedProductData(product);
-          setOpenCreateProductModal(true);
+              handleExtraction(barcode, pic, data?.extractProductFields)
+                .then(({ id }) => {
+                  toProductPage(id);
+                })
+                .catch((_err) => {
+                  setOpenCreateProductModal(true);
+                });
+            })
+            .catch((_err) => {
+              setRenderCameraComponent(true);
+              Alert.alert(
+                'Error extracting product data',
+                'Please try again or add the product manually'
+              );
+              setOpenCreateProductModal(true);
+            });
         },
       });
 
@@ -168,7 +210,17 @@ export default function ScanScreen() {
       {extractingProduct && (
         <View className="flex h-full w-full flex-col items-center justify-center gap-10 p-10">
           <ActivityIndicator color="black" size="large" />
-          <Text className="text-center">Extracting product data...</Text>
+          <Text className="text-center">Extracting product data.</Text>
+          <Text className="text-center">
+            This might take a few minutes depending on your network speed
+          </Text>
+        </View>
+      )}
+
+      {creatingProduct && (
+        <View className="flex h-full w-full flex-col items-center justify-center gap-10 p-10">
+          <ActivityIndicator color="black" size="large" />
+          <Text className="text-center">Uploading extracted product data</Text>
         </View>
       )}
 
@@ -181,11 +233,10 @@ export default function ScanScreen() {
           }}
           title="Create Product">
           <ProductForm
-            upc={scannedCode}
+            upc={scannedCode.replaceAll('*', '')}
             product={
               {
                 code: scannedCode.replaceAll('*', ''),
-                ...extractedProductData,
               } as Product
             }
             onCancel={({ resetForm }) => {
