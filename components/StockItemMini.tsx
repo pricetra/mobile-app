@@ -79,7 +79,7 @@ export default function StockItemMini({
 
             {stock?.latestPrice?.amount && (
               <View className="flex flex-row items-center justify-start gap-1">
-                <Text className=" font-black">{currencyFormat(calculatedAmount)}</Text>
+                <Text className="font-black">{currencyFormat(calculatedAmount)}</Text>
                 <Text className="text-xs color-gray-500">
                   {getPriceUnitOrEach(stock.latestPrice)}
                 </Text>
@@ -87,7 +87,7 @@ export default function StockItemMini({
             )}
 
             {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
-              <Text className="text-right text-[10px] color-gray-500">
+              <Text className="text-[10px] color-gray-500">
                 {`${currencyFormat(calculatedAmount / quantityValue)}/${quantityType}`}
               </Text>
             )}
