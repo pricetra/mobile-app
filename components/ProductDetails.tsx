@@ -3,10 +3,19 @@ import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking, useWindowDimensions } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  useWindowDimensions,
+  FlatList,
+} from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 
 import FullStockView from './FullStockView';
+import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import NutritionFacts from './NutritionFacts';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
@@ -200,28 +209,39 @@ export function ProductDetails({
           {
             title: 'Available at',
             badge: paginatedStocks ? paginatedStocks.paginator.total.toString() : undefined,
+            noHorizontalPadding: true,
             content: (
               <View>
-                <View className="mb-10 flex flex-row items-center justify-between gap-5">
+                <View className="mb-5 flex flex-row items-center justify-between gap-5 px-5">
                   <LocationChangeButton onPress={() => setOpenFiltersModal(true)} />
                 </View>
 
                 {paginatedStocks && paginatedStocks.stocks.length > 0 ? (
-                  <View className="flex flex-row flex-wrap gap-2">
-                    {paginatedStocks.stocks.map((s) => (
+                  <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    data={paginatedStocks.stocks}
+                    keyExtractor={({ id }, i) => `${id}-${i}`}
+                    renderItem={({ item: s }) => (
                       <TouchableOpacity
                         onPress={() => setSelectedStock(s)}
-                        className="mb-4"
-                        key={s.id}
-                        style={{ width: width / 2.5 }}>
+                        className="px-2"
+                        key={s.id}>
                         <StockItemMini
                           stock={s as Stock}
                           quantityValue={product.quantityValue}
                           quantityType={product.quantityType}
+                          stackLogo
                         />
                       </TouchableOpacity>
-                    ))}
-                  </View>
+                    )}
+                    contentContainerStyle={{ paddingHorizontal: 10 }}
+                    ListFooterComponent={() =>
+                      paginatedStocks.paginator.next ? (
+                        <HorizontalShowMoreButton onPress={() => {}} heightDiv={3} />
+                      ) : undefined
+                    }
+                  />
                 ) : (
                   <Text className="py-5 text-center">
                     No stocks and prices found for this product.
@@ -313,7 +333,11 @@ export function ProductDetails({
             <></>
           )
         }
-        renderContent={(section, i) => <View className="px-5 py-3">{section?.content}</View>}
+        renderContent={(section, i) => (
+          <View className={cn('py-3', section?.noHorizontalPadding ? 'px-0' : 'px-5')}>
+            {section?.content}
+          </View>
+        )}
         keyExtractor={(_props, i) => i}
         sectionContainerStyle={{ marginBottom: 20, width: '100%', height: 'auto' }}
         containerStyle={{ marginTop: 20 }}

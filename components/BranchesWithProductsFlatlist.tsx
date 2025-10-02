@@ -1,5 +1,4 @@
 import { QueryResult } from '@apollo/client';
-import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useContext, useState } from 'react';
 import {
@@ -10,11 +9,10 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-  Text,
-  useWindowDimensions,
 } from 'react-native';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
+import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 import StoreMini, { StoreMiniShowMore } from './StoreMini';
 import LocationChangeButton from './ui/LocationChangeButton';
@@ -55,7 +53,6 @@ export default function BranchesWithProductsFlatlist({
   stores,
   onLocationButtonPressed,
 }: BranchesWithProductsFlatlistProps) {
-  const { width } = useWindowDimensions();
   const [refreshing, setRefreshing] = useState(false);
   const { search } = useContext(SearchContext);
 
@@ -102,6 +99,7 @@ export default function BranchesWithProductsFlatlist({
 
             <FlatList
               horizontal
+              showsHorizontalScrollIndicator={false}
               data={branch.products}
               keyExtractor={({ id }, i) => `${id}-${i}`}
               renderItem={({ item: product }) => (
@@ -117,27 +115,20 @@ export default function BranchesWithProductsFlatlist({
               )}
               style={{ padding: 15 }}
               ListFooterComponent={() => (
-                <View
-                  className="mx-5 flex flex-col items-start justify-center"
-                  style={{ width: width / 3, height: width / 2 }}>
-                  <TouchableOpacity
-                    className="flex size-24 flex-col items-center justify-center gap-1 rounded-xl border-[1px] border-gray-200 bg-gray-50"
-                    onPress={() => {
-                      const params = new URLSearchParams();
-                      if (search && search.length > 0) {
-                        params.append('query', encodeURIComponent(search));
-                      }
-                      params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
-                      params.append('page', String(1));
-                      router.push(
-                        `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
-                        { relativeToDirectory: false }
-                      );
-                    }}>
-                    <AntDesign name="arrowright" size={25} color="#4b5563" />
-                    <Text className="text-xs color-gray-600">Show All</Text>
-                  </TouchableOpacity>
-                </View>
+                <HorizontalShowMoreButton
+                  onPress={() => {
+                    const params = new URLSearchParams();
+                    if (search && search.length > 0) {
+                      params.append('query', encodeURIComponent(search));
+                    }
+                    params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
+                    params.append('page', String(1));
+                    router.push(
+                      `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
+                      { relativeToDirectory: false }
+                    );
+                  }}
+                />
               )}
             />
           </View>

@@ -1,18 +1,19 @@
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, useWindowDimensions } from 'react-native';
 
 import Image from '@/components/ui/Image';
 import { Stock } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
-import { isSaleExpired, metersToMiles } from '@/lib/utils';
+import { cn, isSaleExpired, metersToMiles } from '@/lib/utils';
 
 export type StockItemMiniProps = {
   stock: Stock;
   approximatePrice?: number;
   quantityValue?: number;
   quantityType?: string;
+  stackLogo?: boolean;
 };
 
 export default function StockItemMini({
@@ -20,9 +21,11 @@ export default function StockItemMini({
   approximatePrice,
   quantityValue,
   quantityType,
+  stackLogo = false,
 }: StockItemMiniProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
+  const { width } = useWindowDimensions();
   const isExpired = useMemo(
     () => (stock.latestPrice ? isSaleExpired(stock.latestPrice) : false),
     [stock.latestPrice]
@@ -35,23 +38,23 @@ export default function StockItemMini({
   }, [stock?.latestPrice, isExpired]);
 
   return (
-    <View className="flex flex-col gap-2">
-      <View className="flex flex-row gap-2">
+    <View className="flex flex-col gap-2" style={{ width: width / 3 }}>
+      <View className={cn('flex gap-2', stackLogo ? 'flex-col' : 'flex-row')}>
         <Image
           src={createCloudinaryUrl(stock.store.logo, 500, 500)}
           className="size-[30px] rounded-lg border-[1px] border-gray-100"
         />
 
         <View className="flex flex-col gap-1">
-          <View className="mb-1 flex flex-row items-center">
+          <View className="flex flex-row items-center">
             {stock.latestPrice?.sale && !isExpired && (
-              <View className="rounded-full bg-red-700 px-2 py-0.5">
+              <View className="mb-1 rounded-full bg-red-700 px-2 py-0.5">
                 <Text className="text-[9px] color-white">SALE</Text>
               </View>
             )}
 
             {stock.branch.address?.distance && (
-              <View className="rounded-full bg-pricetraGreenDark/10 px-2 py-0.5">
+              <View className="mb-1 rounded-full bg-pricetraGreenDark/10 px-2 py-0.5">
                 <Text className="text-[9px] color-pricetraGreenHeavyDark">
                   {metersToMiles(stock.branch.address.distance)} mi
                 </Text>
@@ -59,7 +62,7 @@ export default function StockItemMini({
             )}
           </View>
 
-          <Text className="font-sm" numberOfLines={2}>
+          <Text className="font-xs" numberOfLines={2}>
             {stock.store.name}
           </Text>
 
@@ -106,7 +109,7 @@ export default function StockItemMini({
         <View className="flex flex-col gap-1">
           {stock.latestPrice?.expiresAt && (
             <Text>
-              <Text className="bg-yellow-200 text-xs italic">
+              <Text className="bg-yellow-200 text-[9px] italic">
                 Valid until{' '}
                 <Text className="font-bold">{dayjs(stock.latestPrice.expiresAt).format('LL')}</Text>
               </Text>
@@ -115,7 +118,9 @@ export default function StockItemMini({
 
           {stock.latestPrice?.condition && (
             <Text>
-              <Text className="bg-yellow-200 text-xs italic">*{stock.latestPrice.condition}</Text>
+              <Text className="bg-yellow-200 text-[9px] italic">
+                *{stock.latestPrice.condition}
+              </Text>
             </Text>
           )}
         </View>
