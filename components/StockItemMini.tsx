@@ -48,14 +48,14 @@ export default function StockItemMini({
         <View className="flex flex-col gap-1">
           <View className="flex flex-row items-center">
             {stock.latestPrice?.sale && !isExpired && (
-              <View className="mb-1 rounded-full bg-red-700 px-2 py-0.5">
-                <Text className="text-[9px] color-white">SALE</Text>
+              <View className="mb-1 rounded-full bg-red-700 px-1.5 py-0.5">
+                <Text className="text-[8px] color-white">SALE</Text>
               </View>
             )}
 
             {stock.branch.address?.distance && (
-              <View className="mb-1 rounded-full bg-pricetraGreenDark/10 px-2 py-0.5">
-                <Text className="text-[9px] color-pricetraGreenHeavyDark">
+              <View className="mb-1 rounded-full bg-pricetraGreenDark/10 px-1.5 py-0.5">
+                <Text className="text-[8px] color-pricetraGreenHeavyDark">
                   {metersToMiles(stock.branch.address.distance)} mi
                 </Text>
               </View>
