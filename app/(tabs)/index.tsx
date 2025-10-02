@@ -13,7 +13,6 @@ import {
   ViewStyle,
   ScrollView,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
 
 import BranchesWithProductsFlatlist, {

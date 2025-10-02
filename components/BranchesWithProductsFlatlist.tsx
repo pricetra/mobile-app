@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-  Text,
 } from 'react-native';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
@@ -158,11 +157,7 @@ export default function BranchesWithProductsFlatlist({
         }
       }}
       onEndReachedThreshold={0.8}
-      ListEmptyComponent={
-        <View className="flex items-center justify-center px-5 py-36">
-          <Text className="text-center">No products found</Text>
-        </View>
-      }
+      ListEmptyComponent={<BranchWithProductsItemLoading />}
       style={style}
     />
   );

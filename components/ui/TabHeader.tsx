@@ -1,4 +1,4 @@
-import { Feather, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -7,7 +7,6 @@ import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } 
 
 import TabHeaderSearchBar from './TabHeaderSearchBar';
 
-import { useDrawer } from '@/context/DrawerContext';
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
@@ -23,10 +22,9 @@ const navHeight = 2 * padding + logoHeight;
 
 const iconColor = '#333';
 
-export default function TabHeader(props: TabHeaderProps) {
+export default function TabHeader(_props: TabHeaderProps) {
   const { user } = useAuth();
   const { subHeader } = useHeader();
-  const { openDrawer } = useDrawer();
   const { search, handleSearch, setSearching, searching, searchOpen, setSearchOpen } =
     useContext(SearchContext);
 

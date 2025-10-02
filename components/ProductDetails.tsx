@@ -190,7 +190,7 @@ export function ProductDetails({
                         }}
                         className={cn(
                           'mb-2',
-                          !approximatePrice && stock.id === 0 ? 'opacity-50' : 'opacity-100'
+                          !approximatePrice && stock.id === 0 ? 'opacity-35' : 'opacity-100'
                         )}
                         style={{ width: width / 2.5 }}
                         key={`${stock.id}-${i}`}>
