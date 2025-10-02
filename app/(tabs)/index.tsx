@@ -44,27 +44,27 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
-  const [getAllProducts, { data, error, loading }] = useLazyQuery(BranchesWithProductsDocument, {
-    fetchPolicy: 'no-cache', // This is required for cache key related bugs
+
+  // keep accumulated results in state
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [paginator, setPaginator] = useState<any>(null);
+
+  const [getAllProducts, { error, loading }] = useLazyQuery(BranchesWithProductsDocument, {
+    fetchPolicy: 'no-cache',
   });
+
   const { data: allStoresData } = useQuery(AllStoresDocument, {
     fetchPolicy: 'cache-first',
     variables: {
-      paginator: {
-        page: 1,
-        limit: 9,
-      },
+      paginator: { page: 1, limit: 9 },
     },
   });
+
   const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(MySearchHistoryDocument, {
     fetchPolicy: 'network-only',
-    variables: {
-      paginator: {
-        page: 1,
-        limit: 10,
-      },
-    },
+    variables: { paginator: { page: 1, limit: 10 } },
   });
+
   const [page, setPage] = useState(1);
   const { search, searching, setSearching, searchOpen, handleSearch } = useContext(SearchContext);
   const { location, getCurrentLocation } = useLocationService();
@@ -72,6 +72,7 @@ export default function HomeScreen() {
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
   const [address, setAddress] = useState(user.address?.fullAddress);
   const [openLocationModal, setOpenLocationModal] = useState(false);
+
   const style: StyleProp<ViewStyle> = {
     marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
     paddingTop: 10,
@@ -134,26 +135,47 @@ export default function HomeScreen() {
     if (!currentLocation) return Promise.resolve();
 
     try {
-      return await getAllProducts({
+      const { data } = await getAllProducts({
         variables: {
           paginator: { limit: BRANCH_LIMIT, page },
           productLimit: PRODUCT_LIMIT,
           filters: { ...searchVariables },
         },
       });
+
+      if (data?.branchesWithProducts) {
+        setPaginator(data.branchesWithProducts.paginator);
+
+        // append if not first page, else reset
+        if (page === 1) {
+          setBranches(data.branchesWithProducts.branches as Branch[]);
+        } else {
+          setBranches((prev) => [...prev, ...(data.branchesWithProducts.branches as Branch[])]);
+        }
+      }
     } finally {
       if (searching) setSearching(false);
     }
   }
 
-  // Initial load and dependency changes
+  // Reset on filter/search/location changes
   useEffect(() => {
+    setPage(1);
+    setBranches([]);
     loadProducts(1);
   }, [search, categoryFilterInput, currentLocation]);
 
+  // Load when page changes
   useEffect(() => {
-    loadProducts(page);
+    if (page > 1) {
+      loadProducts(page);
+    }
   }, [page]);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    getSearchHistory();
+  }, [searchOpen]);
 
   useEffect(() => {
     if (!location) return;
@@ -206,7 +228,7 @@ export default function HomeScreen() {
         />
       </ModalFormMini>
 
-      {loading && <BranchesWithProductsFlatlistLoading style={style} />}
+      {loading && page === 1 && <BranchesWithProductsFlatlistLoading style={style} />}
 
       {error && (
         <SafeAreaView>
@@ -219,27 +241,19 @@ export default function HomeScreen() {
         </SafeAreaView>
       )}
 
-      {data?.branchesWithProducts?.branches.length === 0 && (
-        <View className="flex items-center justify-center px-5 py-36">
-          <Text className="text-center">No products found</Text>
-        </View>
-      )}
-
-      {data?.branchesWithProducts?.branches && (
-        <BranchesWithProductsFlatlist
-          branches={data.branchesWithProducts.branches as Branch[]}
-          paginator={data?.branchesWithProducts.paginator}
-          handleRefresh={async () => {
-            await getCurrentLocation({});
-            return loadProducts(1);
-          }}
-          setPage={setPage}
-          style={style}
-          categoryFilterInput={categoryFilterInput}
-          stores={allStoresData?.allStores?.stores}
-          onLocationButtonPressed={() => setOpenLocationModal(true)}
-        />
-      )}
+      <BranchesWithProductsFlatlist
+        branches={branches}
+        paginator={paginator}
+        handleRefresh={async () => {
+          await getCurrentLocation({});
+          return loadProducts(1);
+        }}
+        setPage={setPage}
+        style={style}
+        categoryFilterInput={categoryFilterInput}
+        stores={allStoresData?.allStores?.stores}
+        onLocationButtonPressed={() => setOpenLocationModal(true)}
+      />
     </SafeAreaView>
   );
 }

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
+  Text,
 } from 'react-native';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
@@ -16,7 +17,6 @@ import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 import StoreMini, { StoreMiniShowMore } from './StoreMini';
 import LocationChangeButton from './ui/LocationChangeButton';
-import PaginationSimple from './ui/PaginationSimple';
 import { Skeleton } from './ui/Skeleton';
 import { PartialCategory } from './ui/TabSubHeaderProductFilter';
 
@@ -136,15 +136,7 @@ export default function BranchesWithProductsFlatlist({
           <></>
         )
       }
-      ListFooterComponent={
-        <View className="px-5">
-          {paginator && (paginator.next || paginator.prev) && (
-            <PaginationSimple paginator={paginator} onPageChange={setPage} />
-          )}
-
-          <View className="h-[100px]" />
-        </View>
-      }
+      ListFooterComponent={paginator?.next ? <BranchWithProductsItemLoading /> : undefined}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -158,8 +150,41 @@ export default function BranchesWithProductsFlatlist({
           progressBackgroundColor="#111827"
         />
       }
+      onEndReached={() => {
+        if (paginator?.next) {
+          setPage(paginator.next);
+        }
+      }}
+      onEndReachedThreshold={0.8}
+      ListEmptyComponent={
+        <View className="flex items-center justify-center px-5 py-36">
+          <Text className="text-center">No products found</Text>
+        </View>
+      }
       style={style}
     />
+  );
+}
+
+export function BranchWithProductsItemLoading() {
+  return (
+    <View className="mb-5">
+      <View className="px-5 py-3">
+        <BranchProductItemLoading />
+      </View>
+
+      <FlatList
+        horizontal
+        data={Array(5).fill(0)}
+        keyExtractor={(_, i) => `product-loading-${i}`}
+        renderItem={() => (
+          <View className="mr-4">
+            <ProductLoadingItemHorizontal />
+          </View>
+        )}
+        style={{ padding: 15 }}
+      />
+    </View>
   );
 }
 
@@ -174,25 +199,7 @@ export function BranchesWithProductsFlatlistLoading({ style }: { style?: StylePr
           <Skeleton className="h-14 w-60 rounded-full bg-gray-200" />
         </View>
       }
-      renderItem={() => (
-        <View className="mb-5">
-          <View className="px-5 py-3">
-            <BranchProductItemLoading />
-          </View>
-
-          <FlatList
-            horizontal
-            data={Array(5).fill(0)}
-            keyExtractor={(_, i) => `product-loading-${i}`}
-            renderItem={() => (
-              <View className="mr-4">
-                <ProductLoadingItemHorizontal />
-              </View>
-            )}
-            style={{ padding: 15 }}
-          />
-        </View>
-      )}
+      renderItem={() => <BranchWithProductsItemLoading />}
       style={style}
     />
   );
