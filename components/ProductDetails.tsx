@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
@@ -17,12 +17,14 @@ import Accordion from 'react-native-collapsible/Accordion';
 import FullStockView from './FullStockView';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import NutritionFacts from './NutritionFacts';
+import ProductItemHorizontal from './ProductItemHorizontal';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
 import StockItemMini from './StockItemMini';
 import LocationChangeButton from './ui/LocationChangeButton';
 import ModalFormFull from './ui/ModalFormFull';
 import ModalFormMini from './ui/ModalFormMini';
+import { AllProductsDocument } from '../graphql/types/graphql';
 
 import Btn from '@/components/ui/Btn';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
@@ -47,6 +49,7 @@ export type ProductDetailsProps = {
   product: Product;
   paginatedStocks?: PaginatedStocks;
   productNutrition?: ProductNutrition;
+  stock?: Stock;
 };
 
 export function ProductDetails({
@@ -54,6 +57,7 @@ export function ProductDetails({
   paginatedStocks,
   product,
   productNutrition,
+  stock,
 }: ProductDetailsProps) {
   const { width } = useWindowDimensions();
   const { lists } = useAuth();
@@ -70,6 +74,23 @@ export function ProductDetails({
       refetchQueries: [GetProductNutritionDataDocument],
     }
   );
+  const [fetchRelatedProducts, { data: relatedProducts }] = useLazyQuery(AllProductsDocument, {
+    variables: {
+      paginator: {
+        limit: 10,
+        page: 1,
+      },
+      search: {
+        categoryId: product.categoryId,
+        storeId: stock?.storeId,
+        branchId: stock?.branchId,
+        // weight:
+        //   product.weightValue && product.weightType
+        //     ? `${product.weightValue} ${product.weightType}`
+        //     : undefined,
+      },
+    },
+  });
 
   const availableFavoriteBranches = useMemo(
     () => favBranchesPriceData.filter((d) => d.approximatePrice || d.stock?.latestPriceId),
@@ -85,6 +106,11 @@ export function ProductDetails({
     if (paginatedStocks?.paginator.total === 0) return;
     setActiveSections((prev) => [...prev, 1]);
   }, [paginatedStocks]);
+
+  useEffect(() => {
+    if (!stock || !product) return;
+    fetchRelatedProducts();
+  }, [stock, product]);
 
   return (
     <>
@@ -314,7 +340,7 @@ export function ProductDetails({
           section ? (
             <View className="flex flex-row items-center justify-between gap-5 px-5 py-3">
               <View className="flex flex-1 flex-row items-center justify-between gap-3">
-                <Text className="text-xl font-extrabold">{section.title}</Text>
+                <Text className="text-lg font-semibold">{section.title}</Text>
 
                 {section.badge && (
                   <Text className="size-6 rounded-full bg-pricetraGreenHeavyDark py-1 text-center text-xs font-bold color-white">
@@ -343,6 +369,45 @@ export function ProductDetails({
         containerStyle={{ marginTop: 20 }}
         underlayColor="transparent"
       />
+
+      {stock && stock.branch && (relatedProducts?.allProducts?.paginator?.total ?? 0) > 1 && (
+        <View className="mt-5">
+          <View className="mb-7 px-5">
+            <Text className="text-lg font-semibold">Related in {stock.branch.name}</Text>
+          </View>
+
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={relatedProducts?.allProducts?.products}
+            keyExtractor={({ id }, i) => `${id}-${i}`}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() =>
+                  router.push(`/(tabs)/(products)/${item.id}?stockID=${item.stock?.id}`, {
+                    relativeToDirectory: false,
+                  })
+                }
+                className="mr-4">
+                <ProductItemHorizontal product={item as Product} />
+              </TouchableOpacity>
+            )}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            ListFooterComponent={() =>
+              relatedProducts?.allProducts?.paginator?.next ? (
+                <HorizontalShowMoreButton
+                  onPress={() =>
+                    router.push(`/(tabs)/(stores)/${stock.storeId}/branch/${stock.branchId}`, {
+                      relativeToDirectory: false,
+                    })
+                  }
+                  heightDiv={3}
+                />
+              ) : undefined
+            }
+          />
+        </View>
+      )}
     </>
   );
 }

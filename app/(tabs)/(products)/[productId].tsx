@@ -397,6 +397,7 @@ export default function ProductScreen() {
           productNutrition={
             productNutritionData?.getProductNutritionData as ProductNutrition | undefined
           }
+          stock={stockData?.stock as Stock}
         />
 
         <View className="h-[100px]" />
