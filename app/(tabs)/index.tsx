@@ -1,7 +1,7 @@
 import { useLazyQuery, useQuery } from '@apollo/client';
-import { FontAwesome6, Octicons } from '@expo/vector-icons';
+import { FontAwesome6, Octicons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
@@ -13,6 +13,7 @@ import {
   ViewStyle,
   ScrollView,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 
 import BranchesWithProductsFlatlist, {
@@ -66,7 +67,8 @@ export default function HomeScreen() {
   });
 
   const [page, setPage] = useState(1);
-  const { search, searching, setSearching, searchOpen, handleSearch } = useContext(SearchContext);
+  const { search, searching, setSearching, searchOpen, handleSearch, setSearchOpen } =
+    useContext(SearchContext);
   const { location, getCurrentLocation } = useLocationService();
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
@@ -74,7 +76,7 @@ export default function HomeScreen() {
   const [openLocationModal, setOpenLocationModal] = useState(false);
 
   const style: StyleProp<ViewStyle> = {
-    marginBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
+    paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
     paddingTop: 10,
   };
 
@@ -97,28 +99,41 @@ export default function HomeScreen() {
     useCallback(() => {
       setSubHeader(
         <>
-          {searchOpen &&
-            searchHistoryData &&
-            searchHistoryData.mySearchHistory.paginator.total > 0 && (
-              <ScrollView horizontal>
-                <View className="flex flex-row items-center justify-start gap-2 px-5 py-1">
-                  <View className="ml-2 mr-5 flex flex-row items-center gap-2">
-                    <Octicons name="history" size={15} color="black" />
-                    <Text className="font-bold">History</Text>
-                  </View>
+          {!searchOpen && (
+            <View className="flex flex-row items-center gap-5 px-5 pb-0.5 pt-1">
+              <TouchableOpacity
+                className="relative flex flex-1 flex-row items-center gap-5 rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
+                onPress={() => setSearchOpen(true)}>
+                <Ionicons name="search" color="#6b7280" size={18} />
+                <Text className="color-[#6b7280]">Search...</Text>
+              </TouchableOpacity>
 
-                  {searchHistoryData.mySearchHistory.searches.map(({ id, searchTerm }) => (
-                    <TouchableOpacity
-                      className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
-                      key={`sh-${id}`}
-                      onPress={() => handleSearch(searchTerm)}>
-                      <Text className="text-sm color-gray-500">{searchTerm}</Text>
-                      <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
-                    </TouchableOpacity>
-                  ))}
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
+                <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+              </TouchableOpacity>
+            </View>
+          )}
+          {searchOpen && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View className="flex flex-row items-center justify-start gap-2 px-5 py-2">
+                <View className="ml-2 mr-5 flex flex-row items-center gap-2">
+                  <Octicons name="history" size={15} color="black" />
+                  <Text className="font-bold">History</Text>
                 </View>
-              </ScrollView>
-            )}
+
+                {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
+                  <TouchableOpacity
+                    className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
+                    key={`sh-${id}`}
+                    onPress={() => handleSearch(searchTerm)}>
+                    <Text className="text-sm color-gray-500">{searchTerm}</Text>
+                    <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          )}
 
           <TabSubHeaderProductFilter
             selectedCategoryId={categoryFilterInput?.id}
@@ -190,7 +205,7 @@ export default function HomeScreen() {
   }, [location, address]);
 
   return (
-    <SafeAreaView>
+    <>
       <ModalFormMini
         title="Change Location"
         visible={openLocationModal}
@@ -254,6 +269,6 @@ export default function HomeScreen() {
         stores={allStoresData?.allStores?.stores}
         onLocationButtonPressed={() => setOpenLocationModal(true)}
       />
-    </SafeAreaView>
+    </>
   );
 }

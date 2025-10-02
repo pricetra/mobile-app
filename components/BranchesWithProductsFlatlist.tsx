@@ -136,7 +136,9 @@ export default function BranchesWithProductsFlatlist({
           <></>
         )
       }
-      ListFooterComponent={paginator?.next ? <BranchWithProductsItemLoading /> : undefined}
+      ListFooterComponent={
+        <View className="mb-20">{paginator?.next && <BranchWithProductsItemLoading />}</View>
+      }
       refreshControl={
         <RefreshControl
           refreshing={refreshing}

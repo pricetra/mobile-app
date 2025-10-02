@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Feather, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -10,6 +10,8 @@ import TabHeaderSearchBar from './TabHeaderSearchBar';
 import { useDrawer } from '@/context/DrawerContext';
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
+import { useAuth } from '@/context/UserContext';
+import { createCloudinaryUrl } from '@/lib/files';
 import { cn } from '@/lib/utils';
 
 export type TabHeaderProps = BottomTabHeaderProps;
@@ -22,6 +24,7 @@ const navHeight = 2 * padding + logoHeight;
 const iconColor = '#333';
 
 export default function TabHeader(props: TabHeaderProps) {
+  const { user } = useAuth();
   const { subHeader } = useHeader();
   const { openDrawer } = useDrawer();
   const { search, handleSearch, setSearching, searching, searchOpen, setSearchOpen } =
@@ -58,8 +61,10 @@ export default function TabHeader(props: TabHeaderProps) {
           />
         ) : (
           <>
-            <TouchableOpacity onPress={() => openDrawer()} style={iconStyles}>
-              <Ionicons name="menu" color={iconColor} size={iconSize} />
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/grocery-list', { relativeToDirectory: false })}
+              style={iconStyles}>
+              <FontAwesome5 name="shopping-basket" size={iconSize - 2} color={iconColor} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -79,8 +84,23 @@ export default function TabHeader(props: TabHeaderProps) {
               )}
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setSearchOpen(true)} style={iconStyles}>
-              <Ionicons name="search" color={iconColor} size={iconSize} />
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/(profile)', { relativeToDirectory: false })}
+              style={iconStyles}>
+              {user.avatar ? (
+                <Image
+                  source={{
+                    uri: createCloudinaryUrl(user.avatar, 2 * iconSize, 2 * iconSize),
+                  }}
+                  style={{
+                    width: iconSize + 2,
+                    height: iconSize + 2,
+                    borderRadius: 20,
+                  }}
+                />
+              ) : (
+                <Feather size={iconSize} name="user" color={iconColor} />
+              )}
             </TouchableOpacity>
           </>
         )}

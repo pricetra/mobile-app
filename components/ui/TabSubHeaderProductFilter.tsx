@@ -31,7 +31,7 @@ export default function TabSubHeaderProductFilter({
   hideFiltersButton = false,
 }: TabSubHeaderProductFilterProps) {
   return (
-    <ScrollView horizontal>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <View className="flex flex-row items-center justify-start gap-2 px-5 py-3">
         {!hideFiltersButton && (
           <Button
@@ -46,7 +46,7 @@ export default function TabSubHeaderProductFilter({
           </Button>
         )}
 
-        <View className="ml-1 mr-[15vh] flex flex-row items-center gap-2">
+        <View className="ml-1 mr-5 flex flex-row items-center gap-2">
           {categories.map((c, i) => (
             <Button
               className={cn(
