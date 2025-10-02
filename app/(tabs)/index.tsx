@@ -2,11 +2,9 @@ import { useLazyQuery, useQuery } from '@apollo/client';
 import { FontAwesome6, Octicons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router, useFocusEffect } from 'expo-router';
-import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   View,
-  SafeAreaView,
   Platform,
   Text,
   StyleProp,
@@ -19,7 +17,6 @@ import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
 } from '@/components/BranchesWithProductsFlatlist';
 import ProductSearchFilterModal from '@/components/ProductSearchFilterModal';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabSubHeaderProductFilter, {
   PartialCategory,
@@ -49,7 +46,7 @@ export default function HomeScreen() {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [paginator, setPaginator] = useState<any>(null);
 
-  const [getAllProducts, { error, loading }] = useLazyQuery(BranchesWithProductsDocument, {
+  const [getAllProducts, { loading }] = useLazyQuery(BranchesWithProductsDocument, {
     fetchPolicy: 'no-cache',
   });
 
@@ -68,7 +65,7 @@ export default function HomeScreen() {
   const [page, setPage] = useState(1);
   const { search, searching, setSearching, searchOpen, handleSearch, setSearchOpen } =
     useContext(SearchContext);
-  const { location, getCurrentLocation } = useLocationService();
+  const { location } = useLocationService();
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
   const [address, setAddress] = useState(user.address?.fullAddress);
@@ -175,15 +172,13 @@ export default function HomeScreen() {
   // Reset on filter/search/location changes
   useEffect(() => {
     setPage(1);
-    setBranches([]);
     loadProducts(1);
   }, [search, categoryFilterInput, currentLocation]);
 
   // Load when page changes
   useEffect(() => {
-    if (page > 1) {
-      loadProducts(page);
-    }
+    if (page === 1) return;
+    loadProducts(page);
   }, [page]);
 
   useEffect(() => {
@@ -202,6 +197,8 @@ export default function HomeScreen() {
       fullAddress: address ?? currentLocation.fullAddress,
     });
   }, [location, address]);
+
+  if (loading && page === 1) return <BranchesWithProductsFlatlistLoading style={style} />;
 
   return (
     <>
@@ -242,31 +239,16 @@ export default function HomeScreen() {
         />
       </ModalFormMini>
 
-      {loading && page === 1 && <BranchesWithProductsFlatlistLoading style={style} />}
-
-      {error && (
-        <SafeAreaView>
-          <View className="p-5">
-            <Alert icon={AlertTriangle} variant="destructive" className="max-w-xl">
-              <AlertTitle>Error!</AlertTitle>
-              <AlertDescription>{error?.message}</AlertDescription>
-            </Alert>
-          </View>
-        </SafeAreaView>
-      )}
-
       <BranchesWithProductsFlatlist
         branches={branches}
         paginator={paginator}
-        handleRefresh={async () => {
-          await getCurrentLocation({});
-          return loadProducts(1);
-        }}
+        handleRefresh={() => loadProducts(1)}
         setPage={setPage}
         style={style}
         categoryFilterInput={categoryFilterInput}
         stores={allStoresData?.allStores?.stores}
         onLocationButtonPressed={() => setOpenLocationModal(true)}
+        loading={loading}
       />
     </>
   );
