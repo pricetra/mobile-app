@@ -135,7 +135,9 @@ export default function BranchesWithProductsFlatlist({
         </View>
       )}
       ListFooterComponent={
-        <View className="mb-20">{paginator?.next && <BranchWithProductsItemLoading />}</View>
+        <View className="mb-20">
+          {branches.length > 0 && paginator?.next && <BranchWithProductsItemLoading />}
+        </View>
       }
       refreshControl={
         <RefreshControl
@@ -198,7 +200,7 @@ export function BranchesWithProductsFlatlistLoading({ style }: { style?: StylePr
       indicatorStyle="black"
       ListHeaderComponent={
         <View className="mb-8 mt-5 flex flex-row px-5">
-          <Skeleton className="h-14 w-60 rounded-full bg-gray-200" />
+          <Skeleton className="h-10 w-52 rounded-full bg-gray-200" />
         </View>
       }
       renderItem={() => <BranchWithProductsItemLoading />}

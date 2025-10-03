@@ -43,8 +43,8 @@ export default function HomeScreen() {
   const bottomTabBarHeight = 45;
 
   // keep accumulated results in state
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [paginator, setPaginator] = useState<any>(null);
+  const [branches, setBranches] = useState<Branch[]>();
+  const [paginator, setPaginator] = useState<Paginator>();
 
   const [getAllProducts, { loading }] = useLazyQuery(BranchesWithProductsDocument, {
     fetchPolicy: 'no-cache',
@@ -165,7 +165,7 @@ export default function HomeScreen() {
         if (page === 1) {
           setBranches(filteredBranches);
         } else {
-          setBranches((prev) => [...prev, ...filteredBranches]);
+          setBranches((prev) => [...(prev ?? []), ...filteredBranches]);
         }
       }
     } finally {
@@ -203,7 +203,7 @@ export default function HomeScreen() {
     });
   }, [location, address]);
 
-  if (resetting) return <BranchesWithProductsFlatlistLoading style={style} />;
+  if (resetting || !branches) return <BranchesWithProductsFlatlistLoading style={style} />;
 
   return (
     <>
