@@ -340,12 +340,14 @@ export function ProductDetails({
       />
 
       {stock && stock.branch && (
-        <RelatedBranchProducts
-          product={product}
-          branch={stock.branch}
-          storeId={stock.storeId}
-          hideDuringLoading
-        />
+        <View className="mb-14 mt-7">
+          <RelatedBranchProducts
+            product={product}
+            branch={stock.branch}
+            storeId={stock.storeId}
+            hideDuringLoading
+          />
+        </View>
       )}
 
       <View>
@@ -362,6 +364,7 @@ export function ProductDetails({
               </View>
             ))}
       </View>
+      {/* <RelatedFavoriteBranchProducts product={product} branchId={stock?.branchId} /> */}
     </>
   );
 }
