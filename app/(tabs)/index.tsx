@@ -70,6 +70,7 @@ export default function HomeScreen() {
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
   const [address, setAddress] = useState(user.address?.fullAddress);
   const [openLocationModal, setOpenLocationModal] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const style: StyleProp<ViewStyle> = {
     paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
@@ -144,6 +145,7 @@ export default function HomeScreen() {
 
   async function loadProducts(page = 1) {
     if (!currentLocation) return Promise.resolve();
+    if (page === 1) setResetting(true);
 
     try {
       const { data } = await getAllProducts({
@@ -156,15 +158,18 @@ export default function HomeScreen() {
 
       if (data?.branchesWithProducts) {
         setPaginator(data.branchesWithProducts.paginator);
-
+        const filteredBranches = data.branchesWithProducts.branches.filter(
+          ({ products }) => products && products.length > 0
+        ) as Branch[];
         // append if not first page, else reset
         if (page === 1) {
-          setBranches(data.branchesWithProducts.branches as Branch[]);
+          setBranches(filteredBranches);
         } else {
-          setBranches((prev) => [...prev, ...(data.branchesWithProducts.branches as Branch[])]);
+          setBranches((prev) => [...prev, ...filteredBranches]);
         }
       }
     } finally {
+      setResetting(false);
       if (searching) setSearching(false);
     }
   }
@@ -198,7 +203,7 @@ export default function HomeScreen() {
     });
   }, [location, address]);
 
-  if (loading && page === 1) return <BranchesWithProductsFlatlistLoading style={style} />;
+  if (resetting) return <BranchesWithProductsFlatlistLoading style={style} />;
 
   return (
     <>
