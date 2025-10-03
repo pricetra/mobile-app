@@ -20,6 +20,7 @@ import NutritionFacts from './NutritionFacts';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
 import RelatedBranchProducts from './RelatedBranchProducts';
+import RelatedFavoriteBranchProducts from './RelatedFavoriteBranchProducts';
 import StockItemMini from './StockItemMini';
 import LocationChangeButton from './ui/LocationChangeButton';
 import ModalFormFull from './ui/ModalFormFull';
@@ -165,12 +166,9 @@ export function ProductDetails({
                             );
                             return;
                           }
-                          if (stock.id === 0) {
-                            alert('Stock not recorded for this branch');
-                            return;
-                          }
                           setSelectedStock(stock);
                         }}
+                        disabled={stock.id === 0}
                         className={cn(
                           'mb-2',
                           !approximatePrice && stock.id === 0 ? 'opacity-35' : 'opacity-100'
