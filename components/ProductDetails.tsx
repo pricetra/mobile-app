@@ -342,8 +342,28 @@ export function ProductDetails({
       />
 
       {stock && stock.branch && (
-        <RelatedBranchProducts product={product} branch={stock.branch} storeId={stock.storeId} />
+        <RelatedBranchProducts
+          product={product}
+          branch={stock.branch}
+          storeId={stock.storeId}
+          hideDuringLoading
+        />
       )}
+
+      <View>
+        {lists.favorites.branchList &&
+          lists.favorites.branchList
+            .filter((l) => l.branch !== undefined && l.branchId !== stock?.branchId)
+            .map(({ id, branch }, i) => (
+              <View className="mt-10" key={`${id}-${branch?.id}-${i}`}>
+                <RelatedBranchProducts
+                  product={product}
+                  branch={branch!}
+                  storeId={branch!.storeId}
+                />
+              </View>
+            ))}
+      </View>
     </>
   );
 }
