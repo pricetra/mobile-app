@@ -17,17 +17,19 @@ export default function LocationChangeButton({ onPress }: LocationChangeButtonPr
 
   return (
     <TouchableOpacity
-      className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-100 bg-gray-50 px-6 py-2"
+      className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-1.5"
       onPress={onPress}>
       <Octicons name="location" size={15} color="#1f2937" />
 
       <View>
-        <Text className="text-sm font-semibold color-gray-800" numberOfLines={1}>
+        <Text className="text-xs font-semibold color-gray-800" numberOfLines={1}>
           {parsedAddress[0].trim()}
         </Text>
-        <Text className="text-[10px] font-normal color-gray-800">
-          {parsedAddress.slice(1).join(',').trim()}
-        </Text>
+        {parsedAddress.length > 1 && (
+          <Text className="text-[8px] font-normal color-gray-800">
+            {parsedAddress.slice(1).join(',').trim()}
+          </Text>
+        )}
       </View>
 
       <Entypo name="chevron-down" size={15} color="#1f2937" style={{ marginLeft: 10 }} />

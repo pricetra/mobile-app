@@ -19,6 +19,8 @@ import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import NutritionFacts from './NutritionFacts';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
+import RelatedBranchProducts from './RelatedBranchProducts';
+import RelatedFavoriteBranchProducts from './RelatedFavoriteBranchProducts';
 import StockItemMini from './StockItemMini';
 import LocationChangeButton from './ui/LocationChangeButton';
 import ModalFormFull from './ui/ModalFormFull';
@@ -47,6 +49,7 @@ export type ProductDetailsProps = {
   product: Product;
   paginatedStocks?: PaginatedStocks;
   productNutrition?: ProductNutrition;
+  stock?: Stock;
 };
 
 export function ProductDetails({
@@ -54,6 +57,7 @@ export function ProductDetails({
   paginatedStocks,
   product,
   productNutrition,
+  stock,
 }: ProductDetailsProps) {
   const { width } = useWindowDimensions();
   const { lists } = useAuth();
@@ -132,31 +136,11 @@ export function ProductDetails({
         expandMultiple
         sections={[
           {
-            title: 'Favorite Branches',
+            title: 'Favorite Stores',
             badge: availableFavoriteBranches.length.toString(),
             content: (
               <View>
-                <View className="mb-5 flex flex-row items-center justify-between gap-5">
-                  <Btn
-                    text="Favorites"
-                    size="sm"
-                    rounded="full"
-                    className="bg-gray-200"
-                    color="black"
-                    icon={
-                      <MaterialCommunityIcons name="star-cog-outline" size={15} color="black" />
-                    }
-                    onPress={() =>
-                      router.push(`/(tabs)/(profile)/list/${lists.favorites.id}?tab=branches`, {
-                        relativeToDirectory: false,
-                      })
-                    }
-                  />
-
-                  <View className="flex-1" />
-                </View>
-
-                <View className="flex flex-row flex-wrap gap-5">
+                <View className="mt-5 flex flex-row flex-wrap gap-5">
                   {favBranchesPriceData
                     .map(
                       (data) =>
@@ -182,12 +166,9 @@ export function ProductDetails({
                             );
                             return;
                           }
-                          if (stock.id === 0) {
-                            alert('Stock not recorded for this branch');
-                            return;
-                          }
                           setSelectedStock(stock);
                         }}
+                        disabled={stock.id === 0}
                         className={cn(
                           'mb-2',
                           !approximatePrice && stock.id === 0 ? 'opacity-35' : 'opacity-100'
@@ -202,6 +183,26 @@ export function ProductDetails({
                         />
                       </TouchableOpacity>
                     ))}
+                </View>
+
+                <View className="mb-5 mt-3 flex flex-row items-center justify-between gap-5">
+                  <Btn
+                    text="Manage Favorites"
+                    size="xs"
+                    rounded="full"
+                    className="bg-gray-200"
+                    color="black"
+                    icon={
+                      <MaterialCommunityIcons name="star-cog-outline" size={15} color="black" />
+                    }
+                    onPress={() =>
+                      router.push(`/(tabs)/(profile)/list/${lists.favorites.id}?tab=branches`, {
+                        relativeToDirectory: false,
+                      })
+                    }
+                  />
+
+                  <View className="flex-1" />
                 </View>
               </View>
             ),
@@ -235,7 +236,7 @@ export function ProductDetails({
                         />
                       </TouchableOpacity>
                     )}
-                    contentContainerStyle={{ paddingHorizontal: 10 }}
+                    contentContainerStyle={{ paddingHorizontal: 15 }}
                     ListFooterComponent={() =>
                       paginatedStocks.paginator.next ? (
                         <HorizontalShowMoreButton onPress={() => {}} heightDiv={3} />
@@ -284,8 +285,8 @@ export function ProductDetails({
                   {productNutrition.ingredientList &&
                     productNutrition.ingredientList.length > 0 && (
                       <View className="mt-7">
-                        <Text className="mb-1.5 text-xl font-bold">Ingredients</Text>
-                        <Text>
+                        <Text className="mb-1.5 text-lg font-bold">Ingredients</Text>
+                        <Text className="text-sm">
                           {productNutrition.ingredientList.map((i) => i.toUpperCase()).join(', ')}
                         </Text>
                       </View>
@@ -293,18 +294,12 @@ export function ProductDetails({
                 </View>
               ),
             },
-          {
-            title: 'Description',
-            content: (
-              <>
-                {product.description?.length > 0 ? (
-                  <Text style={{ lineHeight: 19 }}>{product.description}</Text>
-                ) : (
-                  <Text className="py-5 text-center">No product description</Text>
-                )}
-              </>
-            ),
-          },
+          product.description?.length > 0
+            ? {
+                title: 'Description',
+                content: <Text style={{ lineHeight: 19 }}>{product.description}</Text>,
+              }
+            : undefined,
           {
             title: 'Specifications',
             content: <ProductSpecs product={product} />,
@@ -314,7 +309,7 @@ export function ProductDetails({
           section ? (
             <View className="flex flex-row items-center justify-between gap-5 px-5 py-3">
               <View className="flex flex-1 flex-row items-center justify-between gap-3">
-                <Text className="text-xl font-extrabold">{section.title}</Text>
+                <Text className="text-lg font-semibold">{section.title}</Text>
 
                 {section.badge && (
                   <Text className="size-6 rounded-full bg-pricetraGreenHeavyDark py-1 text-center text-xs font-bold color-white">
@@ -343,6 +338,33 @@ export function ProductDetails({
         containerStyle={{ marginTop: 20 }}
         underlayColor="transparent"
       />
+
+      {stock && stock.branch && (
+        <View className="mb-14 mt-7">
+          <RelatedBranchProducts
+            product={product}
+            branch={stock.branch}
+            storeId={stock.storeId}
+            hideDuringLoading
+          />
+        </View>
+      )}
+
+      <View>
+        {lists.favorites.branchList &&
+          lists.favorites.branchList
+            .filter((l) => l.branch !== undefined && l.branchId !== stock?.branchId)
+            .map(({ id, branch }, i) => (
+              <View className="mt-10" key={`${id}-${branch?.id}-${i}`}>
+                <RelatedBranchProducts
+                  product={product}
+                  branch={branch!}
+                  storeId={branch!.storeId}
+                />
+              </View>
+            ))}
+      </View>
+      {/* <RelatedFavoriteBranchProducts product={product} branchId={stock?.branchId} /> */}
     </>
   );
 }

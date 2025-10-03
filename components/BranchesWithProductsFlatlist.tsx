@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
+  Text,
 } from 'react-native';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
@@ -40,6 +41,8 @@ export type BranchesWithProductsFlatlistProps = {
   categoryFilterInput?: PartialCategory;
   stores?: Store[];
   onLocationButtonPressed: () => void;
+  loading: boolean;
+  showLocationButton?: boolean;
 };
 
 export default function BranchesWithProductsFlatlist({
@@ -51,6 +54,8 @@ export default function BranchesWithProductsFlatlist({
   categoryFilterInput,
   stores,
   onLocationButtonPressed,
+  loading,
+  showLocationButton = true,
 }: BranchesWithProductsFlatlistProps) {
   const [refreshing, setRefreshing] = useState(false);
   const { search } = useContext(SearchContext);
@@ -71,72 +76,45 @@ export default function BranchesWithProductsFlatlist({
             </View>
           )}
 
-          <View className="mb-8 mt-5 flex flex-row px-5">
-            <LocationChangeButton onPress={onLocationButtonPressed} />
+          {showLocationButton && (
+            <View className="mb-8 mt-5 flex flex-row px-5">
+              <LocationChangeButton onPress={onLocationButtonPressed} />
 
-            <View className="flex-1" />
-          </View>
+              <View className="flex-1" />
+            </View>
+          )}
         </>
       }
-      renderItem={({ item: branch }) =>
-        branch.products?.length ? (
-          <View className="mb-5">
-            <View className="px-5 py-3">
-              <TouchableOpacity
-                onPress={() => {
-                  const params = new URLSearchParams();
-                  params.append('categoryId', String(undefined));
-                  params.append('page', String(1));
-                  router.push(
-                    `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
-                    { relativeToDirectory: false }
-                  );
-                }}>
-                <BranchProductItem branch={branch} />
-              </TouchableOpacity>
-            </View>
-
-            <FlatList
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              data={branch.products}
-              keyExtractor={({ id }, i) => `${id}-${i}`}
-              renderItem={({ item: product }) => (
-                <TouchableOpacity
-                  className="mr-4"
-                  onPress={() => {
-                    router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`, {
-                      relativeToDirectory: false,
-                    });
-                  }}>
-                  <ProductItemHorizontal product={product} />
-                </TouchableOpacity>
-              )}
-              style={{ padding: 15 }}
-              ListFooterComponent={() => (
-                <HorizontalShowMoreButton
-                  onPress={() => {
-                    const params = new URLSearchParams();
-                    if (search && search.length > 0) {
-                      params.append('query', encodeURIComponent(search));
-                    }
-                    params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
-                    params.append('page', String(1));
-                    router.push(
-                      `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
-                      { relativeToDirectory: false }
-                    );
-                  }}
-                />
-              )}
-            />
-          </View>
-        ) : (
-          <></>
-        )
-      }
+      renderItem={({ item: branch }) => (
+        <BranchWithProductItem
+          branch={branch}
+          onPressBranch={() => {
+            const params = new URLSearchParams();
+            params.append('categoryId', String(undefined));
+            params.append('page', String(1));
+            router.push(
+              `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
+              { relativeToDirectory: false }
+            );
+          }}
+          onPressShowMore={() => {
+            const params = new URLSearchParams();
+            if (search && search.length > 0) {
+              params.append('query', encodeURIComponent(search));
+            }
+            params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
+            params.append('page', String(1));
+            router.push(
+              `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
+              { relativeToDirectory: false }
+            );
+          }}
+        />
+      )}
       ListFooterComponent={
-        <View className="mb-20">{paginator?.next && <BranchWithProductsItemLoading />}</View>
+        <View className="mb-20">
+          {branches.length > 0 && paginator?.next && <BranchWithProductsItemLoading />}
+        </View>
       }
       refreshControl={
         <RefreshControl
@@ -157,7 +135,13 @@ export default function BranchesWithProductsFlatlist({
         }
       }}
       onEndReachedThreshold={0.8}
-      ListEmptyComponent={<BranchWithProductsItemLoading />}
+      ListEmptyComponent={
+        !loading ? (
+          <View className="px-5 py-10">
+            <Text className="text-center color-gray-500">No results found</Text>
+          </View>
+        ) : undefined
+      }
       style={style}
     />
   );
@@ -185,16 +169,66 @@ export function BranchWithProductsItemLoading() {
   );
 }
 
-export function BranchesWithProductsFlatlistLoading({ style }: { style?: StyleProp<ViewStyle> }) {
+export function BranchWithProductItem({
+  branch,
+  onPressBranch,
+  onPressShowMore,
+}: {
+  branch: Branch;
+  onPressBranch: () => void;
+  onPressShowMore: () => void;
+}) {
+  return (
+    <View className="mb-5">
+      <View className="px-5 py-3">
+        <TouchableOpacity onPress={onPressBranch}>
+          <BranchProductItem branch={branch} />
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={branch.products}
+        keyExtractor={({ id }, i) => `${id}-${i}`}
+        renderItem={({ item: product }) => (
+          <TouchableOpacity
+            className="mr-4"
+            onPress={() => {
+              router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`, {
+                relativeToDirectory: false,
+              });
+            }}>
+            <ProductItemHorizontal product={product} />
+          </TouchableOpacity>
+        )}
+        style={{ padding: 15 }}
+        ListFooterComponent={() => <HorizontalShowMoreButton onPress={onPressShowMore} />}
+      />
+    </View>
+  );
+}
+
+export function BranchesWithProductsFlatlistLoading({
+  style,
+  showLocationButton = true,
+  itemCount = 5,
+}: {
+  style?: StyleProp<ViewStyle>;
+  showLocationButton?: boolean;
+  itemCount?: number;
+}) {
   return (
     <FlatList
-      data={Array(5).fill(0)}
+      data={Array(itemCount).fill(0)}
       keyExtractor={(_, i) => `branch-loading-${i}`}
       indicatorStyle="black"
       ListHeaderComponent={
-        <View className="mb-8 mt-5 flex flex-row px-5">
-          <Skeleton className="h-14 w-60 rounded-full bg-gray-200" />
-        </View>
+        showLocationButton ? (
+          <View className="mb-8 mt-5 flex flex-row px-5">
+            <Skeleton className="h-10 w-52 rounded-full bg-gray-200" />
+          </View>
+        ) : undefined
       }
       renderItem={() => <BranchWithProductsItemLoading />}
       style={style}

@@ -2,11 +2,9 @@ import { useLazyQuery, useQuery } from '@apollo/client';
 import { FontAwesome6, Octicons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router, useFocusEffect } from 'expo-router';
-import { AlertTriangle } from 'lucide-react-native';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   View,
-  SafeAreaView,
   Platform,
   Text,
   StyleProp,
@@ -19,7 +17,6 @@ import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
 } from '@/components/BranchesWithProductsFlatlist';
 import ProductSearchFilterModal from '@/components/ProductSearchFilterModal';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabSubHeaderProductFilter, {
   PartialCategory,
@@ -33,12 +30,22 @@ import {
   Branch,
   BranchesWithProductsDocument,
   MySearchHistoryDocument,
+  Paginator,
   ProductSearch,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
+import { getRandomElement } from '@/lib/utils';
 
 const BRANCH_LIMIT = 15;
 const PRODUCT_LIMIT = 10;
+
+const searchTaglines = [
+  'Search for milk, eggs, cereal...',
+  'Find prices for groceries near you',
+  'What are you shopping for today?',
+  'Search products, brands, or categories',
+  'Start with milk, bread, or coffee...',
+];
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -46,10 +53,10 @@ export default function HomeScreen() {
   const bottomTabBarHeight = 45;
 
   // keep accumulated results in state
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [paginator, setPaginator] = useState<any>(null);
+  const [branches, setBranches] = useState<Branch[]>();
+  const [paginator, setPaginator] = useState<Paginator>();
 
-  const [getAllProducts, { error, loading }] = useLazyQuery(BranchesWithProductsDocument, {
+  const [getAllProducts, { loading }] = useLazyQuery(BranchesWithProductsDocument, {
     fetchPolicy: 'no-cache',
   });
 
@@ -68,11 +75,12 @@ export default function HomeScreen() {
   const [page, setPage] = useState(1);
   const { search, searching, setSearching, searchOpen, handleSearch, setSearchOpen } =
     useContext(SearchContext);
-  const { location, getCurrentLocation } = useLocationService();
+  const { location } = useLocationService();
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
   const [address, setAddress] = useState(user.address?.fullAddress);
   const [openLocationModal, setOpenLocationModal] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const style: StyleProp<ViewStyle> = {
     paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
@@ -98,41 +106,44 @@ export default function HomeScreen() {
     useCallback(() => {
       setSubHeader(
         <>
-          {!searchOpen && (
-            <View className="flex flex-row items-center gap-5 px-5 pb-0.5 pt-1">
-              <TouchableOpacity
-                className="relative flex flex-1 flex-row items-center gap-5 rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
-                onPress={() => setSearchOpen(true)}>
-                <Ionicons name="search" color="#6b7280" size={18} />
-                <Text className="color-[#6b7280]">Search...</Text>
-              </TouchableOpacity>
+          <View className="h-[50px]">
+            {!searchOpen ? (
+              <View className="flex flex-row items-center gap-5 px-5 pb-0.5 pt-1">
+                <TouchableOpacity
+                  className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
+                  onPress={() => setSearchOpen(true)}>
+                  <Ionicons name="search" color="#6b7280" size={18} />
+                  <Text className="flex-1 color-[#6b7280]" numberOfLines={1}>
+                    {getRandomElement(searchTaglines)}
+                  </Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
-                <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
-              </TouchableOpacity>
-            </View>
-          )}
-          {searchOpen && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View className="flex flex-row items-center justify-start gap-2 px-5 py-2">
-                <View className="ml-2 mr-5 flex flex-row items-center gap-2">
-                  <Octicons name="history" size={15} color="black" />
-                  <Text className="font-bold">History</Text>
-                </View>
-
-                {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
-                  <TouchableOpacity
-                    className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
-                    key={`sh-${id}`}
-                    onPress={() => handleSearch(searchTerm)}>
-                    <Text className="text-sm color-gray-500">{searchTerm}</Text>
-                    <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
-                  </TouchableOpacity>
-                ))}
+                <TouchableOpacity
+                  onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
+                  <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+                </TouchableOpacity>
               </View>
-            </ScrollView>
-          )}
+            ) : (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View className="flex flex-row items-center justify-start gap-2 px-5 py-2">
+                  <View className="mr-5 flex flex-row items-center justify-center gap-2 rounded-full bg-white px-2 py-2">
+                    <Octicons name="history" size={15} color="black" />
+                    <Text className="font-bold">History</Text>
+                  </View>
+
+                  {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
+                    <TouchableOpacity
+                      className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
+                      key={`sh-${id}`}
+                      onPress={() => handleSearch(searchTerm)}>
+                      <Text className="text-sm color-gray-500">{searchTerm}</Text>
+                      <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            )}
+          </View>
 
           <TabSubHeaderProductFilter
             selectedCategoryId={categoryFilterInput?.id}
@@ -147,6 +158,7 @@ export default function HomeScreen() {
 
   async function loadProducts(page = 1) {
     if (!currentLocation) return Promise.resolve();
+    if (page === 1) setResetting(true);
 
     try {
       const { data } = await getAllProducts({
@@ -159,15 +171,18 @@ export default function HomeScreen() {
 
       if (data?.branchesWithProducts) {
         setPaginator(data.branchesWithProducts.paginator);
-
+        const filteredBranches = data.branchesWithProducts.branches.filter(
+          ({ products }) => products && products.length > 0
+        ) as Branch[];
         // append if not first page, else reset
         if (page === 1) {
-          setBranches(data.branchesWithProducts.branches as Branch[]);
+          setBranches(filteredBranches);
         } else {
-          setBranches((prev) => [...prev, ...(data.branchesWithProducts.branches as Branch[])]);
+          setBranches((prev) => [...(prev ?? []), ...filteredBranches]);
         }
       }
     } finally {
+      setResetting(false);
       if (searching) setSearching(false);
     }
   }
@@ -175,15 +190,13 @@ export default function HomeScreen() {
   // Reset on filter/search/location changes
   useEffect(() => {
     setPage(1);
-    setBranches([]);
     loadProducts(1);
   }, [search, categoryFilterInput, currentLocation]);
 
   // Load when page changes
   useEffect(() => {
-    if (page > 1) {
-      loadProducts(page);
-    }
+    if (page === 1) return;
+    loadProducts(page);
   }, [page]);
 
   useEffect(() => {
@@ -202,6 +215,8 @@ export default function HomeScreen() {
       fullAddress: address ?? currentLocation.fullAddress,
     });
   }, [location, address]);
+
+  if (resetting || !branches) return <BranchesWithProductsFlatlistLoading style={style} />;
 
   return (
     <>
@@ -242,31 +257,16 @@ export default function HomeScreen() {
         />
       </ModalFormMini>
 
-      {loading && page === 1 && <BranchesWithProductsFlatlistLoading style={style} />}
-
-      {error && (
-        <SafeAreaView>
-          <View className="p-5">
-            <Alert icon={AlertTriangle} variant="destructive" className="max-w-xl">
-              <AlertTitle>Error!</AlertTitle>
-              <AlertDescription>{error?.message}</AlertDescription>
-            </Alert>
-          </View>
-        </SafeAreaView>
-      )}
-
       <BranchesWithProductsFlatlist
         branches={branches}
         paginator={paginator}
-        handleRefresh={async () => {
-          await getCurrentLocation({});
-          return loadProducts(1);
-        }}
+        handleRefresh={() => loadProducts(1)}
         setPage={setPage}
         style={style}
         categoryFilterInput={categoryFilterInput}
         stores={allStoresData?.allStores?.stores}
         onLocationButtonPressed={() => setOpenLocationModal(true)}
+        loading={loading}
       />
     </>
   );

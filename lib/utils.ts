@@ -89,3 +89,8 @@ export function extractUndefined(value?: string): string | undefined {
   if (value.toLowerCase() === String(undefined)) return undefined;
   return value;
 }
+
+export function getRandomElement(arr: any[]) {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
+}
