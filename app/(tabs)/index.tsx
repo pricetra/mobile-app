@@ -30,6 +30,7 @@ import {
   Branch,
   BranchesWithProductsDocument,
   MySearchHistoryDocument,
+  Paginator,
   ProductSearch,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
@@ -96,41 +97,42 @@ export default function HomeScreen() {
     useCallback(() => {
       setSubHeader(
         <>
-          {!searchOpen && (
-            <View className="flex flex-row items-center gap-5 px-5 pb-0.5 pt-1">
-              <TouchableOpacity
-                className="relative flex flex-1 flex-row items-center gap-5 rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
-                onPress={() => setSearchOpen(true)}>
-                <Ionicons name="search" color="#6b7280" size={18} />
-                <Text className="color-[#6b7280]">Search...</Text>
-              </TouchableOpacity>
+          <View className="h-[50px]">
+            {!searchOpen ? (
+              <View className="flex flex-row items-center gap-5 px-5 pb-0.5 pt-1">
+                <TouchableOpacity
+                  className="relative flex flex-1 flex-row items-center gap-5 rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
+                  onPress={() => setSearchOpen(true)}>
+                  <Ionicons name="search" color="#6b7280" size={18} />
+                  <Text className="color-[#6b7280]">Search...</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
-                <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
-              </TouchableOpacity>
-            </View>
-          )}
-          {searchOpen && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View className="flex flex-row items-center justify-start gap-2 px-5 py-2">
-                <View className="ml-2 mr-5 flex flex-row items-center gap-2">
-                  <Octicons name="history" size={15} color="black" />
-                  <Text className="font-bold">History</Text>
-                </View>
-
-                {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
-                  <TouchableOpacity
-                    className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
-                    key={`sh-${id}`}
-                    onPress={() => handleSearch(searchTerm)}>
-                    <Text className="text-sm color-gray-500">{searchTerm}</Text>
-                    <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
-                  </TouchableOpacity>
-                ))}
+                <TouchableOpacity
+                  onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
+                  <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+                </TouchableOpacity>
               </View>
-            </ScrollView>
-          )}
+            ) : (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View className="flex flex-row items-center justify-start gap-2 px-5 py-2">
+                  <View className="mr-5 flex flex-row items-center justify-center gap-2 rounded-full bg-white px-2 py-2">
+                    <Octicons name="history" size={15} color="black" />
+                    <Text className="font-bold">History</Text>
+                  </View>
+
+                  {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
+                    <TouchableOpacity
+                      className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
+                      key={`sh-${id}`}
+                      onPress={() => handleSearch(searchTerm)}>
+                      <Text className="text-sm color-gray-500">{searchTerm}</Text>
+                      <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            )}
+          </View>
 
           <TabSubHeaderProductFilter
             selectedCategoryId={categoryFilterInput?.id}
