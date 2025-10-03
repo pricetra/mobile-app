@@ -783,6 +783,7 @@ export type ProductNutrition = {
 
 export type ProductSearch = {
   branchId?: InputMaybe<Scalars['ID']['input']>;
+  branchIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   brand?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
   categoryId?: InputMaybe<Scalars['ID']['input']>;
