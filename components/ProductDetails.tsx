@@ -84,10 +84,7 @@ export function ProductDetails({
         categoryId: product.categoryId,
         storeId: stock?.storeId,
         branchId: stock?.branchId,
-        // weight:
-        //   product.weightValue && product.weightType
-        //     ? `${product.weightValue} ${product.weightType}`
-        //     : undefined,
+        sortByPrice: 'asc',
       },
     },
   });
