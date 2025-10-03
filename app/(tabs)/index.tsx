@@ -34,9 +34,18 @@ import {
   ProductSearch,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
+import { getRandomElement } from '@/lib/utils';
 
 const BRANCH_LIMIT = 15;
 const PRODUCT_LIMIT = 10;
+
+const searchTaglines = [
+  'Search for milk, eggs, cereal...',
+  'Find prices for groceries near you',
+  'What are you shopping for today?',
+  'Search products, brands, or categories',
+  'Start with milk, bread, or coffee...',
+];
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -101,10 +110,12 @@ export default function HomeScreen() {
             {!searchOpen ? (
               <View className="flex flex-row items-center gap-5 px-5 pb-0.5 pt-1">
                 <TouchableOpacity
-                  className="relative flex flex-1 flex-row items-center gap-5 rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
+                  className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
                   onPress={() => setSearchOpen(true)}>
                   <Ionicons name="search" color="#6b7280" size={18} />
-                  <Text className="color-[#6b7280]">Search...</Text>
+                  <Text className="flex-1 color-[#6b7280]" numberOfLines={1}>
+                    {getRandomElement(searchTaglines)}
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
