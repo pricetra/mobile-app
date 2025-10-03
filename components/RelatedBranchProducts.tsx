@@ -43,7 +43,7 @@ export default function RelatedBranchProducts({
   if (data?.allProducts?.paginator && data.allProducts.paginator.total === 0) return <></>;
 
   return (
-    <View className="mt-5">
+    <>
       <View className="mb-7 px-5">
         <Text className="text-lg font-semibold">Related in {branch.name}</Text>
       </View>
@@ -78,6 +78,6 @@ export default function RelatedBranchProducts({
           ) : undefined
         }
       />
-    </View>
+    </>
   );
 }
