@@ -7,6 +7,7 @@ import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal from './ProductItemHorizontal';
 
 import { AllProductsDocument, Branch, Product } from '@/graphql/types/graphql';
+import { cn } from '@/lib/utils';
 
 export type RelatedBranchProductsProps = {
   product: Product;
@@ -60,7 +61,8 @@ export default function RelatedBranchProducts({
                 relativeToDirectory: false,
               })
             }
-            className="mr-4">
+            disabled={item.id === product.id}
+            className={cn('mr-4', item.id === product.id ? 'opacity-50' : '')}>
             <ProductItemHorizontal product={item as Product} />
           </TouchableOpacity>
         )}
