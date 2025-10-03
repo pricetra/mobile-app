@@ -58,7 +58,7 @@ export default function SelectedBranchScreen() {
   const [favorite, setFavorite] = useState<boolean>();
   const [getAllProducts, { data: productsData, loading: productsLoading }] = useLazyQuery(
     AllProductsDocument,
-    { fetchPolicy: 'network-only' }
+    { fetchPolicy: 'no-cache' }
   );
   const [addBranchToList] = useMutation(AddBranchToListDocument, {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],

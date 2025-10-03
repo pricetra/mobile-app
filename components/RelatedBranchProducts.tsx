@@ -23,6 +23,7 @@ export default function RelatedBranchProducts({
   hideDuringLoading = false,
 }: RelatedBranchProductsProps) {
   const { data, loading } = useQuery(AllProductsDocument, {
+    fetchPolicy: 'no-cache',
     variables: {
       paginator: {
         limit: 10,
