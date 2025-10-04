@@ -1,7 +1,8 @@
 import { useQuery } from '@apollo/client';
 import { router } from 'expo-router';
-import { FlatList, TouchableOpacity, View, Text } from 'react-native';
+import { FlatList, TouchableOpacity, View } from 'react-native';
 
+import BranchProductItem from './BranchProductItem';
 import { BranchWithProductsItemLoading } from './BranchesWithProductsFlatlist';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal from './ProductItemHorizontal';
@@ -30,7 +31,7 @@ export default function RelatedBranchProducts({
         page: 1,
       },
       search: {
-        categoryId: product.categoryId,
+        category: product.category?.name,
         storeId,
         branchId: branch.id,
         sortByPrice: 'asc',
@@ -45,9 +46,12 @@ export default function RelatedBranchProducts({
   if (data?.allProducts?.paginator && data.allProducts.paginator.total === 0) return <></>;
 
   return (
-    <>
+    <View className="mt-10">
       <View className="mb-7 px-5">
-        <Text className="text-lg font-semibold">Related in {branch.name}</Text>
+        <TouchableOpacity
+          onPress={() => router.push(`/(tabs)/(stores)/${storeId}/branch/${branch.id}`)}>
+          <BranchProductItem branch={branch} branchTagline="Similar products in" />
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -81,6 +85,6 @@ export default function RelatedBranchProducts({
           ) : undefined
         }
       />
-    </>
+    </View>
   );
 }

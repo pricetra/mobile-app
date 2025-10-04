@@ -20,7 +20,6 @@ import NutritionFacts from './NutritionFacts';
 import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
 import RelatedBranchProducts from './RelatedBranchProducts';
-import RelatedFavoriteBranchProducts from './RelatedFavoriteBranchProducts';
 import StockItemMini from './StockItemMini';
 import LocationChangeButton from './ui/LocationChangeButton';
 import ModalFormFull from './ui/ModalFormFull';
@@ -37,6 +36,7 @@ import {
   ProductNutrition,
   Stock,
   UpdateProductNutritionDataDocument,
+  Store,
 } from '@/graphql/types/graphql';
 import { cn } from '@/lib/utils';
 
@@ -340,10 +340,10 @@ export function ProductDetails({
       />
 
       {stock && stock.branch && (
-        <View className="mb-14 mt-7">
+        <View className="mb-7 mt-7">
           <RelatedBranchProducts
             product={product}
-            branch={stock.branch}
+            branch={{ ...stock.branch, store: { ...(stock.store as Store) } }}
             storeId={stock.storeId}
             hideDuringLoading
           />
@@ -355,7 +355,7 @@ export function ProductDetails({
           lists.favorites.branchList
             .filter((l) => l.branch !== undefined && l.branchId !== stock?.branchId)
             .map(({ id, branch }, i) => (
-              <View className="mt-10" key={`${id}-${branch?.id}-${i}`}>
+              <View key={`${id}-${branch?.id}-${i}`}>
                 <RelatedBranchProducts
                   product={product}
                   branch={branch!}
@@ -364,7 +364,6 @@ export function ProductDetails({
               </View>
             ))}
       </View>
-      {/* <RelatedFavoriteBranchProducts product={product} branchId={stock?.branchId} /> */}
     </>
   );
 }

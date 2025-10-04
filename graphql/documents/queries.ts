@@ -722,6 +722,7 @@ export const GET_ALL_LISTS = gql`
         branch {
           id
           name
+          addressId
           address {
             id
             distance
@@ -735,6 +736,12 @@ export const GET_ALL_LISTS = gql`
             countryCode
             country
             zipCode
+          }
+          storeId
+          store {
+            id
+            name
+            logo
           }
         }
         createdAt

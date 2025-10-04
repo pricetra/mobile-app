@@ -9,18 +9,23 @@ import { metersToMiles } from '@/lib/utils';
 
 export type BranchProductItemProps = {
   branch: Branch;
+  branchTagline?: string;
 };
 
-export default function BranchProductItem({ branch }: BranchProductItemProps) {
+export default function BranchProductItem({ branch, branchTagline }: BranchProductItemProps) {
   return (
     <View>
       <View className="flex flex-row items-center justify-between gap-5">
-        <View className="flex flex-1 flex-row items-center gap-4">
+        <View className="flex flex-1 flex-row gap-4">
           <Image
             src={createCloudinaryUrl(branch.store?.logo ?? '', 500, 500)}
             className="size-[40px] rounded-lg"
           />
-          <View className="flex flex-col items-center gap-1">
+          <View className="flex flex-col gap-1">
+            {branchTagline && (
+              <Text className="text-sm color-pricetraGreenHeavyDark">{branchTagline}</Text>
+            )}
+
             <View className="flex w-full flex-row items-center gap-3">
               <Text className="text-md font-bold" numberOfLines={1}>
                 {branch.store?.name}
