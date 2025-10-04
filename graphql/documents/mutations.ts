@@ -378,3 +378,20 @@ export const UPDATE_PRODUCT_NUTRITION_MUTATION = gql(`
     }
   }
 `);
+
+export const EXTRACT_AND_CREATE_PRODUCT_FIELDS_QUERY = gql(`
+  mutation ExtractAndCreateProduct($barcode: String!, $base64Image: String!) {
+    extractAndCreateProduct(barcode: $barcode, base64Image: $base64Image) {
+      id
+      code
+      brand
+      name
+      categoryId
+      weightValue
+      weightType
+      quantityValue
+      quantityType
+      description
+    }
+  }
+`);
