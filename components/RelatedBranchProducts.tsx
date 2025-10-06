@@ -15,6 +15,7 @@ export type RelatedBranchProductsProps = {
   branch: Branch;
   storeId: number;
   hideDuringLoading?: boolean;
+  disableCurrentProduct?: boolean;
 };
 
 export default function RelatedBranchProducts({
@@ -22,6 +23,7 @@ export default function RelatedBranchProducts({
   branch,
   storeId,
   hideDuringLoading = false,
+  disableCurrentProduct = false,
 }: RelatedBranchProductsProps) {
   const { data, loading } = useQuery(AllProductsDocument, {
     fetchPolicy: 'no-cache',
@@ -62,12 +64,15 @@ export default function RelatedBranchProducts({
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>
-              router.push(`/(tabs)/(products)/${item.id}?stockID=${item.stock?.id}`, {
+              router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`, {
                 relativeToDirectory: false,
               })
             }
-            disabled={item.id === product.id}
-            className={cn('mr-4', item.id === product.id ? 'opacity-50' : '')}>
+            disabled={disableCurrentProduct && item.id === product.id}
+            className={cn(
+              'mr-4',
+              disableCurrentProduct && item.id === product.id ? 'opacity-50' : ''
+            )}>
             <ProductItemHorizontal product={item as Product} />
           </TouchableOpacity>
         )}

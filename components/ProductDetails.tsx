@@ -346,6 +346,7 @@ export function ProductDetails({
             branch={{ ...stock.branch, store: { ...(stock.store as Store) } }}
             storeId={stock.storeId}
             hideDuringLoading
+            disableCurrentProduct
           />
         </View>
       )}
