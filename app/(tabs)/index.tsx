@@ -108,7 +108,7 @@ export default function HomeScreen() {
         <>
           <View className="h-[50px]">
             {!searchOpen ? (
-              <View className="flex flex-row items-center gap-5 px-5 pb-0.5 pt-1">
+              <View className="flex flex-row items-center gap-3 px-5 pb-0.5 pt-1">
                 <TouchableOpacity
                   className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
                   onPress={() => setSearchOpen(true)}>
@@ -119,7 +119,8 @@ export default function HomeScreen() {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
+                  onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
+                  className="p-2.5">
                   <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
                 </TouchableOpacity>
               </View>
