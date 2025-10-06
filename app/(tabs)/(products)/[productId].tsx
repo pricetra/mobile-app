@@ -59,14 +59,14 @@ export default function ProductScreen() {
       fetchPolicy: 'network-only',
     });
   const [getStock, { data: stockData, loading: stockLoading }] = useLazyQuery(StockDocument, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'no-cache',
   });
   const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'no-cache',
   });
   const [getFavBranchesPrices, { data: favBranchesPriceData }] = useLazyQuery(
     FavoriteBranchesWithPricesDocument,
-    { fetchPolicy: 'network-only' }
+    { fetchPolicy: 'no-cache' }
   );
   const [getProductNutritionData, { data: productNutritionData }] = useLazyQuery(
     GetProductNutritionDataDocument,
