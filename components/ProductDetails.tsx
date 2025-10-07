@@ -29,7 +29,6 @@ import {
   ProductNutrition,
   Stock,
   UpdateProductNutritionDataDocument,
-  Store,
 } from '@/graphql/types/graphql';
 import { cn } from '@/lib/utils';
 
@@ -148,6 +147,7 @@ export function ProductDetails({
             content: (
               <View>
                 <FlatGrid
+                  nestedScrollEnabled
                   data={favBranchesPriceData.map(stockToApproxMap)}
                   itemContainerStyle={{
                     justifyContent: 'flex-start',
@@ -212,6 +212,7 @@ export function ProductDetails({
 
                 {paginatedStocks && paginatedStocks.stocks.length > 0 ? (
                   <FlatGrid
+                    nestedScrollEnabled
                     horizontal
                     itemContainerStyle={{
                       justifyContent: 'flex-start',
@@ -338,32 +339,9 @@ export function ProductDetails({
         underlayColor="transparent"
       />
 
-      {stock && stock.branch && (
-        <View className="mb-7 mt-7">
-          <RelatedBranchProducts
-            product={product}
-            branch={{ ...stock.branch, store: { ...(stock.store as Store) } }}
-            storeId={stock.storeId}
-            hideDuringLoading
-            disableCurrentProduct
-          />
-        </View>
-      )}
+      <View style={{ marginTop: 30 }} />
 
-      <View>
-        {lists.favorites.branchList &&
-          lists.favorites.branchList
-            .filter((l) => l.branch !== undefined && l.branchId !== stock?.branchId)
-            .map(({ id, branch }, i) => (
-              <View key={`${id}-${branch?.id}-${i}`}>
-                <RelatedBranchProducts
-                  product={product}
-                  branch={branch!}
-                  storeId={branch!.storeId}
-                />
-              </View>
-            ))}
-      </View>
+      <RelatedBranchProducts product={product} stock={stock} />
     </>
   );
 }

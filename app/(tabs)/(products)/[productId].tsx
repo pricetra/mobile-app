@@ -6,7 +6,6 @@ import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'exp
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   View,
   Text,
   Alert,
@@ -14,9 +13,9 @@ import {
   Platform,
   TouchableOpacity,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
 
-import FullStockView from '@/components/FullStockView';
 import { ProductDetails } from '@/components/ProductDetails';
 import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import SelectedStock from '@/components/SelectedStock';
@@ -339,9 +338,51 @@ export default function ProductScreen() {
         />
       </ModalFormFull>
 
-      <ScrollView
+      <FlatList
         className="h-full w-full"
         nestedScrollEnabled
+        data={[]}
+        renderItem={undefined}
+        ListHeaderComponent={
+          <>
+            <View className="mt-5">
+              <ProductFull
+                product={productData.product as Product}
+                hideDescription
+                hideEditButton
+                onEditButtonPress={() => setOpenEditModal(true)}
+              />
+            </View>
+
+            {stockId && stockData && (
+              <View className="mb-5 p-5">
+                <TouchableOpacity
+                  className="rounded-xl bg-gray-50 p-5"
+                  onPress={() => setSelectedStock(stockData.stock as Stock)}>
+                  <SelectedStock
+                    stock={stockData.stock as Stock}
+                    quantityValue={productData.product.quantityValue}
+                    quantityType={productData.product.quantityType}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
+
+            <ProductDetails
+              paginatedStocks={stocksData?.getProductStocks as PaginatedStocks | undefined}
+              favBranchesPriceData={
+                (favBranchesPriceData?.getFavoriteBranchesWithPrices ??
+                  []) as BranchListWithPrices[]
+              }
+              product={productData.product}
+              productNutrition={
+                productNutritionData?.getProductNutritionData as ProductNutrition | undefined
+              }
+              stock={stockData?.stock as Stock}
+            />
+          </>
+        }
+        ListFooterComponent={<View className="h-[100px]" />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -356,44 +397,8 @@ export default function ProductScreen() {
             colors={Platform.OS === 'ios' ? ['black'] : ['white']}
             progressBackgroundColor="#111827"
           />
-        }>
-        <View className="mt-5">
-          <ProductFull
-            product={productData.product as Product}
-            hideDescription
-            hideEditButton
-            onEditButtonPress={() => setOpenEditModal(true)}
-          />
-        </View>
-
-        {stockId && stockData && (
-          <View className="mb-5 p-5">
-            <TouchableOpacity
-              className="rounded-xl bg-gray-50 p-5"
-              onPress={() => setSelectedStock(stockData.stock as Stock)}>
-              <SelectedStock
-                stock={stockData.stock as Stock}
-                quantityValue={productData.product.quantityValue}
-                quantityType={productData.product.quantityType}
-              />
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <ProductDetails
-          paginatedStocks={stocksData?.getProductStocks as PaginatedStocks | undefined}
-          favBranchesPriceData={
-            (favBranchesPriceData?.getFavoriteBranchesWithPrices ?? []) as BranchListWithPrices[]
-          }
-          product={productData.product}
-          productNutrition={
-            productNutritionData?.getProductNutritionData as ProductNutrition | undefined
-          }
-          stock={stockData?.stock as Stock}
-        />
-
-        <View className="h-[100px]" />
-      </ScrollView>
+        }
+      />
     </>
   );
 }

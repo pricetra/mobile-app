@@ -210,7 +210,9 @@ export function BranchWithProductItem({
           </TouchableOpacity>
         )}
         style={{ padding: 15 }}
-        ListFooterComponent={() => <HorizontalShowMoreButton onPress={onPressShowMore} />}
+        ListFooterComponent={() => (
+          <HorizontalShowMoreButton onPress={onPressShowMore} heightDiv={1} />
+        )}
       />
     </View>
   );
