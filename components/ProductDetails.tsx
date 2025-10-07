@@ -211,16 +211,22 @@ export function ProductDetails({
                 </View>
 
                 {paginatedStocks && paginatedStocks.stocks.length > 0 ? (
-                  <FlatList
+                  <FlatGrid
                     horizontal
+                    itemContainerStyle={{
+                      justifyContent: 'flex-start',
+                    }}
+                    spacing={5}
+                    maxItemsPerRow={1}
+                    staticDimension={130}
                     showsHorizontalScrollIndicator={false}
                     data={paginatedStocks.stocks}
                     keyExtractor={({ id }, i) => `${id}-${i}`}
                     renderItem={({ item: s }) => (
                       <TouchableOpacity
                         onPress={() => setSelectedStock(s)}
-                        className="px-2"
-                        key={s.id}>
+                        key={s.id}
+                        className="mr-5">
                         <StockItemMini
                           stock={s as Stock}
                           quantityValue={product.quantityValue}
