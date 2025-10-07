@@ -68,11 +68,15 @@ export default function BranchesWithProductsFlatlist({
       ListHeaderComponent={
         <>
           {!search && !categoryFilterInput?.id && stores && (
-            <View className="mb-10 mt-5 flex flex-row flex-wrap items-center justify-center gap-2">
+            <View className="mb-10 mt-5 flex flex-row flex-wrap items-center justify-evenly gap-3 px-5">
               {stores.map((store) => (
-                <StoreMini key={`store-${store.id}`} store={store} />
+                <View style={{ width: 60 }} key={`store-${store.id}`}>
+                  <StoreMini store={store} />
+                </View>
               ))}
-              <StoreMiniShowMore />
+              <View style={{ width: 60, height: 60 }}>
+                <StoreMiniShowMore />
+              </View>
             </View>
           )}
 
