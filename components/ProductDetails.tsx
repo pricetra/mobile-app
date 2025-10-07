@@ -3,16 +3,9 @@ import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  Linking,
-  useWindowDimensions,
-  FlatList,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Linking, FlatList } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
+import { FlatGrid } from 'react-native-super-grid';
 
 import FullStockView from './FullStockView';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
@@ -52,6 +45,20 @@ export type ProductDetailsProps = {
   stock?: Stock;
 };
 
+function stockToApproxMap(data: BranchListWithPrices): StockWithApproximatePrice {
+  return {
+    id: data.stock?.id ?? 0,
+    productId: data.stock?.productId,
+    latestPriceId: data.stock?.latestPrice?.id ?? 0,
+    latestPrice: { ...data.stock?.latestPrice },
+    branchId: data.branchId,
+    branch: data.branch,
+    store: data.branch?.store,
+    storeId: data.branch?.storeId,
+    approximatePrice: data.approximatePrice,
+  } as StockWithApproximatePrice;
+}
+
 export function ProductDetails({
   favBranchesPriceData,
   paginatedStocks,
@@ -59,7 +66,6 @@ export function ProductDetails({
   productNutrition,
   stock,
 }: ProductDetailsProps) {
-  const { width } = useWindowDimensions();
   const { lists } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const [activeSections, setActiveSections] = useState<number[]>([]);
@@ -138,54 +144,41 @@ export function ProductDetails({
           {
             title: 'Favorite Stores',
             badge: availableFavoriteBranches.length.toString(),
+            noHorizontalPadding: true,
             content: (
               <View>
-                <View className="mt-5 flex flex-row flex-wrap gap-5">
-                  {favBranchesPriceData
-                    .map(
-                      (data) =>
-                        ({
-                          id: data.stock?.id ?? 0,
-                          productId: data.stock?.productId,
-                          latestPriceId: data.stock?.latestPrice?.id ?? 0,
-                          latestPrice: { ...data.stock?.latestPrice },
-                          branchId: data.branchId,
-                          branch: data.branch,
-                          store: data.branch?.store,
-                          storeId: data.branch?.storeId,
-                          approximatePrice: data.approximatePrice,
-                        }) as StockWithApproximatePrice
-                    )
-                    .map(({ approximatePrice, ...stock }, i) => (
-                      <TouchableOpacity
-                        onPress={() => {
-                          if (approximatePrice) {
-                            Alert.alert(
-                              'This is a stock approximation',
-                              'Stock approximations are calculated algorithmically and do not necessarily show the exact price at the location.'
-                            );
-                            return;
-                          }
-                          setSelectedStock(stock);
-                        }}
-                        disabled={stock.id === 0}
-                        className={cn(
-                          'mb-2',
-                          !approximatePrice && stock.id === 0 ? 'opacity-35' : 'opacity-100'
-                        )}
-                        style={{ width: width / 2.5 }}
-                        key={`${stock.id}-${i}`}>
-                        <StockItemMini
-                          stock={stock}
-                          approximatePrice={approximatePrice}
-                          quantityValue={product.quantityValue}
-                          quantityType={product.quantityType}
-                        />
-                      </TouchableOpacity>
-                    ))}
-                </View>
+                <FlatGrid
+                  data={favBranchesPriceData.map(stockToApproxMap)}
+                  itemContainerStyle={{
+                    justifyContent: 'flex-start',
+                  }}
+                  spacing={15}
+                  keyExtractor={(stock, i) => `fav-stock-${stock.branchId}-${stock.id}-${i}`}
+                  renderItem={({ item: { approximatePrice, ...stock } }) => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (approximatePrice) {
+                          Alert.alert(
+                            'This is a stock approximation',
+                            'Stock approximations are calculated algorithmically and do not necessarily show the exact price at the location.'
+                          );
+                          return;
+                        }
+                        setSelectedStock(stock);
+                      }}
+                      disabled={stock.id === 0}
+                      className={cn(approximatePrice && stock.id === 0 ? 'opacity-35' : '')}>
+                      <StockItemMini
+                        stock={stock}
+                        approximatePrice={approximatePrice}
+                        quantityValue={product.quantityValue}
+                        quantityType={product.quantityType}
+                      />
+                    </TouchableOpacity>
+                  )}
+                />
 
-                <View className="mb-5 mt-3 flex flex-row items-center justify-between gap-5">
+                <View className="mb-5 mt-2 flex flex-row px-5">
                   <Btn
                     text="Manage Favorites"
                     size="xs"

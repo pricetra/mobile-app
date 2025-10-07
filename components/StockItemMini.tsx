@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { View, Text, useWindowDimensions } from 'react-native';
+import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
 import { Stock } from '@/graphql/types/graphql';
@@ -25,7 +25,6 @@ export default function StockItemMini({
 }: StockItemMiniProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
-  const { width } = useWindowDimensions();
   const isExpired = useMemo(
     () => (stock.latestPrice ? isSaleExpired(stock.latestPrice) : false),
     [stock.latestPrice]
@@ -38,14 +37,14 @@ export default function StockItemMini({
   }, [stock?.latestPrice, isExpired]);
 
   return (
-    <View className="flex flex-col gap-2" style={{ width: width / 3 }}>
+    <View className="flex flex-col gap-2">
       <View className={cn('flex gap-2', stackLogo ? 'flex-col' : 'flex-row')}>
         <Image
           src={createCloudinaryUrl(stock.store.logo, 500, 500)}
           className="size-[30px] rounded-lg border-[1px] border-gray-100"
         />
 
-        <View className="flex flex-col gap-1">
+        <View className={cn('flex flex-col gap-1', stackLogo ? '' : 'flex-1')}>
           <View className="flex flex-row items-center">
             {stock.latestPrice?.sale && !isExpired && (
               <View className="mb-1 rounded-full bg-red-700 px-1.5 py-0.5">
