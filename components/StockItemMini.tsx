@@ -61,7 +61,7 @@ export default function StockItemMini({
             )}
           </View>
 
-          <Text className="font-xs" numberOfLines={2}>
+          <Text className="text-[13px]" numberOfLines={2}>
             {stock.store.name}
           </Text>
 

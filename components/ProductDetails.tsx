@@ -3,7 +3,7 @@ import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Linking } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import { FlatGrid } from 'react-native-super-grid';
 
@@ -167,7 +167,7 @@ export function ProductDetails({
                         setSelectedStock(stock);
                       }}
                       disabled={stock.id === 0}
-                      className={cn(approximatePrice && stock.id === 0 ? 'opacity-35' : '')}>
+                      style={{ opacity: !approximatePrice && stock.id === 0 ? 0.35 : 1 }}>
                       <StockItemMini
                         stock={stock}
                         approximatePrice={approximatePrice}
@@ -218,7 +218,7 @@ export function ProductDetails({
                     }}
                     spacing={5}
                     maxItemsPerRow={1}
-                    staticDimension={130}
+                    staticDimension={150}
                     showsHorizontalScrollIndicator={false}
                     data={paginatedStocks.stocks}
                     keyExtractor={({ id }, i) => `${id}-${i}`}
@@ -226,7 +226,7 @@ export function ProductDetails({
                       <TouchableOpacity
                         onPress={() => setSelectedStock(s)}
                         key={s.id}
-                        className="mr-5">
+                        className="mr-5 w-[100px]">
                         <StockItemMini
                           stock={s as Stock}
                           quantityValue={product.quantityValue}
