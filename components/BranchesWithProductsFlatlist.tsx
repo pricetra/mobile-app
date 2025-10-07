@@ -147,6 +147,8 @@ export default function BranchesWithProductsFlatlist({
   );
 }
 
+export const HORIZONTAL_PRODUCT_WIDTH = 130;
+
 export function BranchWithProductsItemLoading() {
   return (
     <View className="mb-5">
@@ -159,8 +161,8 @@ export function BranchWithProductsItemLoading() {
         data={Array(5).fill(0)}
         keyExtractor={(_, i) => `product-loading-${i}`}
         renderItem={() => (
-          <View className="mr-4">
-            <ProductLoadingItemHorizontal />
+          <View className="mr-4" style={{ width: HORIZONTAL_PRODUCT_WIDTH }}>
+            <ProductLoadingItemHorizontal imgWidth={HORIZONTAL_PRODUCT_WIDTH} />
           </View>
         )}
         style={{ padding: 15 }}
@@ -198,8 +200,9 @@ export function BranchWithProductItem({
               router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`, {
                 relativeToDirectory: false,
               });
-            }}>
-            <ProductItemHorizontal product={product} />
+            }}
+            style={{ width: HORIZONTAL_PRODUCT_WIDTH }}>
+            <ProductItemHorizontal product={product} imgWidth={HORIZONTAL_PRODUCT_WIDTH} />
           </TouchableOpacity>
         )}
         style={{ padding: 15 }}

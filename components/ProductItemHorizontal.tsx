@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Text, useWindowDimensions } from 'react-native';
+import { View, Text } from 'react-native';
 
 import { Skeleton } from './ui/Skeleton';
 
@@ -11,10 +11,13 @@ import { isSaleExpired } from '@/lib/utils';
 
 export type ProductItemHorizontalProps = {
   product: Product;
+  imgWidth?: number;
 };
 
-export default function ProductItemHorizontal({ product }: ProductItemHorizontalProps) {
-  const { width } = useWindowDimensions();
+export default function ProductItemHorizontal({
+  product,
+  imgWidth = 130,
+}: ProductItemHorizontalProps) {
   const isExpired = useMemo(
     () => (product.stock?.latestPrice ? isSaleExpired(product.stock.latestPrice) : false),
     [product.stock?.latestPrice]
@@ -27,8 +30,8 @@ export default function ProductItemHorizontal({ product }: ProductItemHorizontal
   }, [product.stock?.latestPrice, isExpired]);
 
   return (
-    <View className="flex max-w-full flex-col gap-2" style={{ width: width / 3 }}>
-      <View style={{ position: 'relative', width: width / 3, height: width / 3 }}>
+    <View className="flex flex-col gap-2">
+      <View style={{ position: 'relative' }}>
         {product.stock?.latestPrice?.sale && !isExpired && (
           <View className="absolute left-1 top-1 z-[1] w-[40px]">
             <Text className="inline-block rounded-md bg-red-700 px-1.5 py-1 text-center text-[9px] font-bold color-white">
@@ -39,10 +42,10 @@ export default function ProductItemHorizontal({ product }: ProductItemHorizontal
         <Image
           src={createCloudinaryUrl(product.code, 500)}
           className="rounded-xl"
-          style={{ width: width / 3, height: width / 3 }}
+          style={{ maxWidth: imgWidth, height: imgWidth }}
         />
       </View>
-      <View className="flex max-w-full flex-1 flex-col justify-between gap-2">
+      <View className="flex flex-col justify-between gap-2">
         <View className="flex flex-col gap-1">
           <View className="mb-1 flex flex-row items-center gap-1">
             {product.weightValue && product.weightType && (
@@ -98,12 +101,10 @@ export default function ProductItemHorizontal({ product }: ProductItemHorizontal
   );
 }
 
-export function ProductLoadingItemHorizontal() {
-  const { width } = useWindowDimensions();
-
+export function ProductLoadingItemHorizontal({ imgWidth = 130 }: { imgWidth?: number }) {
   return (
-    <View className="flex max-w-full flex-col gap-2" style={{ width: width / 3 }}>
-      <View style={{ width: width / 3, height: width / 3 }}>
+    <View className="flex max-w-full flex-col gap-2">
+      <View style={{ width: imgWidth, height: imgWidth }}>
         <Skeleton className="size-full rounded-xl" />
       </View>
       <View className="max-w-full flex-1 gap-2">
@@ -111,25 +112,6 @@ export function ProductLoadingItemHorizontal() {
         <Skeleton className="h-6 w-full" />
         <Skeleton className="mt-5 h-6 w-[100px]" />
       </View>
-    </View>
-  );
-}
-
-export type RenderProductLoadingItemsHorizontalProps = { count?: number; noPadding?: boolean };
-
-export function RenderProductLoadingItemsHorizontal({
-  count = 5,
-  noPadding = false,
-}: RenderProductLoadingItemsHorizontalProps) {
-  return (
-    <View style={{ padding: noPadding ? 0 : 20 }}>
-      {Array(count)
-        .fill(0)
-        .map((_, i) => (
-          <View className="mb-10" key={i}>
-            <ProductLoadingItemHorizontal />
-          </View>
-        ))}
     </View>
   );
 }

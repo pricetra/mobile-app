@@ -3,12 +3,14 @@ import { router } from 'expo-router';
 import { FlatList, TouchableOpacity, View } from 'react-native';
 
 import BranchProductItem from './BranchProductItem';
-import { BranchWithProductsItemLoading } from './BranchesWithProductsFlatlist';
+import {
+  BranchWithProductsItemLoading,
+  HORIZONTAL_PRODUCT_WIDTH,
+} from './BranchesWithProductsFlatlist';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal from './ProductItemHorizontal';
 
 import { AllProductsDocument, Branch, Product } from '@/graphql/types/graphql';
-import { cn } from '@/lib/utils';
 
 export type RelatedBranchProductsProps = {
   product: Product;
@@ -69,11 +71,12 @@ export default function RelatedBranchProducts({
               })
             }
             disabled={disableCurrentProduct && item.id === product.id}
-            className={cn(
-              'mr-4',
-              disableCurrentProduct && item.id === product.id ? 'opacity-50' : ''
-            )}>
-            <ProductItemHorizontal product={item as Product} />
+            style={{
+              width: HORIZONTAL_PRODUCT_WIDTH,
+              marginRight: 16,
+              opacity: disableCurrentProduct && item.id === product.id ? 0.5 : 1,
+            }}>
+            <ProductItemHorizontal product={item as Product} imgWidth={HORIZONTAL_PRODUCT_WIDTH} />
           </TouchableOpacity>
         )}
         contentContainerStyle={{ paddingHorizontal: 15 }}
