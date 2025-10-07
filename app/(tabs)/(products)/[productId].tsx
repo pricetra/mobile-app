@@ -341,6 +341,7 @@ export default function ProductScreen() {
 
       <ScrollView
         className="h-full w-full"
+        nestedScrollEnabled
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -364,15 +365,6 @@ export default function ProductScreen() {
             onEditButtonPress={() => setOpenEditModal(true)}
           />
         </View>
-
-        <ModalFormFull
-          visible={selectedStock !== undefined}
-          onRequestClose={() => setSelectedStock(undefined)}
-          title="Stock">
-          {selectedStock && (
-            <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
-          )}
-        </ModalFormFull>
 
         {stockId && stockData && (
           <View className="mb-5 p-5">
