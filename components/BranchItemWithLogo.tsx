@@ -15,7 +15,7 @@ export default function BranchItemWithLogo({ branch }: BranchItemWithLogoProps) 
       <View className="flex flex-1 flex-row gap-4">
         <Image
           src={createCloudinaryUrl(branch.store?.logo ?? '', 500, 500)}
-          className="size-[60px] rounded-lg"
+          className="size-[60px] rounded-xl"
         />
         <View
           style={{

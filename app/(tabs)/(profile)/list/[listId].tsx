@@ -1,17 +1,17 @@
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, View, Text } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 
 import { ListIconRenderer } from '../index';
 
 import BranchListView from '@/components/BranchListView';
 import ProductListView from '@/components/ProductListView';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
-import TextRNR from '@/components/ui/Text';
+import { useHeader } from '@/context/HeaderContext';
 import { useAuth } from '@/context/UserContext';
 import { List, ListType } from '@/graphql/types/graphql';
+import { cn } from '@/lib/utils';
 
 export enum ListScreenTabType {
   Products = 'products',
@@ -20,6 +20,7 @@ export enum ListScreenTabType {
 
 export default function ListScreen() {
   const navigation = useNavigation();
+  const { setSubHeader } = useHeader();
   const { lists } = useAuth();
   const { listId, tab } = useLocalSearchParams<{
     listId: string;
@@ -60,40 +61,41 @@ export default function ListScreen() {
         ),
       });
 
+      setSubHeader(
+        <View className="flex flex-row items-center justify-center px-5 py-3">
+          <TouchableOpacity
+            onPress={() => setViewState(ListScreenTabType.Products)}
+            className={cn(
+              'rounded-lg px-7 py-2',
+              viewState === ListScreenTabType.Products ? 'bg-gray-100' : 'bg-white'
+            )}>
+            <Text>Products</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setViewState(ListScreenTabType.Branches)}
+            className={cn(
+              'rounded-lg px-7 py-2',
+              viewState === ListScreenTabType.Branches ? 'bg-gray-100' : 'bg-white'
+            )}>
+            <Text>Branches</Text>
+          </TouchableOpacity>
+        </View>
+      );
+
       return () => {
+        setSubHeader(undefined);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [listId])
+    }, [listId, viewState])
   );
 
   return (
-    <SafeAreaView style={{ height: '100%' }}>
-      <View>
-        <Tabs
-          value={viewState}
-          onValueChange={(s) => setViewState(s as ListScreenTabType)}
-          className="mx-auto w-full max-w-[400px] flex-col gap-1.5">
-          <View className="p-2 shadow-sm shadow-black/10">
-            <TabsList className="w-full flex-row">
-              <TabsTrigger value={ListScreenTabType.Products} className="flex-1">
-                <TextRNR>Products</TextRNR>
-              </TabsTrigger>
-              <TabsTrigger value={ListScreenTabType.Branches} className="flex-1">
-                <TextRNR>Branches</TextRNR>
-              </TabsTrigger>
-            </TabsList>
-          </View>
-
-          <TabsContent value={ListScreenTabType.Products}>
-            <ProductListView listId={listId} />
-          </TabsContent>
-          <TabsContent value={ListScreenTabType.Branches}>
-            <BranchListView listId={listId} />
-          </TabsContent>
-        </Tabs>
-      </View>
-    </SafeAreaView>
+    <ScrollView>
+      {viewState === ListScreenTabType.Products && <ProductListView listId={listId} />}
+      {viewState === ListScreenTabType.Branches && <BranchListView listId={listId} />}
+    </ScrollView>
   );
 }
