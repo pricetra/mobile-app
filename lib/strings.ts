@@ -52,6 +52,6 @@ export function getPriceUnit(price: Price): string {
 }
 
 export function getPriceUnitOrEach(price: Price): string {
-  const unit = price.unitType === 'item' ? 'pk' : price.unitType;
+  const unit = price.unitType === 'item' ? 'ea' : price.unitType;
   return `/ ${unit.substring(0, 2)}`;
 }
