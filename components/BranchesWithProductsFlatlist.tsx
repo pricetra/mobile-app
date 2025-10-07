@@ -11,6 +11,7 @@ import {
   ViewStyle,
   Text,
 } from 'react-native';
+import { FlatGrid } from 'react-native-super-grid';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
@@ -68,16 +69,15 @@ export default function BranchesWithProductsFlatlist({
       ListHeaderComponent={
         <>
           {!search && !categoryFilterInput?.id && stores && (
-            <View className="mb-10 mt-5 flex flex-row flex-wrap items-center justify-evenly gap-3 px-5">
-              {stores.map((store) => (
-                <View style={{ width: 60 }} key={`store-${store.id}`}>
-                  <StoreMini store={store} />
-                </View>
-              ))}
-              <View style={{ width: 60, height: 60 }}>
-                <StoreMiniShowMore />
-              </View>
-            </View>
+            <FlatGrid
+              data={[...stores, { id: 0 } as Store]}
+              itemDimension={50}
+              spacing={15}
+              keyExtractor={({ id }) => `store-${id}`}
+              renderItem={({ item }) =>
+                item.id !== 0 ? <StoreMini store={item} /> : <StoreMiniShowMore />
+              }
+            />
           )}
 
           {showLocationButton && (
