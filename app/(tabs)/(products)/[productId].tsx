@@ -16,6 +16,7 @@ import {
   FlatList,
 } from 'react-native';
 
+import FullStockView from '@/components/FullStockView';
 import { ProductDetails } from '@/components/ProductDetails';
 import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import SelectedStock from '@/components/SelectedStock';
@@ -336,6 +337,15 @@ export default function ProductScreen() {
           }}
           onError={(e) => alert(e.message)}
         />
+      </ModalFormFull>
+
+      <ModalFormFull
+        visible={selectedStock !== undefined}
+        onRequestClose={() => setSelectedStock(undefined)}
+        title="Stock">
+        {selectedStock && (
+          <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
+        )}
       </ModalFormFull>
 
       <FlatList
