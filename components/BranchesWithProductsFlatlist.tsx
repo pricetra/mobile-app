@@ -11,6 +11,7 @@ import {
   ViewStyle,
   Text,
 } from 'react-native';
+import { FlatGrid } from 'react-native-super-grid';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
@@ -68,12 +69,15 @@ export default function BranchesWithProductsFlatlist({
       ListHeaderComponent={
         <>
           {!search && !categoryFilterInput?.id && stores && (
-            <View className="mb-10 mt-5 flex flex-row flex-wrap items-center justify-center gap-2">
-              {stores.map((store) => (
-                <StoreMini key={`store-${store.id}`} store={store} />
-              ))}
-              <StoreMiniShowMore />
-            </View>
+            <FlatGrid
+              data={[...stores, { id: 0 } as Store]}
+              itemDimension={50}
+              spacing={15}
+              keyExtractor={({ id }) => `store-${id}`}
+              renderItem={({ item }) =>
+                item.id !== 0 ? <StoreMini store={item} /> : <StoreMiniShowMore />
+              }
+            />
           )}
 
           {showLocationButton && (
@@ -147,6 +151,8 @@ export default function BranchesWithProductsFlatlist({
   );
 }
 
+export const HORIZONTAL_PRODUCT_WIDTH = 130;
+
 export function BranchWithProductsItemLoading() {
   return (
     <View className="mb-5">
@@ -159,8 +165,8 @@ export function BranchWithProductsItemLoading() {
         data={Array(5).fill(0)}
         keyExtractor={(_, i) => `product-loading-${i}`}
         renderItem={() => (
-          <View className="mr-4">
-            <ProductLoadingItemHorizontal />
+          <View className="mr-4" style={{ width: HORIZONTAL_PRODUCT_WIDTH }}>
+            <ProductLoadingItemHorizontal imgWidth={HORIZONTAL_PRODUCT_WIDTH} />
           </View>
         )}
         style={{ padding: 15 }}
@@ -198,12 +204,15 @@ export function BranchWithProductItem({
               router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`, {
                 relativeToDirectory: false,
               });
-            }}>
-            <ProductItemHorizontal product={product} />
+            }}
+            style={{ width: HORIZONTAL_PRODUCT_WIDTH }}>
+            <ProductItemHorizontal product={product} imgWidth={HORIZONTAL_PRODUCT_WIDTH} />
           </TouchableOpacity>
         )}
         style={{ padding: 15 }}
-        ListFooterComponent={() => <HorizontalShowMoreButton onPress={onPressShowMore} />}
+        ListFooterComponent={() => (
+          <HorizontalShowMoreButton onPress={onPressShowMore} heightDiv={1} />
+        )}
       />
     </View>
   );

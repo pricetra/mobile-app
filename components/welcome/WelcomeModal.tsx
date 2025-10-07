@@ -177,15 +177,21 @@ export default function WelcomeModal() {
                               input: { address: addressInput?.trim() },
                             },
                           }).then(({ data, errors }) => {
-                            if (!data || errors) return;
+                            if (!data || errors || !data.updateProfile.address)
+                              return Alert.alert(
+                                'Could not save address',
+                                errors
+                                  ? errors.map((e) => e.message).join('\n')
+                                  : 'There was an error trying to update user address. Please try again or contact support'
+                              );
 
-                            const address = (data.updateProfile.address ?? user.address) as Address;
+                            const address = data.updateProfile.address as Address;
                             setNewAddress(address);
                             getBranches({
                               variables: {
                                 lat: address.latitude,
                                 lon: address.longitude,
-                                radiusMeters: Math.round(convert(5).from('mi').to('m')),
+                                radiusMeters: Math.round(convert(10).from('mi').to('m')),
                               },
                             });
                             setPage(WelcomePageType.BRANCHES);
@@ -217,6 +223,18 @@ export default function WelcomeModal() {
 
                   <View className="rounded-lg bg-gray-50 p-5">
                     {branchesLoading && <ActivityIndicator size="large" color="black" />}
+                    {branchesData?.findBranchesByDistance?.length === 0 && (
+                      <View>
+                        <Text className="mb-3 text-lg font-semibold">
+                          There aren't any stores located near you
+                        </Text>
+
+                        <Text>
+                          We are constantly adding new stores and will alert you when new locations
+                          are added.
+                        </Text>
+                      </View>
+                    )}
                     {branchesData &&
                       branchesData.findBranchesByDistance.map((branch) => (
                         <TouchableOpacity
