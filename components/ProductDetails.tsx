@@ -239,7 +239,7 @@ export function ProductDetails({
                     contentContainerStyle={{ paddingHorizontal: 15 }}
                     ListFooterComponent={() =>
                       paginatedStocks.paginator.next ? (
-                        <HorizontalShowMoreButton onPress={() => {}} heightDiv={3} />
+                        <HorizontalShowMoreButton onPress={() => {}} heightDiv={1} />
                       ) : undefined
                     }
                   />
