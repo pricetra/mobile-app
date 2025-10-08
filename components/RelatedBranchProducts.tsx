@@ -37,7 +37,7 @@ export default function RelatedBranchProducts({
     fetchPolicy: 'no-cache',
     variables: {
       paginator: {
-        limit: favoriteBranchIds.length,
+        limit: favoriteBranchIds.length + (stock ? 1 : 0),
         page: 1,
       },
       productLimit: 10,
