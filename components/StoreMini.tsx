@@ -1,6 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { TouchableOpacity, Image, Text } from 'react-native';
+import { TouchableOpacity, Image, Text, View } from 'react-native';
+
+import { Skeleton } from './ui/Skeleton';
 
 import { Store } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
@@ -33,5 +35,14 @@ export function StoreMiniShowMore() {
         See All
       </Text>
     </TouchableOpacity>
+  );
+}
+
+export function StoreMiniLoading() {
+  return (
+    <View className="flex flex-col items-center gap-2">
+      <Skeleton className="size-[40px] rounded-lg" />
+      <Skeleton className="h-3 w-[40px] rounded-md" />
+    </View>
   );
 }

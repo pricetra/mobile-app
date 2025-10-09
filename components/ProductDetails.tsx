@@ -219,7 +219,7 @@ export function ProductDetails({
                     }}
                     spacing={5}
                     maxItemsPerRow={1}
-                    staticDimension={150}
+                    maxDimension={205}
                     showsHorizontalScrollIndicator={false}
                     data={paginatedStocks.stocks}
                     keyExtractor={({ id }, i) => `${id}-${i}`}
@@ -239,7 +239,7 @@ export function ProductDetails({
                     contentContainerStyle={{ paddingHorizontal: 15 }}
                     ListFooterComponent={() =>
                       paginatedStocks.paginator.next ? (
-                        <HorizontalShowMoreButton onPress={() => {}} heightDiv={3} />
+                        <HorizontalShowMoreButton onPress={() => {}} heightDiv={1} />
                       ) : undefined
                     }
                   />

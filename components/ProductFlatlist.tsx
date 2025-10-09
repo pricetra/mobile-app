@@ -2,7 +2,6 @@ import { QueryResult } from '@apollo/client';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  FlatList,
   Platform,
   RefreshControl,
   StyleProp,
@@ -10,8 +9,9 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import { FlatGrid } from 'react-native-super-grid';
 
-import ProductItem from './ProductItem';
+import ProductItem, { ProductItemLoading } from './ProductItem';
 import PaginationSimple from './ui/PaginationSimple';
 
 import {
@@ -20,6 +20,8 @@ import {
   Product,
   QueryAllProductsArgs,
 } from '@/graphql/types/graphql';
+
+const itemDimension = 300;
 
 export type ProductFlatlistProps = {
   products: Product[];
@@ -41,22 +43,23 @@ export default function ProductFlatlist({
   const [refreshing, setRefreshing] = useState(false);
 
   return (
-    <FlatList
+    <FlatGrid
       data={products}
       keyExtractor={({ id }, i) => `${id}-${i}`}
       indicatorStyle="black"
+      spacing={20}
+      itemDimension={itemDimension}
       renderItem={({ item }) => (
-        <View className="p-5">
-          <TouchableOpacity
-            onPress={() => {
-              if (onItemPress) onItemPress(item);
-              router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`, {
-                relativeToDirectory: false,
-              });
-            }}>
-            <ProductItem product={item} hideStoreInfo />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            if (onItemPress) onItemPress(item);
+            router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`, {
+              relativeToDirectory: false,
+            });
+          }}
+          className="mb-5">
+          <ProductItem product={item} hideStoreInfo />
+        </TouchableOpacity>
       )}
       refreshControl={
         <RefreshControl
@@ -77,6 +80,22 @@ export default function ProductFlatlist({
         </View>
       )}
       style={style}
+    />
+  );
+}
+
+export type ProductFlatlistLoadingProps = { count?: number; noPadding?: boolean };
+
+export function ProductFlatlistLoading({ count }: ProductFlatlistLoadingProps) {
+  return (
+    <FlatGrid
+      keyExtractor={(n, i) => `product-item-loading-${n}-${i}`}
+      spacing={20}
+      itemDimension={itemDimension}
+      data={Array(count)
+        .fill(0)
+        .map((n, i) => n + i)}
+      renderItem={() => <ProductItemLoading />}
     />
   );
 }

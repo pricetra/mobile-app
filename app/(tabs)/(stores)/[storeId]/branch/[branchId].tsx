@@ -5,8 +5,7 @@ import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'exp
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 
-import ProductFlatlist from '@/components/ProductFlatlist';
-import { RenderProductLoadingItems } from '@/components/ProductItem';
+import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
 import Image from '@/components/ui/Image';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import TabHeaderItemSearchBar from '@/components/ui/TabHeaderItemSearchBar';
@@ -218,7 +217,7 @@ export default function SelectedBranchScreen() {
   );
 
   if (productsLoading) {
-    return <RenderProductLoadingItems count={10} />;
+    return <ProductFlatlistLoading count={LIMIT} />;
   }
 
   if (productsData && productsData.allProducts.products.length === 0) {
@@ -253,6 +252,7 @@ export default function SelectedBranchScreen() {
             page: String(p),
           });
         }}
+        style={{ paddingVertical: 10 }}
       />
     </KeyboardAvoidingView>
   );
