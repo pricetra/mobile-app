@@ -33,6 +33,8 @@ export default function RelatedBranchProducts({
         .filter((id) => id !== stock?.branchId),
     [lists.favorites.branchList, stock]
   );
+  const category = product.category?.name;
+  const sortByPrice = 'asc';
   const { data, loading } = useQuery(BranchesWithProductsDocument, {
     fetchPolicy: 'no-cache',
     variables: {
@@ -42,9 +44,9 @@ export default function RelatedBranchProducts({
       },
       productLimit: 10,
       filters: {
-        category: product.category?.name,
+        category,
+        sortByPrice,
         branchIds: stock ? [stock.branchId, ...favoriteBranchIds] : favoriteBranchIds,
-        sortByPrice: 'asc',
       },
     },
   });
@@ -100,9 +102,12 @@ export default function RelatedBranchProducts({
                 (branch.products?.length ?? 0) > 0 ? (
                   <HorizontalShowMoreButton
                     onPress={() =>
-                      router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`, {
-                        relativeToDirectory: false,
-                      })
+                      router.push(
+                        `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?category=${category}&sortByPrice=${sortByPrice}`,
+                        {
+                          relativeToDirectory: false,
+                        }
+                      )
                     }
                     heightDiv={1}
                     width={HORIZONTAL_PRODUCT_WIDTH}

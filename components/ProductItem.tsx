@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Text, useWindowDimensions } from 'react-native';
+import { View, Text } from 'react-native';
 
 import ProductStockMini from './ProductStockMini';
 import { Skeleton } from './ui/Skeleton';
@@ -13,10 +13,14 @@ import { cn, isSaleExpired } from '@/lib/utils';
 export type ProductItemProps = {
   hideStoreInfo?: boolean;
   product: Product;
+  imgWidth?: number;
 };
 
-export default function ProductItem({ product, hideStoreInfo = false }: ProductItemProps) {
-  const { width } = useWindowDimensions();
+export default function ProductItem({
+  product,
+  hideStoreInfo = false,
+  imgWidth = 130,
+}: ProductItemProps) {
   const isExpired = useMemo(
     () => (product.stock?.latestPrice ? isSaleExpired(product.stock.latestPrice) : false),
     [product.stock?.latestPrice]
@@ -30,7 +34,7 @@ export default function ProductItem({ product, hideStoreInfo = false }: ProductI
 
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <View style={{ width: width / 3, height: width / 3, position: 'relative' }}>
+      <View style={{ width: imgWidth, height: imgWidth, position: 'relative' }}>
         {product.stock?.latestPrice?.sale && !isExpired && (
           <View className="absolute left-1 top-1 z-[1] w-[40px]">
             <Text className="inline-block rounded-md bg-red-700 px-1.5 py-1 text-center text-[9px] font-bold color-white">
@@ -41,7 +45,7 @@ export default function ProductItem({ product, hideStoreInfo = false }: ProductI
         <Image
           src={createCloudinaryUrl(product.code, 500)}
           className="rounded-xl"
-          style={{ width: width / 3, height: width / 3 }}
+          style={{ width: imgWidth, height: imgWidth }}
         />
       </View>
       <View className="flex max-w-full flex-1 flex-col gap-3 px-2">
@@ -111,12 +115,10 @@ export default function ProductItem({ product, hideStoreInfo = false }: ProductI
   );
 }
 
-export function ProductLoadingItem() {
-  const { width } = useWindowDimensions();
-
+export function ProductItemLoading({ imgWidth = 130 }: Pick<ProductItemProps, 'imgWidth'>) {
   return (
     <View className="flex max-w-full flex-row gap-2">
-      <View style={{ width: width / 3, height: width / 3 }}>
+      <View style={{ width: imgWidth, height: imgWidth }}>
         <Skeleton className="size-full rounded-xl" />
       </View>
       <View className="max-w-full flex-1 gap-2 p-2">
@@ -124,25 +126,6 @@ export function ProductLoadingItem() {
         <Skeleton className="h-6 w-full" />
         <Skeleton className="h-6 w-[100px]" />
       </View>
-    </View>
-  );
-}
-
-export type RenderProductLoadingItemsProps = { count?: number; noPadding?: boolean };
-
-export function RenderProductLoadingItems({
-  count = 5,
-  noPadding = false,
-}: RenderProductLoadingItemsProps) {
-  return (
-    <View style={{ padding: noPadding ? 0 : 20 }}>
-      {Array(count)
-        .fill(0)
-        .map((_, i) => (
-          <View className="mb-10" key={i}>
-            <ProductLoadingItem />
-          </View>
-        ))}
     </View>
   );
 }
