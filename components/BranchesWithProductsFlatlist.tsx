@@ -16,7 +16,7 @@ import { FlatGrid } from 'react-native-super-grid';
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
-import StoreMini, { StoreMiniShowMore } from './StoreMini';
+import StoreMini, { StoreMiniLoading, StoreMiniShowMore } from './StoreMini';
 import LocationChangeButton from './ui/LocationChangeButton';
 import { Skeleton } from './ui/Skeleton';
 import { PartialCategory } from './ui/TabSubHeaderProductFilter';
@@ -222,10 +222,12 @@ export function BranchesWithProductsFlatlistLoading({
   style,
   showLocationButton = true,
   itemCount = 5,
+  showBranches = false,
 }: {
   style?: StyleProp<ViewStyle>;
   showLocationButton?: boolean;
   itemCount?: number;
+  showBranches?: boolean;
 }) {
   return (
     <FlatList
@@ -233,11 +235,25 @@ export function BranchesWithProductsFlatlistLoading({
       keyExtractor={(_, i) => `branch-loading-${i}`}
       indicatorStyle="black"
       ListHeaderComponent={
-        showLocationButton ? (
-          <View className="mb-8 mt-5 flex flex-row px-5">
-            <Skeleton className="h-10 w-52 rounded-full bg-gray-200" />
-          </View>
-        ) : undefined
+        <>
+          {showBranches && (
+            <FlatGrid
+              data={Array(10)
+                .fill(0)
+                .map((_, i) => i)}
+              itemDimension={50}
+              spacing={15}
+              keyExtractor={(i) => `store-loading-${i}`}
+              renderItem={() => <StoreMiniLoading />}
+            />
+          )}
+
+          {showLocationButton ? (
+            <View className="mb-8 mt-5 flex flex-row px-5">
+              <Skeleton className="h-10 w-52 rounded-full bg-gray-200" />
+            </View>
+          ) : undefined}
+        </>
       }
       renderItem={() => <BranchWithProductsItemLoading />}
       style={style}
