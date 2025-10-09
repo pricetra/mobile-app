@@ -138,7 +138,8 @@ export default function BranchesWithProductsFlatlist({
           setPage(paginator.next);
         }
       }}
-      onEndReachedThreshold={0.8}
+      onEndReachedThreshold={0.5}
+      nestedScrollEnabled
       ListEmptyComponent={
         !loading ? (
           <View className="px-5 py-10">
