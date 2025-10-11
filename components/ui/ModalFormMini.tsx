@@ -23,6 +23,7 @@ export default function ModalFormMini({
   TitleComponent,
   className,
   icon,
+  noPadding = false,
 }: ModalFormMiniProps) {
   return (
     <Modal animationType="fade" visible={visible} onRequestClose={onRequestClose} transparent>
@@ -62,7 +63,7 @@ export default function ModalFormMini({
               ListFooterComponent={<View className="h-5" />}
               keyboardShouldPersistTaps="handled"
               contentInsetAdjustmentBehavior="automatic"
-              className={cn('px-5', className)}
+              className={cn(noPadding ? '' : 'px-5', className)}
               nestedScrollEnabled
             />
           </View>

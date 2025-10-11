@@ -9,4 +9,5 @@ export type ModalProps = {
   icon?: ReactNode;
   TitleComponent?: ReactNode;
   className?: string;
+  noPadding?: boolean;
 };

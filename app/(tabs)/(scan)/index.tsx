@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { debounce } from 'lodash';
@@ -11,6 +11,7 @@ import ProductForm, {
   selectImageForProductExtraction,
 } from '@/components/product-form/ProductForm';
 import ScannerOverlay from '@/components/scanner/ScannerOverlay';
+import Btn from '@/components/ui/Btn';
 import Button from '@/components/ui/Button';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
@@ -154,15 +155,14 @@ export default function ScanScreen() {
     <View style={{ flex: 1 }}>
       <ModalFormMini
         visible={openManualBarcodeModal}
-        onRequestClose={() => setOpenManualBarcodeModal(false)}
-        title="Search Barcode">
-        <ManualBarcodeForm
-          onSubmit={(barcode) => {
-            setScannedCode(barcode);
-            _handleBarcodeScan(barcode, true);
-            setOpenManualBarcodeModal(false);
-          }}
-        />
+        noPadding
+        onRequestClose={() => {
+          setOpenManualBarcodeModal(false);
+          setRenderCameraComponent(true);
+        }}
+        icon={<Ionicons name="search" size={24} color="black" />}
+        title="Search Products">
+        <ManualBarcodeForm onDismiss={() => setOpenManualBarcodeModal(false)} />
       </ModalFormMini>
 
       {scannedCode && openCreateProductModal && (
@@ -226,9 +226,22 @@ export default function ScanScreen() {
         </View>
 
         <View className="my-5">
-          <Text className="text-lg color-white">
-            Point your camera at the product barcode to search
-          </Text>
+          <Text className="color-white">Point your camera at the product barcode to search</Text>
+
+          <View className="mt-5 flex flex-row">
+            <Btn
+              text="Use Keyboard"
+              color="text-white"
+              bgColor="bg-[#111]"
+              onPress={() => {
+                setTimeout(() => setRenderCameraComponent(false), 1000);
+                setOpenManualBarcodeModal(true);
+              }}
+              icon={<MaterialIcons name="keyboard" size={24} color="white" />}
+            />
+
+            <View className="flex-1" />
+          </View>
         </View>
       </View>
     </View>
