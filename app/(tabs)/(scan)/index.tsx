@@ -1,6 +1,6 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { MaterialIcons } from '@expo/vector-icons';
-import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { debounce } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
@@ -30,7 +30,6 @@ export default function ScanScreen() {
 
   const [renderCameraComponent, setRenderCameraComponent] = useState(false);
   const [, setCamera] = useState<CameraView | null>(null);
-  const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
   const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
@@ -66,10 +65,6 @@ export default function ScanScreen() {
         <Button onPress={requestPermission}>Grant permission</Button>
       </View>
     );
-  }
-
-  function toggleCameraFacing() {
-    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
   function toProductPage(productId: number) {
@@ -202,7 +197,7 @@ export default function ScanScreen() {
           style={{
             flex: 1,
           }}
-          facing={facing}
+          facing="back"
           autofocus="off"
           ref={(ref) => setCamera(ref)}
           barcodeScannerSettings={{
