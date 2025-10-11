@@ -24,6 +24,7 @@ import {
   GetProductStocksDocument,
   Price,
   Product,
+  StockDocument,
   UserRole,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
@@ -50,6 +51,7 @@ export default function AddProductPriceForm({
   );
   const [createPrice, { loading }] = useMutation(CreatePriceDocument, {
     refetchQueries: [
+      StockDocument,
       GetProductStocksDocument,
       FavoriteBranchesWithPricesDocument,
       BranchesWithProductsDocument,
