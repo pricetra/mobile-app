@@ -1307,3 +1307,33 @@ export const MY_SEARCH_HISTORY_QUERY = gql(`
     }
   }
 `);
+
+export const PRODUCT_SEARCH_QUERY = gql(`
+  query ProductSearch($paginator: PaginatorInput!, $search: String!) {
+    productSearch(search: $search, paginator: $paginator) {
+      products {
+        id
+        code
+        brand
+        name
+        category {
+          id
+          name
+          expandedPathname
+        }
+        quantityValue
+        quantityType
+        weightValue
+        weightType
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
+      }
+    }
+  }
+`);
