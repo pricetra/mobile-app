@@ -74,6 +74,7 @@ export default function ManualBarcodeForm({ onDismiss }: ManualBarcodeFormProps)
                   <TouchableOpacity
                     disabled={!searchResults.productSearch.paginator.prev}
                     onPress={() => fetchProducts(searchResults.productSearch.paginator.prev ?? 1)}
+                    className="px-2 pt-2"
                     style={{ opacity: !searchResults.productSearch.paginator.prev ? 0.3 : 1 }}>
                     <MaterialIcons name="navigate-before" size={24} color="black" />
                   </TouchableOpacity>
@@ -81,6 +82,7 @@ export default function ManualBarcodeForm({ onDismiss }: ManualBarcodeFormProps)
                   <TouchableOpacity
                     disabled={!searchResults.productSearch.paginator.next}
                     onPress={() => fetchProducts(searchResults.productSearch.paginator.next ?? 1)}
+                    className="px-2 pt-2"
                     style={{ opacity: !searchResults.productSearch.paginator.next ? 0.3 : 1 }}>
                     <MaterialIcons name="navigate-next" size={24} color="black" />
                   </TouchableOpacity>

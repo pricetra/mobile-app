@@ -214,7 +214,7 @@ export default function ScanScreen() {
         />
       )}
 
-      <ScannerOverlay />
+      {renderCameraComponent && <ScannerOverlay />}
 
       <View className="absolute bottom-0 z-10 w-full rounded-t-3xl bg-black px-5 py-7">
         <View className="flex flex-row items-center justify-between">

@@ -90,7 +90,10 @@ export default function ScannerOverlay() {
                 translateY: Animated.add(
                   animation.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [(height - cutoutHeight) / 2, (height + cutoutHeight) / 2 - 4],
+                    outputRange: [
+                      (height - cutoutHeight) / 2 + 8,
+                      (height + cutoutHeight) / 2 - 10,
+                    ],
                   }),
                   0
                 ),
