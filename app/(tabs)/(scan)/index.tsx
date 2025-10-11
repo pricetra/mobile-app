@@ -138,6 +138,18 @@ export default function ScanScreen() {
     });
   }
 
+  if (extractingProduct) {
+    return (
+      <View className="flex h-full w-full flex-col items-center justify-center gap-10 p-10">
+        <ActivityIndicator color="black" size="large" />
+        <Text className="text-center">Extracting product data.</Text>
+        <Text className="text-center">
+          This might take a few minutes depending on your network speed
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <ModalFormMini
@@ -152,16 +164,6 @@ export default function ScanScreen() {
           }}
         />
       </ModalFormMini>
-
-      {extractingProduct && (
-        <View className="flex h-full w-full flex-col items-center justify-center gap-10 p-10">
-          <ActivityIndicator color="black" size="large" />
-          <Text className="text-center">Extracting product data.</Text>
-          <Text className="text-center">
-            This might take a few minutes depending on your network speed
-          </Text>
-        </View>
-      )}
 
       {scannedCode && openCreateProductModal && (
         <ModalFormFull
