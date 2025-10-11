@@ -1,16 +1,16 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { MaterialIcons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { debounce } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, AlertButton, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, AlertButton, Text, TouchableOpacity, View } from 'react-native';
 
 import ManualBarcodeForm from '@/components/ManualBarcodeForm';
 import ProductForm, {
   selectImageForProductExtraction,
 } from '@/components/product-form/ProductForm';
-import ScannerButton from '@/components/scanner/ScannerButton';
+import ScannerOverlay from '@/components/scanner/ScannerOverlay';
 import Button from '@/components/ui/Button';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
@@ -35,7 +35,7 @@ export default function ScanScreen() {
   const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
 
-  const [barcodeScan, { loading: barcodeScanLoading }] = useLazyQuery(BarcodeScanDocument);
+  const [barcodeScan] = useLazyQuery(BarcodeScanDocument);
   const [extractProductFields, { loading: extractingProduct }] = useMutation(
     ExtractAndCreateProductDocument
   );
@@ -72,6 +72,8 @@ export default function ScanScreen() {
   }
 
   function _handleBarcodeScan(barcode: string, searchMode?: boolean) {
+    setScannedCode(barcode);
+
     barcodeScan({
       variables: { barcode, searchMode },
     }).then(({ error, data }) => {
@@ -205,36 +207,28 @@ export default function ScanScreen() {
           }}
           onMountError={(e) => Alert.alert('Camera mount error', e.message)}
           onBarcodeScanned={(res) => {
-            if (res.data === scannedCode) return;
-            setScannedCode(res.data);
             debouncedHandleBarcodeScan(res.data);
-          }}>
-          <View className="bottom-safe-or-5 absolute w-full gap-5 p-3">
-            <View className="flex flex-row items-center justify-between">
-              <ScannerButton onPress={() => router.back()}>
-                <MaterialIcons name="arrow-back" size={25} color="white" />
-              </ScannerButton>
-
-              <ScannerButton
-                onPress={() => {
-                  if (!scannedCode) return;
-                  _handleBarcodeScan(scannedCode);
-                }}
-                onLongPress={() => setOpenManualBarcodeModal(true)}>
-                {barcodeScanLoading ? (
-                  <ActivityIndicator color="white" size="large" />
-                ) : (
-                  <MaterialIcons name="search" size={40} color="white" />
-                )}
-              </ScannerButton>
-
-              <ScannerButton onPress={toggleCameraFacing}>
-                <MaterialIcons name="flip-camera-android" size={25} color="white" />
-              </ScannerButton>
-            </View>
-          </View>
-        </CameraView>
+          }}
+        />
       )}
+
+      <ScannerOverlay />
+
+      <View className="absolute bottom-0 z-10 w-full rounded-t-3xl bg-black px-5 py-7">
+        <View className="flex flex-row items-center justify-between">
+          <Text className="text-2xl font-bold color-white">Scan Barcode</Text>
+
+          <TouchableOpacity onPress={() => router.back()} className="p-3">
+            <AntDesign name="close" size={25} color="white" />
+          </TouchableOpacity>
+        </View>
+
+        <View className="my-5">
+          <Text className="text-lg color-white">
+            Point your camera at the product barcode to search
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
