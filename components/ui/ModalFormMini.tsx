@@ -22,6 +22,7 @@ export default function ModalFormMini({
   title,
   TitleComponent,
   className,
+  icon,
 }: ModalFormMiniProps) {
   return (
     <Modal animationType="fade" visible={visible} onRequestClose={onRequestClose} transparent>
@@ -40,9 +41,11 @@ export default function ModalFormMini({
               {TitleComponent ? (
                 <View className="px-5 py-3">{TitleComponent}</View>
               ) : (
-                <Text className="flex flex-1 flex-row items-center gap-2 px-5 py-5 text-2xl font-bold">
-                  {title}
-                </Text>
+                <View className="flex flex-1 flex-row items-center gap-4 px-5 py-5">
+                  {icon && icon}
+
+                  <Text className="text-2xl font-bold">{title}</Text>
+                </View>
               )}
 
               <TouchableOpacity

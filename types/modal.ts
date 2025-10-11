@@ -6,6 +6,7 @@ export type ModalProps = {
   onRequestClose: (event: NativeSyntheticEvent<any>) => void;
   children: ReactNode;
   title: string;
+  icon?: ReactNode;
   TitleComponent?: ReactNode;
   className?: string;
 };
