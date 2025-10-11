@@ -107,7 +107,7 @@ export default function ProductForm({
   }, [brandsData]);
 
   async function selectImage() {
-    const picture = await selectImageForProductExtraction();
+    const picture = await selectImageForProductExtraction(true, 0);
     if (!picture) return alert('could not process image');
 
     setImageUpdated(true);
@@ -331,12 +331,15 @@ export default function ProductForm({
 
               <TouchableOpacity
                 onPress={() => {
-                  const query =
-                    formik.values.brand !== ''
-                      ? `${formik.values.brand} ${formik.values.name}`
-                      : formik.values.name;
+                  const brand = formik.values.brand.toLocaleLowerCase();
+                  const productName = formik.values.name;
+                  const query: string[] = [];
+                  if (brand !== 'n/a' && !productName.toLowerCase().includes(brand)) {
+                    query.push(formik.values.brand);
+                  }
+                  query.push(formik.values.name);
                   Linking.openURL(
-                    `https://www.google.com/search?udm=2&q=${encodeURIComponent(query)}`
+                    `https://www.google.com/search?udm=2&q=${encodeURIComponent(query.join(' '))}`
                   );
                 }}
                 className="flex size-28 items-center justify-center gap-2 rounded-xl bg-sky-100/50">
