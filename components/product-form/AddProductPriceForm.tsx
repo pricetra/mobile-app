@@ -292,7 +292,7 @@ export default function AddProductPriceForm({
                 </View>
               )}
 
-              <View className="mt-10">
+              <View className="mt-7">
                 {formik.errors && (
                   <>
                     {Object.values(formik.errors).map((v, i) => (
@@ -324,8 +324,6 @@ export default function AddProductPriceForm({
                   </View>
                 </View>
               </View>
-
-              {Platform.OS === 'ios' && formik.values.sale && <View style={{ height: 150 }} />}
             </View>
           )}
         </Formik>
