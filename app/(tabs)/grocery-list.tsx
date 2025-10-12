@@ -1,9 +1,10 @@
-import { FontAwesome6 } from '@expo/vector-icons';
+import { Entypo, FontAwesome6 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, KeyboardAvoidingView, FlatList } from 'react-native';
 
+import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 
 export default function GroceryList() {
@@ -37,9 +38,11 @@ export default function GroceryList() {
   );
 
   return (
-    <View className="mt-28 items-center justify-center">
-      <Text className="text-lg font-bold">Grocery List</Text>
-      <Text className="text-gray-500">This is your grocery list.</Text>
+    <View style={{ flex: 1 }}>
+      <FloatingActionButton btnClassName="gap-5 px-12 bg-gray-800" onPress={() => {}}>
+        <Entypo name="add-to-list" size={30} color="white" />
+        <Text className="text-xl font-bold color-white">Add</Text>
+      </FloatingActionButton>
     </View>
   );
 }
