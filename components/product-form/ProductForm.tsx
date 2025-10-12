@@ -108,7 +108,7 @@ export default function ProductForm({
 
   async function selectImage() {
     const picture = await selectImageForProductExtraction();
-    if (!picture) return alert('could not process image');
+    if (!picture) return;
 
     setImageUpdated(true);
     setImageUri(picture.imageUri);
@@ -194,13 +194,7 @@ export default function ProductForm({
     if (result.canceled || result.assets.length === 0) return;
 
     const picture = result.assets.at(0);
-    if (!picture || !picture.base64) {
-      Alert.alert(
-        'Image Selection Failed!',
-        'Selected image could not be processed properly. Please try again.'
-      );
-      return;
-    }
+    if (!picture || !picture.base64) return;
 
     setAnalyzingImage(true);
     const manipulationResult = await ImageManipulator.manipulateAsync(
