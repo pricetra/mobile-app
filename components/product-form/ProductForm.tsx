@@ -107,7 +107,7 @@ export default function ProductForm({
   }, [brandsData]);
 
   async function selectImage() {
-    const picture = await selectImageForProductExtraction(true, 0);
+    const picture = await selectImageForProductExtraction();
     if (!picture) return alert('could not process image');
 
     setImageUpdated(true);
@@ -186,7 +186,7 @@ export default function ProductForm({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 2],
-      quality: 1,
+      quality: 0,
       base64: true,
       allowsMultipleSelection: false,
       cameraType: ImagePicker.CameraType.back,

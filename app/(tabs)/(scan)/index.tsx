@@ -48,7 +48,7 @@ export default function ScanScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setRenderCameraComponent(true);
+      setTimeout(() => setRenderCameraComponent(true), 1000);
 
       return () => {
         setRenderCameraComponent(false);
@@ -231,6 +231,7 @@ export default function ScanScreen() {
           <View className="mt-5 flex flex-row">
             <Btn
               text="Use Keyboard"
+              size="sm"
               color="text-white"
               bgColor="bg-[#111]"
               onPress={() => {
