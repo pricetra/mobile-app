@@ -70,12 +70,9 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   const [lists, { data: listData }] = useLazyQuery(GetAllListsDocument, {
     fetchPolicy: 'no-cache',
   });
-  const [getGroceryLists, { data: groceryLists, loading: groceryListsLoading }] = useLazyQuery(
-    GroceryListsDocument,
-    {
-      fetchPolicy: 'no-cache',
-    }
-  );
+  const [getGroceryLists, { data: groceryLists }] = useLazyQuery(GroceryListsDocument, {
+    fetchPolicy: 'no-cache',
+  });
   const [logout] = useMutation(LogoutDocument);
   const [registerExpoPushToken] = useMutation(RegisterExpoPushTokenDocument, {
     refetchQueries: [MeDocument],
@@ -200,7 +197,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         token: jwt,
         user,
         lists: userLists ?? { allLists: [], favorites: {} as List, watchList: {} as List },
-        allGroceryLists: allGroceryLists,
+        allGroceryLists,
         updateUser: (updatedUser) => setUser(updatedUser),
         logout: () => {
           logout().then(({ data, errors }) => {
