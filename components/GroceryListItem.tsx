@@ -1,8 +1,13 @@
+import { useMutation } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
+import { useState } from 'react';
 import { Pressable, View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
-import { GroceryListItem as GqlGroceryListItem } from '@/graphql/types/graphql';
+import {
+  GroceryListItem as GqlGroceryListItem,
+  MarkGroceryListItemDocument,
+} from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { cn } from '@/lib/utils';
 
@@ -11,12 +16,26 @@ export type GroceryListItemProps = {
 };
 
 export default function GroceryListItem({ item }: GroceryListItemProps) {
+  const [completed, setCompleted] = useState(item.completed);
+  const [markGroceryListItem] = useMutation(MarkGroceryListItemDocument, {});
+
   return (
-    <View className="flex flex-row items-center gap-5 border-b-[1px] border-gray-50 px-5 py-3">
+    <View className="flex flex-row items-center gap-6 border-b-[1px] border-gray-50 px-5 py-4">
       <Pressable
-        onPress={() => {}}
-        className="flex items-start justify-center rounded-full border-2 border-gray-200 p-1">
-        <Feather name="check" size={15} color="#999" style={{ opacity: item.completed ? 1 : 0 }} />
+        onPress={() => {
+          setCompleted((prev) => {
+            const completed = !prev;
+            markGroceryListItem({
+              variables: {
+                groceryListItemId: item.id,
+                completed,
+              },
+            });
+            return completed;
+          });
+        }}
+        className="flex items-start justify-center rounded-full border-[1px] border-gray-200 p-1">
+        <Feather name="check" size={15} color="#999" style={{ opacity: completed ? 1 : 0 }} />
       </Pressable>
 
       <View className="flex flex-1 flex-row flex-wrap items-center justify-start gap-4">
@@ -28,13 +47,13 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
               style={{ width: 40, height: 40 }}
             />
 
-            <Text className={cn('flex-1', item.completed ? 'line-through' : '')} numberOfLines={1}>
+            <Text className={cn('flex-1', completed ? 'line-through' : '')} numberOfLines={1}>
               {item.product.name}
             </Text>
           </>
         )}
         {item.category && (
-          <Text className={cn('flex-1', item.completed ? 'line-through' : '')} numberOfLines={1}>
+          <Text className={cn('flex-1', completed ? 'line-through' : '')} numberOfLines={1}>
             {item.category}
           </Text>
         )}

@@ -62,9 +62,9 @@ export default function GroceryList() {
 
   return (
     <View style={{ flex: 1 }}>
-      <FloatingActionButton btnClassName="gap-5 px-12 bg-gray-800" onPress={() => {}}>
-        <Entypo name="add-to-list" size={30} color="white" />
-        <Text className="text-xl font-bold color-white">Add</Text>
+      <FloatingActionButton btnClassName="gap-5 px-12 bg-white shadow-gray-200" onPress={() => {}}>
+        <Entypo name="add-to-list" size={27} color="#111827" />
+        <Text className="text-lg font-bold color-gray-900">Add Item</Text>
       </FloatingActionButton>
 
       <FlatList
