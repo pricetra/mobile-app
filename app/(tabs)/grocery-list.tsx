@@ -1,33 +1,36 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { Entypo, FontAwesome6 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl, Platform } from 'react-native';
+
+import { GroceryListItemsDocument } from '../../graphql/types/graphql';
 
 import GroceryListItem from '@/components/grocery-list/GroceryListItem';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import {
-  DefaultGroceryListItemsDocument,
   GroceryListItem as GqlGroceryListItem,
+  GroceryListsDocument,
 } from '@/graphql/types/graphql';
 
 export default function GroceryList() {
   const navigation = useNavigation();
   const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [getDefaultListItems, { data: listData, loading }] = useLazyQuery(
-    DefaultGroceryListItemsDocument,
-    {
-      fetchPolicy: 'network-only',
-    }
+  const { data: groceryLists, loading: groceryListsLoading } = useQuery(GroceryListsDocument);
+  const groceryList = useMemo(
+    () => groceryLists?.groceryLists?.find((l) => l.default),
+    [groceryLists]
   );
+  const [getGroceryListItems, { data: groceryListItemsData, loading: groceryListItemsLoading }] =
+    useLazyQuery(GroceryListItemsDocument, {
+      fetchPolicy: 'network-only',
+    });
 
   useFocusEffect(
     useCallback(() => {
-      getDefaultListItems();
-
       navigation.setOptions({
         header: (props: BottomTabHeaderProps) => (
           <TabHeaderItem
@@ -53,14 +56,17 @@ export default function GroceryList() {
     }, [])
   );
 
-  if (loading)
+  useEffect(() => {
+    if (!groceryList) return;
+    getGroceryListItems({ variables: { groceryListId: groceryList.id } });
+  }, [groceryList]);
+
+  if (!groceryList || groceryListsLoading || groceryListItemsLoading || !groceryListItemsData)
     return (
       <View className="flex h-40 w-full items-center justify-center px-10">
         <ActivityIndicator color="#555" size="large" />
       </View>
     );
-
-  if (!listData) return <></>;
 
   return (
     <View style={{ flex: 1 }}>
@@ -79,9 +85,19 @@ export default function GroceryList() {
       </FloatingActionButton>
 
       <FlatList
-        data={listData.defaultGroceryListItems}
+        data={groceryListItemsData.groceryListItems}
         keyExtractor={({ id }, i) => `grocery-list-item-${id}-${i}`}
         renderItem={({ item }) => <GroceryListItem item={item as GqlGroceryListItem} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={groceryListItemsLoading}
+            onRefresh={async () => {
+              await getGroceryListItems({ variables: { groceryListId: groceryList.id } });
+            }}
+            colors={Platform.OS === 'ios' ? ['black'] : ['white']}
+            progressBackgroundColor="#111827"
+          />
+        }
       />
     </View>
   );
