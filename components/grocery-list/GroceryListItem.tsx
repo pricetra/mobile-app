@@ -34,7 +34,7 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
             return completed;
           });
         }}
-        className="flex items-start justify-center rounded-full border-[1px] border-gray-200 p-1">
+        className="flex items-start justify-center rounded-full border-[1px] border-gray-300 p-1">
         <Feather name="check" size={15} color="#999" style={{ opacity: completed ? 1 : 0 }} />
       </Pressable>
 

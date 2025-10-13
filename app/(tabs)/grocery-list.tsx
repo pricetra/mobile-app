@@ -2,19 +2,21 @@ import { useLazyQuery } from '@apollo/client';
 import { Entypo, FontAwesome6 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from 'expo-router';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 
+import GroceryListItem from '@/components/grocery-list/GroceryListItem';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
+import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import {
   DefaultGroceryListItemsDocument,
   GroceryListItem as GqlGroceryListItem,
 } from '@/graphql/types/graphql';
-import GroceryListItem from '@/components/GroceryListItem';
 
 export default function GroceryList() {
   const navigation = useNavigation();
+  const [openCreateModal, setOpenCreateModal] = useState(false);
   const [getDefaultListItems, { data: listData, loading }] = useLazyQuery(
     DefaultGroceryListItemsDocument,
     {
@@ -62,7 +64,16 @@ export default function GroceryList() {
 
   return (
     <View style={{ flex: 1 }}>
-      <FloatingActionButton btnClassName="gap-5 px-12 bg-white shadow-gray-200" onPress={() => {}}>
+      <ModalFormMini
+        visible={openCreateModal}
+        title="Add Grocery Item"
+        onRequestClose={() => setOpenCreateModal(false)}>
+        <View />
+      </ModalFormMini>
+
+      <FloatingActionButton
+        btnClassName="gap-5 px-12 bg-white shadow-gray-200"
+        onPress={() => setOpenCreateModal(true)}>
         <Entypo name="add-to-list" size={27} color="#111827" />
         <Text className="text-lg font-bold color-gray-900">Add Item</Text>
       </FloatingActionButton>
