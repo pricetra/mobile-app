@@ -1,6 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 
-import { Price } from '@/graphql/types/graphql';
+import { Price, ProductWeightComponents } from '@/graphql/types/graphql';
 
 export function titleCase(str: string) {
   return str
@@ -54,4 +54,12 @@ export function getPriceUnit(price: Price): string {
 export function getPriceUnitOrEach(price: Price): string {
   const unit = price.unitType === 'item' ? 'ea' : price.unitType;
   return `/ ${unit.substring(0, 2)}`;
+}
+
+export function parseWeight(rawWeight: string): ProductWeightComponents {
+  const splitWeight = rawWeight.split(' ');
+  return {
+    weightValue: +splitWeight[0],
+    weightType: splitWeight.slice(1).join(' '),
+  };
 }

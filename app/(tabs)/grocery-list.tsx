@@ -15,6 +15,7 @@ import {
   GroceryListItem as GqlGroceryListItem,
   GroceryListsDocument,
 } from '@/graphql/types/graphql';
+import AddGroceryListItem from '@/components/grocery-list/AddGroceryListItem';
 
 export default function GroceryList() {
   const navigation = useNavigation();
@@ -74,17 +75,25 @@ export default function GroceryList() {
         visible={openCreateModal}
         title="Add Grocery Item"
         onRequestClose={() => setOpenCreateModal(false)}>
-        <View />
+        <AddGroceryListItem
+          groceryListId={groceryList.id}
+          onSuccess={() => setOpenCreateModal(false)}
+        />
       </ModalFormMini>
 
       <FloatingActionButton
-        btnClassName="gap-5 px-12 bg-white shadow-gray-200"
+        btnClassName="gap-5 px-12 shadow-gray-200"
         onPress={() => setOpenCreateModal(true)}>
-        <Entypo name="add-to-list" size={27} color="#111827" />
-        <Text className="text-lg font-bold color-gray-900">Add Item</Text>
+        <Entypo name="add-to-list" size={27} color="white" />
+        <Text className="text-lg font-bold color-white">Add Item</Text>
       </FloatingActionButton>
 
       <FlatList
+        ListHeaderComponent={
+          <View className="mb-2 px-5 py-5">
+            <Text className="text-3xl font-extrabold">{groceryList.name}</Text>
+          </View>
+        }
         data={groceryListItemsData.groceryListItems}
         keyExtractor={({ id }, i) => `grocery-list-item-${id}-${i}`}
         renderItem={({ item }) => <GroceryListItem item={item as GqlGroceryListItem} />}
@@ -98,6 +107,7 @@ export default function GroceryList() {
             progressBackgroundColor="#111827"
           />
         }
+        ListFooterComponent={<View style={{ height: 200 }} />}
       />
     </View>
   );
