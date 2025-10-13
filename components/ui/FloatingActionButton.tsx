@@ -9,6 +9,7 @@ export type FloatingActionButtonProps = {
   className?: clsx.ClassValue;
   btnClassName?: clsx.ClassValue;
   onPress?: (event: GestureResponderEvent) => void;
+  disabled?: boolean;
 };
 
 export default function FloatingActionButton({
@@ -16,6 +17,7 @@ export default function FloatingActionButton({
   className,
   btnClassName,
   onPress,
+  disabled,
 }: FloatingActionButtonProps) {
   return (
     <View
@@ -25,8 +27,10 @@ export default function FloatingActionButton({
       )}>
       <TouchableOpacity
         onPress={onPress}
+        disabled={disabled}
+        activeOpacity={1}
         className={cn(
-          'flex flex-row items-center justify-center gap-2 rounded-full bg-pricetraGreenDark px-5 py-3 shadow-lg',
+          'flex flex-row items-center justify-center gap-2 rounded-full bg-pricetraGreenHeavyDark px-5 py-3 shadow-lg',
           btnClassName
         )}>
         {children}

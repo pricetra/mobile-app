@@ -22,6 +22,7 @@ import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import SelectedStock from '@/components/SelectedStock';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
+import AddToGroceryListFab from '@/components/ui/AddToGroceryListFab';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
@@ -347,6 +348,8 @@ export default function ProductScreen() {
           <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
         )}
       </ModalFormFull>
+
+      <AddToGroceryListFab productId={productData.product.id} />
 
       <FlatList
         className="h-full w-full"

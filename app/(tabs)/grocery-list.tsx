@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import { Entypo, FontAwesome6 } from '@expo/vector-icons';
+import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -35,7 +35,7 @@ export default function GroceryList() {
             leftNav={
               <View className="flex flex-row items-center gap-3">
                 <View className="flex size-[35px] items-center justify-center rounded-full bg-pricetraGreenHeavyDark/10">
-                  <FontAwesome6 name="list-check" size={15} color="#396a12" />
+                  <FontAwesome5 name="shopping-basket" size={15} color="#396a12" />
                 </View>
                 <Text className="font-bold" numberOfLines={1}>
                   Grocery List

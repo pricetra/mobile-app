@@ -35,7 +35,7 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
           });
         }}
         className="flex items-start justify-center rounded-full border-[1px] border-gray-300 p-1">
-        <Feather name="check" size={15} color="#999" style={{ opacity: completed ? 1 : 0 }} />
+        <Feather name="check" size={15} color="#888" style={{ opacity: completed ? 1 : 0 }} />
       </Pressable>
 
       <View className="flex flex-1 flex-row flex-wrap items-center justify-start gap-4">
