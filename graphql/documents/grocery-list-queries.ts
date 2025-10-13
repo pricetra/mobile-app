@@ -15,6 +15,7 @@ export const GET_GROCERY_LIST_ITEMS_QUERY = gql(`
   query GroceryListItems($groceryListId: ID!) {
     groceryListItems(groceryListId: $groceryListId) {
       id
+      groceryListId
       productId
       product {
         id
@@ -44,6 +45,7 @@ export const DEFAULT_GROCERY_LIST_ITEMS_QUERY = gql(`
   query DefaultGroceryListItems {
     defaultGroceryListItems {
       id
+      groceryListId
       productId
       product {
         id

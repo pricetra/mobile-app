@@ -7,3 +7,12 @@ export const ADD_GROCERY_LIST_ITEMS_MUTATION = gql(`
     }
   }
 `);
+
+export const MARK_GROCERY_ITEM_MUTATION = gql(`
+  mutation MarkGroceryListItem($groceryListItemId:ID!, $completed:Boolean!) {
+    markGroceryListItem(groceryListItemId:$groceryListItemId, completed:$completed) {
+      id
+      completed
+    }
+  }
+`);
