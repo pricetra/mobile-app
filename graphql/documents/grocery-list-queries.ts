@@ -70,3 +70,9 @@ export const DEFAULT_GROCERY_LIST_ITEMS_QUERY = gql(`
     }
   }
 `);
+
+export const COUNT_GROCERY_LIST_ITEMS_QUERY = gql(`
+  query CountGroceryListItems($groceryListId: ID, $includeCompleted: Boolean) {
+    countGroceryListItems(groceryListId: $groceryListId, includeCompleted: $includeCompleted)
+  }
+`);
