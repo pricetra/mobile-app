@@ -8,6 +8,7 @@ import FloatingActionButton from './FloatingActionButton';
 import { useAuth } from '@/context/UserContext';
 import {
   AddGroceryListItemDocument,
+  CountGroceryListItemsDocument,
   DefaultGroceryListItemsDocument,
   GroceryListItemsDocument,
 } from '@/graphql/types/graphql';
@@ -19,7 +20,11 @@ export type AddToGroceryListFabProps = {
 export default function AddToGroceryListFab({ productId }: AddToGroceryListFabProps) {
   const { allGroceryLists } = useAuth();
   const [addItem, { loading: addingItem }] = useMutation(AddGroceryListItemDocument, {
-    refetchQueries: [DefaultGroceryListItemsDocument, GroceryListItemsDocument],
+    refetchQueries: [
+      DefaultGroceryListItemsDocument,
+      GroceryListItemsDocument,
+      CountGroceryListItemsDocument,
+    ],
   });
   const [addedToList, setAddedToList] = useState(false);
 

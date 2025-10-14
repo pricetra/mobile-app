@@ -9,6 +9,7 @@ import Combobox from '@/components/ui/Combobox';
 import {
   AddGroceryListItemDocument,
   CategorySearchDocument,
+  CountGroceryListItemsDocument,
   CreateGroceryListItemInput,
   DefaultGroceryListItemsDocument,
   GroceryListItemsDocument,
@@ -27,7 +28,11 @@ export default function AddGroceryListItem({ groceryListId, onSuccess }: AddGroc
   const [weightComponents, { data: weightComponentsData, loading: weightComponentsLoading }] =
     useLazyQuery(WeightComponentsFromCategoryIdDocument, { fetchPolicy: 'no-cache' });
   const [addItem, { loading: addingItem }] = useMutation(AddGroceryListItemDocument, {
-    refetchQueries: [DefaultGroceryListItemsDocument, GroceryListItemsDocument],
+    refetchQueries: [
+      DefaultGroceryListItemsDocument,
+      GroceryListItemsDocument,
+      CountGroceryListItemsDocument,
+    ],
   });
   const [selectedCategory, setSelectedCategory] = useState<{ id: number; name: string }>();
   const [selectedWeight, setSelectedWeight] = useState<string>();
