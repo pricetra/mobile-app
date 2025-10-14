@@ -11,6 +11,8 @@ import {
   AuthDeviceType,
   CheckAppVersionDocument,
   GetAllListsDocument,
+  GroceryList,
+  GroceryListsDocument,
   List,
   ListType,
   LogoutDocument,
@@ -28,9 +30,15 @@ export type UserListsType = {
   watchList: List;
 };
 
+export type GroceryListsType = {
+  defaultGroceryList: GroceryList;
+  groceryLists: GroceryList[];
+};
+
 export type UserContextType = {
   user: User;
   lists: UserListsType;
+  allGroceryLists?: GroceryListsType;
   token: string;
   updateUser: (updatedUser: User) => void;
   logout: () => void;
@@ -47,6 +55,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   const { removeJwt } = useContext(JwtStoreContext);
   const [user, setUser] = useState<User>();
   const [userLists, setUserLists] = useState<UserListsType>();
+  const [allGroceryLists, setAllGroceryLists] = useState<GroceryListsType>();
   const router = useRouter();
   const [checkAppVersion, { data: appVersionCheckData }] = useLazyQuery(CheckAppVersionDocument, {
     fetchPolicy: 'no-cache',
@@ -59,6 +68,9 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     fetchPolicy: 'no-cache',
   });
   const [lists, { data: listData }] = useLazyQuery(GetAllListsDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const [getGroceryLists, { data: groceryLists }] = useLazyQuery(GroceryListsDocument, {
     fetchPolicy: 'no-cache',
   });
   const [logout] = useMutation(LogoutDocument);
@@ -108,6 +120,16 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   }, [listData]);
 
   useEffect(() => {
+    if (!groceryLists) return;
+
+    const allLists = groceryLists.groceryLists as GroceryList[];
+    setAllGroceryLists({
+      defaultGroceryList: allLists.find((l) => l.default)!,
+      groceryLists: allLists,
+    });
+  }, [groceryLists]);
+
+  useEffect(() => {
     if (!appVersionCheckData || appVersionCheckData.checkAppVersion) return;
 
     Alert.alert(
@@ -145,6 +167,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         if (!userData) return;
 
         fetchAndRegisterExpoPushToken(userData.me as User);
+        getGroceryLists();
         await lists({ context: { ...ctx } });
       })
       .catch((_e) => removeStoredJwtAndRedirect())
@@ -174,6 +197,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         token: jwt,
         user,
         lists: userLists ?? { allLists: [], favorites: {} as List, watchList: {} as List },
+        allGroceryLists,
         updateUser: (updatedUser) => setUser(updatedUser),
         logout: () => {
           logout().then(({ data, errors }) => {

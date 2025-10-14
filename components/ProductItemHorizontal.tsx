@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
+import ProductMetadataBadge from './ProductMetadataBadge';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
@@ -49,18 +50,18 @@ export default function ProductItemHorizontal({
         <View className="flex flex-col gap-1">
           <View className="mb-1 flex flex-row items-center gap-1">
             {product.weightValue && product.weightType && (
-              <View className="rounded-full bg-green-300/30 px-2 py-1">
-                <Text className="text-[9px] color-black">
-                  {product.weightValue} {product.weightType}
-                </Text>
-              </View>
+              <ProductMetadataBadge
+                type="weight"
+                size="sm"
+                text={`${product.weightValue} ${product.weightType}`}
+              />
             )}
             {product.quantityValue && product.quantityType && (
-              <View className="rounded-full bg-blue-300/30 px-2 py-1">
-                <Text className="text-[9px] color-black">
-                  {product.quantityValue} {product.quantityType}
-                </Text>
-              </View>
+              <ProductMetadataBadge
+                type="quantity"
+                size="sm"
+                text={`${product.quantityValue} ${product.quantityType}`}
+              />
             )}
           </View>
 

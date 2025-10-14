@@ -107,8 +107,8 @@ export default function ProductForm({
   }, [brandsData]);
 
   async function selectImage() {
-    const picture = await selectImageForProductExtraction(true, 0);
-    if (!picture) return alert('could not process image');
+    const picture = await selectImageForProductExtraction();
+    if (!picture) return;
 
     setImageUpdated(true);
     setImageUri(picture.imageUri);
@@ -186,7 +186,7 @@ export default function ProductForm({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 2],
-      quality: 1,
+      quality: 0,
       base64: true,
       allowsMultipleSelection: false,
       cameraType: ImagePicker.CameraType.back,
@@ -194,13 +194,7 @@ export default function ProductForm({
     if (result.canceled || result.assets.length === 0) return;
 
     const picture = result.assets.at(0);
-    if (!picture || !picture.base64) {
-      Alert.alert(
-        'Image Selection Failed!',
-        'Selected image could not be processed properly. Please try again.'
-      );
-      return;
-    }
+    if (!picture || !picture.base64) return;
 
     setAnalyzingImage(true);
     const manipulationResult = await ImageManipulator.manipulateAsync(

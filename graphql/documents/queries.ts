@@ -1337,3 +1337,21 @@ export const PRODUCT_SEARCH_QUERY = gql(`
     }
   }
 `);
+
+export const CATEGORY_SEARCH_QUERY = gql(`
+  query CategorySearch($search: String!, $quickSearchMode: Boolean) {
+    categorySearch(search: $search, quickSearchMode: $quickSearchMode) {
+      id
+      name
+    }
+  }
+`);
+
+export const WEIGHT_COMPONENTS_FROM_CATEGORY_ID_QUERY = gql(`
+  query WeightComponentsFromCategoryId($categoryId: ID!) {
+    weightComponentsFromCategoryId(categoryId: $categoryId) {
+      weightValue
+      weightType
+    }
+  }
+`);

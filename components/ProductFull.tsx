@@ -2,6 +2,7 @@ import { Entypo } from '@expo/vector-icons';
 import { Fragment, useState } from 'react';
 import { View, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
 
+import ProductMetadataBadge from './ProductMetadataBadge';
 import Image from './ui/Image';
 import { Skeleton } from './ui/Skeleton';
 
@@ -49,18 +50,18 @@ export default function ProductFull({
         <View className="flex flex-col gap-2">
           <View className="mb-5 flex flex-row items-center gap-3">
             {product.weightValue && product.weightType && (
-              <View className="rounded-full bg-green-300/30 px-3 py-1">
-                <Text className="text-sm color-black">
-                  {product.weightValue} {product.weightType}
-                </Text>
-              </View>
+              <ProductMetadataBadge
+                type="weight"
+                size="md"
+                text={`${product.weightValue} ${product.weightType}`}
+              />
             )}
             {product.quantityValue && product.quantityType && (
-              <View className="rounded-full bg-blue-300/30 px-3 py-1">
-                <Text className="text-sm color-black">
-                  {product.quantityValue} {product.quantityType}
-                </Text>
-              </View>
+              <ProductMetadataBadge
+                type="quantity"
+                size="md"
+                text={`${product.quantityValue} ${product.quantityType}`}
+              />
             )}
           </View>
 

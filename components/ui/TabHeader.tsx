@@ -1,15 +1,25 @@
+import { useQuery } from '@apollo/client';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useContext } from 'react';
-import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import {
+  Platform,
+  SafeAreaView,
+  View,
+  TouchableOpacity,
+  StyleProp,
+  ViewStyle,
+  Text,
+} from 'react-native';
 
 import TabHeaderSearchBar from './TabHeaderSearchBar';
 
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
+import { CountGroceryListItemsDocument } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { cn } from '@/lib/utils';
 
@@ -32,6 +42,11 @@ export default function TabHeader(_props: TabHeaderProps) {
     paddingVertical: padding,
     paddingHorizontal: padding + 5,
   };
+
+  const { data: groceryListItemCount } = useQuery(CountGroceryListItemsDocument, {
+    fetchPolicy: 'no-cache',
+    variables: { includeCompleted: false },
+  });
 
   return (
     <SafeAreaView
@@ -61,8 +76,17 @@ export default function TabHeader(_props: TabHeaderProps) {
           <>
             <TouchableOpacity
               onPress={() => router.push('/(tabs)/grocery-list', { relativeToDirectory: false })}
-              style={iconStyles}>
+              style={iconStyles}
+              className="relative">
               <FontAwesome5 name="shopping-basket" size={iconSize - 2} color={iconColor} />
+
+              {groceryListItemCount && (
+                <View className="absolute right-0 top-1.5 flex size-6 items-center justify-center rounded-full bg-[#e7f8d0] ">
+                  <Text className="text-xs color-pricetraGreenHeavyDark">
+                    {groceryListItemCount.countGroceryListItems}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
 
             <TouchableOpacity
