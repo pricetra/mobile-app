@@ -22,7 +22,14 @@ export default function ProductMetadataBadge({
         size === 'md' ? 'px-3 py-1' : '',
         size === 'sm' ? 'px-2 py-1' : ''
       )}>
-      <Text className="text-[9px] color-black">{text}</Text>
+      <Text
+        className={cn(
+          'color-black',
+          size === 'md' ? 'text-sm' : '',
+          size === 'sm' ? 'text-[9px]' : ''
+        )}>
+        {text}
+      </Text>
     </View>
   );
 }
