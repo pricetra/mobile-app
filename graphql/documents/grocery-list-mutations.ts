@@ -8,6 +8,14 @@ export const ADD_GROCERY_LIST_ITEMS_MUTATION = gql(`
   }
 `);
 
+export const UPDATE_GROCERY_LIST_ITEMS_MUTATION = gql(`
+  mutation UpdateGroceryListItem($groceryListItemId: ID!, $input: CreateGroceryListItemInput!) {
+    updateGroceryListItem(groceryListItemId:$groceryListItemId, input:$input) {
+      id
+    }
+  }
+`);
+
 export const MARK_GROCERY_ITEM_MUTATION = gql(`
   mutation MarkGroceryListItem($groceryListItemId:ID!, $completed:Boolean!) {
     markGroceryListItem(groceryListItemId:$groceryListItemId, completed:$completed) {
