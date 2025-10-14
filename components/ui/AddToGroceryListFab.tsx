@@ -30,7 +30,7 @@ export default function AddToGroceryListFab({ productId }: AddToGroceryListFabPr
 
   return (
     <FloatingActionButton
-      btnClassName="gap-5 py-5 px-10 bg-pricetraGreenHeavyDark shadow-black/30"
+      btnClassName="gap-5 py-4 px-8 bg-pricetraGreenHeavyDark shadow-black/30"
       onPress={() => {
         if (!allGroceryLists) return;
         const groceryListId = allGroceryLists.defaultGroceryList.id;
@@ -41,11 +41,13 @@ export default function AddToGroceryListFab({ productId }: AddToGroceryListFabPr
       }}
       disabled={addingItem || addedToList}>
       {addedToList ? (
-        <Feather name="check" size={20} color="white" />
+        <Feather name="check" size={15} color="white" />
       ) : (
-        <FontAwesome5 name="shopping-basket" size={20} color="white" />
+        <FontAwesome5 name="shopping-basket" size={15} color="white" />
       )}
-      <Text className="font-bold color-white">{addedToList ? 'Added' : 'Add to Grocery List'}</Text>
+      <Text className="text-sm font-bold color-white">
+        {addedToList ? 'Added' : 'Add to Grocery List'}
+      </Text>
     </FloatingActionButton>
   );
 }

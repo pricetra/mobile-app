@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { ReactNode } from 'react';
-import { GestureResponderEvent, TouchableOpacity, View } from 'react-native';
+import { GestureResponderEvent, Platform, TouchableOpacity, View } from 'react-native';
 
 import { cn } from '@/lib/utils';
 
@@ -22,7 +22,9 @@ export default function FloatingActionButton({
   return (
     <View
       className={cn(
-        'bottom-safe-offset-0 absolute left-0 z-10 flex w-full flex-row items-center justify-center',
+        'absolute left-0 z-10 flex w-full flex-row items-center justify-center',
+        Platform.OS === 'ios' ? 'bottom-safe-or-5' : '',
+        Platform.OS === 'android' ? 'bottom-safe-offset-10' : '',
         className
       )}>
       <TouchableOpacity
