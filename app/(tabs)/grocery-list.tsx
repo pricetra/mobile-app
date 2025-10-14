@@ -1,12 +1,16 @@
 import { useLazyQuery } from '@apollo/client';
-import { Entypo, FontAwesome5 } from '@expo/vector-icons';
+import { Entypo, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, RefreshControl, Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import AddGroceryListItem from '@/components/grocery-list/AddGroceryListItem';
-import GroceryListItem from '@/components/grocery-list/GroceryListItem';
+import GroceryListItem, {
+  GroceryListItemDeleteAction,
+} from '@/components/grocery-list/GroceryListItem';
 import FloatingActionButton from '@/components/ui/FloatingActionButton';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
@@ -87,7 +91,19 @@ export default function GroceryList() {
         }
         data={groceryListItemsData?.groceryListItems}
         keyExtractor={({ id }, i) => `grocery-list-item-${id}-${i}`}
-        renderItem={({ item }) => <GroceryListItem item={item as GqlGroceryListItem} />}
+        renderItem={({ item }) => (
+          <GestureHandlerRootView>
+            <Swipeable
+              containerStyle={{ backgroundColor: '#b91c1c' }}
+              friction={2}
+              rightThreshold={40}
+              renderRightActions={(prog, drag) =>
+                GroceryListItemDeleteAction({ groceryListItemId: item.id }, prog, drag)
+              }>
+              <GroceryListItem item={item as GqlGroceryListItem} />
+            </Swipeable>
+          </GestureHandlerRootView>
+        )}
         refreshControl={
           <RefreshControl
             refreshing={groceryListItemsLoading}
