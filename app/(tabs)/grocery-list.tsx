@@ -3,7 +3,7 @@ import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl, Platform } from 'react-native';
+import { View, Text, FlatList, RefreshControl, Platform } from 'react-native';
 
 import AddGroceryListItem from '@/components/grocery-list/AddGroceryListItem';
 import GroceryListItem from '@/components/grocery-list/GroceryListItem';
@@ -58,12 +58,7 @@ export default function GroceryList() {
     getGroceryListItems({ variables: { groceryListId: selectedGroceryList.id } });
   }, [selectedGroceryList]);
 
-  if (!selectedGroceryList || groceryListItemsLoading || !groceryListItemsData)
-    return (
-      <View className="flex h-40 w-full items-center justify-center px-10">
-        <ActivityIndicator color="#555" size="large" />
-      </View>
-    );
+  if (!selectedGroceryList) return <></>;
 
   return (
     <View style={{ flex: 1 }}>
@@ -90,7 +85,7 @@ export default function GroceryList() {
             <Text className="text-3xl font-extrabold">{selectedGroceryList.name}</Text>
           </View>
         }
-        data={groceryListItemsData.groceryListItems}
+        data={groceryListItemsData?.groceryListItems}
         keyExtractor={({ id }, i) => `grocery-list-item-${id}-${i}`}
         renderItem={({ item }) => <GroceryListItem item={item as GqlGroceryListItem} />}
         refreshControl={

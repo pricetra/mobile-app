@@ -20,7 +20,7 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
   const [markGroceryListItem] = useMutation(MarkGroceryListItemDocument, {});
 
   return (
-    <View className="flex flex-row items-center gap-6 border-b-[1px] border-gray-50 px-5 py-4">
+    <View className="flex flex-row items-center border-b-[1px] border-gray-50 py-2">
       <Pressable
         onPress={() => {
           setCompleted((prev) => {
@@ -34,30 +34,32 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
             return completed;
           });
         }}
-        className="flex items-start justify-center rounded-full border-[1px] border-gray-300 p-1">
-        <Feather name="check" size={15} color="#888" style={{ opacity: completed ? 1 : 0 }} />
+        className="px-5 py-2">
+        <View className="flex items-start justify-center rounded-full border-[1px] border-gray-300 p-1">
+          <Feather name="check" size={15} color="#888" style={{ opacity: completed ? 1 : 0 }} />
+        </View>
       </Pressable>
 
-      <View className="flex flex-1 flex-row flex-wrap items-center justify-start gap-4">
+      <View className="flex flex-1 flex-row flex-wrap gap-3 py-3">
         {item.product && item.productId && (
-          <>
-            <Image
-              src={createCloudinaryUrl(item.product.code, 200)}
-              className="rounded-xl"
-              style={{ width: 40, height: 40 }}
-            />
-
-            <Text className={cn('flex-1', completed ? 'line-through' : '')} numberOfLines={1}>
-              {item.product.name}
-            </Text>
-          </>
+          <Image
+            src={createCloudinaryUrl(item.product.code, 200)}
+            className="rounded-xl"
+            style={{ width: 40, height: 40 }}
+          />
         )}
-        {item.category && (
-          <Text className={cn('flex-1', completed ? 'line-through' : '')} numberOfLines={1}>
-            {item.category}
+        <View className="flex flex-1 flex-col items-start justify-center gap-1 pr-5">
+          <Text className={cn('flex-1', completed ? 'line-through' : '')} numberOfLines={2}>
+            {item.product && item.productId ? item.product.name : item.category}
           </Text>
-        )}
+
+          <Text className="text-xs color-gray-500">qty: {item.quantity}</Text>
+        </View>
       </View>
     </View>
   );
+}
+
+export function GroceryListItemLoading() {
+  return <></>;
 }

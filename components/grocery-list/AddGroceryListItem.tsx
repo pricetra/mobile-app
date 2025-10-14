@@ -2,7 +2,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Alert, View } from 'react-native';
 
 import Btn from '@/components/ui/Btn';
 import Combobox from '@/components/ui/Combobox';
@@ -35,7 +35,7 @@ export default function AddGroceryListItem({ groceryListId, onSuccess }: AddGroc
     ],
   });
   const [selectedCategory, setSelectedCategory] = useState<{ id: number; name: string }>();
-  const [selectedWeight, setSelectedWeight] = useState<string>();
+  const [, setSelectedWeight] = useState<string>();
 
   useEffect(() => {
     if (!selectedCategory?.id) return;
@@ -46,7 +46,6 @@ export default function AddGroceryListItem({ groceryListId, onSuccess }: AddGroc
     <Formik
       initialValues={{} as CreateGroceryListItemInput}
       onSubmit={(input) => {
-        console.log(input);
         addItem({
           variables: {
             groceryListId,
@@ -57,7 +56,7 @@ export default function AddGroceryListItem({ groceryListId, onSuccess }: AddGroc
             if (!data) return;
             onSuccess();
           })
-          .catch((err) => console.log(err));
+          .catch((err) => Alert.alert('Could not add item', err));
       }}>
       {(formik) => (
         <View>
@@ -83,11 +82,6 @@ export default function AddGroceryListItem({ groceryListId, onSuccess }: AddGroc
             textInputProps={{
               placeholder: 'Search',
             }}
-            renderItem={(item) => (
-              <View className="flex flex-row items-center gap-2 p-3">
-                <Text>{item.title}</Text>
-              </View>
-            )}
           />
 
           {selectedCategory?.id && (
