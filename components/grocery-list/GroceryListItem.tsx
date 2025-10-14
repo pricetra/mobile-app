@@ -50,7 +50,7 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
         }}
         className="px-5 py-2">
         <View className="flex items-start justify-center rounded-full border-[1px] border-gray-300 p-1">
-          <Feather name="check" size={15} color="#888" style={{ opacity: completed ? 1 : 0 }} />
+          <Feather name="check" size={15} color="#666 " style={{ opacity: completed ? 1 : 0 }} />
         </View>
       </Pressable>
 
@@ -116,7 +116,7 @@ export function GroceryListItemLoading() {
 
 export function GroceryListItemDeleteAction(
   props: { groceryListItemId: number },
-  prog: SharedValue<number>,
+  _prog: SharedValue<number>,
   drag: SharedValue<number>
 ) {
   const [deleting, setDeleting] = useState(false);
