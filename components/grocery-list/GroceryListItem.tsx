@@ -3,6 +3,8 @@ import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, View, Text } from 'react-native';
 
+import ProductMetadataBadge from '../ProductMetadataBadge';
+
 import Image from '@/components/ui/Image';
 import {
   GroceryListItem as GqlGroceryListItem,
@@ -48,12 +50,30 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
             style={{ width: 40, height: 40 }}
           />
         )}
-        <View className="flex flex-1 flex-col items-start justify-center gap-1 pr-5">
+        <View className="flex flex-1 flex-col items-start justify-center gap-2 pr-5">
           <Text className={cn('flex-1', completed ? 'line-through' : '')} numberOfLines={2}>
             {item.product && item.productId ? item.product.name : item.category}
           </Text>
 
-          <Text className="text-xs color-gray-500">qty: {item.quantity}</Text>
+          <View className="flex flex-row gap-2">
+            <ProductMetadataBadge size="sm" text={`quantity ${item.quantity}`} />
+
+            {item.product && item.productId && item.product.weightValue && (
+              <ProductMetadataBadge
+                type="weight"
+                size="sm"
+                text={`${item.product.weightValue} ${item.product.weightType}`}
+              />
+            )}
+
+            {item.product && item.productId && item.product.quantityValue && (
+              <ProductMetadataBadge
+                type="quantity"
+                size="sm"
+                text={`${item.product.quantityValue} ${item.product.quantityType}`}
+              />
+            )}
+          </View>
         </View>
       </View>
     </View>
