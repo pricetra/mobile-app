@@ -12,7 +12,7 @@ export type ProductListViewProps = {
 
 export default function ProductListView({ listId }: ProductListViewProps) {
   const [getProducts, { data, loading, error }] = useLazyQuery(GetAllProductListsByListIdDocument, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'no-cache',
   });
 
   useEffect(() => {

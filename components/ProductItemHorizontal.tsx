@@ -1,17 +1,20 @@
 import { useMemo } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Touchable, TouchableOpacity } from 'react-native';
 
 import ProductMetadataBadge from './ProductMetadataBadge';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
-import { Product } from '@/graphql/types/graphql';
+import { Product, ProductSimple } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
 import { isSaleExpired } from '@/lib/utils';
+import Btn from '@/components/ui/Btn';
+import { Ionicons } from '@expo/vector-icons';
+import AddToGroceryListActionButton from './ui/AddToGroceryListActionButton';
 
 export type ProductItemHorizontalProps = {
-  product: Product;
+  product: ProductSimple | Product;
   imgWidth?: number;
 };
 
@@ -40,6 +43,9 @@ export default function ProductItemHorizontal({
             </Text>
           </View>
         )}
+
+        <AddToGroceryListActionButton productId={product.id} />
+
         <Image
           src={createCloudinaryUrl(product.code, 500)}
           className="rounded-xl"
