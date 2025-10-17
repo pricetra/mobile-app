@@ -643,49 +643,6 @@ export const GET_ALL_LISTS = gql`
         id
         listId
         productId
-        product {
-          id
-          name
-          image
-          description
-          brand
-          code
-          model
-          categoryId
-          category {
-            id
-            name
-            expandedPathname
-            path
-          }
-          weightValue
-          weightType
-          quantityValue
-          quantityType
-          createdAt
-          updatedAt
-        }
-        stock {
-          id
-          productId
-          storeId
-          branchId
-          latestPriceId
-          latestPrice {
-            id
-            productId
-            branchId
-            storeId
-            amount
-            currencyCode
-            createdAt
-            sale
-            originalPrice
-            condition
-            expiresAt
-            unitType
-          }
-        }
         stockId
         createdAt
       }
@@ -693,31 +650,6 @@ export const GET_ALL_LISTS = gql`
         id
         listId
         branchId
-        branch {
-          id
-          name
-          addressId
-          address {
-            id
-            distance
-            latitude
-            longitude
-            mapsLink
-            fullAddress
-            street
-            city
-            administrativeDivision
-            countryCode
-            country
-            zipCode
-          }
-          storeId
-          store {
-            id
-            name
-            logo
-          }
-        }
         createdAt
       }
     }
