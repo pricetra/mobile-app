@@ -10,6 +10,7 @@ import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
 import { cn, isSaleExpired } from '@/lib/utils';
+import AddToGroceryListActionButton from './ui/AddToGroceryListActionButton';
 
 export type ProductItemProps = {
   hideStoreInfo?: boolean;
@@ -43,6 +44,9 @@ export default function ProductItem({
             </Text>
           </View>
         )}
+
+        <AddToGroceryListActionButton productId={product.id} />
+
         <Image
           src={createCloudinaryUrl(product.code, 500)}
           className="rounded-xl"
