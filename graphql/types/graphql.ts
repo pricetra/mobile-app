@@ -91,17 +91,8 @@ export type BranchList = {
   branchId: Scalars['ID']['output'];
   createdAt: Scalars['Time']['output'];
   id: Scalars['ID']['output'];
-  list?: Maybe<List>;
   listId: Scalars['ID']['output'];
   userId: Scalars['ID']['output'];
-};
-
-export type BranchListSimple = {
-  __typename?: 'BranchListSimple';
-  branchId: Scalars['ID']['output'];
-  createdAt: Scalars['Time']['output'];
-  id: Scalars['ID']['output'];
-  listId: Scalars['ID']['output'];
 };
 
 export type BranchListWithPrices = {
@@ -272,11 +263,11 @@ export type GroceryListItem = {
 
 export type List = {
   __typename?: 'List';
-  branchList?: Maybe<Array<BranchListSimple>>;
+  branchList?: Maybe<Array<BranchList>>;
   createdAt: Scalars['Time']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  productList?: Maybe<Array<ProductListSimple>>;
+  productList?: Maybe<Array<ProductList>>;
   type: ListType;
   userId: Scalars['ID']['output'];
 };
@@ -652,7 +643,6 @@ export type ProductList = {
   __typename?: 'ProductList';
   createdAt: Scalars['Time']['output'];
   id: Scalars['ID']['output'];
-  list?: Maybe<List>;
   listId: Scalars['ID']['output'];
   product?: Maybe<Product>;
   productId: Scalars['ID']['output'];
@@ -660,15 +650,6 @@ export type ProductList = {
   stockId?: Maybe<Scalars['ID']['output']>;
   type?: Maybe<ListType>;
   userId: Scalars['ID']['output'];
-};
-
-export type ProductListSimple = {
-  __typename?: 'ProductListSimple';
-  createdAt: Scalars['Time']['output'];
-  id: Scalars['ID']['output'];
-  listId: Scalars['ID']['output'];
-  productId: Scalars['ID']['output'];
-  stockId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type ProductNutriment = {
@@ -1634,7 +1615,7 @@ export type GetAllListsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllListsQuery = { __typename?: 'Query', getAllLists: Array<{ __typename?: 'List', id: number, name: string, type: ListType, userId: number, createdAt: any, productList?: Array<{ __typename?: 'ProductListSimple', id: number, listId: number, productId: number, stockId?: number | null, createdAt: any }> | null, branchList?: Array<{ __typename?: 'BranchListSimple', id: number, listId: number, branchId: number, createdAt: any }> | null }> };
+export type GetAllListsQuery = { __typename?: 'Query', getAllLists: Array<{ __typename?: 'List', id: number, name: string, type: ListType, userId: number, createdAt: any, productList?: Array<{ __typename?: 'ProductList', id: number, listId: number, productId: number, stockId?: number | null, createdAt: any }> | null, branchList?: Array<{ __typename?: 'BranchList', id: number, listId: number, branchId: number, createdAt: any }> | null }> };
 
 export type StockQueryVariables = Exact<{
   stockId: Scalars['ID']['input'];

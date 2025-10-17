@@ -13,7 +13,7 @@ export type BranchListViewProps = {
 
 export default function BranchListView({ listId }: BranchListViewProps) {
   const [getBranches, { data, loading, error }] = useLazyQuery(GetAllBranchListsByListIdDocument, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'no-cache',
   });
 
   useEffect(() => {
