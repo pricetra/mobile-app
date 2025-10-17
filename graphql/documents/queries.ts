@@ -30,10 +30,8 @@ export const BARCODE_SCAN_QUERY = gql`
       name
       image
       description
-      url
       brand
       code
-      color
       model
       categoryId
       category {
@@ -46,8 +44,6 @@ export const BARCODE_SCAN_QUERY = gql`
       weightType
       quantityValue
       quantityType
-      lowestRecordedPrice
-      highestRecordedPrice
       createdAt
       updatedAt
     }
@@ -188,10 +184,8 @@ export const ALL_PRODUCTS_QUERY = gql(`
         name
         image
         description
-        url
         brand
         code
-        color
         model
         categoryId
         category {
@@ -242,26 +236,29 @@ export const ALL_PRODUCTS_QUERY = gql(`
             condition
             expiresAt
             unitType
+            createdBy {
+              id
+              name
+              avatar
+            }
+          }
+          createdBy {
+            id
+            name
+            avatar
+          }
+          updatedBy {
+            id
+            name
+            avatar
           }
         }
         weightValue
         weightType
         quantityValue
         quantityType
-        lowestRecordedPrice
-        highestRecordedPrice
         createdAt
         updatedAt
-        createdBy {
-          id
-          name
-          avatar
-        }
-        updatedBy {
-          id
-          name
-          avatar
-        }
         views
       }
       paginator {
@@ -283,10 +280,8 @@ export const PRODUCT_BY_ID_QUERY = gql(`
       name
       image
       description
-      url
       brand
       code
-      color
       model
       categoryId
       category {
@@ -300,15 +295,8 @@ export const PRODUCT_BY_ID_QUERY = gql(`
       weightType
       quantityValue
       quantityType
-      lowestRecordedPrice
-      highestRecordedPrice
       createdAt
       updatedAt
-      createdBy {
-        id
-        name
-        avatar
-      }
       views
       productList {
         id
@@ -401,11 +389,6 @@ export const ALL_STORES_QUERY = gql(`
         name
         logo
         website
-        createdBy {
-          id
-          name
-          avatar
-        }
       }
       paginator {
         next
@@ -426,11 +409,6 @@ export const FIND_STORE_QUERY = gql(`
       name
       logo
       website
-      createdBy {
-        id
-        name
-        avatar
-      }
     }
 
     allBranches(storeId: $storeId, paginator: $paginator, search: $search, location: $location) {
@@ -670,10 +648,8 @@ export const GET_ALL_LISTS = gql`
           name
           image
           description
-          url
           brand
           code
-          color
           model
           categoryId
           category {
@@ -686,8 +662,6 @@ export const GET_ALL_LISTS = gql`
           weightType
           quantityValue
           quantityType
-          lowestRecordedPrice
-          highestRecordedPrice
           createdAt
           updatedAt
         }
@@ -863,11 +837,6 @@ export const GET_FAVORITE_BRANCHES_WITH_PRICE_DATA_QUERY = gql(`
             name
             avatar
           }
-          updatedBy {
-            id
-            name
-            avatar
-          }
         }
       }
       approximatePrice
@@ -896,10 +865,8 @@ export const GET_ALL_PRODUCT_LISTS_BY_LIST_ID = gql(`
         name
         image
         description
-        url
         brand
         code
-        color
         model
         categoryId
         category {
@@ -912,8 +879,6 @@ export const GET_ALL_PRODUCT_LISTS_BY_LIST_ID = gql(`
         weightType
         quantityValue
         quantityType
-        lowestRecordedPrice
-        highestRecordedPrice
         createdAt
         updatedAt
       }
@@ -1048,11 +1013,6 @@ export const PRICE_CHANGE_HISTORY_QUERY = gql(`
           name
           avatar
         }
-        updatedBy {
-          id
-          name
-          avatar
-        }
         createdAt
       }
       paginator {
@@ -1102,10 +1062,8 @@ export const BRANCHES_WITH_PRODUCTS_QUERY = gql(`
           name
           image
           description
-          url
           brand
           code
-          color
           model
           categoryId
           category {
@@ -1134,25 +1092,23 @@ export const BRANCHES_WITH_PRODUCTS_QUERY = gql(`
               expiresAt
               unitType
             }
+            createdBy {
+              id
+              name
+              avatar
+            }
+            updatedBy {
+              id
+              name
+              avatar
+            }
           }
           weightValue
           weightType
           quantityValue
           quantityType
-          lowestRecordedPrice
-          highestRecordedPrice
           createdAt
           updatedAt
-          createdBy {
-            id
-            name
-            avatar
-          }
-          updatedBy {
-            id
-            name
-            avatar
-          }
           views
         }
       }

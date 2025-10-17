@@ -85,8 +85,6 @@ export const CREATE_STORE_MUTATION = gql(`
       name
       logo
       website
-      createdById
-      updatedById
     }
   }
 `);
@@ -146,10 +144,8 @@ export const CREATE_PRODUCT_MUTATION = gql(`
       name
       image
       description
-      url
       brand
       code
-      color
       model
       categoryId
       category {
@@ -160,8 +156,6 @@ export const CREATE_PRODUCT_MUTATION = gql(`
       }
       weightValue
       weightType
-      lowestRecordedPrice
-      highestRecordedPrice
       createdAt
       updatedAt
     }
@@ -175,10 +169,8 @@ export const UPDATE_PRODUCT_MUTATION = gql(`
       name
       image
       description
-      url
       brand
       code
-      color
       model
       categoryId
       category {
@@ -189,8 +181,6 @@ export const UPDATE_PRODUCT_MUTATION = gql(`
       }
       weightValue
       weightType
-      lowestRecordedPrice
-      highestRecordedPrice
       createdAt
       updatedAt
     }
@@ -217,30 +207,9 @@ export const CREATE_PRICE_MUTATION = gql(`
       amount
       currencyCode
       productId
-      product {
-        id
-        name
-        brand
-        category {
-          id
-          expandedPathname
-        }
-      }
       storeId
       stockId
-      store {
-        id
-        name
-      }
       branchId
-      branch {
-        id
-        name
-        address {
-          id
-          fullAddress
-        }
-      }
     }
   }
 `);

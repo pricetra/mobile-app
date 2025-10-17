@@ -5,13 +5,13 @@ import ProductMetadataBadge from './ProductMetadataBadge';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
-import { Product } from '@/graphql/types/graphql';
+import { Product, ProductSimple } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
 import { isSaleExpired } from '@/lib/utils';
 
 export type ProductItemHorizontalProps = {
-  product: Product;
+  product: ProductSimple | Product;
   imgWidth?: number;
 };
 
