@@ -1,17 +1,9 @@
 import { useLazyQuery, useQuery } from '@apollo/client';
-import { FontAwesome6, Octicons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Platform,
-  Text,
-  StyleProp,
-  ViewStyle,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Platform, Text, StyleProp, ViewStyle, TouchableOpacity } from 'react-native';
 
 import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
@@ -23,13 +15,11 @@ import TabSubHeaderProductFilter, {
 } from '@/components/ui/TabSubHeaderProductFilter';
 import { useHeader } from '@/context/HeaderContext';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
-import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
 import {
   AllStoresDocument,
   Branch,
   BranchesWithProductsDocument,
-  MySearchHistoryDocument,
   Paginator,
   ProductSearch,
 } from '@/graphql/types/graphql';
@@ -52,6 +42,8 @@ export default function HomeScreen() {
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
 
+  const params = useLocalSearchParams<{ search?: string }>();
+
   // keep accumulated results in state
   const [branches, setBranches] = useState<Branch[]>();
   const [paginator, setPaginator] = useState<Paginator>();
@@ -67,14 +59,7 @@ export default function HomeScreen() {
     },
   });
 
-  const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(MySearchHistoryDocument, {
-    fetchPolicy: 'network-only',
-    variables: { paginator: { page: 1, limit: 10 } },
-  });
-
   const [page, setPage] = useState(1);
-  const { search, searching, setSearching, searchOpen, handleSearch, setSearchOpen } =
-    useContext(SearchContext);
   const { location } = useLocationService();
   const { setSubHeader } = useHeader();
   const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
@@ -90,60 +75,56 @@ export default function HomeScreen() {
   const searchVariables = useMemo(
     () =>
       ({
-        query: search,
+        query: params.search,
         location: currentLocation.locationInput,
         categoryId: categoryFilterInput?.id,
       }) as ProductSearch,
-    [search, currentLocation, categoryFilterInput]
+    [params.search, currentLocation, categoryFilterInput]
   );
-
-  useEffect(() => {
-    if (!searchOpen) return;
-    getSearchHistory();
-  }, [searchOpen]);
 
   useFocusEffect(
     useCallback(() => {
       setSubHeader(
         <>
           <View className="h-[50px]">
-            {!searchOpen ? (
-              <View className="flex flex-row items-center gap-3 px-5 pb-0.5 pt-1">
-                <TouchableOpacity
-                  className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
-                  onPress={() => setSearchOpen(true)}>
-                  <Ionicons name="search" color="#6b7280" size={18} />
+            <View className="flex flex-row items-center gap-3 px-5 pb-0.5 pt-1">
+              <TouchableOpacity
+                className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
+                onPress={() => {
+                  const paramsBuilder = new URLSearchParams();
+                  if (params.search && params.search !== '') {
+                    paramsBuilder.append('search', encodeURIComponent(params.search));
+                  }
+                  router.push(`/(tabs)/search?${paramsBuilder.toString()}`);
+                }}>
+                <Ionicons name="search" color="#6b7280" size={18} />
+
+                {params.search && params.search.length > 0 ? (
+                  <Text className="flex-1 color-black" numberOfLines={1}>
+                    {params.search}
+                  </Text>
+                ) : (
                   <Text className="flex-1 color-[#6b7280]" numberOfLines={1}>
                     {getRandomElement(searchTaglines)}
                   </Text>
-                </TouchableOpacity>
+                )}
 
-                <TouchableOpacity
-                  onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
-                  className="p-2.5">
-                  <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View className="flex flex-row items-center justify-start gap-2 px-5 py-2">
-                  <View className="mr-5 flex flex-row items-center justify-center gap-2 rounded-full bg-white px-2 py-2">
-                    <Octicons name="history" size={15} color="black" />
-                    <Text className="font-bold">History</Text>
-                  </View>
+                {params.search && params.search.length > 0 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      router.setParams({ ...params, search: '' });
+                    }}>
+                    <Feather name="x-circle" size={20} color="#999" />
+                  </TouchableOpacity>
+                )}
+              </TouchableOpacity>
 
-                  {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
-                    <TouchableOpacity
-                      className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
-                      key={`sh-${id}`}
-                      onPress={() => handleSearch(searchTerm)}>
-                      <Text className="text-sm color-gray-500">{searchTerm}</Text>
-                      <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </ScrollView>
-            )}
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
+                className="p-2.5">
+                <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <TabSubHeaderProductFilter
@@ -154,7 +135,7 @@ export default function HomeScreen() {
         </>
       );
       return () => setSubHeader(undefined);
-    }, [categoryFilterInput, searchOpen, searchHistoryData])
+    }, [categoryFilterInput, params.search])
   );
 
   async function loadProducts(page = 1) {
@@ -184,7 +165,6 @@ export default function HomeScreen() {
       }
     } finally {
       setResetting(false);
-      if (searching) setSearching(false);
     }
   }
 
@@ -192,18 +172,13 @@ export default function HomeScreen() {
   useEffect(() => {
     setPage(1);
     loadProducts(1);
-  }, [search, categoryFilterInput, currentLocation]);
+  }, [params.search, categoryFilterInput, currentLocation]);
 
   // Load when page changes
   useEffect(() => {
     if (page === 1) return;
     loadProducts(page);
   }, [page]);
-
-  useEffect(() => {
-    if (!searchOpen) return;
-    getSearchHistory();
-  }, [searchOpen]);
 
   useEffect(() => {
     if (!location) return;

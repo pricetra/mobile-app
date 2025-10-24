@@ -1,4 +1,10 @@
-import { Feather, MaterialIcons, MaterialCommunityIcons, FontAwesome6 } from '@expo/vector-icons';
+import {
+  Feather,
+  MaterialIcons,
+  MaterialCommunityIcons,
+  FontAwesome6,
+  Ionicons,
+} from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React, { useContext } from 'react';
 import { Platform, Image } from 'react-native';
@@ -35,6 +41,16 @@ export default function TabLayout() {
           tabBarIcon: ({ size, color }) => <Feather name="home" size={size} color={color} />,
           tabBarShowLabel: false,
           tabBarStyle: { display: 'none' },
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Search',
+          tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />,
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
+          animation: 'shift',
         }}
       />
       <Tabs.Screen

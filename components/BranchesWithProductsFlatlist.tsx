@@ -1,6 +1,7 @@
 import { QueryResult } from '@apollo/client';
 import { router } from 'expo-router';
-import { useContext, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router/build/hooks';
+import { useState } from 'react';
 import {
   FlatList,
   Platform,
@@ -21,7 +22,6 @@ import LocationChangeButton from './ui/LocationChangeButton';
 import { Skeleton } from './ui/Skeleton';
 import { PartialCategory } from './ui/TabSubHeaderProductFilter';
 
-import { SearchContext } from '@/context/SearchContext';
 import {
   Branch,
   BranchesWithProductsQuery,
@@ -59,7 +59,7 @@ export default function BranchesWithProductsFlatlist({
   showLocationButton = true,
 }: BranchesWithProductsFlatlistProps) {
   const [refreshing, setRefreshing] = useState(false);
-  const { search } = useContext(SearchContext);
+  const { search: searchParam } = useLocalSearchParams<{ search?: string }>();
 
   return (
     <FlatList
@@ -68,7 +68,7 @@ export default function BranchesWithProductsFlatlist({
       indicatorStyle="black"
       ListHeaderComponent={
         <>
-          {!search && !categoryFilterInput?.id && stores && (
+          {!searchParam && !categoryFilterInput?.id && stores && (
             <FlatGrid
               data={[...stores, { id: 0 } as Store]}
               itemDimension={50}
@@ -103,8 +103,8 @@ export default function BranchesWithProductsFlatlist({
           }}
           onPressShowMore={() => {
             const params = new URLSearchParams();
-            if (search && search.length > 0) {
-              params.append('query', encodeURIComponent(search));
+            if (searchParam && searchParam.length > 0) {
+              params.append('query', encodeURIComponent(searchParam));
             }
             params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
             params.append('page', String(1));

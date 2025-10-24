@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { View, Text, Touchable, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 
 import ProductMetadataBadge from './ProductMetadataBadge';
+import AddToGroceryListActionButton from './ui/AddToGroceryListActionButton';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
@@ -9,9 +10,6 @@ import { Product, ProductSimple } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
 import { isSaleExpired } from '@/lib/utils';
-import Btn from '@/components/ui/Btn';
-import { Ionicons } from '@expo/vector-icons';
-import AddToGroceryListActionButton from './ui/AddToGroceryListActionButton';
 
 export type ProductItemHorizontalProps = {
   product: ProductSimple | Product;
