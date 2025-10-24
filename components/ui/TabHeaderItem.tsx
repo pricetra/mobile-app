@@ -2,13 +2,13 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router';
 import { ReactNode, useContext, useEffect, useState } from 'react';
-import { Platform, SafeAreaView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import { View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
+import TabHeaderContainer, { navConsts } from './TabHeaderContainer';
 import TabHeaderSearchBar from './TabHeaderSearchBar';
 
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
-import { cn } from '@/lib/utils';
 
 export type TabHeaderItemProps = BottomTabHeaderProps & {
   leftNav?: ReactNode;
@@ -16,13 +16,6 @@ export type TabHeaderItemProps = BottomTabHeaderProps & {
   showSearch?: boolean;
   onSearchChange?: (query: string | null | undefined) => void;
 };
-
-const iconSize = 20;
-const logoHeight = 23;
-const padding = 15;
-const navHeight = 2 * padding + logoHeight;
-
-const iconColor = '#333';
 
 export default function TabHeaderItem({
   leftNav,
@@ -35,8 +28,8 @@ export default function TabHeaderItem({
   const [openSearch, setOpenSearch] = useState(false);
 
   const iconStyles: StyleProp<ViewStyle> = {
-    paddingVertical: padding,
-    paddingHorizontal: padding + 5,
+    paddingVertical: navConsts.padding,
+    paddingHorizontal: navConsts.padding + 5,
   };
 
   useEffect(() => {
@@ -50,53 +43,44 @@ export default function TabHeaderItem({
   }, [search]);
 
   return (
-    <SafeAreaView
-      className={cn(
-        'flex w-full bg-white',
-        Platform.OS === 'android' ? 'shadow shadow-black/100' : 'border-b-[1px] border-neutral-100'
-      )}>
-      <View
-        className="w-full flex-row items-center justify-between gap-3"
-        style={{ marginTop: Platform.OS === 'android' ? 30 : 0, height: navHeight }}>
-        {openSearch ? (
-          <TabHeaderSearchBar
-            onBackPressed={() => {
-              handleSearch(null);
-              setOpenSearch(false);
-            }}
-            logoHeight={logoHeight}
-            padding={padding}
-            iconStyles={iconStyles}
-            iconColor={iconColor}
-            iconSize={iconSize}
-            updateSearch={handleSearch}
-            searchText={search}
-          />
-        ) : (
-          <>
-            <View className="flex flex-[2] flex-row items-center justify-start gap-1">
-              <TouchableOpacity onPress={() => router.back()} style={iconStyles}>
-                <Feather name="arrow-left" size={iconSize} color={iconColor} />
+    <TabHeaderContainer subHeader={subHeader}>
+      {openSearch ? (
+        <TabHeaderSearchBar
+          onBackPressed={() => {
+            handleSearch(null);
+            setOpenSearch(false);
+          }}
+          logoHeight={navConsts.logoHeight}
+          padding={navConsts.padding}
+          iconStyles={iconStyles}
+          iconColor={navConsts.iconColor}
+          iconSize={navConsts.iconSize}
+          updateSearch={handleSearch}
+          searchText={search}
+        />
+      ) : (
+        <>
+          <View className="flex flex-[2] flex-row items-center justify-start gap-1">
+            <TouchableOpacity onPress={() => router.back()} style={iconStyles}>
+              <Feather name="arrow-left" size={navConsts.iconSize} color={navConsts.iconColor} />
+            </TouchableOpacity>
+
+            {leftNav}
+          </View>
+
+          <View
+            className="flex flex-[1] flex-row items-center justify-end gap-3"
+            style={{ paddingHorizontal: iconStyles.paddingHorizontal }}>
+            {rightNav}
+
+            {showSearch && (
+              <TouchableOpacity onPress={() => setOpenSearch(true)}>
+                <Ionicons name="search" color={navConsts.iconColor} size={navConsts.iconSize} />
               </TouchableOpacity>
-
-              {leftNav}
-            </View>
-
-            <View
-              className="flex flex-[1] flex-row items-center justify-end gap-3"
-              style={{ paddingHorizontal: iconStyles.paddingHorizontal }}>
-              {rightNav}
-
-              {showSearch && (
-                <TouchableOpacity onPress={() => setOpenSearch(true)}>
-                  <Ionicons name="search" color={iconColor} size={iconSize} />
-                </TouchableOpacity>
-              )}
-            </View>
-          </>
-        )}
-      </View>
-      <View>{subHeader ? subHeader : <></>}</View>
-    </SafeAreaView>
+            )}
+          </View>
+        </>
+      )}
+    </TabHeaderContainer>
   );
 }

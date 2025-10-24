@@ -1,7 +1,7 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleProp, TextInput, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Keyboard, StyleProp, TextInput, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 export type TabHeaderSearchBarProps = {
   onBackPressed: () => void;
@@ -12,6 +12,7 @@ export type TabHeaderSearchBarProps = {
   iconSize: number;
   updateSearch: (text: string | null) => void;
   searchText?: string | null;
+  showSearchButton?: boolean;
 };
 
 export default function TabHeaderSearchBar({
@@ -23,6 +24,7 @@ export default function TabHeaderSearchBar({
   padding,
   updateSearch,
   searchText,
+  showSearchButton = false,
 }: TabHeaderSearchBarProps) {
   const [text, setText] = useState(searchText ?? '');
   useEffect(() => {
@@ -63,14 +65,16 @@ export default function TabHeaderSearchBar({
           </TouchableOpacity>
         )}
 
-        {/* <TouchableOpacity
-          onPress={() => {
-            updateSearch(text);
-            Keyboard.dismiss();
-          }}
-          className="flex items-center justify-center rounded-full bg-pricetraGreenHeavyDark p-2.5">
-          <Ionicons name="search" size={17} color="white" />
-        </TouchableOpacity> */}
+        {showSearchButton && (
+          <TouchableOpacity
+            onPress={() => {
+              updateSearch(text);
+              Keyboard.dismiss();
+            }}
+            className="flex items-center justify-center rounded-full bg-pricetraGreenHeavyDark p-2.5">
+            <Ionicons name="search" size={17} color="white" />
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
