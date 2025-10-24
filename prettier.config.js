@@ -7,4 +7,7 @@ module.exports = {
 
   plugins: [require.resolve('prettier-plugin-tailwindcss')],
   tailwindAttributes: ['className'],
+  rules: {
+    '@typescript-eslint/ban-types': 'error',
+  },
 };
