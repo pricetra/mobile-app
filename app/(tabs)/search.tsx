@@ -1,14 +1,30 @@
 import { useLazyQuery } from '@apollo/client';
-import { FontAwesome6, Octicons } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation, router, useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
-import { ScrollView, StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleProp,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 
+import { HORIZONTAL_PRODUCT_WIDTH } from '@/components/BranchesWithProductsFlatlist';
+import ProductItemHorizontal from '@/components/ProductItemHorizontal';
 import TabHeaderContainer, { navConsts } from '@/components/ui/TabHeaderContainer';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import TabHeaderSearchBar from '@/components/ui/TabHeaderSearchBar';
-import { MySearchHistoryDocument } from '@/graphql/types/graphql';
+import {
+  MyProductViewHistoryDocument,
+  MySearchHistoryDocument,
+  Product,
+} from '@/graphql/types/graphql';
 
 export default function SearchScreen() {
   const navigation = useNavigation();
@@ -20,38 +36,30 @@ export default function SearchScreen() {
   };
 
   const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(MySearchHistoryDocument, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'no-cache',
     variables: { paginator: { page: 1, limit: 10 } },
   });
+
+  const [getProductViewHistory, { data: productViewHistory }] = useLazyQuery(
+    MyProductViewHistoryDocument,
+    {
+      fetchPolicy: 'no-cache',
+      variables: { paginator: { page: 1, limit: 10 } },
+    }
+  );
 
   useFocusEffect(
     useCallback(() => {
       getSearchHistory();
+      getProductViewHistory();
+    }, [])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
       navigation.setOptions({
         header: (_props: BottomTabHeaderProps) => (
-          <TabHeaderContainer
-            subHeader={
-              <>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  <View className="flex flex-row items-center justify-start gap-2 px-5 py-2">
-                    <View className="mr-5 flex flex-row items-center justify-center gap-2 rounded-full bg-white px-2 py-2">
-                      <Octicons name="history" size={15} color="black" />
-                      <Text className="font-bold">History</Text>
-                    </View>
-
-                    {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
-                      <TouchableOpacity
-                        className="flex flex-row items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-2"
-                        key={`sh-${id}`}
-                        onPress={() => router.setParams({ search: searchTerm })}>
-                        <Text className="text-sm color-gray-500">{searchTerm}</Text>
-                        <FontAwesome6 name="up-right-from-square" size={8} color="#6b7280" />
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </ScrollView>
-              </>
-            }>
+          <TabHeaderContainer>
             <TabHeaderSearchBar
               onBackPressed={() => {
                 router.push('/(tabs)/');
@@ -73,13 +81,73 @@ export default function SearchScreen() {
           </TabHeaderContainer>
         ),
       });
+
       return () => {
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [search, searchHistoryData])
+    }, [search])
   );
 
-  return <></>;
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ScrollView keyboardShouldPersistTaps="always">
+        <View className="mb-5">
+          {productViewHistory && (
+            <>
+              <View className="p-5">
+                <Text className="text-2xl font-bold">Recent viewed</Text>
+              </View>
+
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={productViewHistory.myProductViewHistory.products}
+                keyExtractor={({ id }, i) => `${id}-${i}`}
+                renderItem={({ item: product }) => (
+                  <TouchableOpacity
+                    className="mr-4"
+                    onPress={() => {
+                      router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`, {
+                        relativeToDirectory: false,
+                      });
+                    }}
+                    style={{ width: HORIZONTAL_PRODUCT_WIDTH }}>
+                    <ProductItemHorizontal
+                      product={product as Product}
+                      imgWidth={HORIZONTAL_PRODUCT_WIDTH}
+                    />
+                  </TouchableOpacity>
+                )}
+                style={{ padding: 15 }}
+              />
+            </>
+          )}
+        </View>
+
+        <View className="mb-10">
+          {searchHistoryData && (
+            <>
+              <View className="p-5">
+                <Text className="text-2xl font-bold">Recent searches</Text>
+              </View>
+
+              {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
+                <TouchableOpacity
+                  className="my-1 flex flex-row items-center justify-between gap-2 px-5 py-3"
+                  key={`sh-${id}`}
+                  onPress={() => router.setParams({ search: searchTerm })}>
+                  <Text className="font-lg">{searchTerm}</Text>
+                  <FontAwesome6 name="up-right-from-square" size={12} color="#6b7280" />
+                </TouchableOpacity>
+              ))}
+            </>
+          )}
+        </View>
+      </ScrollView>
+
+      <View style={{ height: 100 }} />
+    </KeyboardAvoidingView>
+  );
 }
