@@ -1196,6 +1196,75 @@ export const MY_SEARCH_HISTORY_QUERY = gql(`
   }
 `);
 
+export const MY_PRODUCT_VIEW_HISTORY_QUERY = gql(`
+  query MyProductViewHistory($paginator: PaginatorInput!) {
+    myProductViewHistory(paginator: $paginator) {
+      products {
+        id
+        name
+        image
+        description
+        brand
+        code
+        model
+        categoryId
+        category {
+          id
+          name
+          expandedPathname
+          path
+        }
+        stock {
+          id
+          productId
+          storeId
+          branchId
+          latestPriceId
+          latestPrice {
+            id
+            productId
+            branchId
+            storeId
+            amount
+            currencyCode
+            createdAt
+            sale
+            originalPrice
+            condition
+            expiresAt
+            unitType
+          }
+          createdBy {
+            id
+            name
+            avatar
+          }
+          updatedBy {
+            id
+            name
+            avatar
+          }
+        }
+        weightValue
+        weightType
+        quantityValue
+        quantityType
+        createdAt
+        updatedAt
+        views
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
+      }
+    }
+  }
+`);
+
 export const PRODUCT_SEARCH_QUERY = gql(`
   query ProductSearch($paginator: PaginatorInput!, $search: String!) {
     productSearch(search: $search, paginator: $paginator) {
