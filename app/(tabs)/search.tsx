@@ -74,7 +74,7 @@ export default function SearchScreen() {
                   router.setParams({});
                   return;
                 }
-                router.push(`/(tabs)/?search=${t.trim()}`);
+                router.push(`/(tabs)/?search=${encodeURIComponent(t.trim())}`);
               }}
               searchText={search}
             />
@@ -137,7 +137,7 @@ export default function SearchScreen() {
                 <TouchableOpacity
                   className="my-1 flex flex-row items-center justify-between gap-2 px-5 py-3"
                   key={`sh-${id}`}
-                  onPress={() => router.setParams({ search: searchTerm })}>
+                  onPress={() => router.push(`/(tabs)/?search=${encodeURIComponent(searchTerm)}`)}>
                   <Text className="font-lg">{searchTerm}</Text>
                   <FontAwesome6 name="up-right-from-square" size={12} color="#6b7280" />
                 </TouchableOpacity>
