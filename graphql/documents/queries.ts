@@ -403,42 +403,12 @@ export const ALL_STORES_QUERY = gql(`
 `);
 
 export const FIND_STORE_QUERY = gql(`
-  query FindStore($storeId: ID!, $paginator: PaginatorInput!, $search: String, $location: LocationInput) {
+  query FindStore($storeId: ID!) {
     findStore(id: $storeId) {
       id
       name
       logo
       website
-    }
-
-    allBranches(storeId: $storeId, paginator: $paginator, search: $search, location: $location) {
-      branches {
-        id
-        name
-        addressId
-        storeId
-        address {
-          id
-          latitude
-          longitude
-          mapsLink
-          fullAddress
-          street
-          city
-          administrativeDivision
-          countryCode
-          country
-          zipCode
-        }
-      }
-      paginator {
-        next
-        page
-        prev
-        limit
-        total
-        numPages
-      }
     }
   }
 `);
@@ -1183,6 +1153,75 @@ export const MY_SEARCH_HISTORY_QUERY = gql(`
       searches {
         id
         searchTerm
+      }
+      paginator {
+        next
+        page
+        prev
+        limit
+        total
+        numPages
+      }
+    }
+  }
+`);
+
+export const MY_PRODUCT_VIEW_HISTORY_QUERY = gql(`
+  query MyProductViewHistory($paginator: PaginatorInput!) {
+    myProductViewHistory(paginator: $paginator) {
+      products {
+        id
+        name
+        image
+        description
+        brand
+        code
+        model
+        categoryId
+        category {
+          id
+          name
+          expandedPathname
+          path
+        }
+        stock {
+          id
+          productId
+          storeId
+          branchId
+          latestPriceId
+          latestPrice {
+            id
+            productId
+            branchId
+            storeId
+            amount
+            currencyCode
+            createdAt
+            sale
+            originalPrice
+            condition
+            expiresAt
+            unitType
+          }
+          createdBy {
+            id
+            name
+            avatar
+          }
+          updatedBy {
+            id
+            name
+            avatar
+          }
+        }
+        weightValue
+        weightType
+        quantityValue
+        quantityType
+        createdAt
+        updatedAt
+        views
       }
       paginator {
         next
