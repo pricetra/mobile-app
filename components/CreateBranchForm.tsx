@@ -7,9 +7,9 @@ import Btn from './ui/Btn';
 import { Input } from '@/components/ui/Input';
 import {
   AllBranchesDocument,
+  BranchesWithProductsDocument,
   CreateBranchFromFullAddressDocument,
   CreateBranchFromFullAddressMutation,
-  FindStoreDocument,
   Store,
 } from '@/graphql/types/graphql';
 
@@ -30,7 +30,7 @@ export default function CreateBranchForm({
   const [createBranch, { data, loading, error }] = useMutation(
     CreateBranchFromFullAddressDocument,
     {
-      refetchQueries: [AllBranchesDocument, FindStoreDocument],
+      refetchQueries: [AllBranchesDocument, BranchesWithProductsDocument],
     }
   );
 
