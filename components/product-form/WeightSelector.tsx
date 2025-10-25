@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TextInputProps, View } from 'react-native';
 import { AutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
 
@@ -29,16 +29,25 @@ export default function WeightSelector({ value, onChangeText, editable }: Weight
   const [measurement, setMeasurement] = useState<string>(parsedValue.measurement);
   const [unit, setUnit] = useState<AutocompleteDropdownItem>(parsedValue.unit);
 
+  const lastEmittedValue = useRef<string>(value);
+
   useEffect(() => {
-    const { measurement, unit } = getMeasurement(value);
-    setMeasurement(measurement);
-    setUnit(unit);
+    if (value === lastEmittedValue.current) return; // skip internal updates
+
+    const parsed = getMeasurement(value);
+    console.log('Value changed to: ', measurement, unit);
+    setMeasurement(parsed.measurement);
+    setUnit(parsed.unit);
   }, [value]);
 
   useEffect(() => {
-    if (!measurement || !unit) return;
-    const value = `${measurement} ${unit.id}`.trim();
-    onChangeText(value);
+    if (!measurement || !unit?.id) return;
+
+    const newValue = `${measurement} ${unit.id}`.trim();
+    if (newValue === value) return;
+
+    lastEmittedValue.current = newValue;
+    onChangeText(newValue);
   }, [measurement, unit]);
 
   return (
