@@ -64,7 +64,7 @@ export default function SelectedStoreScreen() {
     getBranchesWithProducts({
       variables: {
         paginator: {
-          limit: 2,
+          limit: 10,
           page,
         },
         productLimit: 10,
