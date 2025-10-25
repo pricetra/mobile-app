@@ -3,10 +3,10 @@ import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, RefreshControl, Platform } from 'react-native';
 
 import BranchProductItem from '@/components/BranchProductItem';
-import BranchesWithProductsFlatlist, {
+import {
   BranchesWithProductsFlatlistLoading,
   HORIZONTAL_PRODUCT_WIDTH,
 } from '@/components/BranchesWithProductsFlatlist';
@@ -15,6 +15,7 @@ import HorizontalShowMoreButton from '@/components/HorizontalShowMoreButton';
 import ProductItemHorizontal from '@/components/ProductItemHorizontal';
 import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
+import PaginationSimple from '@/components/ui/PaginationSimple';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
@@ -22,7 +23,6 @@ import {
   BranchesWithProductsDocument,
   FindStoreDocument,
   LocationInput,
-  PaginatorInput,
   Branch,
   Product,
 } from '@/graphql/types/graphql';
@@ -35,6 +35,8 @@ export default function SelectedStoreScreen() {
   const { storeId } = useLocalSearchParams<{ storeId: string }>();
   const { search, handleSearch, setSearching } = useContext(SearchContext);
   const [openModal, setOpenModal] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
   const [findStore, { data: storeData }] = useLazyQuery(FindStoreDocument);
   const [getBranchesWithProducts, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
     BranchesWithProductsDocument,
@@ -47,10 +49,6 @@ export default function SelectedStoreScreen() {
     latitude: user.address!.latitude,
     longitude: user.address!.longitude,
   });
-  const paginator: PaginatorInput = {
-    limit: 100,
-    page: 1,
-  };
 
   useEffect(() => {
     if (!location) return;
@@ -65,7 +63,10 @@ export default function SelectedStoreScreen() {
 
     getBranchesWithProducts({
       variables: {
-        paginator,
+        paginator: {
+          limit: 2,
+          page,
+        },
         productLimit: 10,
         filters: {
           storeId: storeData.findStore.id,
@@ -74,7 +75,7 @@ export default function SelectedStoreScreen() {
         },
       },
     });
-  }, [storeData, search, locationInput, storeId]);
+  }, [storeData, search, locationInput, storeId, page]);
 
   useFocusEffect(
     useCallback(() => {
@@ -114,6 +115,7 @@ export default function SelectedStoreScreen() {
       return () => {
         handleSearch(null);
         setSearching(false);
+        setPage(1);
         navigation.setOptions({
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
@@ -138,7 +140,7 @@ export default function SelectedStoreScreen() {
       )}
 
       {branchesLoading && (
-        <BranchesWithProductsFlatlistLoading showLocationButton={false} style={{ marginTop: 90 }} />
+        <BranchesWithProductsFlatlistLoading showLocationButton={false} style={{ marginTop: 80 }} />
       )}
 
       {storeData && !branchesLoading && branchesData && (
@@ -199,7 +201,34 @@ export default function SelectedStoreScreen() {
           )}
           ListHeaderComponent={
             <View className="mb-8 px-5 py-3">
-              <Text className="text-2xl font-bold">Locations for {storeData.findStore.name}</Text>
+              {branchesData.branchesWithProducts.paginator.total > 0 && (
+                <Text className="text-2xl font-bold">Locations for {storeData.findStore.name}</Text>
+              )}
+            </View>
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => {
+                setRefreshing(true);
+                setTimeout(() => {
+                  getCurrentLocation({}).finally(() => setRefreshing(false));
+                }, 500);
+              }}
+              colors={Platform.OS === 'ios' ? ['black'] : ['white']}
+              progressBackgroundColor="#111827"
+            />
+          }
+          ListFooterComponent={
+            <View className="px-5 py-5">
+              {branchesData.branchesWithProducts.paginator && (
+                <PaginationSimple
+                  paginator={branchesData.branchesWithProducts.paginator}
+                  onPageChange={setPage}
+                />
+              )}
+
+              <View style={{ height: 100 }} />
             </View>
           }
           style={{ paddingVertical: 15 }}
