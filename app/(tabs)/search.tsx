@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import { FontAwesome6 } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation, router, useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
@@ -97,7 +97,7 @@ export default function SearchScreen() {
           {productViewHistory && (
             <>
               <View className="p-5">
-                <Text className="text-2xl font-bold">Recent viewed</Text>
+                <Text className="text-2xl font-bold">Recently viewed</Text>
               </View>
 
               <FlatList
@@ -139,7 +139,7 @@ export default function SearchScreen() {
                   key={`sh-${id}`}
                   onPress={() => router.push(`/(tabs)/?search=${encodeURIComponent(searchTerm)}`)}>
                   <Text className="font-lg">{searchTerm}</Text>
-                  <FontAwesome6 name="up-right-from-square" size={12} color="#6b7280" />
+                  <Ionicons name="search" size={15} color="#555" />
                 </TouchableOpacity>
               ))}
             </>
