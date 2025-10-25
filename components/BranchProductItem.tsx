@@ -36,7 +36,7 @@ export default function BranchProductItem({
             )}
 
             <View className="flex w-full flex-row flex-wrap items-center gap-x-3 gap-y-1">
-              <Text className="text-md font-bold" numberOfLines={1}>
+              <Text className="text-md max-w-[80%] font-bold" numberOfLines={1}>
                 {displayBranchName ? branch.name : branch.store?.name}
               </Text>
 
