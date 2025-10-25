@@ -403,42 +403,12 @@ export const ALL_STORES_QUERY = gql(`
 `);
 
 export const FIND_STORE_QUERY = gql(`
-  query FindStore($storeId: ID!, $paginator: PaginatorInput!, $search: String, $location: LocationInput) {
+  query FindStore($storeId: ID!) {
     findStore(id: $storeId) {
       id
       name
       logo
       website
-    }
-
-    allBranches(storeId: $storeId, paginator: $paginator, search: $search, location: $location) {
-      branches {
-        id
-        name
-        addressId
-        storeId
-        address {
-          id
-          latitude
-          longitude
-          mapsLink
-          fullAddress
-          street
-          city
-          administrativeDivision
-          countryCode
-          country
-          zipCode
-        }
-      }
-      paginator {
-        next
-        page
-        prev
-        limit
-        total
-        numPages
-      }
     }
   }
 `);
