@@ -131,7 +131,7 @@ export default function SelectedBranchScreen() {
             {...props}
             showSearch={false}
             leftNav={
-              <View className="flex flex-row items-center gap-2">
+              <View className="flex flex-1 flex-row items-center gap-2">
                 <Image
                   src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
                   className="size-[30px] rounded-lg"
@@ -141,7 +141,7 @@ export default function SelectedBranchScreen() {
                     {branchData.findStore.name}
                   </Text>
                   {branchData.findBranch.address && (
-                    <Text className="w-[80%] text-xs" numberOfLines={1}>
+                    <Text className="text-xs" numberOfLines={1}>
                       {branchData.findBranch.address.fullAddress}
                     </Text>
                   )}

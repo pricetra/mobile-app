@@ -3,24 +3,29 @@ import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-  RefreshControl,
-  Platform,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 
+import BranchProductItem from '@/components/BranchProductItem';
+import BranchesWithProductsFlatlist, {
+  BranchesWithProductsFlatlistLoading,
+  HORIZONTAL_PRODUCT_WIDTH,
+} from '@/components/BranchesWithProductsFlatlist';
 import CreateBranchForm from '@/components/CreateBranchForm';
+import HorizontalShowMoreButton from '@/components/HorizontalShowMoreButton';
+import ProductItemHorizontal from '@/components/ProductItemHorizontal';
 import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import { FindStoreDocument, LocationInput, PaginatorInput } from '@/graphql/types/graphql';
+import {
+  BranchesWithProductsDocument,
+  FindStoreDocument,
+  LocationInput,
+  PaginatorInput,
+  Branch,
+  Product,
+} from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 
@@ -30,7 +35,13 @@ export default function SelectedStoreScreen() {
   const { storeId } = useLocalSearchParams<{ storeId: string }>();
   const { search, handleSearch, setSearching } = useContext(SearchContext);
   const [openModal, setOpenModal] = useState(false);
-  const [findStore, { data: storeData, loading: storeLoading }] = useLazyQuery(FindStoreDocument);
+  const [findStore, { data: storeData }] = useLazyQuery(FindStoreDocument);
+  const [getBranchesWithProducts, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
+    BranchesWithProductsDocument,
+    {
+      fetchPolicy: 'no-cache',
+    }
+  );
   const { location, getCurrentLocation } = useLocationService();
   const [locationInput, setLocationInput] = useState<LocationInput>({
     latitude: user.address!.latitude,
@@ -50,25 +61,26 @@ export default function SelectedStoreScreen() {
   }, [location]);
 
   useEffect(() => {
-    findStore({
+    if (!storeData) return;
+
+    getBranchesWithProducts({
       variables: {
-        storeId: +storeId,
         paginator,
-        location: locationInput,
-        search,
+        productLimit: 10,
+        filters: {
+          storeId: storeData.findStore.id,
+          location: locationInput,
+          query: search,
+        },
       },
     });
-  }, [search]);
+  }, [storeData, search, locationInput, storeId]);
 
   useFocusEffect(
     useCallback(() => {
       if (!storeId) return router.back();
       findStore({
-        variables: {
-          storeId: +storeId,
-          paginator,
-          location: locationInput,
-        },
+        variables: { storeId: +storeId },
       }).then(({ data }) => {
         if (!data) return;
 
@@ -110,62 +122,94 @@ export default function SelectedStoreScreen() {
   );
 
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl
-          refreshing={storeLoading}
-          onRefresh={async () => {
-            await getCurrentLocation({});
-          }}
-          colors={Platform.OS === 'ios' ? ['black'] : ['white']}
-          progressBackgroundColor="#111827"
-        />
-      }>
-      <SafeAreaView className="h-full">
-        {storeData && (
-          <ModalFormMini
-            visible={openModal}
-            onRequestClose={() => setOpenModal(false)}
-            title="Add Branch">
-            <CreateBranchForm
-              store={storeData.findStore}
-              onSuccess={(_data) => setOpenModal(false)}
-              onError={(e) => alert(e.message)}
-              onCloseModal={() => setOpenModal(false)}
-            />
-          </ModalFormMini>
-        )}
+    <>
+      {storeData && (
+        <ModalFormMini
+          visible={openModal}
+          onRequestClose={() => setOpenModal(false)}
+          title="Add Branch">
+          <CreateBranchForm
+            store={storeData.findStore}
+            onSuccess={(_data) => setOpenModal(false)}
+            onError={(e) => alert(e.message)}
+            onCloseModal={() => setOpenModal(false)}
+          />
+        </ModalFormMini>
+      )}
 
-        <View className="p-5">
-          {storeLoading && (
-            <View className="flex h-40 w-full items-center justify-center px-10">
-              <ActivityIndicator color="#555" size="large" />
+      {branchesLoading && (
+        <BranchesWithProductsFlatlistLoading showLocationButton={false} style={{ marginTop: 90 }} />
+      )}
+
+      {storeData && !branchesLoading && branchesData && (
+        <FlatList
+          nestedScrollEnabled
+          showsVerticalScrollIndicator={false}
+          data={branchesData.branchesWithProducts.branches}
+          keyExtractor={({ id }) => `branch-${id}`}
+          renderItem={({ item: branch }) => (
+            <View className="mb-14">
+              <View className="mb-7 px-5">
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`)
+                  }>
+                  <BranchProductItem branch={branch as Branch} hideStoreLogo displayBranchName />
+                </TouchableOpacity>
+              </View>
+
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={branch.products}
+                keyExtractor={({ id }, i) => `${id}-${i}`}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`, {
+                        relativeToDirectory: false,
+                      })
+                    }
+                    style={{
+                      width: HORIZONTAL_PRODUCT_WIDTH,
+                      marginRight: 16,
+                    }}>
+                    <ProductItemHorizontal
+                      product={item as Product}
+                      imgWidth={HORIZONTAL_PRODUCT_WIDTH}
+                    />
+                  </TouchableOpacity>
+                )}
+                contentContainerStyle={{ paddingHorizontal: 15 }}
+                ListFooterComponent={() =>
+                  (branch.products?.length ?? 0) > 0 ? (
+                    <HorizontalShowMoreButton
+                      onPress={() =>
+                        router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`, {
+                          relativeToDirectory: false,
+                        })
+                      }
+                      heightDiv={1}
+                      width={HORIZONTAL_PRODUCT_WIDTH}
+                    />
+                  ) : undefined
+                }
+              />
             </View>
           )}
-          <View>
-            {storeData &&
-              (storeData.allBranches.branches.length > 0 ? (
-                storeData.allBranches.branches.map((b) => (
-                  <TouchableOpacity
-                    onPress={() => router.push(`/(stores)/${b.storeId}/branch/${b.id}`)}
-                    key={b.id}
-                    className="mb-8 flex flex-row items-center justify-between gap-3">
-                    <View className="flex flex-1 flex-col gap-1">
-                      <Text className="font-bold">{b.name}</Text>
-                      <Text className="text-sm color-gray-700">{b.address?.fullAddress}</Text>
-                    </View>
-
-                    <View>
-                      <Feather name="chevron-right" size={20} color="black" />
-                    </View>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Text className="text-center text-gray-600">No branches on this store</Text>
-              ))}
-          </View>
-        </View>
-      </SafeAreaView>
-    </ScrollView>
+          ListHeaderComponent={
+            <View className="mb-8 px-5 py-3">
+              <Text className="text-2xl font-bold">Locations for {storeData.findStore.name}</Text>
+            </View>
+          }
+          style={{ paddingVertical: 15 }}
+          ListEmptyComponent={
+            <View className="flex items-center justify-center px-5 py-10">
+              <Text>No branches found for this store.</Text>
+            </View>
+          }
+        />
+      )}
+    </>
   );
 }
