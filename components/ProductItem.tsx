@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 
 import ProductMetadataBadge from './ProductMetadataBadge';
 import ProductStockMini from './ProductStockMini';
+import AddToGroceryListActionButton from './ui/AddToGroceryListActionButton';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
@@ -10,18 +11,22 @@ import { Product } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
 import { cn, isSaleExpired } from '@/lib/utils';
-import AddToGroceryListActionButton from './ui/AddToGroceryListActionButton';
 
-export type ProductItemProps = {
-  hideStoreInfo?: boolean;
-  product: Product;
+export type ProductItemOptionalProps = {
   imgWidth?: number;
+  hideStoreInfo?: boolean;
+  hideAddButton?: boolean;
+};
+
+export type ProductItemProps = ProductItemOptionalProps & {
+  product: Product;
 };
 
 export default function ProductItem({
   product,
   hideStoreInfo = false,
   imgWidth = 130,
+  hideAddButton = false,
 }: ProductItemProps) {
   const isExpired = useMemo(
     () => (product.stock?.latestPrice ? isSaleExpired(product.stock.latestPrice) : false),
@@ -45,7 +50,7 @@ export default function ProductItem({
           </View>
         )}
 
-        <AddToGroceryListActionButton productId={product.id} />
+        {!hideAddButton && <AddToGroceryListActionButton productId={product.id} />}
 
         <Image
           src={createCloudinaryUrl(product.code, 500)}
