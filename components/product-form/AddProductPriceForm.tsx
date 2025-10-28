@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
+import ProductItem from '../ProductItem';
 import { Checkbox } from '../ui/Checkbox';
 import Input from '../ui/Input';
 
@@ -22,8 +23,10 @@ import {
   FavoriteBranchesWithPricesDocument,
   FindBranchesByDistanceDocument,
   GetProductStocksDocument,
+  GetStockFromProductAndBranchIdDocument,
   Price,
   Product,
+  Stock,
   StockDocument,
   UserRole,
 } from '@/graphql/types/graphql';
@@ -49,6 +52,9 @@ export default function AddProductPriceForm({
     FindBranchesByDistanceDocument,
     { fetchPolicy: 'no-cache' }
   );
+  const [getStock, { data: stockData }] = useLazyQuery(GetStockFromProductAndBranchIdDocument, {
+    fetchPolicy: 'no-cache',
+  });
   const [createPrice, { loading }] = useMutation(CreatePriceDocument, {
     refetchQueries: [
       StockDocument,
@@ -61,6 +67,8 @@ export default function AddProductPriceForm({
   const [priceUnit, setPriceUnit] = useState<string>('item');
   const { location, getCurrentLocation } = useLocationService();
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
 
   useEffect(() => {
     if (!location) {
@@ -80,6 +88,16 @@ export default function AddProductPriceForm({
     if (!branchesData) return;
     setBranchId(branchesData.findBranchesByDistance.at(0)?.id?.toString());
   }, [branchesData]);
+
+  useEffect(() => {
+    if (!branchId) return;
+    getStock({
+      variables: {
+        productId: product.id,
+        branchId: +branchId,
+      },
+    });
+  }, [branchId]);
 
   if (branchesLoading)
     return (
@@ -106,8 +124,19 @@ export default function AddProductPriceForm({
     );
   }
 
+  console.log(stockData?.getStockFromProductAndBranchId?.latestPrice);
+
   return (
     <View className="mb-10 flex gap-10">
+      <View className="rounded-xl bg-gray-100 p-3">
+        <ProductItem
+          product={{ ...product, stock: stockData?.getStockFromProductAndBranchId as Stock }}
+          hideAddButton
+          hideStoreInfo
+          imgWidth={100}
+        />
+      </View>
+
       <Combobox
         initialValue={branchId}
         dataSet={branchesData.findBranchesByDistance.map((b) => ({
@@ -159,7 +188,7 @@ export default function AddProductPriceForm({
               branchId: +branchId,
               amount: 0.0,
               sale: false,
-              expiresAt: dayjs(new Date()).add(7, 'day').toDate(),
+              expiresAt: nextWeek,
             } as CreatePrice
           }
           onSubmit={(input, formik) => {

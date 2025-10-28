@@ -265,7 +265,7 @@ export default function ProductScreen() {
 
   return (
     <>
-      <ModalFormMini
+      <ModalFormFull
         title="Add Price"
         visible={openPriceModal}
         onRequestClose={() => setOpenPriceModal(false)}>
@@ -280,7 +280,7 @@ export default function ProductScreen() {
           }}
           onError={(e) => alert(e.message)}
         />
-      </ModalFormMini>
+      </ModalFormFull>
 
       <ModalFormMini
         title="Watch Stock"
