@@ -1282,3 +1282,31 @@ export const WEIGHT_COMPONENTS_FROM_CATEGORY_ID_QUERY = gql(`
     }
   }
 `);
+
+export const GET_STOCK_FROM_PRODUCT_AND_BRANCH_ID_QUERY = gql(`
+  query GetStockFromProductAndBranchId($productId: ID!, $branchId: ID!) {
+    getStockFromProductAndBranchId(productId: $productId, branchId: $branchId) {
+      id
+        productId
+        storeId
+        branchId
+        latestPriceId
+        latestPrice {
+          id
+          productId
+          branchId
+          storeId
+          amount
+          currencyCode
+          sale
+          originalPrice
+          condition
+          expiresAt
+          createdAt
+          unitType
+        }
+        createdAt
+        updatedAt
+    }
+  }
+`);
