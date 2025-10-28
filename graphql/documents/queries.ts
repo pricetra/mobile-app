@@ -1287,26 +1287,26 @@ export const GET_STOCK_FROM_PRODUCT_AND_BRANCH_ID_QUERY = gql(`
   query GetStockFromProductAndBranchId($productId: ID!, $branchId: ID!) {
     getStockFromProductAndBranchId(productId: $productId, branchId: $branchId) {
       id
+      productId
+      storeId
+      branchId
+      latestPriceId
+      latestPrice {
+        id
         productId
-        storeId
         branchId
-        latestPriceId
-        latestPrice {
-          id
-          productId
-          branchId
-          storeId
-          amount
-          currencyCode
-          sale
-          originalPrice
-          condition
-          expiresAt
-          createdAt
-          unitType
-        }
+        storeId
+        amount
+        currencyCode
+        sale
+        originalPrice
+        condition
+        expiresAt
         createdAt
-        updatedAt
+        unitType
+      }
+      createdAt
+      updatedAt
     }
   }
 `);
