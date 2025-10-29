@@ -2,7 +2,7 @@ import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { Formik, FormikErrors, FormikProps, useFormikContext } from 'formik';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
@@ -64,6 +64,13 @@ export default function AddProductPriceForm({
     ],
   });
   const [branchId, setBranchId] = useState<string>();
+  const selectedBranch = useMemo(
+    () =>
+      branchId
+        ? branchesData?.findBranchesByDistance?.find(({ id }) => branchId === String(id))
+        : undefined,
+    [branchId, branchesData]
+  );
   const { location, getCurrentLocation } = useLocationService();
 
   const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
@@ -125,7 +132,7 @@ export default function AddProductPriceForm({
   }
 
   return (
-    <View className="mb-10 flex gap-10">
+    <View className="mb-10 flex gap-5">
       <View className="rounded-xl border-[1px] border-gray-200 bg-gray-50 p-3">
         <ProductItem
           product={{ ...product, stock: stockData?.getStockFromProductAndBranchId as Stock }}
@@ -135,36 +142,46 @@ export default function AddProductPriceForm({
         />
       </View>
 
-      <Combobox
-        initialValue={branchId}
-        dataSet={branchesData.findBranchesByDistance.map((b) => ({
-          id: b.id.toString(),
-          title: b.name,
-          description: b.address?.fullAddress,
-          logo: b.store?.logo,
-        }))}
-        onSelectItem={(data) => {
-          if (!data) return;
-          setBranchId(data.id);
-        }}
-        textInputProps={{
-          placeholder: 'Select Branch',
-          value: branchesData.findBranchesByDistance?.find(({ id }) => id.toString() === branchId)
-            ?.name,
-        }}
-        renderItem={(item: any) => (
-          <View className="flex flex-row items-center gap-2 p-3">
-            <Image
-              src={createCloudinaryUrl(item.logo ?? '', 100, 100)}
-              className="size-[35px] rounded-lg"
-            />
-            <View>
-              <Text className="text font-semibold">{item.title}</Text>
-              <Text className="text-xs">{item.description}</Text>
-            </View>
-          </View>
+      <View className="mb-7 flex flex-row items-center justify-center gap-2">
+        {branchId && selectedBranch && (
+          <Image
+            src={createCloudinaryUrl(selectedBranch.store?.logo ?? '', 500, 500)}
+            className="size-[55px] rounded-xl border-[1px] border-gray-200"
+          />
         )}
-      />
+
+        <Combobox
+          initialValue={branchId}
+          dataSet={branchesData.findBranchesByDistance.map((b) => ({
+            id: b.id.toString(),
+            title: b.name,
+            description: b.address?.fullAddress,
+            logo: b.store?.logo,
+          }))}
+          onSelectItem={(data) => {
+            if (!data) return;
+            setBranchId(data.id);
+          }}
+          textInputProps={{
+            placeholder: 'Select Branch',
+            value: branchesData.findBranchesByDistance?.find(({ id }) => id.toString() === branchId)
+              ?.name,
+          }}
+          renderItem={(item: any) => (
+            <View className="flex flex-row items-center gap-2 p-3">
+              <Image
+                src={createCloudinaryUrl(item.logo ?? '', 100, 100)}
+                className="size-[35px] rounded-lg"
+              />
+              <View>
+                <Text className="text font-semibold">{item.title}</Text>
+                <Text className="text-xs">{item.description}</Text>
+              </View>
+            </View>
+          )}
+          containerStyle={{ flex: 1 }}
+        />
+      </View>
 
       {branchId && (
         <Formik
