@@ -26,9 +26,18 @@ import {
   Product,
 } from '@/graphql/types/graphql';
 
+export type SearchRouteParams = {
+  query?: string;
+  categoryId?: string;
+  category?: string;
+  brand?: string;
+  sale?: string;
+  sortByPrice?: string;
+};
+
 export default function SearchScreen() {
   const navigation = useNavigation();
-  const { search } = useLocalSearchParams<{ search?: string }>();
+  const params = useLocalSearchParams<{ search?: string }>();
 
   const iconStyles: StyleProp<ViewStyle> = {
     paddingVertical: navConsts.padding,
@@ -55,6 +64,12 @@ export default function SearchScreen() {
     }, [])
   );
 
+  function performSearch(search: string) {
+    const sp = new URLSearchParams(params);
+    sp.set('query', encodeURIComponent(search.trim()));
+    router.push(`/(tabs)/?${sp.toString()}`);
+  }
+
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({
@@ -62,7 +77,7 @@ export default function SearchScreen() {
           <TabHeaderContainer>
             <TabHeaderSearchBar
               onBackPressed={() => {
-                router.push('/(tabs)/');
+                router.back();
               }}
               logoHeight={navConsts.logoHeight}
               padding={navConsts.padding}
@@ -74,9 +89,10 @@ export default function SearchScreen() {
                   router.setParams({});
                   return;
                 }
-                router.push(`/(tabs)/?search=${encodeURIComponent(t.trim())}`);
+
+                performSearch(t);
               }}
-              searchText={search}
+              searchText={params.search}
             />
           </TabHeaderContainer>
         ),
@@ -87,7 +103,7 @@ export default function SearchScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [search])
+    }, [params.search])
   );
 
   return (
@@ -137,7 +153,7 @@ export default function SearchScreen() {
                 <TouchableOpacity
                   className="my-1 flex flex-row items-center justify-between gap-2 px-5 py-3"
                   key={`sh-${id}`}
-                  onPress={() => router.push(`/(tabs)/?search=${encodeURIComponent(searchTerm)}`)}>
+                  onPress={() => performSearch(searchTerm)}>
                   <Text className="font-lg">{searchTerm}</Text>
                   <Ionicons name="search" size={15} color="#555" />
                 </TouchableOpacity>

@@ -5,6 +5,7 @@ import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'exp
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 
+import { SearchRouteParams } from '@/app/(tabs)/search';
 import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
 import Image from '@/components/ui/Image';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
@@ -25,16 +26,12 @@ import {
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { extractUndefined, stringToNumber, toBoolean } from '@/lib/utils';
+import SearchFilters from '@/components/ui/SearchFilters';
 
-export type BranchQueryParams = {
+export type BranchQueryParams = SearchRouteParams & {
   storeId: string;
   branchId: string;
-  query?: string;
-  categoryId?: string;
-  category?: string;
   page?: string;
-  sale?: string;
-  sortByPrice?: string;
 };
 
 export default function SelectedBranchScreen() {
@@ -50,6 +47,7 @@ export default function SelectedBranchScreen() {
     page = String(1),
     sale,
     sortByPrice,
+    brand,
   } = params;
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
@@ -71,6 +69,7 @@ export default function SelectedBranchScreen() {
     () =>
       ({
         query: extractUndefined(query),
+        brand,
         category,
         categoryId: stringToNumber(categoryId),
         branchId: +branchId,
@@ -78,7 +77,7 @@ export default function SelectedBranchScreen() {
         sale: sale ? toBoolean(sale) : undefined,
         sortByPrice,
       }) as ProductSearch,
-    [query, category, categoryId, branchId, storeId, sale, sortByPrice]
+    [query, category, categoryId, branchId, storeId, sale, sortByPrice, brand]
   );
 
   function handleSearch(s?: string) {
@@ -238,6 +237,11 @@ export default function SelectedBranchScreen() {
       <ProductFlatlist
         products={products}
         paginator={productsData?.allProducts.paginator}
+        ListHeaderComponent={
+          <View className="mb-10 px-5">
+            <SearchFilters params={params} />
+          </View>
+        }
         handleRefresh={async () => {
           return getAllProducts({
             variables: {

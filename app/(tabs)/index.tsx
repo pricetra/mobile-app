@@ -5,14 +5,14 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Platform, Text, StyleProp, ViewStyle, TouchableOpacity } from 'react-native';
 
+import { SearchRouteParams } from './search';
+
 import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
 } from '@/components/BranchesWithProductsFlatlist';
 import ProductSearchFilterModal from '@/components/ProductSearchFilterModal';
 import ModalFormMini from '@/components/ui/ModalFormMini';
-import TabSubHeaderProductFilter, {
-  PartialCategory,
-} from '@/components/ui/TabSubHeaderProductFilter';
+import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
 import { useHeader } from '@/context/HeaderContext';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/UserContext';
@@ -42,7 +42,7 @@ export default function HomeScreen() {
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
 
-  const params = useLocalSearchParams<{ search?: string }>();
+  const params = useLocalSearchParams<SearchRouteParams>();
 
   // keep accumulated results in state
   const [branches, setBranches] = useState<Branch[]>();
@@ -62,7 +62,6 @@ export default function HomeScreen() {
   const [page, setPage] = useState(1);
   const { location } = useLocationService();
   const { setSubHeader } = useHeader();
-  const [categoryFilterInput, setCategoryFilterInput] = useState<PartialCategory>();
   const [address, setAddress] = useState(user.address?.fullAddress);
   const [openLocationModal, setOpenLocationModal] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -75,11 +74,12 @@ export default function HomeScreen() {
   const searchVariables = useMemo(
     () =>
       ({
-        query: params.search,
+        query: params.query,
         location: currentLocation.locationInput,
-        categoryId: categoryFilterInput?.id,
+        categoryId: params?.categoryId ? +params.categoryId : undefined,
+        brand: params.brand,
       }) as ProductSearch,
-    [params.search, currentLocation, categoryFilterInput]
+    [params.query, params.categoryId, params.brand, currentLocation]
   );
 
   useFocusEffect(
@@ -91,17 +91,14 @@ export default function HomeScreen() {
               <TouchableOpacity
                 className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
                 onPress={() => {
-                  const paramsBuilder = new URLSearchParams();
-                  if (params.search && params.search !== '') {
-                    paramsBuilder.append('search', encodeURIComponent(params.search));
-                  }
+                  const paramsBuilder = new URLSearchParams(params);
                   router.push(`/(tabs)/search?${paramsBuilder.toString()}`);
                 }}>
                 <Ionicons name="search" color="#6b7280" size={18} />
 
-                {params.search && params.search.length > 0 ? (
+                {params.query && params.query.length > 0 ? (
                   <Text className="flex-1 color-black" numberOfLines={1}>
-                    {params.search}
+                    {params.query}
                   </Text>
                 ) : (
                   <Text className="flex-1 color-[#6b7280]" numberOfLines={1}>
@@ -109,10 +106,10 @@ export default function HomeScreen() {
                   </Text>
                 )}
 
-                {params.search && params.search.length > 0 && (
+                {params.query && params.query.length > 0 && (
                   <TouchableOpacity
                     onPress={() => {
-                      router.setParams({ ...params, search: '' });
+                      router.setParams({ ...params, query: '' });
                     }}>
                     <Feather name="x-circle" size={20} color="#999" />
                   </TouchableOpacity>
@@ -128,14 +125,16 @@ export default function HomeScreen() {
           </View>
 
           <TabSubHeaderProductFilter
-            selectedCategoryId={categoryFilterInput?.id}
-            onSelectCategory={(c) => setCategoryFilterInput(c)}
+            selectedCategoryId={params.categoryId}
+            onSelectCategory={(c) =>
+              router.setParams({ ...params, categoryId: c.id, category: c.name })
+            }
             onFiltersButtonPressed={() => {}}
           />
         </>
       );
       return () => setSubHeader(undefined);
-    }, [categoryFilterInput, params.search])
+    }, [params.query, params.categoryId])
   );
 
   async function loadProducts(page = 1) {
@@ -168,11 +167,10 @@ export default function HomeScreen() {
     }
   }
 
-  // Reset on filter/search/location changes
   useEffect(() => {
     setPage(1);
     loadProducts(1);
-  }, [params.search, categoryFilterInput, currentLocation]);
+  }, [searchVariables, currentLocation]);
 
   // Load when page changes
   useEffect(() => {
@@ -239,7 +237,6 @@ export default function HomeScreen() {
         handleRefresh={() => loadProducts(1)}
         setPage={setPage}
         style={style}
-        categoryFilterInput={categoryFilterInput}
         stores={allStoresData?.allStores?.stores}
         onLocationButtonPressed={() => setOpenLocationModal(true)}
         loading={loading}

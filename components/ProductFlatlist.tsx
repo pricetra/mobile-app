@@ -1,6 +1,6 @@
 import { QueryResult } from '@apollo/client';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   Platform,
   RefreshControl,
@@ -30,6 +30,7 @@ export type ProductFlatlistProps = {
   setPage: (page: number) => void;
   style?: StyleProp<ViewStyle>;
   onItemPress?: (product: Product) => void;
+  ListHeaderComponent?: ReactNode;
 };
 
 export default function ProductFlatlist({
@@ -39,6 +40,7 @@ export default function ProductFlatlist({
   setPage,
   style,
   onItemPress,
+  ListHeaderComponent,
 }: ProductFlatlistProps) {
   const [refreshing, setRefreshing] = useState(false);
 
@@ -49,6 +51,7 @@ export default function ProductFlatlist({
       indicatorStyle="black"
       spacing={20}
       itemDimension={itemDimension}
+      ListHeaderComponent={() => ListHeaderComponent}
       renderItem={({ item }) => (
         <TouchableOpacity
           onPress={() => {
