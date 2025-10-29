@@ -20,9 +20,11 @@ import { useAuth } from '@/context/UserContext';
 import {
   BarcodeScanDocument,
   ExtractAndCreateProductDocument,
+  LocationInput,
   Product,
   UserRole,
 } from '@/graphql/types/graphql';
+import useLocationService from '@/hooks/useLocationService';
 import { isRoleAuthorized } from '@/lib/roles';
 
 export default function ScanScreen() {
@@ -35,6 +37,8 @@ export default function ScanScreen() {
   const [scannedCode, setScannedCode] = useState<string>();
   const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
+
+  const { getCurrentLocation, permissionGranted } = useLocationService();
 
   const [barcodeScan] = useLazyQuery(BarcodeScanDocument);
   const [extractProductFields, { loading: extractingProduct }] = useMutation(
@@ -68,18 +72,20 @@ export default function ScanScreen() {
     );
   }
 
-  function toProductPage(productId: number) {
-    router.push(`/(tabs)/(products)/${productId}`, { relativeToDirectory: false });
+  function toProductPage(productId: number, stockId?: number) {
+    const p = new URLSearchParams();
+    if (stockId) p.append('stockId', String(stockId));
+    router.push(`/(tabs)/(products)/${productId}?${p.toString()}`, { relativeToDirectory: false });
   }
 
-  function _handleBarcodeScan(barcode: string, searchMode?: boolean) {
+  function _handleBarcodeScan(barcode: string, searchMode?: boolean, location?: LocationInput) {
     setScannedCode(barcode);
 
     barcodeScan({
-      variables: { barcode, searchMode },
+      variables: { barcode, searchMode, location },
     }).then(({ error, data }) => {
       if (!error && data) {
-        return toProductPage(data.barcodeScan.id);
+        return toProductPage(data.barcodeScan.id, data.barcodeScan.stock?.id);
       }
 
       setRenderCameraComponent(false);
@@ -208,8 +214,17 @@ export default function ScanScreen() {
             barcodeTypes,
           }}
           onMountError={(e) => Alert.alert('Camera mount error', e.message)}
-          onBarcodeScanned={(res) => {
-            debouncedHandleBarcodeScan(res.data);
+          onBarcodeScanned={async (res) => {
+            let location: LocationInput | undefined = undefined;
+            if (permissionGranted) {
+              const coords = await getCurrentLocation({});
+              location = {
+                latitude: coords.coords.latitude,
+                longitude: coords.coords.longitude,
+                radiusMeters: 500,
+              };
+            }
+            debouncedHandleBarcodeScan(res.data, undefined, location);
           }}
         />
       )}

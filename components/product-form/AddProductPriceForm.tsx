@@ -1,11 +1,12 @@
 import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
-import { Formik, FormikErrors } from 'formik';
-import { useEffect, useState } from 'react';
+import { Formik, FormikErrors, FormikProps, useFormikContext } from 'formik';
+import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 
+import ProductItem from '../ProductItem';
 import { Checkbox } from '../ui/Checkbox';
 import Input from '../ui/Input';
 
@@ -22,8 +23,10 @@ import {
   FavoriteBranchesWithPricesDocument,
   FindBranchesByDistanceDocument,
   GetProductStocksDocument,
+  GetStockFromProductAndBranchIdDocument,
   Price,
   Product,
+  Stock,
   StockDocument,
   UserRole,
 } from '@/graphql/types/graphql';
@@ -49,6 +52,9 @@ export default function AddProductPriceForm({
     FindBranchesByDistanceDocument,
     { fetchPolicy: 'no-cache' }
   );
+  const [getStock, { data: stockData }] = useLazyQuery(GetStockFromProductAndBranchIdDocument, {
+    fetchPolicy: 'no-cache',
+  });
   const [createPrice, { loading }] = useMutation(CreatePriceDocument, {
     refetchQueries: [
       StockDocument,
@@ -58,9 +64,18 @@ export default function AddProductPriceForm({
     ],
   });
   const [branchId, setBranchId] = useState<string>();
-  const [priceUnit, setPriceUnit] = useState<string>('item');
+  const selectedBranch = useMemo(
+    () =>
+      branchId
+        ? branchesData?.findBranchesByDistance?.find(({ id }) => branchId === String(id))
+        : undefined,
+    [branchId, branchesData]
+  );
   const { location, getCurrentLocation } = useLocationService();
-  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
+
+  const stock = stockData?.getStockFromProductAndBranchId as Stock | undefined;
 
   useEffect(() => {
     if (!location) {
@@ -80,6 +95,16 @@ export default function AddProductPriceForm({
     if (!branchesData) return;
     setBranchId(branchesData.findBranchesByDistance.at(0)?.id?.toString());
   }, [branchesData]);
+
+  useEffect(() => {
+    if (!branchId) return;
+    getStock({
+      variables: {
+        productId: product.id,
+        branchId: +branchId,
+      },
+    });
+  }, [branchId]);
 
   if (branchesLoading)
     return (
@@ -107,37 +132,56 @@ export default function AddProductPriceForm({
   }
 
   return (
-    <View className="mb-10 flex gap-10">
-      <Combobox
-        initialValue={branchId}
-        dataSet={branchesData.findBranchesByDistance.map((b) => ({
-          id: b.id.toString(),
-          title: b.name,
-          description: b.address?.fullAddress,
-          logo: b.store?.logo,
-        }))}
-        onSelectItem={(data) => {
-          if (!data) return;
-          setBranchId(data.id);
-        }}
-        textInputProps={{
-          placeholder: 'Select Branch',
-          value: branchesData.findBranchesByDistance?.find(({ id }) => id.toString() === branchId)
-            ?.name,
-        }}
-        renderItem={(item: any) => (
-          <View className="flex flex-row items-center gap-2 p-3">
-            <Image
-              src={createCloudinaryUrl(item.logo ?? '', 100, 100)}
-              className="size-[35px] rounded-lg"
-            />
-            <View>
-              <Text className="text font-semibold">{item.title}</Text>
-              <Text className="text-xs">{item.description}</Text>
-            </View>
-          </View>
+    <View className="mb-10 flex gap-5">
+      <View className="rounded-xl border-[1px] border-gray-200 bg-gray-50 p-3">
+        <ProductItem
+          product={{ ...product, stock: stockData?.getStockFromProductAndBranchId as Stock }}
+          hideAddButton
+          hideStoreInfo
+          imgWidth={100}
+        />
+      </View>
+
+      <View className="mb-7 flex flex-row items-center justify-center gap-2">
+        {branchId && selectedBranch && (
+          <Image
+            src={createCloudinaryUrl(selectedBranch.store?.logo ?? '', 500, 500)}
+            className="size-[55px] rounded-xl border-[1px] border-gray-200"
+          />
         )}
-      />
+
+        <Combobox
+          initialValue={branchId}
+          dataSet={branchesData.findBranchesByDistance.map((b) => ({
+            id: b.id.toString(),
+            title: b.name,
+            description: b.address?.fullAddress,
+            logo: b.store?.logo,
+          }))}
+          onSelectItem={(data) => {
+            if (!data) return;
+            setBranchId(data.id);
+          }}
+          textInputProps={{
+            placeholder: 'Select Branch',
+            value: branchesData.findBranchesByDistance?.find(({ id }) => id.toString() === branchId)
+              ?.name,
+          }}
+          renderItem={(item: any) => (
+            <View className="flex flex-row items-center gap-2 p-3">
+              <Image
+                src={createCloudinaryUrl(item.logo ?? '', 100, 100)}
+                className="size-[35px] rounded-lg"
+              />
+              <View>
+                <Text className="text font-semibold">{item.title}</Text>
+                <Text className="text-xs">{item.description}</Text>
+              </View>
+            </View>
+          )}
+          containerStyle={{ flex: 1 }}
+        />
+      </View>
 
       {branchId && (
         <Formik
@@ -159,7 +203,8 @@ export default function AddProductPriceForm({
               branchId: +branchId,
               amount: 0.0,
               sale: false,
-              expiresAt: dayjs(new Date()).add(7, 'day').toDate(),
+              expiresAt: nextWeek,
+              unitType: 'item',
             } as CreatePrice
           }
           onSubmit={(input, formik) => {
@@ -167,7 +212,6 @@ export default function AddProductPriceForm({
               variables: {
                 input: {
                   ...input,
-                  unitType: priceUnit,
                   branchId: +branchId,
                 },
               },
@@ -180,117 +224,7 @@ export default function AddProductPriceForm({
           }}>
           {(formik) => (
             <View className="flex flex-col gap-5">
-              <View className="flex flex-row items-center justify-center gap-5">
-                <CurrencyInput
-                  value={formik.values.amount}
-                  onChangeValue={(v) => {
-                    formik.setFieldValue('amount', v ?? 0);
-                  }}
-                  onBlur={formik.handleBlur('amount')}
-                  prefix="$"
-                  delimiter=","
-                  separator="."
-                  precision={2}
-                  minValue={0}
-                  maxValue={1000}
-                  renderTextInput={(props) => (
-                    <TextInput
-                      {...props}
-                      style={{
-                        fontSize: 50,
-                        textAlign: 'center',
-                        letterSpacing: 5,
-                        fontWeight: '900',
-                      }}
-                    />
-                  )}
-                />
-
-                <View className="flex flex-row items-center gap-3">
-                  <Text className="text-4xl color-gray-300">/</Text>
-                  <Combobox
-                    showClear={false}
-                    initialValue={priceUnit}
-                    onSelectItem={(i) => setPriceUnit(i?.id ?? 'item')}
-                    dataSet={['item', 'lb'].map((x) => ({ id: x, title: x }))}
-                    textInputProps={{
-                      autoCorrect: false,
-                      placeholder: 'Unit',
-                    }}
-                    inputContainerStylesExtras={{
-                      minWidth: 85,
-                      borderColor: 'transparent',
-                    }}
-                  />
-                </View>
-              </View>
-
-              <Checkbox
-                label="Sale"
-                checked={formik.values.sale}
-                onCheckedChange={(c) => formik.setFieldValue('sale', c)}
-              />
-
-              {formik.values.sale && (
-                <View>
-                  <View className="flex flex-row items-center justify-stretch gap-4">
-                    <CurrencyInput
-                      value={formik.values.originalPrice ?? null}
-                      onChangeValue={(v) => {
-                        formik.setFieldValue('originalPrice', v ?? 0);
-                      }}
-                      onBlur={formik.handleBlur('originalPrice')}
-                      prefix="$"
-                      delimiter=","
-                      separator="."
-                      precision={2}
-                      minValue={0}
-                      maxValue={1000}
-                      renderTextInput={(props) => (
-                        <Input {...props} label="Original Price" placeholder="Amount" />
-                      )}
-                    />
-
-                    <Input
-                      label="Condition"
-                      value={formik.values.condition ?? undefined}
-                      onChangeText={formik.handleChange('condition')}
-                      onBlur={formik.handleBlur('condition')}
-                      className="flex-1"
-                      placeholder="Ex. Multiples of 2"
-                    />
-                  </View>
-
-                  <View className="mt-5">
-                    <Label className="mb-5">Sale Expiration</Label>
-
-                    <Button
-                      onPress={() => {
-                        setShowDatePicker(!showDatePicker);
-                      }}>
-                      {formik.values.expiresAt
-                        ? dayjs(formik.values.expiresAt).format('MMM D, YYYY')
-                        : 'Select Expiration Date'}
-                    </Button>
-
-                    {showDatePicker && (
-                      <DateTimePicker
-                        mode="date"
-                        value={formik.values.expiresAt ?? new Date()}
-                        display="spinner"
-                        onChange={({ nativeEvent: e }) => {
-                          formik.setFieldValue('expiresAt', new Date(e.timestamp));
-                          if (Platform.OS === 'android') setShowDatePicker(false);
-                        }}
-                        minimumDate={new Date()}
-                        accentColor="black"
-                        textColor="black"
-                        maximumDate={dayjs(new Date()).add(1, 'year').toDate()}
-                      />
-                    )}
-                  </View>
-                </View>
-              )}
+              <PriceForm formik={formik} latestPrice={stock?.latestPrice ?? undefined} />
 
               <View className="mt-7">
                 {formik.errors && (
@@ -329,5 +263,147 @@ export default function AddProductPriceForm({
         </Formik>
       )}
     </View>
+  );
+}
+
+type PriceFormProps = {
+  formik: FormikProps<CreatePrice>;
+  latestPrice?: Price;
+};
+
+function PriceForm({ formik, latestPrice }: PriceFormProps) {
+  const formikContext = useFormikContext<CreatePrice>();
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    if (!latestPrice) return;
+
+    formikContext.setValues({
+      ...formikContext.values,
+      amount: latestPrice.amount,
+      sale: latestPrice.sale,
+      originalPrice: latestPrice.originalPrice,
+      condition: latestPrice.condition,
+      unitType: latestPrice.unitType,
+    });
+  }, [latestPrice]);
+
+  return (
+    <>
+      <View className="flex flex-row items-center justify-center gap-5">
+        <CurrencyInput
+          value={formik.values.amount}
+          onChangeValue={(v) => {
+            formik.setFieldValue('amount', v ?? 0);
+          }}
+          onBlur={formik.handleBlur('amount')}
+          prefix="$"
+          delimiter=","
+          separator="."
+          precision={2}
+          minValue={0}
+          maxValue={1000}
+          renderTextInput={(props) => (
+            <TextInput
+              {...props}
+              style={{
+                fontSize: 50,
+                textAlign: 'center',
+                letterSpacing: 5,
+                fontWeight: '900',
+              }}
+            />
+          )}
+        />
+
+        <View className="flex flex-row items-center gap-3">
+          <Text className="text-4xl color-gray-300">/</Text>
+          <Combobox
+            showClear={false}
+            initialValue={formik.values.unitType}
+            onSelectItem={(i) => formik.setFieldValue('unitType', i?.id ?? 'item')}
+            dataSet={['item', 'lb'].map((x) => ({ id: x, title: x }))}
+            textInputProps={{
+              autoCorrect: false,
+              placeholder: 'Unit',
+              value: formik.values.unitType,
+              onChangeText: formik.handleChange('unitType'),
+              onBlur: formik.handleBlur('condition'),
+            }}
+            inputContainerStylesExtras={{
+              minWidth: 85,
+              borderColor: 'transparent',
+            }}
+          />
+        </View>
+      </View>
+
+      <Checkbox
+        label="Sale"
+        checked={formik.values.sale}
+        onCheckedChange={(c) => formik.setFieldValue('sale', c)}
+      />
+
+      {formik.values.sale && (
+        <View>
+          <View className="flex flex-row items-center justify-stretch gap-4">
+            <CurrencyInput
+              value={formik.values.originalPrice ?? null}
+              onChangeValue={(v) => {
+                formik.setFieldValue('originalPrice', v ?? 0);
+              }}
+              onBlur={formik.handleBlur('originalPrice')}
+              prefix="$"
+              delimiter=","
+              separator="."
+              precision={2}
+              minValue={0}
+              maxValue={1000}
+              renderTextInput={(props) => (
+                <Input {...props} label="Original Price" placeholder="Amount" />
+              )}
+            />
+
+            <Input
+              label="Condition"
+              value={formik.values.condition ?? undefined}
+              onChangeText={formik.handleChange('condition')}
+              onBlur={formik.handleBlur('condition')}
+              className="flex-1"
+              placeholder="Ex. Multiples of 2"
+            />
+          </View>
+
+          <View className="mt-5">
+            <Label className="mb-5">Sale Expiration</Label>
+
+            <Button
+              onPress={() => {
+                setShowDatePicker(!showDatePicker);
+              }}>
+              {formik.values.expiresAt
+                ? dayjs(formik.values.expiresAt).format('MMM D, YYYY')
+                : 'Select Expiration Date'}
+            </Button>
+
+            {showDatePicker && (
+              <DateTimePicker
+                mode="date"
+                value={formik.values.expiresAt ?? new Date()}
+                display="spinner"
+                onChange={({ nativeEvent: e }) => {
+                  formik.setFieldValue('expiresAt', new Date(e.timestamp));
+                  if (Platform.OS === 'android') setShowDatePicker(false);
+                }}
+                minimumDate={new Date()}
+                accentColor="black"
+                textColor="black"
+                maximumDate={dayjs(new Date()).add(1, 'year').toDate()}
+              />
+            )}
+          </View>
+        </View>
+      )}
+    </>
   );
 }

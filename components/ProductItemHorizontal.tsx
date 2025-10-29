@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
+import { ProductItemOptionalProps } from './ProductItem';
 import ProductMetadataBadge from './ProductMetadataBadge';
 import AddToGroceryListActionButton from './ui/AddToGroceryListActionButton';
 import { Skeleton } from './ui/Skeleton';
@@ -11,14 +12,14 @@ import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
 import { isSaleExpired } from '@/lib/utils';
 
-export type ProductItemHorizontalProps = {
+export type ProductItemHorizontalProps = ProductItemOptionalProps & {
   product: ProductSimple | Product;
-  imgWidth?: number;
 };
 
 export default function ProductItemHorizontal({
   product,
   imgWidth = 130,
+  hideAddButton = false,
 }: ProductItemHorizontalProps) {
   const isExpired = useMemo(
     () => (product.stock?.latestPrice ? isSaleExpired(product.stock.latestPrice) : false),
@@ -42,7 +43,7 @@ export default function ProductItemHorizontal({
           </View>
         )}
 
-        <AddToGroceryListActionButton productId={product.id} />
+        {!hideAddButton && <AddToGroceryListActionButton productId={product.id} />}
 
         <Image
           src={createCloudinaryUrl(product.code, 500)}

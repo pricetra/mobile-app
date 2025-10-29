@@ -5,8 +5,10 @@ import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'exp
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 
+import { SearchRouteParams } from '@/app/(tabs)/search';
 import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
 import Image from '@/components/ui/Image';
+import SearchFilters from '@/components/ui/SearchFilters';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import TabHeaderItemSearchBar from '@/components/ui/TabHeaderItemSearchBar';
 import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
@@ -26,15 +28,10 @@ import {
 import { createCloudinaryUrl } from '@/lib/files';
 import { extractUndefined, stringToNumber, toBoolean } from '@/lib/utils';
 
-export type BranchQueryParams = {
+export type BranchQueryParams = SearchRouteParams & {
   storeId: string;
   branchId: string;
-  query?: string;
-  categoryId?: string;
-  category?: string;
   page?: string;
-  sale?: string;
-  sortByPrice?: string;
 };
 
 export default function SelectedBranchScreen() {
@@ -50,6 +47,7 @@ export default function SelectedBranchScreen() {
     page = String(1),
     sale,
     sortByPrice,
+    brand,
   } = params;
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
@@ -71,6 +69,7 @@ export default function SelectedBranchScreen() {
     () =>
       ({
         query: extractUndefined(query),
+        brand,
         category,
         categoryId: stringToNumber(categoryId),
         branchId: +branchId,
@@ -78,14 +77,14 @@ export default function SelectedBranchScreen() {
         sale: sale ? toBoolean(sale) : undefined,
         sortByPrice,
       }) as ProductSearch,
-    [query, category, categoryId, branchId, storeId, sale, sortByPrice]
+    [query, category, categoryId, branchId, storeId, sale, sortByPrice, brand]
   );
 
   function handleSearch(s?: string) {
     router.setParams({
       ...params,
       page: String(1),
-      query: s ?? undefined,
+      query: s ?? '',
     });
   }
 
@@ -201,23 +200,19 @@ export default function SelectedBranchScreen() {
 
           <TabSubHeaderProductFilter
             selectedCategoryId={extractUndefined(categoryId)}
-            onSelectCategory={(c) => {
-              router.setParams({
-                ...params,
-                page: String(1),
-                categoryId: String(c.id ?? undefined),
-              });
-            }}
+            onSelectCategory={(c) =>
+              router.setParams({ ...params, categoryId: c.id, category: c.name })
+            }
             onFiltersButtonPressed={() => {}}
             hideFiltersButton
           />
         </View>
       );
-    }, [favorite, branchData, categoryId, query])
+    }, [favorite, branchData, categoryId, query, sortByPrice, sale, category])
   );
 
   if (productsLoading) {
-    return <ProductFlatlistLoading count={LIMIT} />;
+    return <ProductFlatlistLoading count={LIMIT} style={{ paddingVertical: 10 }} />;
   }
 
   if (productsData && productsData.allProducts.products.length === 0) {
@@ -238,6 +233,29 @@ export default function SelectedBranchScreen() {
       <ProductFlatlist
         products={products}
         paginator={productsData?.allProducts.paginator}
+        ListHeaderComponent={
+          <>
+            {(params.query ||
+              params.brand ||
+              params.category ||
+              params.sortByPrice ||
+              params.sale) && (
+              <View className="mb-10 px-5">
+                <SearchFilters
+                  params={params}
+                  onUpdateParams={(p) =>
+                    router.replace(
+                      `/(tabs)/(stores)/${storeId}/branch/${branchId}?${p.toString()}`,
+                      {
+                        relativeToDirectory: false,
+                      }
+                    )
+                  }
+                />
+              </View>
+            )}
+          </>
+        }
         handleRefresh={async () => {
           return getAllProducts({
             variables: {

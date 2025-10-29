@@ -1,6 +1,6 @@
 import { QueryResult } from '@apollo/client';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   Platform,
   RefreshControl,
@@ -30,6 +30,7 @@ export type ProductFlatlistProps = {
   setPage: (page: number) => void;
   style?: StyleProp<ViewStyle>;
   onItemPress?: (product: Product) => void;
+  ListHeaderComponent?: ReactNode;
 };
 
 export default function ProductFlatlist({
@@ -39,6 +40,7 @@ export default function ProductFlatlist({
   setPage,
   style,
   onItemPress,
+  ListHeaderComponent,
 }: ProductFlatlistProps) {
   const [refreshing, setRefreshing] = useState(false);
 
@@ -49,6 +51,7 @@ export default function ProductFlatlist({
       indicatorStyle="black"
       spacing={20}
       itemDimension={itemDimension}
+      ListHeaderComponent={() => ListHeaderComponent}
       renderItem={({ item }) => (
         <TouchableOpacity
           onPress={() => {
@@ -79,14 +82,18 @@ export default function ProductFlatlist({
           {paginator && <PaginationSimple paginator={paginator} onPageChange={setPage} />}
         </View>
       )}
-      style={style}
+      contentContainerStyle={style}
     />
   );
 }
 
-export type ProductFlatlistLoadingProps = { count?: number; noPadding?: boolean };
+export type ProductFlatlistLoadingProps = {
+  count?: number;
+  noPadding?: boolean;
+  style?: StyleProp<ViewStyle>;
+};
 
-export function ProductFlatlistLoading({ count }: ProductFlatlistLoadingProps) {
+export function ProductFlatlistLoading({ count, style }: ProductFlatlistLoadingProps) {
   return (
     <FlatGrid
       keyExtractor={(n, i) => `product-item-loading-${n}-${i}`}
@@ -96,6 +103,7 @@ export function ProductFlatlistLoading({ count }: ProductFlatlistLoadingProps) {
         .fill(0)
         .map((n, i) => n + i)}
       renderItem={() => <ProductItemLoading />}
+      contentContainerStyle={style}
     />
   );
 }

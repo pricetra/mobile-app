@@ -19,9 +19,10 @@ import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 import StoreMini, { StoreMiniLoading, StoreMiniShowMore } from './StoreMini';
 import LocationChangeButton from './ui/LocationChangeButton';
+import SearchFilters from './ui/SearchFilters';
 import { Skeleton } from './ui/Skeleton';
-import { PartialCategory } from './ui/TabSubHeaderProductFilter';
 
+import { SearchRouteParams } from '@/app/(tabs)/search';
 import {
   Branch,
   BranchesWithProductsQuery,
@@ -39,7 +40,6 @@ export type BranchesWithProductsFlatlistProps = {
   >>;
   setPage: (page: number) => void;
   style?: StyleProp<ViewStyle>;
-  categoryFilterInput?: PartialCategory;
   stores?: Store[];
   onLocationButtonPressed: () => void;
   loading: boolean;
@@ -52,14 +52,13 @@ export default function BranchesWithProductsFlatlist({
   handleRefresh,
   setPage,
   style,
-  categoryFilterInput,
   stores,
   onLocationButtonPressed,
   loading,
   showLocationButton = true,
 }: BranchesWithProductsFlatlistProps) {
   const [refreshing, setRefreshing] = useState(false);
-  const { search: searchParam } = useLocalSearchParams<{ search?: string }>();
+  const params = useLocalSearchParams<SearchRouteParams>();
 
   return (
     <FlatList
@@ -68,7 +67,7 @@ export default function BranchesWithProductsFlatlist({
       indicatorStyle="black"
       ListHeaderComponent={
         <>
-          {!searchParam && !categoryFilterInput?.id && stores && (
+          {!params.query && !params.categoryId && !params.brand && stores && (
             <FlatGrid
               data={[...stores, { id: 0 } as Store]}
               itemDimension={50}
@@ -80,36 +79,41 @@ export default function BranchesWithProductsFlatlist({
             />
           )}
 
-          {showLocationButton && (
-            <View className="mb-8 mt-5 flex flex-row px-5">
-              <LocationChangeButton onPress={onLocationButtonPressed} />
+          <View className="col mb-8 mt-5 flex flex-col gap-3 px-5">
+            {showLocationButton && (
+              <View className="flex flex-row">
+                <LocationChangeButton onPress={onLocationButtonPressed} />
 
-              <View className="flex-1" />
-            </View>
-          )}
+                <View className="flex-1" />
+              </View>
+            )}
+
+            <SearchFilters
+              params={params}
+              onUpdateParams={(p) =>
+                router.replace(`/?${p.toString()}`, { relativeToDirectory: true })
+              }
+            />
+          </View>
         </>
       }
       renderItem={({ item: branch }) => (
         <BranchWithProductItem
           branch={branch}
           onPressBranch={() => {
-            const params = new URLSearchParams();
-            params.append('categoryId', String(undefined));
-            params.append('page', String(1));
+            const paramsBuilder = new URLSearchParams();
+            paramsBuilder.append('categoryId', String(undefined));
+            paramsBuilder.append('page', String(1));
             router.push(
-              `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
+              `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${paramsBuilder.toString()}`,
               { relativeToDirectory: false }
             );
           }}
           onPressShowMore={() => {
-            const params = new URLSearchParams();
-            if (searchParam && searchParam.length > 0) {
-              params.append('query', encodeURIComponent(searchParam));
-            }
-            params.append('categoryId', categoryFilterInput?.id ?? String(undefined));
-            params.append('page', String(1));
+            const paramsBuilder = new URLSearchParams(params);
+            paramsBuilder.append('page', String(1));
             router.push(
-              `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${params.toString()}`,
+              `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${paramsBuilder.toString()}`,
               { relativeToDirectory: false }
             );
           }}
