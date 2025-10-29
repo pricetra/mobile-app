@@ -88,7 +88,12 @@ export default function BranchesWithProductsFlatlist({
               </View>
             )}
 
-            <SearchFilters params={params} />
+            <SearchFilters
+              params={params}
+              onUpdateParams={(p) =>
+                router.replace(`/?${p.toString()}`, { relativeToDirectory: true })
+              }
+            />
           </View>
         </>
       }

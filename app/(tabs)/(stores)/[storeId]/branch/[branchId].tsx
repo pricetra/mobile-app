@@ -8,6 +8,7 @@ import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 're
 import { SearchRouteParams } from '@/app/(tabs)/search';
 import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
 import Image from '@/components/ui/Image';
+import SearchFilters from '@/components/ui/SearchFilters';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import TabHeaderItemSearchBar from '@/components/ui/TabHeaderItemSearchBar';
 import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
@@ -26,7 +27,6 @@ import {
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { extractUndefined, stringToNumber, toBoolean } from '@/lib/utils';
-import SearchFilters from '@/components/ui/SearchFilters';
 
 export type BranchQueryParams = SearchRouteParams & {
   storeId: string;
@@ -84,7 +84,7 @@ export default function SelectedBranchScreen() {
     router.setParams({
       ...params,
       page: String(1),
-      query: s ?? undefined,
+      query: s ?? '',
     });
   }
 
@@ -200,13 +200,9 @@ export default function SelectedBranchScreen() {
 
           <TabSubHeaderProductFilter
             selectedCategoryId={extractUndefined(categoryId)}
-            onSelectCategory={(c) => {
-              router.setParams({
-                ...params,
-                page: String(1),
-                categoryId: String(c.id ?? undefined),
-              });
-            }}
+            onSelectCategory={(c) =>
+              router.setParams({ ...params, categoryId: c.id, category: c.name })
+            }
             onFiltersButtonPressed={() => {}}
             hideFiltersButton
           />
@@ -216,7 +212,7 @@ export default function SelectedBranchScreen() {
   );
 
   if (productsLoading) {
-    return <ProductFlatlistLoading count={LIMIT} />;
+    return <ProductFlatlistLoading count={LIMIT} style={{ paddingVertical: 10 }} />;
   }
 
   if (productsData && productsData.allProducts.products.length === 0) {
@@ -238,9 +234,23 @@ export default function SelectedBranchScreen() {
         products={products}
         paginator={productsData?.allProducts.paginator}
         ListHeaderComponent={
-          <View className="mb-10 px-5">
-            <SearchFilters params={params} />
-          </View>
+          <>
+            {(params.query || params.brand || params.category) && (
+              <View className="mb-10 px-5">
+                <SearchFilters
+                  params={params}
+                  onUpdateParams={(p) =>
+                    router.replace(
+                      `/(tabs)/(stores)/${storeId}/branch/${branchId}?${p.toString()}`,
+                      {
+                        relativeToDirectory: false,
+                      }
+                    )
+                  }
+                />
+              </View>
+            )}
+          </>
         }
         handleRefresh={async () => {
           return getAllProducts({

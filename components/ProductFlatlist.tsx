@@ -82,14 +82,18 @@ export default function ProductFlatlist({
           {paginator && <PaginationSimple paginator={paginator} onPageChange={setPage} />}
         </View>
       )}
-      style={style}
+      contentContainerStyle={style}
     />
   );
 }
 
-export type ProductFlatlistLoadingProps = { count?: number; noPadding?: boolean };
+export type ProductFlatlistLoadingProps = {
+  count?: number;
+  noPadding?: boolean;
+  style?: StyleProp<ViewStyle>;
+};
 
-export function ProductFlatlistLoading({ count }: ProductFlatlistLoadingProps) {
+export function ProductFlatlistLoading({ count, style }: ProductFlatlistLoadingProps) {
   return (
     <FlatGrid
       keyExtractor={(n, i) => `product-item-loading-${n}-${i}`}
@@ -99,6 +103,7 @@ export function ProductFlatlistLoading({ count }: ProductFlatlistLoadingProps) {
         .fill(0)
         .map((n, i) => n + i)}
       renderItem={() => <ProductItemLoading />}
+      contentContainerStyle={style}
     />
   );
 }
