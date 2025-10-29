@@ -208,7 +208,7 @@ export default function SelectedBranchScreen() {
           />
         </View>
       );
-    }, [favorite, branchData, categoryId, query])
+    }, [favorite, branchData, categoryId, query, sortByPrice, sale, category])
   );
 
   if (productsLoading) {
@@ -235,7 +235,11 @@ export default function SelectedBranchScreen() {
         paginator={productsData?.allProducts.paginator}
         ListHeaderComponent={
           <>
-            {(params.query || params.brand || params.category) && (
+            {(params.query ||
+              params.brand ||
+              params.category ||
+              params.sortByPrice ||
+              params.sale) && (
               <View className="mb-10 px-5">
                 <SearchFilters
                   params={params}

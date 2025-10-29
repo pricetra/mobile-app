@@ -10,7 +10,7 @@ export type SearchFiltersProps = {
 
 export default function SearchFilters({ params, onUpdateParams }: SearchFiltersProps) {
   return (
-    <View className="flex flex-row items-center gap-3">
+    <View className="flex flex-row flex-wrap items-center gap-3">
       {params.query && (
         <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
           <Text className="text-sm">
@@ -29,7 +29,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
         </View>
       )}
 
-      {params.category && params.categoryId && (
+      {(params.category || params.categoryId) && (
         <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
           <Text className="text-sm">
             <Text>Category: </Text>
@@ -59,6 +59,42 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
             onPress={() => {
               const sp = new URLSearchParams(params);
               sp.delete('brand');
+              onUpdateParams(sp);
+            }}>
+            <AntDesign name="close" size={13} color="black" />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {params.sortByPrice && (
+        <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
+          <Text className="text-sm">
+            <Text>Sort by price: </Text>
+            <Text className="font-bold">{params.sortByPrice}</Text>
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => {
+              const sp = new URLSearchParams(params);
+              sp.delete('sortByPrice');
+              onUpdateParams(sp);
+            }}>
+            <AntDesign name="close" size={13} color="black" />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {params.sale && (
+        <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
+          <Text className="text-sm">
+            <Text>Sale: </Text>
+            <Text className="font-bold">{params.sale}</Text>
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => {
+              const sp = new URLSearchParams(params);
+              sp.delete('sale');
               onUpdateParams(sp);
             }}>
             <AntDesign name="close" size={13} color="black" />
