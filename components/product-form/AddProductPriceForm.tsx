@@ -68,6 +68,8 @@ export default function AddProductPriceForm({
 
   const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
 
+  const stock = stockData?.getStockFromProductAndBranchId as Stock | undefined;
+
   useEffect(() => {
     if (!location) {
       getCurrentLocation({});
@@ -124,7 +126,7 @@ export default function AddProductPriceForm({
 
   return (
     <View className="mb-10 flex gap-10">
-      <View className="rounded-xl bg-gray-100 p-3">
+      <View className="rounded-xl border-[1px] border-gray-200 bg-gray-50 p-3">
         <ProductItem
           product={{ ...product, stock: stockData?.getStockFromProductAndBranchId as Stock }}
           hideAddButton
@@ -185,6 +187,7 @@ export default function AddProductPriceForm({
               amount: 0.0,
               sale: false,
               expiresAt: nextWeek,
+              unitType: 'item',
             } as CreatePrice
           }
           onSubmit={(input, formik) => {
@@ -204,14 +207,7 @@ export default function AddProductPriceForm({
           }}>
           {(formik) => (
             <View className="flex flex-col gap-5">
-              <PriceForm
-                formik={formik}
-                latestPrice={
-                  (stockData?.getStockFromProductAndBranchId?.latestPrice ?? undefined) as
-                    | Price
-                    | undefined
-                }
-              />
+              <PriceForm formik={formik} latestPrice={stock?.latestPrice ?? undefined} />
 
               <View className="mt-7">
                 {formik.errors && (
@@ -264,6 +260,7 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
 
   useEffect(() => {
     if (!latestPrice) return;
+
     formikContext.setValues({
       ...formikContext.values,
       amount: latestPrice.amount,
@@ -312,6 +309,9 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
             textInputProps={{
               autoCorrect: false,
               placeholder: 'Unit',
+              value: formik.values.unitType,
+              onChangeText: formik.handleChange('unitType'),
+              onBlur: formik.handleBlur('condition'),
             }}
             inputContainerStylesExtras={{
               minWidth: 85,
