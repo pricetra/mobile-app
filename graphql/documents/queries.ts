@@ -24,8 +24,8 @@ export const GET_ALL_COUNTRIES_QUERY = gql`
 `;
 
 export const BARCODE_SCAN_QUERY = gql`
-  query BarcodeScan($barcode: String!, $searchMode: Boolean) {
-    barcodeScan(barcode: $barcode, searchMode: $searchMode) {
+  query BarcodeScan($barcode: String!, $searchMode: Boolean, $location: LocationInput) {
+    barcodeScan(barcode: $barcode, searchMode: $searchMode, location: $location) {
       id
       name
       image
@@ -46,6 +46,13 @@ export const BARCODE_SCAN_QUERY = gql`
       quantityType
       createdAt
       updatedAt
+      stock {
+        id
+        productId
+        storeId
+        branchId
+        latestPriceId
+      }
     }
   }
 `;
