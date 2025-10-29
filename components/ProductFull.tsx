@@ -1,4 +1,5 @@
 import { Entypo } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { Fragment, useState } from 'react';
 import { View, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
 
@@ -66,7 +67,16 @@ export default function ProductFull({
           </View>
 
           <View className="flex flex-row flex-wrap items-center gap-1">
-            {product.brand && product.brand !== 'N/A' && <Text>{product.brand}</Text>}
+            {product.brand && product.brand !== 'N/A' && (
+              <Text
+                onPress={() =>
+                  router.push(`/(tabs)/?brand=${product.brand}`, {
+                    relativeToDirectory: false,
+                  })
+                }>
+                {product.brand}
+              </Text>
+            )}
           </View>
 
           <Text className="text-2xl font-semibold">{product.name}</Text>
@@ -76,7 +86,16 @@ export default function ProductFull({
               {categoriesFromChild(product.category).map((c, i) => (
                 <Fragment key={c.id}>
                   {i !== 0 && <Entypo name="chevron-right" size={10} color="#4b5563" />}
-                  <Text className="text-sm text-gray-600">{c.name}</Text>
+                  <Text
+                    className="text-sm text-gray-600"
+                    onPress={() =>
+                      router.push(
+                        `/(tabs)/?categoryId=${c.id}&category=${encodeURIComponent(c.name)}`,
+                        { relativeToDirectory: false }
+                      )
+                    }>
+                    {c.name}
+                  </Text>
                 </Fragment>
               ))}
             </View>
