@@ -67,7 +67,7 @@ export default function BranchesWithProductsFlatlist({
       indicatorStyle="black"
       ListHeaderComponent={
         <>
-          {!params.query && !params.categoryId && stores && (
+          {!params.query && !params.categoryId && !params.brand && stores && (
             <FlatGrid
               data={[...stores, { id: 0 } as Store]}
               itemDimension={50}
