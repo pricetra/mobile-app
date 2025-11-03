@@ -220,17 +220,23 @@ export default function ProductForm({
       );
       return;
     }
-    formik.setFieldValue('brand', data.extractProductFields.brand);
-    formik.setFieldValue('name', data.extractProductFields.name);
-    if (data.extractProductFields.weight) {
-      formik.setFieldValue('weight', data.extractProductFields.weight);
+
+    const extractedFields = data.extractProductFields;
+    formik.setFieldValue('brand', extractedFields.brand);
+    formik.setFieldValue('name', extractedFields.name);
+    formik.setFieldValue('description', extractedFields.description);
+    if (extractedFields.weight) {
+      formik.setFieldValue('weight', extractedFields.weight);
     }
-    if (data.extractProductFields.quantity) {
-      formik.setFieldValue('quantityValue', data.extractProductFields.quantity);
+    if (extractedFields.quantity) {
+      formik.setFieldValue('quantityValue', extractedFields.quantity);
     }
-    if (data.extractProductFields.categoryId && data.extractProductFields.category) {
-      setCategory({ ...data.extractProductFields.category });
-      setSelectedCategory({ ...data.extractProductFields.category });
+    if (extractedFields.netWeight) {
+      formik.setFieldValue('netWeight', extractedFields.netWeight);
+    }
+    if (extractedFields.categoryId && extractedFields.category) {
+      setCategory({ ...extractedFields.category });
+      setSelectedCategory({ ...extractedFields.category });
     }
   }
 

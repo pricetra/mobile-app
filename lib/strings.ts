@@ -41,8 +41,11 @@ export function currencyFormat(v: number): string {
   );
 }
 
-export function buildBase64ImageString(picture: { mimeType: string; base64: string }): string {
-  return `data:${picture.mimeType};base64,${picture.base64}`;
+export function buildBase64ImageString(picture: {
+  mimeType?: string | null;
+  base64?: string | null;
+}): string {
+  return `data:${picture.mimeType ?? 'image/jpeg'};base64,${picture.base64 ?? ''}`;
 }
 
 export function getPriceUnit(price: Price): string {
