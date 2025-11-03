@@ -78,7 +78,17 @@ export default function ScanScreen() {
     router.push(`/(tabs)/(products)/${productId}?${p.toString()}`, { relativeToDirectory: false });
   }
 
-  function _handleBarcodeScan(barcode: string, searchMode?: boolean, location?: LocationInput) {
+  async function _handleBarcodeScan(barcode: string, searchMode?: boolean) {
+    let location: LocationInput | undefined = undefined;
+    if (permissionGranted) {
+      const coords = await getCurrentLocation({});
+      location = {
+        latitude: coords.coords.latitude,
+        longitude: coords.coords.longitude,
+        radiusMeters: 500,
+      };
+    }
+
     setScannedCode(barcode);
 
     barcodeScan({
@@ -215,16 +225,7 @@ export default function ScanScreen() {
           }}
           onMountError={(e) => Alert.alert('Camera mount error', e.message)}
           onBarcodeScanned={async (res) => {
-            let location: LocationInput | undefined = undefined;
-            if (permissionGranted) {
-              const coords = await getCurrentLocation({});
-              location = {
-                latitude: coords.coords.latitude,
-                longitude: coords.coords.longitude,
-                radiusMeters: 500,
-              };
-            }
-            debouncedHandleBarcodeScan(res.data, undefined, location);
+            debouncedHandleBarcodeScan(res.data, undefined);
           }}
         />
       )}
