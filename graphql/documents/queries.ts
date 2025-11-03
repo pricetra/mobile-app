@@ -40,6 +40,8 @@ export const BARCODE_SCAN_QUERY = gql`
         expandedPathname
         path
       }
+      approximateWeight
+      netWeight
       weightValue
       weightType
       quantityValue
@@ -260,6 +262,8 @@ export const ALL_PRODUCTS_QUERY = gql(`
             avatar
           }
         }
+        approximateWeight
+        netWeight
         weightValue
         weightType
         quantityValue
@@ -298,6 +302,8 @@ export const PRODUCT_BY_ID_QUERY = gql(`
         expandedPathname
         path
       }
+      approximateWeight
+      netWeight
       weightValue
       weightType
       quantityValue
@@ -784,6 +790,8 @@ export const GET_ALL_PRODUCT_LISTS_BY_LIST_ID = gql(`
           expandedPathname
           path
         }
+        approximateWeight
+        netWeight
         weightValue
         weightType
         quantityValue
@@ -877,6 +885,8 @@ export const EXTRACT_PRODUCT_FIELDS_QUERY = gql(`
     extractProductFields(base64Image: $base64Image) {
       brand
       name
+      description
+      netWeight
       weight
       quantity
       categoryId
@@ -1012,6 +1022,8 @@ export const BRANCHES_WITH_PRODUCTS_QUERY = gql(`
               avatar
             }
           }
+          approximateWeight
+          netWeight
           weightValue
           weightType
           quantityValue
@@ -1222,6 +1234,8 @@ export const MY_PRODUCT_VIEW_HISTORY_QUERY = gql(`
             avatar
           }
         }
+        approximateWeight
+        netWeight
         weightValue
         weightType
         quantityValue
@@ -1257,6 +1271,8 @@ export const PRODUCT_SEARCH_QUERY = gql(`
         }
         quantityValue
         quantityType
+        approximateWeight
+        netWeight
         weightValue
         weightType
       }
