@@ -8,6 +8,7 @@ import Image from './ui/Image';
 import { Skeleton } from './ui/Skeleton';
 
 import { Product } from '@/graphql/types/graphql';
+import useProductWeightBuilder from '@/hooks/useProductWeightBuilder';
 import { categoriesFromChild } from '@/lib/utils';
 
 export type ProductFullProps = {
@@ -25,6 +26,7 @@ export default function ProductFull({
 }: ProductFullProps) {
   const { width } = useWindowDimensions();
   const [imgAvailable, setImgAvailable] = useState(true);
+  const weight = useProductWeightBuilder(product);
 
   return (
     <View className="flex flex-col gap-3">
@@ -51,11 +53,7 @@ export default function ProductFull({
         <View className="flex flex-col gap-2">
           <View className="mb-5 flex flex-row items-center gap-3">
             {product.weightValue && product.weightType && (
-              <ProductMetadataBadge
-                type="weight"
-                size="md"
-                text={`${product.weightValue} ${product.weightType}`}
-              />
+              <ProductMetadataBadge type="weight" size="md" text={weight} />
             )}
             {product.quantityValue && product.quantityType && (
               <ProductMetadataBadge
