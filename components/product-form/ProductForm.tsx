@@ -11,6 +11,7 @@ import CategorySelector from './CategorySelector';
 import WeightSelector from './WeightSelector';
 
 import Btn from '@/components/ui/Btn';
+import { Checkbox } from '@/components/ui/Checkbox';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
@@ -252,9 +253,7 @@ export default function ProductForm({
       enableReinitialize
       initialValues={
         {
-          name: product?.name,
-          description: product?.description,
-          brand: product?.brand,
+          ...product,
           code: product?.code ?? upc ?? '',
           weight:
             product?.weightValue && product?.weightType
@@ -288,6 +287,7 @@ export default function ProductForm({
               label="Product Name"
               editable={!loading}
               placeholder="Ex: Great Value Grade A Whole Milk (1 Gallon)"
+              autoCapitalize="words"
             />
 
             <View className="mt-3 flex flex-row gap-3">
@@ -358,8 +358,8 @@ export default function ProductForm({
             />
           </View>
 
-          <View className="flex flex-row items-center justify-center gap-7">
-            <View className="flex-[1]">
+          <View className="flex flex-row items-center justify-center gap-2">
+            <View className="flex-1">
               <Input
                 onChangeText={formik.handleChange('quantityValue')}
                 onBlur={formik.handleBlur('quantityValue')}
@@ -369,12 +369,41 @@ export default function ProductForm({
               />
             </View>
 
-            <View className="flex-[2]">
+            <View>
+              <Input
+                onChangeText={formik.handleChange('quantityType')}
+                onBlur={formik.handleBlur('quantityType')}
+                value={formik.values.quantityType?.toString() ?? 'count'}
+                label="Unit"
+                keyboardType="ascii-capable"
+                autoCapitalize="none"
+              />
+            </View>
+          </View>
+
+          <View className="mb-3 flex flex-col gap-2">
+            <View className="flex flex-1 flex-row items-center justify-center gap-3 ">
               <WeightSelector
                 onChangeText={formik.handleChange('weight')}
                 onBlur={formik.handleBlur('weight')}
                 value={formik.values.weight ?? ''}
                 editable={!loading}
+              />
+            </View>
+
+            <View className="flex flex-row flex-wrap items-center gap-5">
+              <Checkbox
+                label="Net weight"
+                checked={formik.values.netWeight ?? false}
+                onCheckedChange={(c) => formik.setFieldValue('netWeight', c)}
+                bold={false}
+              />
+
+              <Checkbox
+                label="Approximate weight"
+                checked={formik.values.approximateWeight ?? false}
+                onCheckedChange={(c) => formik.setFieldValue('approximateWeight', c)}
+                bold={false}
               />
             </View>
           </View>
