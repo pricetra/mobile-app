@@ -1333,3 +1333,15 @@ export const GET_STOCK_FROM_PRODUCT_AND_BRANCH_ID_QUERY = gql(`
     }
   }
 `);
+
+export const GET_CATEGORY_QUERY = gql(`
+  query GetCategory($id: ID!) {
+    getCategory(id: $id) {
+      id
+      name
+      path
+      expandedPathname
+      categoryAlias
+    }
+  }
+`);
