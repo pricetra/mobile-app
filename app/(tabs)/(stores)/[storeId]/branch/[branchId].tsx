@@ -190,7 +190,7 @@ export default function SelectedBranchScreen() {
 
       setSubHeader(
         <View className="flex flex-col">
-          <View className="px-5 pt-2">
+          <View className="px-5 pt-1">
             <TabHeaderItemSearchBar
               handleSearch={handleSearch}
               branchName={branchData.findBranch.name}
@@ -202,6 +202,11 @@ export default function SelectedBranchScreen() {
             selectedCategoryId={extractUndefined(categoryId)}
             onSelectCategory={(c) =>
               router.setParams({ ...params, categoryId: c.id, category: c.name })
+            }
+            onUpdateParams={(p) =>
+              router.replace(`/(tabs)/(stores)/${storeId}/branch/${branchId}?${p.toString()}`, {
+                relativeToDirectory: false,
+              })
             }
           />
         </View>

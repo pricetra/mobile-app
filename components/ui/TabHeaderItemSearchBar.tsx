@@ -17,7 +17,12 @@ export default function TabHeaderItemSearchBar({
 
   return (
     <View className="relative">
-      <Ionicons name="search" color="#6b7280" size={20} className="absolute left-5 top-3 z-[1]" />
+      <Ionicons
+        name="search"
+        color="#6b7280"
+        size={18}
+        className="absolute left-[20px] top-[10px] z-[1]"
+      />
       <TextInput
         placeholder={`Search ${branchName}`}
         value={searchText ?? ''}

@@ -12,7 +12,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
   return (
     <View className="flex flex-row flex-wrap items-center gap-3">
       {params.query && (
-        <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
+        <View className="flex flex-row items-center gap-3 rounded-full bg-gray-100 px-4 py-2">
           <Text className="text-sm">
             <Text>Search: </Text>
             <Text className="font-bold">{params.query}</Text>
@@ -30,7 +30,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
       )}
 
       {(params.category || params.categoryId) && (
-        <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
+        <View className="flex flex-row items-center gap-3 rounded-full bg-gray-100 px-4 py-2">
           <Text className="text-sm">
             <Text>Category: </Text>
             <Text className="font-bold">{params.category}</Text>
@@ -49,7 +49,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
       )}
 
       {params.brand && (
-        <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
+        <View className="flex flex-row items-center gap-3 rounded-full bg-gray-100 px-4 py-2">
           <Text className="text-sm">
             <Text>Brand: </Text>
             <Text className="font-bold">{params.brand}</Text>
@@ -67,7 +67,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
       )}
 
       {params.sortByPrice && (
-        <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
+        <View className="flex flex-row items-center gap-3 rounded-full bg-gray-100 px-4 py-2">
           <Text className="text-sm">
             <Text>Sort by price: </Text>
             <Text className="font-bold">{params.sortByPrice}</Text>
@@ -85,7 +85,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
       )}
 
       {params.sale && (
-        <View className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-50 px-4 py-2">
+        <View className="flex flex-row items-center gap-3 rounded-full bg-gray-100 px-4 py-2">
           <Text className="text-sm">
             <Text>Sale: </Text>
             <Text className="font-bold">{params.sale}</Text>
