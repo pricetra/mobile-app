@@ -14,4 +14,7 @@ export const measurementUnits = [
   'cup',
 ];
 
-export const defaultMeasurementUnit: AutocompleteDropdownItem = { id: '', title: '' };
+export const defaultMeasurementUnit: AutocompleteDropdownItem = {
+  id: measurementUnits[1],
+  title: measurementUnits[1],
+};

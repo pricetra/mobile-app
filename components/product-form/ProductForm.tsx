@@ -384,9 +384,15 @@ export default function ProductForm({
           <View className="mb-3 flex flex-col gap-2">
             <View className="flex flex-1 flex-row items-center justify-center gap-3 ">
               <WeightSelector
-                onChangeText={formik.handleChange('weight')}
+                onChangeText={(v) => {
+                  if (!v.weightType || !v.weightValue) {
+                    formik.setFieldValue('weight', '');
+                    return;
+                  }
+                  formik.setFieldValue('weight', `${v.weightValue} ${v.weightType}`);
+                }}
                 onBlur={formik.handleBlur('weight')}
-                value={formik.values.weight ?? ''}
+                value={formik.values.weight ?? undefined}
                 editable={!loading}
               />
             </View>
