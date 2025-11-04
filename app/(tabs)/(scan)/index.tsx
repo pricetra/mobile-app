@@ -20,7 +20,6 @@ import { useAuth } from '@/context/UserContext';
 import {
   BarcodeScanDocument,
   ExtractAndCreateProductDocument,
-  LocationInput,
   Product,
   UserRole,
 } from '@/graphql/types/graphql';
@@ -38,7 +37,7 @@ export default function ScanScreen() {
   const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
 
-  const { getCurrentLocation, permissionGranted } = useLocationService();
+  const { getCurrentLocation } = useLocationService();
 
   const [barcodeScan] = useLazyQuery(BarcodeScanDocument);
   const [extractProductFields, { loading: extractingProduct }] = useMutation(
@@ -79,15 +78,12 @@ export default function ScanScreen() {
   }
 
   async function _handleBarcodeScan(barcode: string, searchMode?: boolean) {
-    let location: LocationInput | undefined = undefined;
-    if (permissionGranted) {
-      const coords = await getCurrentLocation({});
-      location = {
-        latitude: coords.coords.latitude,
-        longitude: coords.coords.longitude,
-        radiusMeters: 500,
-      };
-    }
+    const coords = await getCurrentLocation({});
+    const location = {
+      latitude: coords.coords.latitude,
+      longitude: coords.coords.longitude,
+      radiusMeters: 6000, // ~3.7 miles
+    };
 
     setScannedCode(barcode);
 
