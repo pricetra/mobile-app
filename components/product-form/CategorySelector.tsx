@@ -107,7 +107,7 @@ export default function CategorySelector({ category, onChange }: CategorySelecto
                 );
               })}
               <Btn
-                text={`Add "${search}"`}
+                text="New"
                 size="xs"
                 bgColor="bg-gray-800"
                 color="text-white"
