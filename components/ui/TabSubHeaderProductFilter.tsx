@@ -1,5 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, ScrollView, View } from 'react-native';
+
+import LocationChangeButton from './LocationChangeButton';
 
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -20,31 +21,18 @@ export type PartialCategory = { id?: string; name: string };
 export type TabSubHeaderProductFilterProps = {
   selectedCategoryId?: string;
   onSelectCategory: (category: PartialCategory) => void;
-  onFiltersButtonPressed: () => void;
-  hideFiltersButton?: boolean;
+  onLocationButtonPress?: () => void;
 };
 
 export default function TabSubHeaderProductFilter({
   selectedCategoryId,
   onSelectCategory,
-  onFiltersButtonPressed,
-  hideFiltersButton = false,
+  onLocationButtonPress,
 }: TabSubHeaderProductFilterProps) {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <View className="flex flex-row items-center justify-start gap-2 px-5 py-3">
-        {!hideFiltersButton && (
-          <Button
-            className="mr-4 rounded-full px-4"
-            variant="secondary"
-            size="sm"
-            onPress={onFiltersButtonPressed}>
-            <View className="flex flex-row items-center justify-center gap-2">
-              <Ionicons name="filter" size={15} color="white" />
-              <Text className="text-sm font-bold text-white">Filters</Text>
-            </View>
-          </Button>
-        )}
+        {onLocationButtonPress && <LocationChangeButton onPress={onLocationButtonPress} />}
 
         <View className="ml-1 mr-5 flex flex-row items-center gap-2">
           {categories.map((c, i) => (

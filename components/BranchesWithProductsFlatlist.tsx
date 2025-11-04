@@ -18,9 +18,6 @@ import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 import StoreMini, { StoreMiniLoading, StoreMiniShowMore } from './StoreMini';
-import LocationChangeButton from './ui/LocationChangeButton';
-import SearchFilters from './ui/SearchFilters';
-import { Skeleton } from './ui/Skeleton';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
 import {
@@ -41,9 +38,7 @@ export type BranchesWithProductsFlatlistProps = {
   setPage: (page: number) => void;
   style?: StyleProp<ViewStyle>;
   stores?: Store[];
-  onLocationButtonPressed: () => void;
   loading: boolean;
-  showLocationButton?: boolean;
 };
 
 export default function BranchesWithProductsFlatlist({
@@ -53,9 +48,7 @@ export default function BranchesWithProductsFlatlist({
   setPage,
   style,
   stores,
-  onLocationButtonPressed,
   loading,
-  showLocationButton = true,
 }: BranchesWithProductsFlatlistProps) {
   const [refreshing, setRefreshing] = useState(false);
   const params = useLocalSearchParams<SearchRouteParams>();
@@ -76,25 +69,9 @@ export default function BranchesWithProductsFlatlist({
               renderItem={({ item }) =>
                 item.id !== 0 ? <StoreMini store={item} /> : <StoreMiniShowMore />
               }
+              style={{ marginBottom: 15 }}
             />
           )}
-
-          <View className="col mb-8 mt-5 flex flex-col gap-3 px-5">
-            {showLocationButton && (
-              <View className="flex flex-row">
-                <LocationChangeButton onPress={onLocationButtonPressed} />
-
-                <View className="flex-1" />
-              </View>
-            )}
-
-            <SearchFilters
-              params={params}
-              onUpdateParams={(p) =>
-                router.replace(`/?${p.toString()}`, { relativeToDirectory: true })
-              }
-            />
-          </View>
         </>
       }
       renderItem={({ item: branch }) => (
@@ -225,7 +202,6 @@ export function BranchWithProductItem({
 
 export function BranchesWithProductsFlatlistLoading({
   style,
-  showLocationButton = true,
   itemCount = 5,
   showBranches = false,
 }: {
@@ -252,12 +228,6 @@ export function BranchesWithProductsFlatlistLoading({
               renderItem={() => <StoreMiniLoading />}
             />
           )}
-
-          {showLocationButton ? (
-            <View className="mb-8 mt-5 flex flex-row px-5">
-              <Skeleton className="h-10 w-52 rounded-full bg-gray-200" />
-            </View>
-          ) : undefined}
         </>
       }
       renderItem={() => <BranchWithProductsItemLoading />}

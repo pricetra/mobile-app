@@ -203,8 +203,6 @@ export default function SelectedBranchScreen() {
             onSelectCategory={(c) =>
               router.setParams({ ...params, categoryId: c.id, category: c.name })
             }
-            onFiltersButtonPressed={() => {}}
-            hideFiltersButton
           />
         </View>
       );

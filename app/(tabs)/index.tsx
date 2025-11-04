@@ -129,12 +129,12 @@ export default function HomeScreen() {
             onSelectCategory={(c) =>
               router.setParams({ ...params, categoryId: c.id, category: c.name })
             }
-            onFiltersButtonPressed={() => {}}
+            onLocationButtonPress={() => setOpenLocationModal(true)}
           />
         </>
       );
       return () => setSubHeader(undefined);
-    }, [params.query, params.categoryId, params.brand])
+    }, [params.query, params.categoryId, params.brand, address, currentLocation])
   );
 
   async function loadProducts(page = 1) {
@@ -238,7 +238,6 @@ export default function HomeScreen() {
         setPage={setPage}
         style={style}
         stores={allStoresData?.allStores?.stores}
-        onLocationButtonPressed={() => setOpenLocationModal(true)}
         loading={loading}
       />
     </>
