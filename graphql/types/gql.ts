@@ -84,6 +84,7 @@ type Documents = {
     "\n  query WeightComponentsFromCategoryId($categoryId: ID!) {\n    weightComponentsFromCategoryId(categoryId: $categoryId) {\n      weightValue\n      weightType\n    }\n  }\n": typeof types.WeightComponentsFromCategoryIdDocument,
     "\n  query GetStockFromProductAndBranchId($productId: ID!, $branchId: ID!) {\n    getStockFromProductAndBranchId(productId: $productId, branchId: $branchId) {\n      id\n      productId\n      storeId\n      branchId\n      latestPriceId\n      latestPrice {\n        id\n        productId\n        branchId\n        storeId\n        amount\n        currencyCode\n        sale\n        originalPrice\n        condition\n        expiresAt\n        createdAt\n        unitType\n      }\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.GetStockFromProductAndBranchIdDocument,
     "\n  query GetCategory($id: ID!) {\n    getCategory(id: $id) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n    }\n  }\n": typeof types.GetCategoryDocument,
+    "\n  query PostAuthUserData($listType: ListType) {\n    getAllLists(listType: $listType) {\n      id\n      name\n      type\n      userId\n      createdAt\n      productList {\n        id\n        listId\n        productId\n        stockId\n        createdAt\n      }\n      branchList {\n        id\n        listId\n        branchId\n        createdAt\n      }\n    }\n\n    groceryLists {\n      id\n      name\n      default\n      createdAt\n    }\n  }\n": typeof types.PostAuthUserDataDocument,
 };
 const documents: Documents = {
     "\n  mutation UpdateUserById($userId: ID!, $input: UpdateUserFull!) {\n    updateUserById(userId: $userId, input: $input) {\n      id\n      email\n      phoneNumber\n      name\n      avatar\n      birthDate\n      bio\n      active\n      role\n      createdAt\n      updatedAt\n    }\n  }\n": types.UpdateUserByIdDocument,
@@ -156,6 +157,7 @@ const documents: Documents = {
     "\n  query WeightComponentsFromCategoryId($categoryId: ID!) {\n    weightComponentsFromCategoryId(categoryId: $categoryId) {\n      weightValue\n      weightType\n    }\n  }\n": types.WeightComponentsFromCategoryIdDocument,
     "\n  query GetStockFromProductAndBranchId($productId: ID!, $branchId: ID!) {\n    getStockFromProductAndBranchId(productId: $productId, branchId: $branchId) {\n      id\n      productId\n      storeId\n      branchId\n      latestPriceId\n      latestPrice {\n        id\n        productId\n        branchId\n        storeId\n        amount\n        currencyCode\n        sale\n        originalPrice\n        condition\n        expiresAt\n        createdAt\n        unitType\n      }\n      createdAt\n      updatedAt\n    }\n  }\n": types.GetStockFromProductAndBranchIdDocument,
     "\n  query GetCategory($id: ID!) {\n    getCategory(id: $id) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n    }\n  }\n": types.GetCategoryDocument,
+    "\n  query PostAuthUserData($listType: ListType) {\n    getAllLists(listType: $listType) {\n      id\n      name\n      type\n      userId\n      createdAt\n      productList {\n        id\n        listId\n        productId\n        stockId\n        createdAt\n      }\n      branchList {\n        id\n        listId\n        branchId\n        createdAt\n      }\n    }\n\n    groceryLists {\n      id\n      name\n      default\n      createdAt\n    }\n  }\n": types.PostAuthUserDataDocument,
 };
 
 /**
@@ -452,6 +454,10 @@ export function graphql(source: "\n  query GetStockFromProductAndBranchId($produ
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetCategory($id: ID!) {\n    getCategory(id: $id) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n    }\n  }\n"): (typeof documents)["\n  query GetCategory($id: ID!) {\n    getCategory(id: $id) {\n      id\n      name\n      path\n      expandedPathname\n      categoryAlias\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query PostAuthUserData($listType: ListType) {\n    getAllLists(listType: $listType) {\n      id\n      name\n      type\n      userId\n      createdAt\n      productList {\n        id\n        listId\n        productId\n        stockId\n        createdAt\n      }\n      branchList {\n        id\n        listId\n        branchId\n        createdAt\n      }\n    }\n\n    groceryLists {\n      id\n      name\n      default\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query PostAuthUserData($listType: ListType) {\n    getAllLists(listType: $listType) {\n      id\n      name\n      type\n      userId\n      createdAt\n      productList {\n        id\n        listId\n        productId\n        stockId\n        createdAt\n      }\n      branchList {\n        id\n        listId\n        branchId\n        createdAt\n      }\n    }\n\n    groceryLists {\n      id\n      name\n      default\n      createdAt\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

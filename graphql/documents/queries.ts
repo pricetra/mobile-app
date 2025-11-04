@@ -1345,3 +1345,35 @@ export const GET_CATEGORY_QUERY = gql(`
     }
   }
 `);
+
+export const POST_AUTH_USER_DATA_QUERIES = gql(`
+  query PostAuthUserData($listType: ListType) {
+    getAllLists(listType: $listType) {
+      id
+      name
+      type
+      userId
+      createdAt
+      productList {
+        id
+        listId
+        productId
+        stockId
+        createdAt
+      }
+      branchList {
+        id
+        listId
+        branchId
+        createdAt
+      }
+    }
+
+    groceryLists {
+      id
+      name
+      default
+      createdAt
+    }
+  }
+`);
