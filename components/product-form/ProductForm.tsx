@@ -352,7 +352,7 @@ export default function ProductForm({
           <View className="relative">
             <Label className="mb-1">Category</Label>
             <CategorySelector
-              category={category}
+              category={selectedCategory}
               editable={!loading}
               onChange={setSelectedCategory}
             />
