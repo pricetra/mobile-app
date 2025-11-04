@@ -97,6 +97,7 @@ export default function CreateStoreForm({
           autoCorrect
           editable={!loading}
           autoFocus
+          autoCapitalize="words"
         />
 
         <Input
