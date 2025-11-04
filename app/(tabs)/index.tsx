@@ -10,7 +10,7 @@ import { SearchRouteParams } from './search';
 import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
 } from '@/components/BranchesWithProductsFlatlist';
-import LocationChangeForm from '@/components/ProductSearchFilterModal';
+import LocationChangeForm from '@/components/LocationChangeForm';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
 import { useHeader } from '@/context/HeaderContext';

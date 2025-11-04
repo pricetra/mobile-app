@@ -9,8 +9,8 @@ import { FlatGrid } from 'react-native-super-grid';
 
 import FullStockView from './FullStockView';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
+import LocationChangeForm from './LocationChangeForm';
 import NutritionFacts from './NutritionFacts';
-import LocationChangeForm from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
 import RelatedBranchProducts from './RelatedBranchProducts';
 import StockItemMini from './StockItemMini';
