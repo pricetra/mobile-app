@@ -128,10 +128,11 @@ export default function WeightSelector({ value, onChangeText, editable }: Weight
 
               let convertedValue = measurement;
               try {
-                convertedValue = convert(parseFloat(measurement))
-                  .from(measurementUnitsToConvertUnits.get(unit.id)!)
-                  .to(measurementUnitsToConvertUnits.get(i.id)!)
-                  .toString();
+                convertedValue = Math.round(
+                  convert(parseFloat(measurement))
+                    .from(measurementUnitsToConvertUnits.get(unit.id)!)
+                    .to(measurementUnitsToConvertUnits.get(i.id)!)
+                ).toString();
               } catch (err: any) {
                 Alert.alert('Conversion Error', err.toString());
                 return;
