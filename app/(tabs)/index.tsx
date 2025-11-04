@@ -10,7 +10,7 @@ import { SearchRouteParams } from './search';
 import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
 } from '@/components/BranchesWithProductsFlatlist';
-import ProductSearchFilterModal from '@/components/ProductSearchFilterModal';
+import LocationChangeForm from '@/components/ProductSearchFilterModal';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
 import { useHeader } from '@/context/HeaderContext';
@@ -198,7 +198,7 @@ export default function HomeScreen() {
         title="Change Location"
         visible={openLocationModal}
         onRequestClose={() => setOpenLocationModal(false)}>
-        <ProductSearchFilterModal
+        <LocationChangeForm
           addressInit={address}
           radiusInit={Math.round(
             convert(currentLocation.locationInput.radiusMeters ?? DEFAULT_SEARCH_RADIUS)
