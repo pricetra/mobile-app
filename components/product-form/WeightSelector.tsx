@@ -1,11 +1,16 @@
+import convert from 'convert-units';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { TextInputProps, View } from 'react-native';
+import { Alert, TextInputProps, View } from 'react-native';
 import { AutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
 
 import Combobox from '@/components/ui/Combobox';
 import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
-import { defaultMeasurementUnit, measurementUnits } from '@/constants/measurements';
+import {
+  defaultMeasurementUnit,
+  measurementUnits,
+  measurementUnitsToConvertUnits,
+} from '@/constants/measurements';
 
 export type WeightType = {
   weightValue?: string;
@@ -22,17 +27,17 @@ export type WeightSelectorProps = {
 function getMeasurement(value?: string): WeightType {
   if (!value) return {};
   const parsedValue = value.split(' ');
-  if (parsedValue.length < 2) return { weightType: defaultMeasurementUnit.id };
+  if (parsedValue.length < 2) return {};
 
   const measurement = parsedValue.at(0) ?? '';
   const unit = parsedValue.slice(1).join(' ').toLowerCase();
 
-  return { weightType: unit || defaultMeasurementUnit.id, weightValue: measurement || '' };
+  return { weightType: unit, weightValue: measurement };
 }
 
 export default function WeightSelector({ value, onChangeText, editable }: WeightSelectorProps) {
   const [measurement, setMeasurement] = useState<string>('');
-  const [unit, setUnit] = useState<AutocompleteDropdownItem>(defaultMeasurementUnit);
+  const [unit, setUnit] = useState<AutocompleteDropdownItem>();
 
   const parsedValue = useMemo(() => getMeasurement(value), [value]);
 
@@ -95,14 +100,48 @@ export default function WeightSelector({ value, onChangeText, editable }: Weight
             editable={editable}
             showClear={false}
             initialValue={unit}
-            onSelectItem={(i) =>
-              setUnit(i ?? { id: defaultMeasurementUnit.id, title: defaultMeasurementUnit.id })
-            }
+            onSelectItem={(i) => {
+              if (!i) return;
+              setUnit(i);
+            }}
             dataSet={measurementUnits.map((u) => ({ id: u, title: u }))}
             textInputProps={{
               autoCorrect: false,
               placeholder: 'Unit',
-              value: unit.id,
+              value: unit?.id ?? defaultMeasurementUnit.id,
+            }}
+            inputContainerStylesExtras={{
+              minWidth: 85,
+            }}
+          />
+        </View>
+      </View>
+
+      <View className="relative">
+        <Label className="mb-1">Convert</Label>
+        <View className="mt-[-2px]">
+          <Combobox
+            editable={editable}
+            showClear={false}
+            onSelectItem={(i) => {
+              if (!i || !unit) return;
+
+              let convertedValue = measurement;
+              try {
+                convertedValue = convert(parseFloat(measurement))
+                  .from(measurementUnitsToConvertUnits.get(unit.id)!)
+                  .to(measurementUnitsToConvertUnits.get(i.id)!)
+                  .toString();
+              } catch (err: any) {
+                Alert.alert('Conversion Error', err.toString());
+                return;
+              }
+              setMeasurement(convertedValue);
+              setUnit(i);
+            }}
+            dataSet={measurementUnits.map((u) => ({ id: u, title: u }))}
+            textInputProps={{
+              autoCorrect: false,
             }}
             inputContainerStylesExtras={{
               minWidth: 85,
