@@ -29,8 +29,8 @@ export default function ModalFormFull({
         <AutocompleteDropdownContextProvider>
           <View className="bg-white">
             <KeyboardAvoidingView behavior="padding">
-              <SafeAreaView>
-                <View className="flex flex-row items-center justify-between gap-3 border-b-[1px] border-gray-100">
+              <View className="bg-white shadow shadow-black/10">
+                <SafeAreaView className="flex flex-row items-center justify-between gap-3">
                   {TitleComponent ? (
                     <View className="px-5 py-3">{TitleComponent}</View>
                   ) : (
@@ -44,19 +44,19 @@ export default function ModalFormFull({
                     className="flex items-center justify-center px-5 py-3">
                     <Feather name="x" size={25} />
                   </TouchableOpacity>
-                </View>
-                <FlatList
-                  data={[{ key: 'form' }]} // Dummy data to render form
-                  keyExtractor={(item) => item.key}
-                  renderItem={() => <>{children}</>}
-                  ListHeaderComponent={<View className="h-5" />}
-                  ListFooterComponent={<View className="h-5" />}
-                  keyboardShouldPersistTaps="handled"
-                  contentInsetAdjustmentBehavior="automatic"
-                  className={cn('px-5', className)}
-                  nestedScrollEnabled
-                />
-              </SafeAreaView>
+                </SafeAreaView>
+              </View>
+              <FlatList
+                data={[{ key: 'form' }]} // Dummy data to render form
+                keyExtractor={(item) => item.key}
+                renderItem={() => <>{children}</>}
+                ListHeaderComponent={<View className="h-5" />}
+                ListFooterComponent={<View className="h-5" />}
+                keyboardShouldPersistTaps="handled"
+                contentInsetAdjustmentBehavior="automatic"
+                className={cn('px-5', className)}
+                nestedScrollEnabled
+              />
             </KeyboardAvoidingView>
           </View>
         </AutocompleteDropdownContextProvider>

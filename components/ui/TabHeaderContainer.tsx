@@ -1,8 +1,6 @@
 import { ReactNode } from 'react';
 import { Platform, SafeAreaView, View } from 'react-native';
 
-import { cn } from '@/lib/utils';
-
 export type TabHeaderContainerProps = {
   subHeader?: ReactNode;
   children: ReactNode;
