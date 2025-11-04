@@ -8,10 +8,11 @@ import { cn } from '@/lib/utils';
 
 export type CheckboxProps = CheckboxPrimitive.RootProps & {
   label?: string;
+  bold?: boolean;
 };
 
 const Checkbox = React.forwardRef<CheckboxPrimitive.RootRef, CheckboxProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, bold = true, ...props }, ref) => {
     return (
       <View className="flex flex-row items-center gap-2">
         <CheckboxPrimitive.Root
@@ -31,7 +32,11 @@ const Checkbox = React.forwardRef<CheckboxPrimitive.RootRef, CheckboxProps>(
         </CheckboxPrimitive.Root>
 
         {props.label && (
-          <Label onPress={() => props.onCheckedChange(!props.checked)}>{props.label}</Label>
+          <Label
+            onPress={() => props.onCheckedChange(!props.checked)}
+            className={cn(bold ? 'font-bold' : 'font-normal')}>
+            {props.label}
+          </Label>
         )}
       </View>
     );
