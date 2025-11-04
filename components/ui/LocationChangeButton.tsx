@@ -17,7 +17,7 @@ export default function LocationChangeButton({ onPress }: LocationChangeButtonPr
 
   return (
     <TouchableOpacity
-      className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-1.5"
+      className="flex flex-row items-center gap-3 rounded-full border-[1px] border-gray-200 bg-gray-100 px-5 py-1.5"
       onPress={onPress}>
       <Octicons name="location" size={15} color="#1f2937" />
 
@@ -32,7 +32,7 @@ export default function LocationChangeButton({ onPress }: LocationChangeButtonPr
         )}
       </View>
 
-      <Entypo name="chevron-down" size={15} color="#1f2937" style={{ marginLeft: 10 }} />
+      <Entypo name="chevron-down" size={15} color="#1f2937" style={{ marginLeft: 5 }} />
     </TouchableOpacity>
   );
 }
