@@ -65,7 +65,6 @@ export default function ProductForm({
     fetchPolicy: 'no-cache',
   });
   const [selectedCategory, setSelectedCategory] = useState<Category>();
-  const [category, setCategory] = useState<Category>();
   const loading = updateLoading || createLoading;
   const [isPLU, setIsPLU] = useState(false);
   const isUpdateProduct = product !== undefined && product.id !== undefined && product.id !== 0;
@@ -82,7 +81,6 @@ export default function ProductForm({
       expandedPathname: 'Food, Beverages & Tobacco > Produce',
       depth: 2,
     };
-    setCategory(myCategory);
     setSelectedCategory(myCategory);
     setIsPLU(true);
   }, [upc, product]);
@@ -91,7 +89,6 @@ export default function ProductForm({
     if (!product) return;
 
     if (product.category) {
-      setCategory(product.category);
       setSelectedCategory(product.category);
     }
 
@@ -120,7 +117,6 @@ export default function ProductForm({
     setImageUri(undefined);
     setImageBase64(undefined);
     setImageUpdated(false);
-    setCategory(undefined);
     setSelectedCategory(undefined);
   }
 
@@ -236,7 +232,6 @@ export default function ProductForm({
       formik.setFieldValue('netWeight', extractedFields.netWeight);
     }
     if (extractedFields.categoryId && extractedFields.category) {
-      setCategory({ ...extractedFields.category });
       setSelectedCategory({ ...extractedFields.category });
     }
   }
