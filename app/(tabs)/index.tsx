@@ -68,7 +68,7 @@ export default function HomeScreen() {
 
   const style: StyleProp<ViewStyle> = {
     paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
-    paddingTop: 10,
+    paddingTop: 20,
   };
 
   const searchVariables = useMemo(
@@ -123,10 +123,6 @@ export default function HomeScreen() {
           </View>
 
           <TabSubHeaderProductFilter
-            selectedCategoryId={params.categoryId}
-            onSelectCategory={(c) =>
-              router.setParams({ ...params, categoryId: c.id, category: c.name })
-            }
             onLocationButtonPress={() => setOpenLocationModal(true)}
             onUpdateParams={(p) =>
               router.replace(`/?${p.toString()}`, { relativeToDirectory: true })

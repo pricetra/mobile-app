@@ -199,10 +199,6 @@ export default function SelectedBranchScreen() {
           </View>
 
           <TabSubHeaderProductFilter
-            selectedCategoryId={extractUndefined(categoryId)}
-            onSelectCategory={(c) =>
-              router.setParams({ ...params, categoryId: c.id, category: c.name })
-            }
             onUpdateParams={(p) =>
               router.replace(`/(tabs)/(stores)/${storeId}/branch/${branchId}?${p.toString()}`, {
                 relativeToDirectory: false,

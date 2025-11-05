@@ -79,7 +79,6 @@ export default function BranchesWithProductsFlatlist({
           branch={branch}
           onPressBranch={() => {
             const paramsBuilder = new URLSearchParams();
-            paramsBuilder.append('categoryId', String(undefined));
             paramsBuilder.append('page', String(1));
             router.push(
               `/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}?${paramsBuilder.toString()}`,
