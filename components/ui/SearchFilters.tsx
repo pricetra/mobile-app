@@ -11,24 +11,6 @@ export type SearchFiltersProps = {
 export default function SearchFilters({ params, onUpdateParams }: SearchFiltersProps) {
   return (
     <View className="flex flex-row flex-wrap items-center gap-3">
-      {params.query && (
-        <View className="flex flex-row items-center gap-3 rounded-full bg-gray-100 px-4 py-2">
-          <Text className="text-sm">
-            <Text>Search: </Text>
-            <Text className="font-bold">{params.query}</Text>
-          </Text>
-
-          <TouchableOpacity
-            onPress={() => {
-              const sp = new URLSearchParams(params);
-              sp.delete('query');
-              onUpdateParams(sp);
-            }}>
-            <AntDesign name="close" size={13} color="black" />
-          </TouchableOpacity>
-        </View>
-      )}
-
       {(params.category || params.categoryId) && (
         <View className="flex flex-row items-center gap-3 rounded-full bg-gray-100 px-4 py-2">
           <Text className="text-sm">

@@ -236,29 +236,6 @@ export default function SelectedBranchScreen() {
       <ProductFlatlist
         products={products}
         paginator={productsData?.allProducts.paginator}
-        ListHeaderComponent={
-          <>
-            {(params.query ||
-              params.brand ||
-              params.category ||
-              params.sortByPrice ||
-              params.sale) && (
-              <View className="mb-10 px-5">
-                <SearchFilters
-                  params={params}
-                  onUpdateParams={(p) =>
-                    router.replace(
-                      `/(tabs)/(stores)/${storeId}/branch/${branchId}?${p.toString()}`,
-                      {
-                        relativeToDirectory: false,
-                      }
-                    )
-                  }
-                />
-              </View>
-            )}
-          </>
-        }
         handleRefresh={async () => {
           return getAllProducts({
             variables: {

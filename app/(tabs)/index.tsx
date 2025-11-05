@@ -135,7 +135,7 @@ export default function HomeScreen() {
         </>
       );
       return () => setSubHeader(undefined);
-    }, [params.query, params.categoryId, params.brand, address, currentLocation])
+    }, [params.query])
   );
 
   async function loadProducts(page = 1) {
