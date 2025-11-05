@@ -10,13 +10,12 @@ import { JwtStoreContext } from './JwtStoreContext';
 import {
   AuthDeviceType,
   CheckAppVersionDocument,
-  GetAllListsDocument,
   GroceryList,
-  GroceryListsDocument,
   List,
   ListType,
   LogoutDocument,
   MeDocument,
+  PostAuthUserDataDocument,
   RegisterExpoPushTokenDocument,
   User,
 } from '@/graphql/types/graphql';
@@ -67,10 +66,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   const [me, { data: meData, error: meError }] = useLazyQuery(MeDocument, {
     fetchPolicy: 'no-cache',
   });
-  const [lists, { data: listData }] = useLazyQuery(GetAllListsDocument, {
-    fetchPolicy: 'no-cache',
-  });
-  const [getGroceryLists, { data: groceryLists }] = useLazyQuery(GroceryListsDocument, {
+  const [getPostAuthUserData, { data: postAuthUserData }] = useLazyQuery(PostAuthUserDataDocument, {
     fetchPolicy: 'no-cache',
   });
   const [logout] = useMutation(LogoutDocument);
@@ -109,25 +105,25 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   }, [meData]);
 
   useEffect(() => {
-    if (!listData) return;
+    if (!postAuthUserData?.getAllLists) return;
 
-    const allLists = listData.getAllLists as List[];
+    const allLists = postAuthUserData.getAllLists as List[];
     setUserLists({
       allLists,
       favorites: allLists.find(({ type }) => type === ListType.Favorites)!,
       watchList: allLists.find(({ type }) => type === ListType.WatchList)!,
     });
-  }, [listData]);
+  }, [postAuthUserData?.getAllLists]);
 
   useEffect(() => {
-    if (!groceryLists) return;
+    if (!postAuthUserData?.groceryLists) return;
 
-    const allLists = groceryLists.groceryLists as GroceryList[];
+    const allLists = postAuthUserData.groceryLists as GroceryList[];
     setAllGroceryLists({
       defaultGroceryList: allLists.find((l) => l.default)!,
       groceryLists: allLists,
     });
-  }, [groceryLists]);
+  }, [postAuthUserData?.groceryLists]);
 
   useEffect(() => {
     if (!appVersionCheckData || appVersionCheckData.checkAppVersion) return;
@@ -167,8 +163,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         if (!userData) return;
 
         fetchAndRegisterExpoPushToken(userData.me as User);
-        getGroceryLists();
-        await lists({ context: { ...ctx } });
+        await getPostAuthUserData({ context: { ...ctx } });
       })
       .catch((_e) => removeStoredJwtAndRedirect())
       .finally(() => setLoading(false));

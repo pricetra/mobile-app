@@ -9,8 +9,8 @@ import { FlatGrid } from 'react-native-super-grid';
 
 import FullStockView from './FullStockView';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
+import LocationChangeForm from './LocationChangeForm';
 import NutritionFacts from './NutritionFacts';
-import ProductSearchFilterModal from './ProductSearchFilterModal';
 import ProductSpecs from './ProductSpecs';
 import RelatedBranchProducts from './RelatedBranchProducts';
 import StockItemMini from './StockItemMini';
@@ -110,7 +110,7 @@ export function ProductDetails({
         title="Change Location"
         visible={openFiltersModal}
         onRequestClose={() => setOpenFiltersModal(false)}>
-        <ProductSearchFilterModal
+        <LocationChangeForm
           addressInit={currentLocation.fullAddress}
           radiusInit={Math.round(
             convert(currentLocation.locationInput.radiusMeters ?? DEFAULT_SEARCH_RADIUS)

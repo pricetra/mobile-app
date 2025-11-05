@@ -1,7 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
+import { useGlobalSearchParams } from 'expo-router';
+import { useMemo } from 'react';
 import { Text, ScrollView, View } from 'react-native';
 
-import Button from '@/components/ui/Button';
+import Button from './Button';
+import LocationChangeButton from './LocationChangeButton';
+import SearchFilters from './SearchFilters';
+
+import { SearchRouteParams } from '@/app/(tabs)/search';
 import { cn } from '@/lib/utils';
 
 const categories: PartialCategory[] = [
@@ -18,54 +23,53 @@ const categories: PartialCategory[] = [
 export type PartialCategory = { id?: string; name: string };
 
 export type TabSubHeaderProductFilterProps = {
-  selectedCategoryId?: string;
-  onSelectCategory: (category: PartialCategory) => void;
-  onFiltersButtonPressed: () => void;
-  hideFiltersButton?: boolean;
+  onLocationButtonPress?: () => void;
+  onUpdateParams: (p: URLSearchParams) => void;
 };
 
 export default function TabSubHeaderProductFilter({
-  selectedCategoryId,
-  onSelectCategory,
-  onFiltersButtonPressed,
-  hideFiltersButton = false,
+  onLocationButtonPress,
+  onUpdateParams,
 }: TabSubHeaderProductFilterProps) {
+  const params = useGlobalSearchParams<SearchRouteParams>();
+  const urlParamBuilder = useMemo(() => new URLSearchParams(params), [params]);
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <View className="flex flex-row items-center justify-start gap-2 px-5 py-3">
-        {!hideFiltersButton && (
-          <Button
-            className="mr-4 rounded-full px-4"
-            variant="secondary"
-            size="sm"
-            onPress={onFiltersButtonPressed}>
-            <View className="flex flex-row items-center justify-center gap-2">
-              <Ionicons name="filter" size={15} color="white" />
-              <Text className="text-sm font-bold text-white">Filters</Text>
-            </View>
-          </Button>
-        )}
+        {onLocationButtonPress && <LocationChangeButton onPress={onLocationButtonPress} />}
 
-        <View className="ml-1 mr-5 flex flex-row items-center gap-2">
-          {categories.map((c, i) => (
-            <Button
-              className={cn(
-                'rounded-full px-4 active:border-pricetraGreenDark active:bg-pricetraGreenDark',
-                c.id === selectedCategoryId
-                  ? 'border-pricetraGreenDark bg-pricetraGreenDark'
-                  : undefined
-              )}
-              variant="outlineLight"
-              size="sm"
-              key={i}
-              onPress={() => onSelectCategory(c)}>
-              <Text
-                className={cn('text-sm', c.id === selectedCategoryId ? 'text-white' : undefined)}>
-                {c.name}
-              </Text>
-            </Button>
-          ))}
-        </View>
+        <SearchFilters params={params} onUpdateParams={onUpdateParams} />
+
+        {(!urlParamBuilder.size || urlParamBuilder.size === 0) && (
+          <View className="ml-1 mr-5 flex flex-row items-center gap-2">
+            {categories.map((c, i) => (
+              <Button
+                className={cn(
+                  'rounded-full px-4 active:border-pricetraGreenDark active:bg-pricetraGreenDark',
+                  String(c.id) === params.categoryId
+                    ? 'border-pricetraGreenDark bg-pricetraGreenDark'
+                    : undefined
+                )}
+                variant="outlineLight"
+                size="sm"
+                key={i}
+                onPress={() => {
+                  urlParamBuilder.set('categoryId', String(c.id));
+                  urlParamBuilder.set('category', String(c.name));
+                  onUpdateParams(urlParamBuilder);
+                }}>
+                <Text
+                  className={cn(
+                    'text-sm',
+                    String(c.id) === params.categoryId ? 'text-white' : undefined
+                  )}>
+                  {c.name}
+                </Text>
+              </Button>
+            ))}
+          </View>
+        )}
       </View>
     </ScrollView>
   );

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
 import { ProductItemOptionalProps } from './ProductItem';
@@ -8,9 +7,11 @@ import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
 import { Product, ProductSimple } from '@/graphql/types/graphql';
+import useCalculatedPrice from '@/hooks/useCalculatedPrice';
+import useIsSaleExpired from '@/hooks/useIsSaleExpired';
+import useProductWeightBuilder from '@/hooks/useProductWeightBuilder';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
-import { isSaleExpired } from '@/lib/utils';
 
 export type ProductItemHorizontalProps = ProductItemOptionalProps & {
   product: ProductSimple | Product;
@@ -21,16 +22,12 @@ export default function ProductItemHorizontal({
   imgWidth = 130,
   hideAddButton = false,
 }: ProductItemHorizontalProps) {
-  const isExpired = useMemo(
-    () => (product.stock?.latestPrice ? isSaleExpired(product.stock.latestPrice) : false),
-    [product.stock?.latestPrice]
-  );
-  const calculatedAmount = useMemo(() => {
-    if (!product.stock?.latestPrice) return 0;
-    return !isExpired
-      ? product.stock.latestPrice.amount
-      : (product.stock.latestPrice.originalPrice ?? product.stock.latestPrice.amount);
-  }, [product.stock?.latestPrice, isExpired]);
+  const isExpired = useIsSaleExpired(product.stock?.latestPrice);
+  const calculatedAmount = useCalculatedPrice({
+    isExpired,
+    latestPrice: product.stock?.latestPrice,
+  });
+  const weight = useProductWeightBuilder(product);
 
   return (
     <View className="flex flex-col gap-2">
@@ -55,11 +52,7 @@ export default function ProductItemHorizontal({
         <View className="flex flex-col gap-1">
           <View className="mb-1 flex flex-row items-center gap-1">
             {product.weightValue && product.weightType && (
-              <ProductMetadataBadge
-                type="weight"
-                size="sm"
-                text={`${product.weightValue} ${product.weightType}`}
-              />
+              <ProductMetadataBadge type="weight" size="sm" text={weight} />
             )}
             {product.quantityValue && product.quantityType && (
               <ProductMetadataBadge

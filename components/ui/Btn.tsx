@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 
 export type BtnProps = TouchableOpacityProps & {
   text?: string;
+  textWeight?: 'light' | 'normal' | 'semibold' | 'bold' | 'black';
   icon?: ReactNode;
   loading?: boolean;
   disabled?: boolean;
@@ -26,6 +27,7 @@ export type BtnProps = TouchableOpacityProps & {
 
 export default function Btn({
   text,
+  textWeight = 'bold',
   icon,
   loading,
   size = 'md',
@@ -68,7 +70,11 @@ export default function Btn({
       {text && (
         <Text
           className={cn(
-            'font-bold',
+            textWeight === 'light' ? 'font-light' : '',
+            textWeight === 'normal' ? 'font-normal' : '',
+            textWeight === 'semibold' ? 'font-semibold' : '',
+            textWeight === 'bold' ? 'font-bold' : '',
+            textWeight === 'black' ? 'font-black' : '',
             color,
             size === 'xs' ? 'text-sm' : '',
             size === 'sm' ? 'text-md' : '',

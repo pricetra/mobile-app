@@ -20,7 +20,6 @@ import { useAuth } from '@/context/UserContext';
 import {
   BarcodeScanDocument,
   ExtractAndCreateProductDocument,
-  LocationInput,
   Product,
   UserRole,
 } from '@/graphql/types/graphql';
@@ -38,7 +37,7 @@ export default function ScanScreen() {
   const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
 
-  const { getCurrentLocation, permissionGranted } = useLocationService();
+  const { getCurrentLocation } = useLocationService();
 
   const [barcodeScan] = useLazyQuery(BarcodeScanDocument);
   const [extractProductFields, { loading: extractingProduct }] = useMutation(
@@ -78,7 +77,14 @@ export default function ScanScreen() {
     router.push(`/(tabs)/(products)/${productId}?${p.toString()}`, { relativeToDirectory: false });
   }
 
-  function _handleBarcodeScan(barcode: string, searchMode?: boolean, location?: LocationInput) {
+  async function _handleBarcodeScan(barcode: string, searchMode?: boolean) {
+    const coords = await getCurrentLocation({});
+    const location = {
+      latitude: coords.coords.latitude,
+      longitude: coords.coords.longitude,
+      radiusMeters: 6000, // ~3.7 miles
+    };
+
     setScannedCode(barcode);
 
     barcodeScan({
@@ -215,16 +221,7 @@ export default function ScanScreen() {
           }}
           onMountError={(e) => Alert.alert('Camera mount error', e.message)}
           onBarcodeScanned={async (res) => {
-            let location: LocationInput | undefined = undefined;
-            if (permissionGranted) {
-              const coords = await getCurrentLocation({});
-              location = {
-                latitude: coords.coords.latitude,
-                longitude: coords.coords.longitude,
-                radiusMeters: 500,
-              };
-            }
-            debouncedHandleBarcodeScan(res.data, undefined, location);
+            debouncedHandleBarcodeScan(res.data, undefined);
           }}
         />
       )}

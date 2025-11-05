@@ -1,12 +1,13 @@
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
 import { Stock } from '@/graphql/types/graphql';
+import useCalculatedPrice from '@/hooks/useCalculatedPrice';
+import useIsSaleExpired from '@/hooks/useIsSaleExpired';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
-import { cn, isSaleExpired, metersToMiles } from '@/lib/utils';
+import { cn, metersToMiles } from '@/lib/utils';
 
 export type StockItemMiniProps = {
   stock: Stock;
@@ -25,16 +26,11 @@ export default function StockItemMini({
 }: StockItemMiniProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
-  const isExpired = useMemo(
-    () => (stock.latestPrice ? isSaleExpired(stock.latestPrice) : false),
-    [stock.latestPrice]
-  );
-  const calculatedAmount = useMemo(() => {
-    if (!stock?.latestPrice) return 0;
-    return !isExpired
-      ? stock.latestPrice.amount
-      : (stock.latestPrice.originalPrice ?? stock.latestPrice.amount);
-  }, [stock?.latestPrice, isExpired]);
+  const isExpired = useIsSaleExpired(stock.latestPrice);
+  const calculatedAmount = useCalculatedPrice({
+    isExpired,
+    latestPrice: stock.latestPrice,
+  });
 
   return (
     <View className="flex flex-col gap-2">

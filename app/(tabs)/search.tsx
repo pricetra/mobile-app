@@ -37,7 +37,7 @@ export type SearchRouteParams = {
 
 export default function SearchScreen() {
   const navigation = useNavigation();
-  const params = useLocalSearchParams<{ search?: string }>();
+  const params = useLocalSearchParams<SearchRouteParams>();
 
   const iconStyles: StyleProp<ViewStyle> = {
     paddingVertical: navConsts.padding,
@@ -92,7 +92,7 @@ export default function SearchScreen() {
 
                 performSearch(t);
               }}
-              searchText={params.search}
+              searchText={params.query}
             />
           </TabHeaderContainer>
         ),
@@ -103,7 +103,7 @@ export default function SearchScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [params.search])
+    }, [params.query])
   );
 
   return (

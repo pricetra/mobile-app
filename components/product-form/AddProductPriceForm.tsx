@@ -186,13 +186,14 @@ export default function AddProductPriceForm({
       {branchId && (
         <Formik
           validateOnBlur
+          validateOnChange
           validate={(values) => {
             const errors = {} as FormikErrors<CreatePrice>;
             if (values.amount <= 0) {
               errors.amount = 'Amount has to be higher than $0.00';
             }
 
-            if (values.originalPrice && values.originalPrice <= values.amount) {
+            if (values.sale && values.originalPrice && values.originalPrice < values.amount) {
               errors.originalPrice = 'Original price cannot be smaller than the Sale price';
             }
             return errors;
@@ -251,7 +252,7 @@ export default function AddProductPriceForm({
                     <Btn
                       onPress={formik.submitForm}
                       loading={loading}
-                      disabled={!formik.isValid || formik.values.amount === 0}
+                      disabled={!formik.isValid}
                       text="Submit Price"
                       size="md"
                     />
@@ -341,7 +342,15 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
       <Checkbox
         label="Sale"
         checked={formik.values.sale}
-        onCheckedChange={(c) => formik.setFieldValue('sale', c)}
+        onCheckedChange={(c) => {
+          formik.setFieldValue('sale', c);
+          if (!c) {
+            // set sale values to zero
+            formik.setFieldValue('originalPrice', undefined);
+            formik.setFieldValue('condition', undefined);
+            formik.validateForm();
+          }
+        }}
       />
 
       {formik.values.sale && (
@@ -350,7 +359,7 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
             <CurrencyInput
               value={formik.values.originalPrice ?? null}
               onChangeValue={(v) => {
-                formik.setFieldValue('originalPrice', v ?? 0);
+                formik.setFieldValue('originalPrice', v);
               }}
               onBlur={formik.handleBlur('originalPrice')}
               prefix="$"
@@ -360,7 +369,7 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
               minValue={0}
               maxValue={1000}
               renderTextInput={(props) => (
-                <Input {...props} label="Original Price" placeholder="Amount" />
+                <Input {...props} label="Original Price" placeholder="$ Amount" />
               )}
             />
 

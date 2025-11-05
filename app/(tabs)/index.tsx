@@ -10,7 +10,7 @@ import { SearchRouteParams } from './search';
 import BranchesWithProductsFlatlist, {
   BranchesWithProductsFlatlistLoading,
 } from '@/components/BranchesWithProductsFlatlist';
-import ProductSearchFilterModal from '@/components/ProductSearchFilterModal';
+import LocationChangeForm from '@/components/LocationChangeForm';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
 import { useHeader } from '@/context/HeaderContext';
@@ -68,7 +68,7 @@ export default function HomeScreen() {
 
   const style: StyleProp<ViewStyle> = {
     paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 0,
-    paddingTop: 10,
+    paddingTop: 20,
   };
 
   const searchVariables = useMemo(
@@ -82,59 +82,66 @@ export default function HomeScreen() {
     [params.query, params.categoryId, params.brand, currentLocation]
   );
 
+  function clearSearch() {
+    router.setParams({ ...params, query: '' });
+  }
+
+  function toSearchPageWithParams() {
+    const paramsBuilder = new URLSearchParams(params);
+    router.push(`/(tabs)/search?${paramsBuilder.toString()}`);
+  }
+
   useFocusEffect(
     useCallback(() => {
       setSubHeader(
         <>
-          <View className="h-[50px]">
-            <View className="flex flex-row items-center gap-3 px-5 pb-0.5 pt-1">
-              <TouchableOpacity
-                className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
-                onPress={() => {
-                  const paramsBuilder = new URLSearchParams(params);
-                  router.push(`/(tabs)/search?${paramsBuilder.toString()}`);
-                }}>
-                <Ionicons name="search" color="#6b7280" size={18} />
+          <View className="flex flex-row items-center gap-3 px-5 pb-0.5 pt-1">
+            <TouchableOpacity
+              className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
+              onPress={toSearchPageWithParams}>
+              <Ionicons name="search" color="#6b7280" size={18} />
 
-                {params.query && params.query.length > 0 ? (
-                  <Text className="flex-1 color-black" numberOfLines={1}>
-                    {params.query}
-                  </Text>
-                ) : (
-                  <Text className="flex-1 color-[#6b7280]" numberOfLines={1}>
-                    {getRandomElement(searchTaglines)}
-                  </Text>
-                )}
+              {params.query && params.query.length > 0 ? (
+                <Text className="flex-1 color-black" numberOfLines={1}>
+                  {params.query}
+                </Text>
+              ) : (
+                <Text className="flex-1 color-[#6b7280]" numberOfLines={1}>
+                  {getRandomElement(searchTaglines)}
+                </Text>
+              )}
 
-                {params.query && params.query.length > 0 && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      router.setParams({ ...params, query: '' });
-                    }}>
-                    <Feather name="x-circle" size={20} color="#999" />
-                  </TouchableOpacity>
-                )}
-              </TouchableOpacity>
+              {params.query && params.query.length > 0 && (
+                <TouchableOpacity onPress={clearSearch}>
+                  <Feather name="x-circle" size={20} color="#999" />
+                </TouchableOpacity>
+              )}
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
-                className="p-2.5">
-                <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
+              className="p-2.5">
+              <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+            </TouchableOpacity>
           </View>
 
           <TabSubHeaderProductFilter
-            selectedCategoryId={params.categoryId}
-            onSelectCategory={(c) =>
-              router.setParams({ ...params, categoryId: c.id, category: c.name })
+            onLocationButtonPress={() => setOpenLocationModal(true)}
+            onUpdateParams={(p) =>
+              router.replace(`/?${p.toString()}`, { relativeToDirectory: true })
             }
-            onFiltersButtonPressed={() => {}}
           />
         </>
       );
       return () => setSubHeader(undefined);
-    }, [params.query, params.categoryId, params.brand])
+    }, [
+      params.query,
+      params.brand,
+      params.category,
+      params.categoryId,
+      params.sale,
+      params.sortByPrice,
+    ])
   );
 
   async function loadProducts(page = 1) {
@@ -198,7 +205,7 @@ export default function HomeScreen() {
         title="Change Location"
         visible={openLocationModal}
         onRequestClose={() => setOpenLocationModal(false)}>
-        <ProductSearchFilterModal
+        <LocationChangeForm
           addressInit={address}
           radiusInit={Math.round(
             convert(currentLocation.locationInput.radiusMeters ?? DEFAULT_SEARCH_RADIUS)
@@ -238,7 +245,6 @@ export default function HomeScreen() {
         setPage={setPage}
         style={style}
         stores={allStoresData?.allStores?.stores}
-        onLocationButtonPressed={() => setOpenLocationModal(true)}
         loading={loading}
       />
     </>

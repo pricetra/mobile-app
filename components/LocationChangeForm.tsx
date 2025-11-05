@@ -8,25 +8,25 @@ import Input from './ui/Input';
 
 import useLocationService from '@/hooks/useLocationService';
 
-export type SearchFilterReturnType = {
+export type LocationChangeReturnType = {
   address?: string;
   location?: Location.LocationGeocodedLocation;
   radius?: number;
 };
 
-export type ProductSearchFilterModalProps = {
+export type LocationChangeFormProps = {
   addressInit?: string;
   radiusInit?: string;
-  onSubmit: (res: SearchFilterReturnType) => void;
+  onSubmit: (res: LocationChangeReturnType) => void;
   onCloseModal: () => void;
 };
 
-export default function ProductSearchFilterModal({
+export default function LocationChangeForm({
   addressInit,
   radiusInit,
   onSubmit,
   onCloseModal,
-}: ProductSearchFilterModalProps) {
+}: LocationChangeFormProps) {
   const [address, setAddress] = useState(addressInit);
   const [locating, setLocating] = useState(false);
   const [radius, setRadius] = useState(radiusInit);
@@ -35,7 +35,7 @@ export default function ProductSearchFilterModal({
 
   async function submitForm() {
     setSubmitting(true);
-    const res = {} as SearchFilterReturnType;
+    const res = {} as LocationChangeReturnType;
     if (address) {
       const locations = await Location.geocodeAsync(address);
       if (locations.length > 0) {
