@@ -207,7 +207,7 @@ export default function SelectedBranchScreen() {
           />
         </View>
       );
-    }, [favorite, branchData, categoryId, query, sortByPrice, sale, category])
+    }, [favorite, branchData, query, brand, category, categoryId, sale, sortByPrice])
   );
 
   if (productsLoading) {

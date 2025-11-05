@@ -82,6 +82,15 @@ export default function HomeScreen() {
     [params.query, params.categoryId, params.brand, currentLocation]
   );
 
+  function clearSearch() {
+    router.setParams({ ...params, query: '' });
+  }
+
+  function toSearchPageWithParams() {
+    const paramsBuilder = new URLSearchParams(params);
+    router.push(`/(tabs)/search?${paramsBuilder.toString()}`);
+  }
+
   useFocusEffect(
     useCallback(() => {
       setSubHeader(
@@ -89,10 +98,7 @@ export default function HomeScreen() {
           <View className="flex flex-row items-center gap-3 px-5 pb-0.5 pt-1">
             <TouchableOpacity
               className="relative flex flex-1 flex-row items-center gap-3 overflow-hidden rounded-full border-[1px] border-gray-100 bg-gray-50 px-5 py-3"
-              onPress={() => {
-                const paramsBuilder = new URLSearchParams(params);
-                router.push(`/(tabs)/search?${paramsBuilder.toString()}`);
-              }}>
+              onPress={toSearchPageWithParams}>
               <Ionicons name="search" color="#6b7280" size={18} />
 
               {params.query && params.query.length > 0 ? (
@@ -106,10 +112,7 @@ export default function HomeScreen() {
               )}
 
               {params.query && params.query.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => {
-                    router.setParams({ ...params, query: '' });
-                  }}>
+                <TouchableOpacity onPress={clearSearch}>
                   <Feather name="x-circle" size={20} color="#999" />
                 </TouchableOpacity>
               )}
@@ -131,7 +134,14 @@ export default function HomeScreen() {
         </>
       );
       return () => setSubHeader(undefined);
-    }, [params.query])
+    }, [
+      params.query,
+      params.brand,
+      params.category,
+      params.categoryId,
+      params.sale,
+      params.sortByPrice,
+    ])
   );
 
   async function loadProducts(page = 1) {
