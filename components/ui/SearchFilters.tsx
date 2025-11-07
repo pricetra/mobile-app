@@ -1,4 +1,4 @@
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity, View, Text } from 'react-native';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
@@ -15,6 +15,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
         <SearchFilterButton
           label="Category"
           value={params.category}
+          dropDown
           onPressClear={() => {
             const sp = new URLSearchParams(params);
             sp.delete('category');
@@ -38,7 +39,8 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
 
       {params.sortByPrice && (
         <SearchFilterButton
-          label={params.sortByPrice === 'asc' ? 'Lowest price' : 'Highest price'}
+          label="Sort"
+          value={params.sortByPrice === 'asc' ? '↓ Price' : '↑ Price'}
           onPressClear={() => {
             const sp = new URLSearchParams(params);
             sp.delete('sortByPrice');
@@ -64,24 +66,36 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
 function SearchFilterButton({
   label,
   value,
+  dropDown = false,
   onPress,
   onPressClear,
 }: {
   label: string;
   value?: string;
+  dropDown?: boolean;
   onPress?: () => void;
-  onPressClear: () => void;
+  onPressClear?: () => void;
 }) {
   return (
     <View className="flex flex-row items-center gap-2 rounded-full bg-gray-100">
-      <TouchableOpacity className="flex flex-row items-center gap-1 py-2 pl-4" onPress={onPress}>
+      <TouchableOpacity className="flex flex-row items-center gap-1.5 py-2 pl-4" onPress={onPress}>
         <Text className="text-sm">{label}</Text>
         {value && <Text className="text-sm font-bold">{value}</Text>}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={onPressClear} className="p-1.5 pr-4">
-        <AntDesign name="close" size={13} color="black" />
-      </TouchableOpacity>
+      <View className="item-center flex flex-row pr-2">
+        {dropDown && (
+          <TouchableOpacity onPress={onPress} className="flex flex-row items-center p-1.5">
+            <Ionicons name="caret-down-sharp" size={10} color="black" />
+          </TouchableOpacity>
+        )}
+
+        {onPressClear && (
+          <TouchableOpacity onPress={onPressClear} className="p-1.5">
+            <AntDesign name="close" size={13} color="black" />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 }
