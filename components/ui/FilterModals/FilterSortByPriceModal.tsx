@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import _ from 'lodash';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 const SORT_OPTIONS = [
