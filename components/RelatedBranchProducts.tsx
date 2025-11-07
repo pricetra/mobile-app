@@ -13,6 +13,7 @@ import ProductItemHorizontal from './ProductItemHorizontal';
 
 import { useAuth } from '@/context/UserContext';
 import { Branch, BranchesWithProductsDocument, Product, Stock } from '@/graphql/types/graphql';
+import { useCurrentLocation } from '@/context/LocationContext';
 
 export type RelatedBranchProductsProps = {
   product: Product;
@@ -26,6 +27,7 @@ export default function RelatedBranchProducts({
   hideDuringLoading = false,
 }: RelatedBranchProductsProps) {
   const { lists } = useAuth();
+  const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const favoriteBranchIds = useMemo(
     () =>
       (lists.favorites.branchList ?? [])
@@ -44,6 +46,7 @@ export default function RelatedBranchProducts({
       },
       productLimit: 10,
       filters: {
+        location: currentLocation.locationInput,
         category,
         sortByPrice,
         branchIds: stock ? [stock.branchId, ...favoriteBranchIds] : favoriteBranchIds,
