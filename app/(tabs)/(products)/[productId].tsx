@@ -91,11 +91,17 @@ export default function ProductScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      const parsedProductId = parseInt(productId, 10);
+      if (isNaN(parsedProductId)) {
+        return router.back();
+      }
+      const parsedStockId = parseInt(stockId ?? '', 10);
+
       getProduct({
         variables: {
-          productId: +productId,
+          productId: parsedProductId,
           viewerTrail: {
-            stockId: stockId ? +stockId : undefined,
+            stockId: !isNaN(parsedStockId) ? parsedStockId : undefined,
             // TODO: Add origin history is not supported so that will also need to be implemented
           },
         },
@@ -109,16 +115,19 @@ export default function ProductScreen() {
         );
         setWatchProductList(watch);
       });
-      if (stockId) {
-        getStock({ variables: { stockId: +stockId } });
+
+      if (!isNaN(parsedStockId)) {
+        getStock({ variables: { stockId: parsedStockId } });
       }
-      fetchProductStocksWithLocation(productId);
+
+      fetchProductStocksWithLocation(parsedProductId);
       getFavBranchesPrices({
         variables: {
-          productId: +productId,
+          productId: parsedProductId,
         },
       });
-      getProductNutritionData({ variables: { productId: +productId } });
+
+      getProductNutritionData({ variables: { productId: parsedProductId } });
       return () => {
         setFavProductList(undefined);
         setWatchProductList(undefined);
@@ -139,14 +148,14 @@ export default function ProductScreen() {
     }
   }, [productError]);
 
-  function fetchProductStocksWithLocation(productId: string) {
+  function fetchProductStocksWithLocation(productId: number) {
     return getProductStocks({
       variables: {
         paginator: {
           page: 1,
           limit: 10,
         },
-        productId: +productId,
+        productId,
         location: currentLocation.locationInput,
       },
     });
@@ -402,9 +411,7 @@ export default function ProductScreen() {
             onRefresh={() => {
               setRefreshing(true);
               setTimeout(() => {
-                fetchProductStocksWithLocation(productId as string).finally(() =>
-                  setRefreshing(false)
-                );
+                fetchProductStocksWithLocation(+productId).finally(() => setRefreshing(false));
               }, 2000);
             }}
             colors={Platform.OS === 'ios' ? ['black'] : ['white']}

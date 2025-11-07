@@ -125,9 +125,16 @@ export default function SearchScreen() {
                   <TouchableOpacity
                     className="mr-4"
                     onPress={() => {
-                      router.push(`/(tabs)/(products)/${product.id}?stockId=${product.stock?.id}`, {
-                        relativeToDirectory: false,
-                      });
+                      const urlParamBuilder = new URLSearchParams();
+                      if (product.stock && product.stock.id !== 0) {
+                        urlParamBuilder.append('stockId', String(product.stock.id));
+                      }
+                      router.push(
+                        `/(tabs)/(products)/${product.id}?${urlParamBuilder.toString()}`,
+                        {
+                          relativeToDirectory: false,
+                        }
+                      );
                     }}
                     style={{ width: HORIZONTAL_PRODUCT_WIDTH }}>
                     <ProductItemHorizontal

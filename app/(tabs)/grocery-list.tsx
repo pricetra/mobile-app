@@ -42,7 +42,7 @@ export default function GroceryList() {
                   <FontAwesome5 name="shopping-basket" size={15} color="#396a12" />
                 </View>
                 <Text className="font-bold" numberOfLines={1}>
-                  Grocery List
+                  My Shopping List
                 </Text>
               </View>
             }
