@@ -78,8 +78,17 @@ export default function HomeScreen() {
         location: currentLocation.locationInput,
         categoryId: params?.categoryId ? +params.categoryId : undefined,
         brand: params.brand,
+        sortByPrice: params.sortByPrice,
+        sale: params.sale === 'true' ? true : undefined,
       }) as ProductSearch,
-    [params.query, params.categoryId, params.brand, currentLocation]
+    [
+      params.query,
+      params.categoryId,
+      params.brand,
+      params.sortByPrice,
+      params.sale,
+      currentLocation,
+    ]
   );
 
   function clearSearch() {

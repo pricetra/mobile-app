@@ -27,7 +27,7 @@ export default function ProductItemHorizontal({
     isExpired,
     latestPrice: product.stock?.latestPrice,
   });
-  const weight = useProductWeightBuilder(product);
+  const weight = useProductWeightBuilder(product, true);
 
   return (
     <View className="flex flex-col gap-2">

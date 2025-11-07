@@ -10,7 +10,6 @@ import { SearchRouteParams } from '@/app/(tabs)/search';
 import { cn } from '@/lib/utils';
 
 const categories: PartialCategory[] = [
-  { id: undefined, name: 'All' },
   { id: '464', name: 'Milk' },
   { id: '478', name: 'Eggs' },
   { id: '509', name: 'Produce' },
