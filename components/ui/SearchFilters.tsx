@@ -4,7 +4,9 @@ import { TouchableOpacity, View, Text } from 'react-native';
 
 import FilterBrandsModal from './FilterModals/FilterBrandsModal';
 import FilterCategoriesModal from './FilterModals/FilterCategoriesModal';
+import FilterSortByPriceModal from './FilterModals/FilterSortByPriceModal';
 import ModalFormFull from './ModalFormFull';
+import ModalFormMini from './ModalFormMini';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
 import { cn } from '@/lib/utils';
@@ -17,6 +19,7 @@ export type SearchFiltersProps = {
 export default function SearchFilters({ params, onUpdateParams }: SearchFiltersProps) {
   const [brandSelectionModal, setBrandSelectionModal] = useState(false);
   const [categorySelectionModal, setCategorySelectionModal] = useState(false);
+  const [sortSelectionModal, setSortSelectionModal] = useState(false);
 
   return (
     <View className="flex flex-row flex-wrap items-center gap-3">
@@ -108,6 +111,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
           params.sortByPrice ? (params.sortByPrice === 'asc' ? '↓ Price' : '↑ Price') : undefined
         }
         dropDown
+        onPress={() => setSortSelectionModal(true)}
         onPressClear={
           params.sortByPrice
             ? () => {
@@ -118,6 +122,26 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
             : undefined
         }
       />
+
+      <ModalFormMini
+        title="Sort"
+        onRequestClose={() => setSortSelectionModal(false)}
+        visible={sortSelectionModal}>
+        <FilterSortByPriceModal
+          onSubmit={(sort) => {
+            const sp = new URLSearchParams(params);
+            if (!sort) {
+              sp.delete('sortByPrice');
+            } else {
+              sp.set('sortByPrice', sort);
+            }
+            onUpdateParams(sp);
+            setSortSelectionModal(false);
+          }}
+          onClose={() => setSortSelectionModal(false)}
+          value={params.sortByPrice ?? undefined}
+        />
+      </ModalFormMini>
     </View>
   );
 }
@@ -143,7 +167,9 @@ function SearchFilterButton({
         'flex flex-row items-center gap-1 rounded-full',
         active ? 'bg-pricetraGreenDark' : 'bg-gray-100'
       )}>
-      <TouchableOpacity className="flex flex-row items-center gap-1.5 py-2 pl-4" onPress={onPress}>
+      <TouchableOpacity
+        className="mr-1 flex flex-row items-center gap-1.5 py-2 pl-4"
+        onPress={onPress}>
         <Text className={cn('text-sm', active ? 'text-white' : 'text-black')}>{label}</Text>
         {value && (
           <Text className={cn('text-sm font-bold', active ? 'text-white' : 'text-black')}>
