@@ -46,7 +46,7 @@ export default function AddToGroceryListFab({ productId }: AddToGroceryListFabPr
         <FontAwesome5 name="shopping-basket" size={15} color="white" />
       )}
       <Text className="text-sm font-bold color-white">
-        {addedToList ? 'Added' : 'Add to Grocery List'}
+        {addedToList ? 'Added' : 'Add to Shopping List'}
       </Text>
     </FloatingActionButton>
   );
