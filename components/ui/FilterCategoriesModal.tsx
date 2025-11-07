@@ -1,45 +1,39 @@
-import { useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, View, Text, TouchableOpacity } from 'react-native';
 
 import Input from './Input';
 
-import { AllBrandsDocument, Brand } from '@/graphql/types/graphql';
+import { CategorySearchDocument } from '@/graphql/types/graphql';
 
-export default function FilterBrandsModal({
+export default function FilterCategoriesModal({
   value,
   onSubmit,
 }: {
   value?: string;
   onClose: () => void;
-  onSubmit: (selectedBrand: string) => void;
+  onSubmit: (category: { id: number; name: string }) => void;
 }) {
   const [search, setSearch] = useState(value ?? '');
-  const [filteredBrands, setFilteredBrands] = useState<Brand[]>();
-  const { data, loading } = useQuery(AllBrandsDocument, {
-    fetchPolicy: 'no-cache',
-    variables: {
-      joinStock: true,
-    },
-  });
+  const [searchCategories, { data: categoriesData, loading }] = useLazyQuery(
+    CategorySearchDocument,
+    {
+      fetchPolicy: 'no-cache',
+    }
+  );
 
-  useEffect(() => {
-    if (!data) return;
-    setFilteredBrands([...data.allBrands]);
-  }, [data]);
-
-  const debouncedSearch = useCallback(
+  const debouncedCategorySearch = useCallback(
     _.debounce((search: string) => {
-      setFilteredBrands(
-        data?.allBrands.filter(({ brand }) => brand.toLowerCase().includes(search.toLowerCase()))
-      );
-    }, 100),
+      searchCategories({
+        variables: { search: search?.trim(), quickSearchMode: true },
+      });
+    }, 500),
     [search]
   );
 
   useEffect(() => {
-    debouncedSearch(search);
+    debouncedCategorySearch(search);
   }, [search]);
 
   return (
@@ -49,7 +43,7 @@ export default function FilterBrandsModal({
         value={search}
         keyboardType="ascii-capable"
         inputMode="search"
-        placeholder="Search Brands..."
+        placeholder="Search Categories..."
       />
 
       <View className="mt-5">
@@ -59,18 +53,18 @@ export default function FilterBrandsModal({
           </View>
         )}
 
-        {filteredBrands && (
+        {categoriesData && (
           <View>
-            {filteredBrands.length === 0 ? (
+            {categoriesData.categorySearch.length === 0 ? (
               <View className="flex flex-row items-center justify-center px-5 py-7">
                 <Text className="text-center text-gray-500">No brands found</Text>
               </View>
             ) : (
               <>
-                {filteredBrands.map(({ brand }, i) => (
-                  <View className="border-b border-gray-200" key={`brand-${brand}-${i}`}>
-                    <TouchableOpacity onPress={() => onSubmit(brand)} className="px-5 py-4">
-                      <Text className="text-xl font-semibold">{brand}</Text>
+                {categoriesData.categorySearch.map((category, i) => (
+                  <View className="border-b border-gray-200" key={`brand-${category.id}-${i}`}>
+                    <TouchableOpacity onPress={() => onSubmit(category)} className="px-5 py-4">
+                      <Text className="text-xl font-semibold">{category.name}</Text>
                     </TouchableOpacity>
                   </View>
                 ))}

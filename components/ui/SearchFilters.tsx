@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 
 import FilterBrandsModal from './FilterBrandsModal';
+import FilterCategoriesModal from './FilterCategoriesModal';
 import ModalFormFull from './ModalFormFull';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
@@ -15,6 +16,7 @@ export type SearchFiltersProps = {
 
 export default function SearchFilters({ params, onUpdateParams }: SearchFiltersProps) {
   const [brandSelectionModal, setBrandSelectionModal] = useState(false);
+  const [categorySelectionModal, setCategorySelectionModal] = useState(false);
 
   return (
     <View className="flex flex-row flex-wrap items-center gap-3">
@@ -38,6 +40,7 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
         label="Category"
         value={params.category || params.categoryId ? params.category : undefined}
         dropDown
+        onPress={() => setCategorySelectionModal(true)}
         onPressClear={
           params.category || params.categoryId
             ? () => {
@@ -49,6 +52,23 @@ export default function SearchFilters({ params, onUpdateParams }: SearchFiltersP
             : undefined
         }
       />
+
+      <ModalFormFull
+        title="Filter Categories"
+        onRequestClose={() => setCategorySelectionModal(false)}
+        visible={categorySelectionModal}>
+        <FilterCategoriesModal
+          onSubmit={({ id, name }) => {
+            const sp = new URLSearchParams(params);
+            sp.set('categoryId', String(id));
+            sp.set('category', name);
+            onUpdateParams(sp);
+            setCategorySelectionModal(false);
+          }}
+          onClose={() => setCategorySelectionModal(false)}
+          value={params.category ?? undefined}
+        />
+      </ModalFormFull>
 
       <SearchFilterButton
         label="Brand"
@@ -120,12 +140,16 @@ function SearchFilterButton({
   return (
     <View
       className={cn(
-        'flex flex-row items-center gap-2 rounded-full',
-        active ? 'bg-green-200' : 'bg-gray-100'
+        'flex flex-row items-center gap-1 rounded-full',
+        active ? 'bg-pricetraGreenDark' : 'bg-gray-100'
       )}>
       <TouchableOpacity className="flex flex-row items-center gap-1.5 py-2 pl-4" onPress={onPress}>
-        <Text className="text-sm">{label}</Text>
-        {value && <Text className="text-sm font-bold">{value}</Text>}
+        <Text className={cn('text-sm', active ? 'text-white' : 'text-black')}>{label}</Text>
+        {value && (
+          <Text className={cn('text-sm font-bold', active ? 'text-white' : 'text-black')}>
+            {value}
+          </Text>
+        )}
       </TouchableOpacity>
 
       <View className="item-center flex flex-row pr-2">
