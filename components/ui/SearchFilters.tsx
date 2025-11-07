@@ -2,8 +2,8 @@ import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 
-import FilterBrandsModal from './FilterBrandsModal';
-import FilterCategoriesModal from './FilterCategoriesModal';
+import FilterBrandsModal from './FilterModals/FilterBrandsModal';
+import FilterCategoriesModal from './FilterModals/FilterCategoriesModal';
 import ModalFormFull from './ModalFormFull';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';

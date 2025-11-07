@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, View, Text, TouchableOpacity } from 'react-native';
 
-import Input from './Input';
+import Input from '../Input';
 
 import { AllBrandsDocument, Brand } from '@/graphql/types/graphql';
 
