@@ -59,7 +59,7 @@ export default function ProductScreen() {
     useLazyQuery(ProductDocument, {
       fetchPolicy: 'network-only',
     });
-  const [getStock, { data: stockData, loading: stockLoading }] = useLazyQuery(StockDocument, {
+  const [getStock, { data: stockData }] = useLazyQuery(StockDocument, {
     fetchPolicy: 'no-cache',
   });
   const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
@@ -76,7 +76,6 @@ export default function ProductScreen() {
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const loading = productLoading || stockLoading;
 
   const [addToList, { loading: addToListLoading }] = useMutation(AddToListDocument, {
     refetchQueries: [GetAllListsDocument, GetAllProductListsByListIdDocument],
@@ -204,7 +203,7 @@ export default function ProductScreen() {
   }
 
   useEffect(() => {
-    if (loading) return;
+    if (productLoading) return;
 
     navigation.setOptions({
       header: (props: BottomTabHeaderProps) => (
@@ -212,7 +211,7 @@ export default function ProductScreen() {
           {...props}
           rightNav={
             <>
-              {stockId && (
+              {stockData && (
                 <TouchableOpacity
                   onPress={() => {
                     if (watchProductList) {
@@ -255,7 +254,14 @@ export default function ProductScreen() {
         />
       ),
     });
-  }, [loading, favProductList, watchProductList, addToListLoading, removeFromListLoading]);
+  }, [
+    productLoading,
+    favProductList,
+    watchProductList,
+    addToListLoading,
+    removeFromListLoading,
+    stockData,
+  ]);
 
   useEffect(() => {
     if (!productData) return;
@@ -264,7 +270,7 @@ export default function ProductScreen() {
     setOpenEditModal(true);
   }, [productData]);
 
-  if (loading || !productData) {
+  if (productLoading || !productData) {
     return (
       <SafeAreaView>
         <ProductFullLoading />
