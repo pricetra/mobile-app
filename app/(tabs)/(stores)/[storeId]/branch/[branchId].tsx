@@ -190,11 +190,6 @@ export default function SelectedBranchScreen() {
                       <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
                     )}
                   </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
-                    <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
-                  </TouchableOpacity>
                 </>
               )
             }
@@ -204,12 +199,20 @@ export default function SelectedBranchScreen() {
 
       setSubHeader(
         <View className="flex flex-col">
-          <View className="px-5 pt-1">
-            <TabHeaderItemSearchBar
-              handleSearch={handleSearch}
-              branchName={branchData ? branchData.findBranch.name : ''}
-              query={query}
-            />
+          <View className="flex flex-row gap-3 px-5 pt-1">
+            <View className="flex-1">
+              <TabHeaderItemSearchBar
+                handleSearch={handleSearch}
+                branchName={branchData ? branchData.findBranch.name : ''}
+                query={query}
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
+              className="p-2.5">
+              <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+            </TouchableOpacity>
           </View>
 
           <TabSubHeaderProductFilter
