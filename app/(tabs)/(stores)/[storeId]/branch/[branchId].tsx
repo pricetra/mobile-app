@@ -8,7 +8,7 @@ import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 're
 import { SearchRouteParams } from '@/app/(tabs)/search';
 import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
 import Image from '@/components/ui/Image';
-import SearchFilters from '@/components/ui/SearchFilters';
+import { Skeleton } from '@/components/ui/Skeleton';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import TabHeaderItemSearchBar from '@/components/ui/TabHeaderItemSearchBar';
 import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
@@ -122,8 +122,6 @@ export default function SelectedBranchScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (branchLoading || !branchData) return;
-
       navigation.setOptions({
         header: (props: BottomTabHeaderProps) => (
           <TabHeaderItem
@@ -131,58 +129,69 @@ export default function SelectedBranchScreen() {
             showSearch={false}
             leftNav={
               <View className="flex flex-1 flex-row items-center gap-2">
-                <Image
-                  src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
-                  className="size-[30px] rounded-lg"
-                />
-                <View className="flex flex-col justify-center gap-[1px]">
-                  <Text className="font-bold" numberOfLines={1}>
-                    {branchData.findStore.name}
-                  </Text>
-                  {branchData.findBranch.address && (
-                    <Text className="text-xs" numberOfLines={1}>
-                      {branchData.findBranch.address.fullAddress}
+                {branchLoading || !branchData ? (
+                  <Skeleton className="size-[30px] rounded-lg" />
+                ) : (
+                  <Image
+                    src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
+                    className="size-[30px] rounded-lg"
+                  />
+                )}
+
+                {branchLoading || !branchData ? (
+                  <View className="flex flex-col justify-center gap-1">
+                    <Skeleton className="h-[13px] w-[90px]" />
+                    <Skeleton className="h-[10px] w-[120px]" />
+                  </View>
+                ) : (
+                  <View className="flex flex-col justify-center gap-[1px]">
+                    <Text className="font-bold" numberOfLines={1}>
+                      {branchData.findStore.name}
                     </Text>
-                  )}
-                </View>
+                    {branchData.findBranch.address && (
+                      <Text className="text-xs" numberOfLines={1}>
+                        {branchData.findBranch.address.fullAddress}
+                      </Text>
+                    )}
+                  </View>
+                )}
               </View>
             }
             rightNav={
-              <>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (favorite === undefined) return;
-                    if (!favorite) {
-                      setFavorite(true);
-                      addBranchToList({
+              branchLoading || !branchData ? (
+                <></>
+              ) : (
+                <>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (favorite === undefined) return;
+                      if (!favorite) {
+                        setFavorite(true);
+                        addBranchToList({
+                          variables: {
+                            branchId: +branchId,
+                            listId: lists.favorites.id,
+                          },
+                        }).catch(() => setFavorite(false));
+                        return;
+                      }
+                      setFavorite(false);
+                      removeBranchFromList({
                         variables: {
-                          branchId: +branchId,
+                          branchListId: lists.favorites.branchList?.find(
+                            (b) => b.branchId.toString() === branchId
+                          )?.id!,
                           listId: lists.favorites.id,
                         },
-                      }).catch(() => setFavorite(false));
-                      return;
-                    }
-                    setFavorite(false);
-                    removeBranchFromList({
-                      variables: {
-                        branchListId: lists.favorites.branchList?.find(
-                          (b) => b.branchId.toString() === branchId
-                        )?.id!,
-                        listId: lists.favorites.id,
-                      },
-                    });
-                  }}
-                  className="flex flex-row items-center gap-2 p-2">
-                  {favorite !== undefined && (
-                    <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
-                  )}
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}>
-                  <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
-                </TouchableOpacity>
-              </>
+                      });
+                    }}
+                    className="flex flex-row items-center gap-2 p-2">
+                    {favorite !== undefined && (
+                      <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                    )}
+                  </TouchableOpacity>
+                </>
+              )
             }
           />
         ),
@@ -190,12 +199,20 @@ export default function SelectedBranchScreen() {
 
       setSubHeader(
         <View className="flex flex-col">
-          <View className="px-5 pt-1">
-            <TabHeaderItemSearchBar
-              handleSearch={handleSearch}
-              branchName={branchData.findBranch.name}
-              query={query}
-            />
+          <View className="flex flex-row gap-3 px-5 pt-1">
+            <View className="flex-1">
+              <TabHeaderItemSearchBar
+                handleSearch={handleSearch}
+                branchName={branchData ? branchData.findBranch.name : ''}
+                query={query}
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
+              className="p-2.5">
+              <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+            </TouchableOpacity>
           </View>
 
           <TabSubHeaderProductFilter
@@ -207,7 +224,18 @@ export default function SelectedBranchScreen() {
           />
         </View>
       );
-    }, [favorite, branchData, query, brand, category, categoryId, sale, sortByPrice])
+    }, [
+      favorite,
+      branchData,
+      query,
+      brand,
+      category,
+      categoryId,
+      sale,
+      sortByPrice,
+      branchLoading,
+      branchData,
+    ])
   );
 
   if (productsLoading) {
