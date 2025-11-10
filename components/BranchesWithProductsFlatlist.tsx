@@ -143,7 +143,7 @@ export function BranchWithProductsItemLoading() {
 
       <FlatList
         horizontal
-        data={Array(5).fill(0)}
+        data={Array(10).fill(0)}
         keyExtractor={(_, i) => `product-loading-${i}`}
         renderItem={() => (
           <View className="mr-4" style={{ width: HORIZONTAL_PRODUCT_WIDTH }}>
