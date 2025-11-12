@@ -3,7 +3,14 @@ import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Linking,
+} from 'react-native';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
 import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
@@ -144,11 +151,21 @@ export default function SelectedBranchScreen() {
                 </View>
               ) : (
                 <View className="flex flex-col justify-center gap-[1px]">
-                  <Text className="font-bold" numberOfLines={1}>
+                  <Text
+                    className="font-bold"
+                    numberOfLines={1}
+                    onPress={() =>
+                      router.push(`/(tabs)/(stores)/${branchData.findStore.id}`, {
+                        relativeToDirectory: false,
+                      })
+                    }>
                     {branchData.findStore.name}
                   </Text>
                   {branchData.findBranch.address && (
-                    <Text className="text-xs" numberOfLines={1}>
+                    <Text
+                      className="text-xs"
+                      numberOfLines={1}
+                      onPress={() => Linking.openURL(branchData.findBranch.address.mapsLink)}>
                       {branchData.findBranch.address.fullAddress}
                     </Text>
                   )}
