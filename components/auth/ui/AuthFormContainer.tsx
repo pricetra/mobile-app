@@ -35,7 +35,7 @@ export default function AuthFormContainer({
   return (
     <ScrollView className="h-screen w-screen bg-white p-5 sm:bg-muted md:p-10">
       <SafeAreaView>
-        <View className="w-full max-w-sm">
+        <View className="mt-10 w-full max-w-sm">
           <View className="my-10 flex flex-col gap-6">
             <View className="mb-0 flex flex-row items-center justify-center sm:mb-2">
               <Image
@@ -49,7 +49,7 @@ export default function AuthFormContainer({
                 <View className="px-3 py-5 md:px-5 md:py-7">
                   <View className="flex flex-col gap-6">
                     <View className="mb-3 flex flex-col">
-                      <Text className="text-3xl font-bold">{title}</Text>
+                      <Text className="text-2xl font-bold">{title}</Text>
                       {description && (
                         <Text className="mt-1 leading-5 text-gray-500">{description}</Text>
                       )}

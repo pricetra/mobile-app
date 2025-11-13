@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { useContext, useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 
 import Input from '../ui/Input';
 
@@ -23,20 +23,36 @@ export default function RegisterScreen() {
 
   return (
     <AuthFormContainer
-      title="Create Account"
-      optionalContent={
-        <>
-          <Text className="mt-5 text-center text-gray-600">Already have an account?</Text>
-
-          <Btn
+      title="Create your account"
+      buttonLabel="Sign Up"
+      extras={
+        <Text className="text-center color-gray-500">
+          Already have an account?{' '}
+          <Text
             onPress={() => setScreen(AuthScreenType.LOGIN, email)}
-            text="Login"
-            size="md"
-            bgColor="bg-transparent border-[1px] border-gray-400"
-            color="text-gray-600"
-          />
-        </>
-      }>
+            className="underline underline-offset-4 color-black">
+            Login
+          </Text>
+        </Text>
+      }
+      error={error?.message}
+      loading={loading}
+      disabled={email.trim().length === 0 || name.trim().length === 0 || password.length === 0}
+      onPressApple={() =>
+        Alert.alert(
+          'Login method not implemented',
+          'Sign in with Apple is currently not available on the mobile app'
+        )
+      }
+      onPressGoogle={() =>
+        Alert.alert(
+          'Login method not implemented',
+          'Sign in with Google is currently not available on the mobile app'
+        )
+      }
+      onPressSubmit={() => {
+        createAccount({ variables: { email, password, name } });
+      }}>
       <Input
         label="Email"
         onChangeText={setEmail}
@@ -75,20 +91,6 @@ export default function RegisterScreen() {
         autoComplete="password"
         editable={!loading}
       />
-
-      {error && <Text className="color-red-700">{error.message}</Text>}
-
-      <View className="mt-7">
-        <Btn
-          onPress={() => {
-            createAccount({ variables: { email, password, name } });
-          }}
-          disabled={email.trim().length === 0 || name.trim().length === 0 || password.length === 0}
-          loading={loading}
-          text="Create account"
-          size="md"
-        />
-      </View>
     </AuthFormContainer>
   );
 }
