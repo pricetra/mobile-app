@@ -6,7 +6,6 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import Input from '../ui/Input';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';

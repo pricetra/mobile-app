@@ -1,11 +1,10 @@
 import { useMutation } from '@apollo/client';
 import { useContext, useEffect, useState } from 'react';
-import { View, Text, Alert } from 'react-native';
+import { Text, Alert } from 'react-native';
 
 import Input from '../ui/Input';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { CreateAccountDocument } from '@/graphql/types/graphql';
 

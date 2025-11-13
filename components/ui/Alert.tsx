@@ -13,6 +13,8 @@ const alertVariants = cva(
       variant: {
         default: '',
         destructive: 'border-destructive color-des',
+        success:
+          'border-pricetra-green-dark/50 bg-pricetra-green-dark/5 color-pricetra-green-heavy-dark',
       },
     },
     defaultVariants: {
@@ -25,7 +27,7 @@ const Alert = forwardRef<
   ElementRef<typeof View>,
   ComponentPropsWithoutRef<typeof View> &
     VariantProps<typeof alertVariants> & {
-      icon: LucideIcon;
+      icon?: LucideIcon;
       iconSize?: number;
       iconClassName?: string;
     }
@@ -34,10 +36,12 @@ const Alert = forwardRef<
   return (
     <View ref={ref} role="alert" className={alertVariants({ variant, className })} {...props}>
       <View className="absolute left-3.5 top-4 -translate-y-0.5">
-        <Icon
-          size={iconSize}
-          color={variant === 'destructive' ? colors.notification : colors.background}
-        />
+        {Icon && (
+          <Icon
+            size={iconSize}
+            color={variant === 'destructive' ? colors.notification : colors.background}
+          />
+        )}
       </View>
       {children}
     </View>

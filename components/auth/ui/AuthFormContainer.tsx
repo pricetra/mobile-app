@@ -99,7 +99,7 @@ export default function AuthFormContainer({
                 </View>
               </View>
             </View>
-            <Text className="text-ms text-balance px-5 text-center text-gray-500">
+            <Text className="mt-10 text-balance px-5 text-center text-sm text-gray-500">
               By clicking continue, you agree to our{' '}
               <Text
                 onPress={() => Linking.openURL('https://pricetra.com/terms')}
