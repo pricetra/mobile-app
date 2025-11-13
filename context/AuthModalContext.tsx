@@ -10,6 +10,8 @@ export enum AuthScreenType {
 export type AuthModal = {
   screen: AuthScreenType;
   email?: string;
+  emailVerified?: boolean;
+  setEmailVerified: (v?: boolean) => void;
   setScreen: (newScreen: AuthScreenType, email?: string) => void;
 };
 
@@ -22,16 +24,19 @@ export type AuthModalProviderProps = {
 export default function AuthModalProvider({ children }: AuthModalProviderProps) {
   const [screen, setScreen] = useState(AuthScreenType.LOGIN);
   const [email, setEmail] = useState<string>();
+  const [emailVerified, setEmailVerified] = useState<boolean>();
 
   return (
     <AuthModalContext.Provider
       value={{
         screen,
         email,
+        emailVerified,
         setScreen: (newScreen, email) => {
           setEmail(email);
           setScreen(newScreen);
         },
+        setEmailVerified,
       }}>
       {children}
     </AuthModalContext.Provider>

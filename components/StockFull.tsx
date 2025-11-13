@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import { View, Text } from 'react-native';
 
+import { Skeleton } from './ui/Skeleton';
+
 import Image from '@/components/ui/Image';
 import { Stock } from '@/graphql/types/graphql';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
@@ -123,6 +125,38 @@ export default function StockFull({
         {!stock?.latestPrice?.amount && !approximatePrice && (
           <Text className="text-xl font-black">--</Text>
         )}
+      </View>
+    </View>
+  );
+}
+
+export function StockFullLoading() {
+  return (
+    <View className="flex flex-row justify-between gap-5">
+      <View className="flex flex-1 flex-row gap-4">
+        <Skeleton className="size-[60px] rounded-xl" />
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 4,
+            flexWrap: 'wrap',
+            flex: 1,
+          }}>
+          <View className="flex w-full flex-row items-center gap-2.5">
+            <Skeleton className="h-[18px] w-[60%] rounded-lg" />
+          </View>
+
+          <View className="w-full">
+            <Skeleton className="h-[12px] w-[80%] rounded-lg" />
+          </View>
+        </View>
+      </View>
+
+      <View className="flex w-fit flex-col items-end gap-0.5 py-3">
+        <View className="flex flex-row items-center justify-start gap-1">
+          <Skeleton className="h-[20px] w-[40px] rounded-lg" />
+        </View>
       </View>
     </View>
   );

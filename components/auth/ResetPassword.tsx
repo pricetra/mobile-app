@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useContext, useEffect, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import {
@@ -37,6 +37,9 @@ export default function ResetPassword() {
   const [resetPassword, { data: resetData, error: resetError, loading: resetting }] = useMutation(
     UpdatePasswordWithResetCodeDocument
   );
+
+  const loading = requestCodeLoading || verificationLoading || resetting;
+  const error = requestCodeError || verificationError || resetError;
 
   // react-native-confirmation-code-field
   const codeComponentRef = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
@@ -77,22 +80,26 @@ export default function ResetPassword() {
   return (
     <AuthFormContainer
       title="Reset Password"
-      optionalContent={
-        <>
-          <Text className="mt-5 text-center text-gray-600">Didn't receive an email?</Text>
-
-          <Btn
+      buttonLabel={!verificationData ? 'Verify Reset Code' : 'Update Password'}
+      error={error?.message}
+      loading={loading}
+      disabled={code.length < 6}
+      extras={
+        <Text className="text-center color-gray-700">
+          Didn&apos;t get an email?{' '}
+          <Text
             onPress={() => {
               requestCode({ variables: { email } });
             }}
-            loading={requestCodeLoading}
-            text="Resend Reset Code"
-            size="md"
-            bgColor="bg-transparent border-[1px] border-gray-400"
-            color="text-gray-600"
-            iconColor="black"
-          />
-        </>
+            className="underline underline-offset-4 color-black">
+            Resend reset code
+          </Text>
+        </Text>
+      }
+      onPressSubmit={
+        !verificationData
+          ? () => verifyResetCode({ variables: { email, code } })
+          : () => resetPassword({ variables: { email, code, newPassword } })
       }>
       {requestCodeLoading ? (
         <View className="flex h-40 items-center justify-center p-10">
@@ -106,79 +113,59 @@ export default function ResetPassword() {
       ) : (
         <>
           {!requestCodeError && requestCodeData?.requestPasswordReset && (
-            <Text className="text-base color-gray-600">
-              Your password reset code was sent to <Text className="font-bold italic">{email}</Text>
-            </Text>
+            <View className="mb-5 rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">
+              <View className="flex flex-row gap-3">
+                <MaterialCommunityIcons name="email-check" size={24} color="#396a12" />
+
+                <View className="flex-1">
+                  <Text className="text-lg font-semibold color-pricetraGreenHeavyDark">
+                    Password reset email sent!
+                  </Text>
+                  <Text className="color-pricetraGreenHeavyDark">
+                    Your password reset code was sent to{' '}
+                    <Text className="font-bold italic">{email}</Text>
+                  </Text>
+                </View>
+              </View>
+            </View>
           )}
 
           {!verificationData ? (
-            <>
-              <CodeField
-                ref={codeComponentRef}
-                {...codeComponentProps}
-                value={code}
-                onChangeText={setCode}
-                cellCount={CELL_COUNT}
-                keyboardType="name-phone-pad"
-                textContentType="oneTimeCode"
-                renderCell={({ index, symbol, isFocused }) => (
-                  <Text
-                    key={index}
-                    className="size-10 rounded-lg border-2 border-gray-200 text-center text-2xl font-bold"
-                    style={[
-                      isFocused && {
-                        borderColor: '#000',
-                      },
-                    ]}
-                    onLayout={getCellOnLayoutHandler(index)}>
-                    {symbol || (isFocused ? <Cursor /> : null)}
-                  </Text>
-                )}
-              />
-
-              {verificationError && (
-                <Text className="px- color-red-700">{verificationError.message}</Text>
+            <CodeField
+              ref={codeComponentRef}
+              {...codeComponentProps}
+              value={code}
+              onChangeText={setCode}
+              cellCount={CELL_COUNT}
+              keyboardType="name-phone-pad"
+              textContentType="oneTimeCode"
+              renderCell={({ index, symbol, isFocused }) => (
+                <Text
+                  key={index}
+                  className="size-10 rounded-lg border-2 border-gray-200 text-center text-2xl font-bold"
+                  style={[
+                    isFocused && {
+                      borderColor: '#000',
+                    },
+                  ]}
+                  onLayout={getCellOnLayoutHandler(index)}>
+                  {symbol || (isFocused ? <Cursor /> : null)}
+                </Text>
               )}
-
-              <View className="mt-5">
-                <Btn
-                  onPress={() => {
-                    verifyResetCode({ variables: { email, code } });
-                  }}
-                  loading={verificationLoading}
-                  disabled={code.length < 6}
-                  text="Verify Reset Code"
-                />
-              </View>
-            </>
+            />
           ) : (
-            <>
-              <Input
-                onChangeText={setNewPassword}
-                value={newPassword}
-                placeholder="New Password"
-                textContentType="password"
-                autoCapitalize="none"
-                secureTextEntry
-                autoCorrect={false}
-                autoComplete="password"
-                editable={!resetting}
-                label="New Password"
-              />
-
-              {resetError && <Text className="px- color-red-700">{resetError.message}</Text>}
-
-              <View className="mt-5">
-                <Btn
-                  onPress={() => {
-                    resetPassword({ variables: { email, code, newPassword } });
-                  }}
-                  loading={resetting}
-                  disabled={code.length < 6 && newPassword.length === 0}
-                  text="Update Password"
-                />
-              </View>
-            </>
+            <Input
+              onChangeText={setNewPassword}
+              value={newPassword}
+              placeholder="New Password"
+              textContentType="password"
+              autoCapitalize="none"
+              secureTextEntry
+              autoCorrect={false}
+              autoComplete="password"
+              editable={!resetting}
+              label="New Password"
+            />
           )}
         </>
       )}

@@ -1,20 +1,20 @@
 import { useLazyQuery } from '@apollo/client';
 import * as Network from 'expo-network';
 import { useContext, useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 import Input from '../ui/Input';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
-  const { setScreen, email: screenEmail } = useContext(AuthModalContext);
+  const { setScreen, email: screenEmail, emailVerified } = useContext(AuthModalContext);
   const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument, {
     fetchPolicy: 'no-cache',
   });
@@ -39,20 +39,58 @@ export default function LoginScreen() {
 
   return (
     <AuthFormContainer
-      title="Login"
-      optionalContent={
-        <>
-          <Text className="mt-5 text-center text-gray-600">Don't have an account?</Text>
-
-          <Btn
+      title="Welcome back"
+      buttonLabel="Login"
+      description="Login to your Pricetra account"
+      extras={
+        <Text className="text-center color-gray-500">
+          Don&apos;t have an account?{' '}
+          <Text
             onPress={() => setScreen(AuthScreenType.REGISTER, email)}
-            text="Create new account"
-            size="md"
-            bgColor="bg-transparent border-[1px] border-gray-400"
-            color="text-gray-600"
-          />
-        </>
-      }>
+            className="underline underline-offset-4 color-black">
+            Sign up
+          </Text>
+        </Text>
+      }
+      error={error?.message}
+      loading={loading}
+      disabled={email.trim().length === 0 || password.length === 0}
+      onPressApple={() =>
+        Alert.alert(
+          'Login method not implemented',
+          'Sign in with Apple is currently not available on the mobile app'
+        )
+      }
+      onPressGoogle={() =>
+        Alert.alert(
+          'Login method not implemented',
+          'Sign in with Google is currently not available on the mobile app'
+        )
+      }
+      onPressSubmit={async () => {
+        const ipAddress = await Network.getIpAddressAsync();
+        const device = getAuthDeviceTypeFromPlatform();
+        login({
+          variables: { email, password, ipAddress, device },
+        });
+      }}>
+      {!error && emailVerified && (
+        <View className="rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">
+          <View className="flex flex-row gap-3">
+            <MaterialCommunityIcons name="email-check" size={24} color="#396a12" />
+
+            <View className="flex-1">
+              <Text className="text-lg font-semibold color-pricetraGreenHeavyDark">
+                Email verified!
+              </Text>
+              <Text className="color-pricetraGreenHeavyDark">
+                Your email address was successfully verified. Please login to continue
+              </Text>
+            </View>
+          </View>
+        </View>
+      )}
+
       <Input
         onChangeText={setEmail}
         value={email}
@@ -92,22 +130,6 @@ export default function LoginScreen() {
           )}
         </View>
       </View>
-
-      {error && <Text className="color-red-700">{error.message}</Text>}
-
-      <Btn
-        onPress={async () => {
-          const ipAddress = await Network.getIpAddressAsync();
-          const device = getAuthDeviceTypeFromPlatform();
-          login({
-            variables: { email, password, ipAddress, device },
-          });
-        }}
-        disabled={email.trim().length === 0 || password.length === 0}
-        loading={loading}
-        text="Login"
-        size="md"
-      />
     </AuthFormContainer>
   );
 }

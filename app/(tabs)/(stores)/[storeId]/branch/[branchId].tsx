@@ -3,7 +3,14 @@ import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Linking,
+} from 'react-native';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
 import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
@@ -120,123 +127,131 @@ export default function SelectedBranchScreen() {
     }, [storeId, branchId])
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      navigation.setOptions({
-        header: (props: BottomTabHeaderProps) => (
-          <TabHeaderItem
-            {...props}
-            showSearch={false}
-            leftNav={
-              <View className="flex flex-1 flex-row items-center gap-2">
-                {branchLoading || !branchData ? (
-                  <Skeleton className="size-[30px] rounded-lg" />
-                ) : (
-                  <Image
-                    src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
-                    className="size-[30px] rounded-lg"
-                  />
-                )}
-
-                {branchLoading || !branchData ? (
-                  <View className="flex flex-col justify-center gap-1">
-                    <Skeleton className="h-[13px] w-[90px]" />
-                    <Skeleton className="h-[10px] w-[120px]" />
-                  </View>
-                ) : (
-                  <View className="flex flex-col justify-center gap-[1px]">
-                    <Text className="font-bold" numberOfLines={1}>
-                      {branchData.findStore.name}
-                    </Text>
-                    {branchData.findBranch.address && (
-                      <Text className="text-xs" numberOfLines={1}>
-                        {branchData.findBranch.address.fullAddress}
-                      </Text>
-                    )}
-                  </View>
-                )}
-              </View>
-            }
-            rightNav={
-              branchLoading || !branchData ? (
-                <></>
+  useEffect(() => {
+    navigation.setOptions({
+      header: (props: BottomTabHeaderProps) => (
+        <TabHeaderItem
+          {...props}
+          showSearch={false}
+          leftNav={
+            <View className="flex flex-1 flex-row items-center gap-2">
+              {branchLoading || !branchData ? (
+                <Skeleton className="size-[30px] rounded-lg" />
               ) : (
-                <>
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (favorite === undefined) return;
-                      if (!favorite) {
-                        setFavorite(true);
-                        addBranchToList({
-                          variables: {
-                            branchId: +branchId,
-                            listId: lists.favorites.id,
-                          },
-                        }).catch(() => setFavorite(false));
-                        return;
-                      }
-                      setFavorite(false);
-                      removeBranchFromList({
+                <Image
+                  src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
+                  className="size-[30px] rounded-lg"
+                />
+              )}
+
+              {branchLoading || !branchData ? (
+                <View className="flex flex-col justify-center gap-1">
+                  <Skeleton className="h-[13px] w-[90px]" />
+                  <Skeleton className="h-[10px] w-[120px]" />
+                </View>
+              ) : (
+                <View className="flex flex-col justify-center gap-[1px]">
+                  <Text
+                    className="font-bold"
+                    numberOfLines={1}
+                    onPress={() =>
+                      router.push(`/(tabs)/(stores)/${branchData.findStore.id}`, {
+                        relativeToDirectory: false,
+                      })
+                    }>
+                    {branchData.findStore.name}
+                  </Text>
+                  {branchData.findBranch.address && (
+                    <Text
+                      className="text-xs"
+                      numberOfLines={1}
+                      onPress={() => Linking.openURL(branchData.findBranch.address.mapsLink)}>
+                      {branchData.findBranch.address.fullAddress}
+                    </Text>
+                  )}
+                </View>
+              )}
+            </View>
+          }
+          rightNav={
+            branchLoading || !branchData ? (
+              <></>
+            ) : (
+              <>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (favorite === undefined) return;
+                    if (!favorite) {
+                      setFavorite(true);
+                      addBranchToList({
                         variables: {
-                          branchListId: lists.favorites.branchList?.find(
-                            (b) => b.branchId.toString() === branchId
-                          )?.id!,
+                          branchId: +branchId,
                           listId: lists.favorites.id,
                         },
-                      });
-                    }}
-                    className="flex flex-row items-center gap-2 p-2">
-                    {favorite !== undefined && (
-                      <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
-                    )}
-                  </TouchableOpacity>
-                </>
-              )
-            }
-          />
-        ),
-      });
+                      }).catch(() => setFavorite(false));
+                      return;
+                    }
+                    setFavorite(false);
+                    removeBranchFromList({
+                      variables: {
+                        branchListId: lists.favorites.branchList?.find(
+                          (b) => b.branchId.toString() === branchId
+                        )?.id!,
+                        listId: lists.favorites.id,
+                      },
+                    });
+                  }}
+                  className="flex flex-row items-center gap-2 p-2">
+                  {favorite !== undefined && (
+                    <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                  )}
+                </TouchableOpacity>
+              </>
+            )
+          }
+        />
+      ),
+    });
 
-      setSubHeader(
-        <View className="flex flex-col">
-          <View className="flex flex-row gap-3 px-5 pt-1">
-            <View className="flex-1">
-              <TabHeaderItemSearchBar
-                handleSearch={handleSearch}
-                branchName={branchData ? branchData.findBranch.name : ''}
-                query={query}
-              />
-            </View>
-
-            <TouchableOpacity
-              onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
-              className="p-2.5">
-              <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
-            </TouchableOpacity>
+    setSubHeader(
+      <View className="flex flex-col">
+        <View className="flex flex-row gap-3 px-5 pt-1">
+          <View className="flex-1">
+            <TabHeaderItemSearchBar
+              handleSearch={handleSearch}
+              branchName={branchData ? branchData.findBranch.name : ''}
+              query={query}
+            />
           </View>
 
-          <TabSubHeaderProductFilter
-            onUpdateParams={(p) =>
-              router.replace(`/(tabs)/(stores)/${storeId}/branch/${branchId}?${p.toString()}`, {
-                relativeToDirectory: false,
-              })
-            }
-          />
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/(scan)', { relativeToDirectory: false })}
+            className="p-2.5">
+            <MaterialCommunityIcons name="barcode-scan" size={20} color="black" />
+          </TouchableOpacity>
         </View>
-      );
-    }, [
-      favorite,
-      branchData,
-      query,
-      brand,
-      category,
-      categoryId,
-      sale,
-      sortByPrice,
-      branchLoading,
-      branchData,
-    ])
-  );
+
+        <TabSubHeaderProductFilter
+          onUpdateParams={(p) =>
+            router.replace(`/(tabs)/(stores)/${storeId}/branch/${branchId}?${p.toString()}`, {
+              relativeToDirectory: false,
+            })
+          }
+        />
+      </View>
+    );
+  }, [
+    branchData,
+    branchLoading,
+    lists,
+    favorite,
+    query,
+    brand,
+    category,
+    categoryId,
+    sale,
+    sortByPrice,
+  ]);
 
   if (productsLoading) {
     return <ProductFlatlistLoading count={LIMIT} style={{ paddingVertical: 10 }} />;

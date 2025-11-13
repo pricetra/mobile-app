@@ -68,6 +68,7 @@ export const UserFragment = gql`
     createdAt
     updatedAt
     active
+    authDevice
     authPlatform
     authStateId
     role
@@ -91,6 +92,7 @@ export const LOGIN_INTERNAL_QUERY = gql`
         createdAt
         updatedAt
         active
+        authDevice
         authPlatform
         authStateId
         expoPushToken
@@ -116,7 +118,7 @@ export const LOGIN_INTERNAL_QUERY = gql`
 
 export const GOOGLE_OAUTH_QUERY = gql`
   query GoogleOAuth($accessToken: String!, $ipAddress: String, $device: AuthDeviceType) {
-    googleOAuth(accessToken: $accessToken, device: $device) {
+    googleOAuth(accessToken: $accessToken, ipAddress: $ipAddress, device: $device) {
       token
       user {
         id
@@ -126,6 +128,7 @@ export const GOOGLE_OAUTH_QUERY = gql`
         createdAt
         updatedAt
         active
+        authDevice
         authPlatform
         authStateId
         expoPushToken
@@ -160,6 +163,7 @@ export const ME_QUERY = gql`
       createdAt
       updatedAt
       active
+      authDevice
       authPlatform
       authStateId
       expoPushToken

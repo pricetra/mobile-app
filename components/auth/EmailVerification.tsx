@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useContext, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import {
@@ -9,22 +10,18 @@ import {
 } from 'react-native-confirmation-code-field';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
 
 const CELL_COUNT = 6;
 
 export default function EmailVerificationScreen() {
-  const { setScreen, email } = useContext(AuthModalContext);
-  const [verifyEmail, { data, loading, error }] = useMutation(VerifyEmailDocument);
+  const { setScreen, email, setEmailVerified } = useContext(AuthModalContext);
+  const [verifyEmail, { data, loading: verifyLoading, error: verifyError }] =
+    useMutation(VerifyEmailDocument);
   const [
     resendVerification,
-    {
-      data: resendVerificationData,
-      loading: resendVerificationLoading,
-      error: resendVerificationError,
-    },
+    { loading: resendVerificationLoading, error: resendVerificationError },
   ] = useMutation(ResendVerificationDocument);
   const [code, setCode] = useState('');
 
@@ -35,8 +32,12 @@ export default function EmailVerificationScreen() {
     setValue: setCode,
   });
 
+  const loading = verifyLoading || resendVerificationLoading;
+  const error = verifyError || resendVerificationError;
+
   useEffect(() => {
     if (!data) return;
+    setEmailVerified(true);
     setScreen(AuthScreenType.LOGIN, email);
   }, [data]);
 
@@ -54,29 +55,41 @@ export default function EmailVerificationScreen() {
   return (
     <AuthFormContainer
       title="Verify your email"
-      optionalContent={
-        <>
-          <Text className="mt-5 text-center text-gray-600">
-            Didn't receive a verification code?
-          </Text>
-
-          <Btn
+      description="Almost done, we just need to verify your email"
+      buttonLabel="Verify"
+      error={error?.message}
+      loading={loading}
+      disabled={code.length < 6}
+      extras={
+        <Text className="text-center color-gray-700">
+          Didn&apos;t get an email?{' '}
+          <Text
             onPress={() => {
               resendVerification({ variables: { email } });
             }}
-            loading={resendVerificationLoading}
-            text="Resend code"
-            size="md"
-            bgColor="bg-transparent border-[1px] border-gray-400"
-            color="text-gray-600"
-            iconColor="black"
-          />
-        </>
-      }>
-      {resendVerificationData && (
-        <Text className="text-base color-gray-600">
-          A verification code was sent to <Text className="font-bold italic">{email}</Text>
+            className="underline underline-offset-4 color-black">
+            Resend verification code
+          </Text>
         </Text>
+      }
+      onPressSubmit={() => {
+        verifyEmail({ variables: { verificationCode: code } });
+      }}>
+      {!error && email && (
+        <View className="mb-5 rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">
+          <View className="flex flex-row gap-3">
+            <MaterialCommunityIcons name="email-check" size={24} color="#396a12" />
+
+            <View className="flex-1">
+              <Text className="text-lg font-semibold color-pricetraGreenHeavyDark">
+                Verification email sent!
+              </Text>
+              <Text className="color-pricetraGreenHeavyDark">
+                An email with the verification code was sent to {email}
+              </Text>
+            </View>
+          </View>
+        </View>
       )}
 
       <CodeField
@@ -101,19 +114,6 @@ export default function EmailVerificationScreen() {
           </Text>
         )}
       />
-
-      {error && <Text className="px- color-red-700">{error.message}</Text>}
-
-      <View className="mt-5">
-        <Btn
-          onPress={() => {
-            verifyEmail({ variables: { verificationCode: code } });
-          }}
-          loading={loading}
-          disabled={code.length < 6}
-          text="Verify email"
-        />
-      </View>
     </AuthFormContainer>
   );
 }
