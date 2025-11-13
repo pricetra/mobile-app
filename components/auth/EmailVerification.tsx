@@ -16,7 +16,7 @@ import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types
 const CELL_COUNT = 6;
 
 export default function EmailVerificationScreen() {
-  const { setScreen, email } = useContext(AuthModalContext);
+  const { setScreen, email, setEmailVerified } = useContext(AuthModalContext);
   const [verifyEmail, { data, loading: verifyLoading, error: verifyError }] =
     useMutation(VerifyEmailDocument);
   const [
@@ -37,6 +37,7 @@ export default function EmailVerificationScreen() {
 
   useEffect(() => {
     if (!data) return;
+    setEmailVerified(true);
     setScreen(AuthScreenType.LOGIN, email);
   }, [data]);
 

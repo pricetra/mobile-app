@@ -10,10 +10,11 @@ import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
-  const { setScreen, email: screenEmail } = useContext(AuthModalContext);
+  const { setScreen, email: screenEmail, emailVerified } = useContext(AuthModalContext);
   const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument, {
     fetchPolicy: 'no-cache',
   });
@@ -73,6 +74,23 @@ export default function LoginScreen() {
           variables: { email, password, ipAddress, device },
         });
       }}>
+      {!error && emailVerified && (
+        <View className="rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">
+          <View className="flex flex-row gap-3">
+            <MaterialCommunityIcons name="email-check" size={24} color="#396a12" />
+
+            <View className="flex-1">
+              <Text className="text-lg font-semibold color-pricetraGreenHeavyDark">
+                Email verified!
+              </Text>
+              <Text className="color-pricetraGreenHeavyDark">
+                Your email address was successfully verified. Please login to continue
+              </Text>
+            </View>
+          </View>
+        </View>
+      )}
+
       <Input
         onChangeText={setEmail}
         value={email}
