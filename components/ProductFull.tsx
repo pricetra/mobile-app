@@ -120,20 +120,25 @@ export function ProductFullLoading() {
 
       <View className="p-5">
         <View className="flex flex-col gap-2">
-          <View className="flex flex-row flex-wrap items-center gap-1">
-            <Skeleton className="h-[18px] w-[100px]" />
+          <View className="mb-5 flex flex-row items-center gap-3">
+            <Skeleton className="h-[23px] w-[60px] rounded-full" />
+            <Skeleton className="h-[23px] w-[60px] rounded-full" />
           </View>
-          <View className="flex flex-col gap-2">
-            <Skeleton className="h-[25px] w-full" />
-            <Skeleton className="h-[25px] w-full" />
-          </View>
-          <Skeleton className="h-[18px] w-1/2" />
-        </View>
 
-        <View className="mt-10 flex flex-col gap-2">
-          <Skeleton className="h-[15px] w-full" />
-          <Skeleton className="h-[15px] w-full" />
-          <Skeleton className="h-[15px] w-1/2" />
+          <View className="flex flex-row flex-wrap items-center gap-1">
+            <Skeleton className="h-[16px] w-[30%] rounded-lg" />
+          </View>
+
+          <View className="flex flex-col gap-2">
+            <Skeleton className="h-[25px] w-[90%]" />
+            <Skeleton className="h-[25px] w-[70%]" />
+          </View>
+
+          <View className="mt-1 flex flex-row flex-wrap items-center gap-2">
+            <Skeleton className="h-[14px] w-[60px] rounded-full" />
+            <Skeleton className="h-[14px] w-[60px] rounded-full" />
+            <Skeleton className="h-[14px] w-[60px] rounded-full" />
+          </View>
         </View>
       </View>
     </View>
