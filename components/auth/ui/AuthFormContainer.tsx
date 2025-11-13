@@ -88,7 +88,7 @@ export default function AuthFormContainer({
                           <TouchableOpacity
                             onPress={onPressGoogle}
                             className="flex flex-1 flex-row justify-center rounded-xl border-[1px] border-gray-200 bg-white px-10 py-3">
-                            <AntDesign name="google" size={20} color="black" />
+                            <AntDesign name="google" size={20} color="#EA4335" />
                           </TouchableOpacity>
                         </View>
                       </>
