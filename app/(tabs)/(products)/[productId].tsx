@@ -5,7 +5,6 @@ import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   Alert,
@@ -20,7 +19,7 @@ import {
 import FullStockView from '@/components/FullStockView';
 import { ProductDetails } from '@/components/ProductDetails';
 import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
-import SelectedStock from '@/components/SelectedStock';
+import SelectedStock, { SelectedStockLoading } from '@/components/SelectedStock';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
 import AddToGroceryListFab from '@/components/ui/AddToGroceryListFab';
@@ -60,7 +59,7 @@ export default function ProductScreen() {
     useLazyQuery(ProductDocument, {
       fetchPolicy: 'network-only',
     });
-  const [getStock, { data: stockData }] = useLazyQuery(StockDocument, {
+  const [getStock, { data: stockData, loading: stockLoading }] = useLazyQuery(StockDocument, {
     fetchPolicy: 'no-cache',
   });
   const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
@@ -298,32 +297,26 @@ export default function ProductScreen() {
     setOpenEditModal(true);
   }, [productData]);
 
-  if (productLoading || !productData) {
-    return (
-      <SafeAreaView>
-        <ProductFullLoading />
-      </SafeAreaView>
-    );
-  }
-
   return (
     <>
-      <ModalFormFull
-        title="Add Price"
-        visible={openPriceModal}
-        onRequestClose={() => setOpenPriceModal(false)}>
-        <AddProductPriceForm
-          product={productData.product}
-          onCancel={() => setOpenPriceModal(false)}
-          onSuccess={(p) => {
-            setOpenPriceModal(false);
-            if (p.stockId) {
-              router.setParams({ stockId: p.stockId?.toString() });
-            }
-          }}
-          onError={(e) => alert(e.message)}
-        />
-      </ModalFormFull>
+      {productData && (
+        <ModalFormFull
+          title="Add Price"
+          visible={openPriceModal}
+          onRequestClose={() => setOpenPriceModal(false)}>
+          <AddProductPriceForm
+            product={productData.product}
+            onCancel={() => setOpenPriceModal(false)}
+            onSuccess={(p) => {
+              setOpenPriceModal(false);
+              if (p.stockId) {
+                router.setParams({ stockId: p.stockId?.toString() });
+              }
+            }}
+            onError={(e) => alert(e.message)}
+          />
+        </ModalFormFull>
+      )}
 
       <ModalFormMini
         title="Watch Stock"
@@ -369,19 +362,21 @@ export default function ProductScreen() {
         </View>
       </ModalFormMini>
 
-      <ModalFormFull
-        title="Edit Product"
-        visible={openEditModal}
-        onRequestClose={() => setOpenEditModal(false)}>
-        <ProductForm
-          product={productData.product as Product}
-          onCancel={() => setOpenEditModal(false)}
-          onSuccess={(_product) => {
-            setOpenEditModal(false);
-          }}
-          onError={(e) => alert(e.message)}
-        />
-      </ModalFormFull>
+      {productData && (
+        <ModalFormFull
+          title="Edit Product"
+          visible={openEditModal}
+          onRequestClose={() => setOpenEditModal(false)}>
+          <ProductForm
+            product={productData.product as Product}
+            onCancel={() => setOpenEditModal(false)}
+            onSuccess={(_product) => {
+              setOpenEditModal(false);
+            }}
+            onError={(e) => alert(e.message)}
+          />
+        </ModalFormFull>
+      )}
 
       <ModalFormFull
         visible={selectedStock !== undefined}
@@ -392,7 +387,7 @@ export default function ProductScreen() {
         )}
       </ModalFormFull>
 
-      <AddToGroceryListFab productId={productData.product.id} />
+      {productData && <AddToGroceryListFab productId={productData.product.id} />}
 
       <FlatList
         className="h-full w-full"
@@ -402,40 +397,53 @@ export default function ProductScreen() {
         ListHeaderComponent={
           <>
             <View className="mt-5">
-              <ProductFull
-                product={productData.product as Product}
-                hideDescription
-                hideEditButton
-                onEditButtonPress={() => setOpenEditModal(true)}
-              />
+              {productData && !productLoading ? (
+                <ProductFull
+                  product={productData.product as Product}
+                  hideDescription
+                  hideEditButton
+                  onEditButtonPress={() => setOpenEditModal(true)}
+                />
+              ) : (
+                <ProductFullLoading />
+              )}
             </View>
 
-            {stockId && stockData && (
-              <View className="mb-5 p-5">
-                <TouchableOpacity
-                  className="rounded-xl bg-gray-50 p-5"
-                  onPress={() => setSelectedStock(stockData.stock as Stock)}>
-                  <SelectedStock
-                    stock={stockData.stock as Stock}
-                    quantityValue={productData.product.quantityValue}
-                    quantityType={productData.product.quantityType}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
+            {stockId &&
+              (stockData && !stockLoading && productData ? (
+                <View className="mb-5 p-5">
+                  <TouchableOpacity
+                    className="rounded-xl bg-gray-50 p-5"
+                    onPress={() => setSelectedStock(stockData.stock as Stock)}>
+                    <SelectedStock
+                      stock={stockData.stock as Stock}
+                      quantityValue={productData.product.quantityValue}
+                      quantityType={productData.product.quantityType}
+                    />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View className="mb-5 p-5">
+                  <View className="rounded-xl bg-gray-50 p-5">
+                    <SelectedStockLoading />
+                  </View>
+                </View>
+              ))}
 
-            <ProductDetails
-              paginatedStocks={stocksData?.getProductStocks as PaginatedStocks | undefined}
-              favBranchesPriceData={
-                (favBranchesPriceData?.getFavoriteBranchesWithPrices ??
-                  []) as BranchListWithPrices[]
-              }
-              product={productData.product}
-              productNutrition={
-                productNutritionData?.getProductNutritionData as ProductNutrition | undefined
-              }
-              stock={stockData?.stock as Stock}
-            />
+            {productData && (
+              <ProductDetails
+                paginatedStocks={stocksData?.getProductStocks as PaginatedStocks | undefined}
+                favBranchesPriceData={
+                  (favBranchesPriceData?.getFavoriteBranchesWithPrices ??
+                    []) as BranchListWithPrices[]
+                }
+                product={productData.product}
+                productNutrition={
+                  productNutritionData?.getProductNutritionData as ProductNutrition | undefined
+                }
+                stock={stockData?.stock as Stock}
+              />
+            )}
           </>
         }
         ListFooterComponent={<View className="h-[100px]" />}

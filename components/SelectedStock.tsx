@@ -1,7 +1,8 @@
 import { View } from 'react-native';
 
 import PriceUserAndTimestamp from './PriceUserAndTimestamp';
-import StockFull from './StockFull';
+import StockFull, { StockFullLoading } from './StockFull';
+import { Skeleton } from './ui/Skeleton';
 
 import { Stock } from '@/graphql/types/graphql';
 
@@ -27,6 +28,18 @@ export default function SelectedStock(props: SelectedStockProps) {
           />
         </View>
       )}
+    </View>
+  );
+}
+
+export function SelectedStockLoading() {
+  return (
+    <View className="flex flex-col gap-2">
+      <StockFullLoading />
+
+      <View className="mt-4">
+        <Skeleton className="h-[30px] w-[30%] rounded-full" />
+      </View>
     </View>
   );
 }
