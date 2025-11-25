@@ -52,7 +52,7 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
   const [quantity, setQuantity] = useState(item.quantity ?? 1);
 
   return (
-    <View className="flex flex-row items-center border-b-[1px] border-gray-50 bg-white py-2">
+    <View className="flex flex-row border-b-[1px] border-gray-50 bg-white py-2">
       <Pressable
         onPress={() => {
           setCompleted((prev) => {
