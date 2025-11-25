@@ -21,6 +21,7 @@ export default function ProductItemHorizontal({
   product,
   imgWidth = 130,
   hideAddButton = false,
+  hideStoreInfo = true,
 }: ProductItemHorizontalProps) {
   const isExpired = useIsSaleExpired(product.stock?.latestPrice);
   const calculatedAmount = useCalculatedPrice({
@@ -72,7 +73,16 @@ export default function ProductItemHorizontal({
         </View>
 
         {product.stock?.latestPrice && (
-          <View className="flex flex-row items-center justify-between gap-2">
+          <View className="flex flex-row justify-between gap-2">
+            {!hideStoreInfo && product.__typename === 'Product' && product.stock.store && (
+              <View>
+                <Image
+                  src={createCloudinaryUrl(product.stock.store.logo ?? '', 100, 100)}
+                  className="size-[25px] rounded-sm"
+                />
+              </View>
+            )}
+
             <View className="flex-[1] flex-col">
               {product.stock.latestPrice.sale &&
                 !isExpired &&
