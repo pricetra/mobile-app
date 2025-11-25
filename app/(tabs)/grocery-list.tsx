@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client';
-import { Entypo, FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -7,13 +7,10 @@ import { View, Text, FlatList, RefreshControl, Platform, KeyboardAvoidingView } 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
-import AddGroceryListItem from '@/components/grocery-list/AddGroceryListItem';
 import GroceryListItem, {
   GroceryListItemDeleteAction,
 } from '@/components/grocery-list/GroceryListItem';
 import GroceryListItemCreate from '@/components/grocery-list/GroceryListItemCreate';
-import FloatingActionButton from '@/components/ui/FloatingActionButton';
-import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useAuth } from '@/context/UserContext';
 import {
@@ -26,7 +23,6 @@ export default function GroceryList() {
   const navigation = useNavigation();
   const { allGroceryLists } = useAuth();
   const [selectedGroceryList] = useState(allGroceryLists?.defaultGroceryList);
-  const [openCreateModal, setOpenCreateModal] = useState(false);
   const [getGroceryListItems, { data: groceryListItemsData, loading: groceryListItemsLoading }] =
     useLazyQuery(GroceryListItemsDocument, {
       fetchPolicy: 'network-only',
@@ -84,23 +80,6 @@ export default function GroceryList() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ModalFormMini
-        visible={openCreateModal}
-        title="Add Grocery Item"
-        onRequestClose={() => setOpenCreateModal(false)}>
-        <AddGroceryListItem
-          groceryListId={selectedGroceryList.id}
-          onSuccess={() => setOpenCreateModal(false)}
-        />
-      </ModalFormMini>
-
-      <FloatingActionButton
-        btnClassName="gap-5 px-12 shadow-gray-200"
-        onPress={() => setOpenCreateModal(true)}>
-        <Entypo name="add-to-list" size={27} color="white" />
-        <Text className="text-lg font-bold color-white">Add Item</Text>
-      </FloatingActionButton>
-
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
