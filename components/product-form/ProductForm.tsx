@@ -1,5 +1,5 @@
 import { ApolloError, useLazyQuery, useMutation, useQuery } from '@apollo/client';
-import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Feather, FontAwesome5, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
@@ -28,6 +28,7 @@ import {
   Category,
   ProductDocument,
   ExtractProductFieldsDocument,
+  SanitizeProductDocument,
 } from '@/graphql/types/graphql';
 import { buildBase64ImageString, titleCase } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
@@ -68,6 +69,9 @@ export default function ProductForm({
   const loading = updateLoading || createLoading;
   const [isPLU, setIsPLU] = useState(false);
   const isUpdateProduct = product !== undefined && product.id !== undefined && product.id !== 0;
+  const [sanitizeProduct, { loading: sanitizing }] = useMutation(SanitizeProductDocument, {
+    refetchQueries: [ProductDocument],
+  });
 
   // Check for PLU codes (Produce)
   useEffect(() => {
@@ -285,32 +289,46 @@ export default function ProductForm({
               autoCapitalize="words"
             />
 
-            <View className="mt-3 flex flex-row gap-3">
-              <TouchableOpacity
-                disabled={analyzingImage}
+            {/* <ScrollView horizontal className="flex flex-row gap-5"></ScrollView> */}
+            <View className="flex flex-row flex-wrap gap-3  py-3">
+              <Btn
+                loading={analyzingImage}
                 onPress={() => onPressAutofill(formik)}
-                className="flex flex-row items-center gap-3 rounded-xl border-[1px] border-emerald-300 bg-emerald-50 px-5 py-3">
-                {analyzingImage ? (
-                  <AntDesign
-                    name="loading1"
-                    className="size-[20px] animate-spin"
-                    color="#059669"
-                    size={20}
-                  />
-                ) : (
-                  <MaterialIcons name="camera-enhance" size={20} color="#059669" />
-                )}
-                <Text className="text-sm color-emerald-600">Autofill with Image</Text>
-              </TouchableOpacity>
+                className="flex flex-row items-center gap-3 rounded-xl border-[1px] border-emerald-300 bg-emerald-50 px-5 py-3"
+                icon={<MaterialIcons name="camera-enhance" size={20} color="#059669" />}
+                iconColor="#059669"
+                color="color-emerald-600"
+                text="Autofill with Image"
+                textWeight="normal"
+                textSize="text-sm"
+              />
 
-              <TouchableOpacity
+              {product && (
+                <Btn
+                  onPress={() => sanitizeProduct({ variables: { id: product.id } })}
+                  loading={sanitizing}
+                  className="flex flex-row items-center gap-3 rounded-xl border-[1px] border-blue-300 bg-blue-50 px-5 py-3"
+                  icon={<FontAwesome5 name="hand-sparkles" size={17} color="#2563eb" />}
+                  iconColor="#2563eb"
+                  color="color-blue-600"
+                  text="Sanitize with AI"
+                  textWeight="normal"
+                  textSize="text-sm"
+                />
+              )}
+
+              <Btn
                 onPress={() => {
                   formik.setFieldValue('name', titleCase(formik.values.name));
                 }}
-                className="flex flex-row items-center gap-3 rounded-xl border-[1px] border-purple-300 bg-purple-50 px-5 py-3">
-                <MaterialCommunityIcons name="format-text" size={20} color="#9333ea" />
-                <Text className="text-sm color-purple-600">Title Case</Text>
-              </TouchableOpacity>
+                className="flex flex-row items-center gap-3 rounded-xl border-[1px] border-purple-300 bg-purple-50 px-5 py-3"
+                icon={<MaterialCommunityIcons name="format-text" size={20} color="#9333ea" />}
+                iconColor="#9333ea"
+                color="color-purple-600"
+                text="Title Case"
+                textWeight="normal"
+                textSize="text-sm"
+              />
             </View>
           </View>
 

@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 export type BtnProps = TouchableOpacityProps & {
   text?: string;
   textWeight?: 'light' | 'normal' | 'semibold' | 'bold' | 'black';
+  textSize?: clsx.ClassValue;
   icon?: ReactNode;
   loading?: boolean;
   disabled?: boolean;
@@ -37,6 +38,7 @@ export default function Btn({
   iconColor = 'white',
   rounded = 'xl',
   iconRight,
+  textSize,
   ...props
 }: BtnProps) {
   return (
@@ -80,7 +82,8 @@ export default function Btn({
             size === 'sm' ? 'text-md' : '',
             size === 'md' ? 'text-lg' : '',
             size === 'lg' ? 'text-xl' : '',
-            loading ? 'opacity-0' : 'opacity-100'
+            loading ? 'opacity-0' : 'opacity-100',
+            textSize
           )}>
           {text}
         </Text>
