@@ -12,8 +12,8 @@ export const GROCERY_LISTS_QUERY = gql(`
 `);
 
 export const GET_GROCERY_LIST_ITEMS_QUERY = gql(`
-  query GroceryListItems($groceryListId: ID!) {
-    groceryListItems(groceryListId: $groceryListId) {
+  query GroceryListItems($groceryListId: ID!, $filters: GroceryListItemsFilters) {
+    groceryListItems(groceryListId: $groceryListId, filters: $filters) {
       id
       groceryListId
       productId
@@ -42,8 +42,8 @@ export const GET_GROCERY_LIST_ITEMS_QUERY = gql(`
 `);
 
 export const DEFAULT_GROCERY_LIST_ITEMS_QUERY = gql(`
-  query DefaultGroceryListItems {
-    defaultGroceryListItems {
+  query DefaultGroceryListItems($filters: GroceryListItemsFilters) {
+    defaultGroceryListItems(filters: $filters) {
       id
       groceryListId
       productId
