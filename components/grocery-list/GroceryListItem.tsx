@@ -5,6 +5,7 @@ import { Pressable, View, Text, TouchableOpacity, ActivityIndicator } from 'reac
 import Reanimated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import ProductMetadataBadge from '../ProductMetadataBadge';
+import ItemCounter from './ItemCounter';
 import { Skeleton } from '../ui/Skeleton';
 
 import Image from '@/components/ui/Image';
@@ -15,6 +16,7 @@ import {
   GroceryListItem as GqlGroceryListItem,
   GroceryListItemsDocument,
   MarkGroceryListItemDocument,
+  UpdateGroceryListItemDocument,
 } from '@/graphql/types/graphql';
 import { createCloudinaryUrl } from '@/lib/files';
 import { cn } from '@/lib/utils';
@@ -32,9 +34,25 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
       CountGroceryListItemsDocument,
     ],
   });
+  const [deleteGroceryListItem] = useMutation(DeleteGroceryListItemDocument, {
+    variables: { groceryListItemId: item.id },
+    refetchQueries: [
+      DefaultGroceryListItemsDocument,
+      GroceryListItemsDocument,
+      CountGroceryListItemsDocument,
+    ],
+  });
+  const [updateGroceryListItem] = useMutation(UpdateGroceryListItemDocument, {
+    refetchQueries: [
+      DefaultGroceryListItemsDocument,
+      GroceryListItemsDocument,
+      CountGroceryListItemsDocument,
+    ],
+  });
+  const [quantity, setQuantity] = useState(item.quantity ?? 1);
 
   return (
-    <View className="flex flex-row items-center border-b-[1px] border-gray-50 bg-white py-2">
+    <View className="flex flex-row border-b-[1px] border-gray-50 bg-white py-2">
       <Pressable
         onPress={() => {
           setCompleted((prev) => {
@@ -54,38 +72,59 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
         </View>
       </Pressable>
 
-      <View className="flex flex-1 flex-row flex-wrap gap-3 py-3">
-        {item.product && item.productId && (
-          <Image
-            src={createCloudinaryUrl(item.product.code, 200)}
-            className="rounded-xl"
-            style={{ width: 40, height: 40 }}
-          />
-        )}
-        <View className="flex flex-1 flex-col items-start justify-center gap-2 pr-5">
-          <Text className={cn('flex-1', completed ? 'line-through' : '')} numberOfLines={2}>
-            {item.product && item.productId ? item.product.name : item.category}
-          </Text>
+      <View className="flex flex-1 flex-col">
+        <View className="flex flex-row flex-wrap gap-3 py-3">
+          {item.product && item.productId && (
+            <Image
+              src={createCloudinaryUrl(item.product.code, 200)}
+              className="rounded-xl"
+              style={{ width: 40, height: 40 }}
+            />
+          )}
+          <View className="flex flex-1 flex-col items-start justify-center gap-2 pr-5">
+            <Text className={cn('flex-1', completed ? 'line-through' : '')} numberOfLines={2}>
+              {item.product && item.productId ? item.product.name : item.category}
+            </Text>
 
-          <View className="flex flex-row gap-2">
-            <ProductMetadataBadge size="sm" text={`quantity ${item.quantity}`} />
+            <View className="flex flex-row gap-2">
+              {item.product && item.productId && item.product.weightValue && (
+                <ProductMetadataBadge
+                  type="weight"
+                  size="sm"
+                  text={`${item.product.weightValue} ${item.product.weightType}`}
+                />
+              )}
 
-            {item.product && item.productId && item.product.weightValue && (
-              <ProductMetadataBadge
-                type="weight"
-                size="sm"
-                text={`${item.product.weightValue} ${item.product.weightType}`}
-              />
-            )}
-
-            {item.product && item.productId && item.product.quantityValue && (
-              <ProductMetadataBadge
-                type="quantity"
-                size="sm"
-                text={`${item.product.quantityValue} ${item.product.quantityType}`}
-              />
-            )}
+              {item.product && item.productId && item.product.quantityValue && (
+                <ProductMetadataBadge
+                  type="quantity"
+                  size="sm"
+                  text={`${item.product.quantityValue} ${item.product.quantityType}`}
+                />
+              )}
+            </View>
           </View>
+        </View>
+
+        <View className="mt-1 flex flex-row">
+          <ItemCounter
+            quantity={quantity}
+            onChange={(quantity) => {
+              setQuantity(quantity);
+              if (quantity < 1) {
+                deleteGroceryListItem();
+                return;
+              }
+              updateGroceryListItem({
+                variables: {
+                  groceryListItemId: item.id,
+                  input: {
+                    quantity,
+                  },
+                },
+              });
+            }}
+          />
         </View>
       </View>
     </View>

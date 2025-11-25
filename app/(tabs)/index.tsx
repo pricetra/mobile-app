@@ -22,6 +22,7 @@ import {
   BranchesWithProductsDocument,
   Paginator,
   ProductSearch,
+  Store,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 import { getRandomElement } from '@/lib/utils';
@@ -253,7 +254,7 @@ export default function HomeScreen() {
         handleRefresh={() => loadProducts(1)}
         setPage={setPage}
         style={style}
-        stores={allStoresData?.allStores?.stores}
+        stores={allStoresData?.allStores?.stores as Store[] | undefined}
         loading={loading}
       />
     </>

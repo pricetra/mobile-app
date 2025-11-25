@@ -3,7 +3,15 @@ import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, RefreshControl, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  RefreshControl,
+  Platform,
+  Share,
+} from 'react-native';
 
 import BranchProductItem from '@/components/BranchProductItem';
 import {
@@ -49,6 +57,15 @@ export default function SelectedStoreScreen() {
     latitude: user.address!.latitude,
     longitude: user.address!.longitude,
   });
+
+  async function share() {
+    if (!storeData) return;
+
+    await Share.share({
+      title: `${storeData.findStore.name} on Pricetra`,
+      url: `https://pricetra.com/stores/${storeData.findStore.slug}`,
+    });
+  }
 
   useEffect(() => {
     if (!location) return;
@@ -102,11 +119,19 @@ export default function SelectedStoreScreen() {
                 </View>
               }
               rightNav={
-                <TouchableOpacity
-                  onPress={() => setOpenModal(true)}
-                  className="flex flex-row items-center gap-2 rounded-full p-2">
-                  <Feather name="plus" size={23} color="#396a12" />
-                </TouchableOpacity>
+                <>
+                  <TouchableOpacity
+                    onPress={() => setOpenModal(true)}
+                    className="flex flex-row items-center gap-2 rounded-full p-2">
+                    <Feather name="plus" size={23} color="#396a12" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={share}
+                    className="flex flex-row items-center gap-2 p-2">
+                    <Feather name="share" size={20} color="#166534" />
+                  </TouchableOpacity>
+                </>
               }
             />
           ),

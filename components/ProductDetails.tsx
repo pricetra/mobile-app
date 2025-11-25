@@ -152,7 +152,7 @@ export function ProductDetails({
                   itemContainerStyle={{
                     justifyContent: 'flex-start',
                   }}
-                  spacing={15}
+                  spacing={20}
                   keyExtractor={(stock, i) => `fav-stock-${stock.branchId}-${stock.id}-${i}`}
                   renderItem={({ item: { approximatePrice, ...stock } }) => (
                     <TouchableOpacity
@@ -213,30 +213,21 @@ export function ProductDetails({
                 {paginatedStocks && paginatedStocks.stocks.length > 0 ? (
                   <FlatGrid
                     nestedScrollEnabled
-                    horizontal
+                    data={paginatedStocks.stocks}
                     itemContainerStyle={{
                       justifyContent: 'flex-start',
                     }}
-                    spacing={5}
-                    maxItemsPerRow={1}
-                    maxDimension={205}
-                    showsHorizontalScrollIndicator={false}
-                    data={paginatedStocks.stocks}
+                    spacing={20}
                     keyExtractor={({ id }, i) => `${id}-${i}`}
                     renderItem={({ item: s }) => (
-                      <TouchableOpacity
-                        onPress={() => setSelectedStock(s)}
-                        key={s.id}
-                        className="mr-5 w-[100px]">
+                      <TouchableOpacity onPress={() => setSelectedStock(s)} key={s.id}>
                         <StockItemMini
                           stock={s as Stock}
                           quantityValue={product.quantityValue}
                           quantityType={product.quantityType}
-                          stackLogo
                         />
                       </TouchableOpacity>
                     )}
-                    contentContainerStyle={{ paddingHorizontal: 15 }}
                     ListFooterComponent={() =>
                       paginatedStocks.paginator.next ? (
                         <HorizontalShowMoreButton onPress={() => {}} heightDiv={1} />

@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Linking,
+  Share,
 } from 'react-native';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
@@ -92,6 +93,15 @@ export default function SelectedBranchScreen() {
       ...params,
       page: String(1),
       query: s ?? '',
+    });
+  }
+
+  async function share() {
+    if (!branchData) return;
+
+    await Share.share({
+      title: `${branchData.findBranch.name} on Pricetra`,
+      url: `https://pricetra.com/stores/${branchData.findStore.slug}/${branchData.findBranch.slug}`,
     });
   }
 
@@ -205,6 +215,10 @@ export default function SelectedBranchScreen() {
                   {favorite !== undefined && (
                     <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
                   )}
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={share} className="flex flex-row items-center gap-2 p-2">
+                  <Feather name="share" size={20} color="#166534" />
                 </TouchableOpacity>
               </>
             )

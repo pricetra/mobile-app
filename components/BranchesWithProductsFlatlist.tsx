@@ -209,6 +209,8 @@ export function BranchesWithProductsFlatlistLoading({
   itemCount?: number;
   showBranches?: boolean;
 }) {
+  const params = useLocalSearchParams<SearchRouteParams>();
+
   return (
     <FlatList
       data={Array(itemCount).fill(0)}
@@ -216,6 +218,19 @@ export function BranchesWithProductsFlatlistLoading({
       indicatorStyle="black"
       ListHeaderComponent={
         <>
+          {!params.query && !params.categoryId && !params.brand && (
+            <FlatGrid
+              data={Array(10)
+                .fill(0)
+                .map((_, i) => i)}
+              itemDimension={50}
+              spacing={15}
+              keyExtractor={(i) => `store-loading-${i}`}
+              renderItem={() => <StoreMiniLoading />}
+              style={{ marginBottom: 15 }}
+            />
+          )}
+
           {showBranches && (
             <FlatGrid
               data={Array(10)

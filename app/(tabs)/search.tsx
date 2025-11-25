@@ -140,6 +140,7 @@ export default function SearchScreen() {
                     <ProductItemHorizontal
                       product={product as Product}
                       imgWidth={HORIZONTAL_PRODUCT_WIDTH}
+                      hideStoreInfo={false}
                     />
                   </TouchableOpacity>
                 )}
