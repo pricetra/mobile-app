@@ -1,7 +1,8 @@
 import { useLazyQuery } from '@apollo/client';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Network from 'expo-network';
-import { useContext, useEffect, useState } from 'react';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import Input from '../ui/Input';
 
@@ -10,7 +11,6 @@ import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { LoginInternalDocument } from '@/graphql/types/graphql';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
@@ -20,6 +20,7 @@ export default function LoginScreen() {
   });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const passwordInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     if (!screenEmail) return;
@@ -36,6 +37,14 @@ export default function LoginScreen() {
     }
     updateJwt(token);
   }, [data]);
+
+  async function onLogin() {
+    const ipAddress = await Network.getIpAddressAsync();
+    const device = getAuthDeviceTypeFromPlatform();
+    login({
+      variables: { email, password, ipAddress, device },
+    });
+  }
 
   return (
     <AuthFormContainer
@@ -67,13 +76,7 @@ export default function LoginScreen() {
           'Sign in with Google is currently not available on the mobile app'
         )
       }
-      onPressSubmit={async () => {
-        const ipAddress = await Network.getIpAddressAsync();
-        const device = getAuthDeviceTypeFromPlatform();
-        login({
-          variables: { email, password, ipAddress, device },
-        });
-      }}>
+      onPressSubmit={onLogin}>
       {!error && emailVerified && (
         <View className="rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">
           <View className="flex flex-row gap-3">
@@ -102,10 +105,12 @@ export default function LoginScreen() {
         autoComplete="email"
         editable={!loading}
         label="Email"
+        onEndEditing={() => passwordInputRef.current?.focus()}
       />
 
       <View>
         <Input
+          ref={passwordInputRef}
           onChangeText={setPassword}
           value={password}
           placeholder="Password"
@@ -116,6 +121,7 @@ export default function LoginScreen() {
           autoComplete="password"
           editable={!loading}
           label="Password"
+          onEndEditing={() => onLogin()}
         />
 
         <View className="mt-3 flex h-[20px] flex-row">
