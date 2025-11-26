@@ -33,6 +33,7 @@ import {
   LocationInput,
   Branch,
   Product,
+  Store,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
@@ -58,12 +59,10 @@ export default function SelectedStoreScreen() {
     longitude: user.address!.longitude,
   });
 
-  async function share() {
-    if (!storeData) return;
-
+  async function share(store: Store) {
     await Share.share({
-      title: `${storeData.findStore.name} on Pricetra`,
-      url: `https://pricetra.com/stores/${storeData.findStore.slug}`,
+      title: `${store.name} on Pricetra`,
+      url: `https://pricetra.com/stores/${store.slug}`,
     });
   }
 
@@ -97,6 +96,7 @@ export default function SelectedStoreScreen() {
   useFocusEffect(
     useCallback(() => {
       if (!storeId) return router.back();
+
       findStore({
         variables: { storeId: +storeId },
       }).then(({ data }) => {
@@ -127,7 +127,7 @@ export default function SelectedStoreScreen() {
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={share}
+                    onPress={() => share(data.findStore)}
                     className="flex flex-row items-center gap-2 p-2">
                     <Feather name="share" size={20} color="#166534" />
                   </TouchableOpacity>
