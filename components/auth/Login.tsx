@@ -105,7 +105,7 @@ export default function LoginScreen() {
         autoComplete="email"
         editable={!loading}
         label="Email"
-        onEndEditing={() => passwordInputRef.current?.focus()}
+        onSubmitEditing={() => passwordInputRef.current?.focus()}
       />
 
       <View>
@@ -121,7 +121,7 @@ export default function LoginScreen() {
           autoComplete="password"
           editable={!loading}
           label="Password"
-          onEndEditing={() => onLogin()}
+          onSubmitEditing={() => onLogin()}
         />
 
         <View className="mt-3 flex h-[20px] flex-row">

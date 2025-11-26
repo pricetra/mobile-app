@@ -69,7 +69,7 @@ export default function RegisterScreen() {
         autoCorrect
         autoComplete="email"
         editable={!loading}
-        onEndEditing={() => fullNameInputRef.current?.focus()}
+        onSubmitEditing={() => fullNameInputRef.current?.focus()}
       />
 
       <Input
@@ -84,7 +84,7 @@ export default function RegisterScreen() {
         autoCorrect
         autoComplete="name"
         editable={!loading}
-        onEndEditing={() => passwordInputRef.current?.focus()}
+        onSubmitEditing={() => passwordInputRef.current?.focus()}
       />
 
       <Input
@@ -99,7 +99,7 @@ export default function RegisterScreen() {
         autoCorrect={false}
         autoComplete="password"
         editable={!loading}
-        onEndEditing={() => onSignUp()}
+        onSubmitEditing={() => onSignUp()}
       />
     </AuthFormContainer>
   );
