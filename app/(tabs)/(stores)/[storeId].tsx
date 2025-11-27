@@ -164,9 +164,7 @@ export default function SelectedStoreScreen() {
         </ModalFormMini>
       )}
 
-      {branchesLoading && (
-        <BranchesWithProductsFlatlistLoading showLocationButton={false} style={{ marginTop: 80 }} />
-      )}
+      {branchesLoading && <BranchesWithProductsFlatlistLoading style={{ marginTop: 40 }} />}
 
       {storeData && !branchesLoading && branchesData && (
         <FlatList

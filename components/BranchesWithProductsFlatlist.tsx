@@ -202,12 +202,11 @@ export function BranchWithProductItem({
 export function BranchesWithProductsFlatlistLoading({
   style,
   itemCount = 5,
-  showBranches = false,
+  showStores = false,
 }: {
   style?: StyleProp<ViewStyle>;
-  showLocationButton?: boolean;
   itemCount?: number;
-  showBranches?: boolean;
+  showStores?: boolean;
 }) {
   const params = useLocalSearchParams<SearchRouteParams>();
 
@@ -218,7 +217,7 @@ export function BranchesWithProductsFlatlistLoading({
       indicatorStyle="black"
       ListHeaderComponent={
         <>
-          {!params.query && !params.categoryId && !params.brand && (
+          {showStores && !params.query && !params.categoryId && !params.brand && (
             <FlatGrid
               data={Array(10)
                 .fill(0)
@@ -228,18 +227,6 @@ export function BranchesWithProductsFlatlistLoading({
               keyExtractor={(i) => `store-loading-${i}`}
               renderItem={() => <StoreMiniLoading />}
               style={{ marginBottom: 15 }}
-            />
-          )}
-
-          {showBranches && (
-            <FlatGrid
-              data={Array(10)
-                .fill(0)
-                .map((_, i) => i)}
-              itemDimension={50}
-              spacing={15}
-              keyExtractor={(i) => `store-loading-${i}`}
-              renderItem={() => <StoreMiniLoading />}
             />
           )}
         </>
