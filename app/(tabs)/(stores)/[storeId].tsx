@@ -108,7 +108,7 @@ export default function SelectedStoreScreen() {
               {...props}
               showSearch
               leftNav={
-                <View className="flex flex-row items-center gap-2">
+                <View className="flex flex-1 flex-row items-center gap-2">
                   <Image
                     src={createCloudinaryUrl(data.findStore.logo, 100, 100)}
                     className="size-[30px] rounded-lg"
@@ -122,13 +122,13 @@ export default function SelectedStoreScreen() {
                 <>
                   <TouchableOpacity
                     onPress={() => setOpenModal(true)}
-                    className="flex flex-row items-center gap-2 rounded-full p-2">
+                    className="flex flex-row items-center">
                     <Feather name="plus" size={23} color="#396a12" />
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     onPress={() => share(data.findStore)}
-                    className="flex flex-row items-center gap-2 p-2">
+                    className="flex flex-row items-center">
                     <Feather name="share" size={20} color="#166534" />
                   </TouchableOpacity>
                 </>

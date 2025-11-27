@@ -148,10 +148,17 @@ export default function SelectedBranchScreen() {
               {branchLoading || !branchData ? (
                 <Skeleton className="size-[30px] rounded-lg" />
               ) : (
-                <Image
-                  src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
-                  className="size-[30px] rounded-lg"
-                />
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push(`/(tabs)/(stores)/${branchData.findStore.id}`, {
+                      relativeToDirectory: false,
+                    })
+                  }>
+                  <Image
+                    src={createCloudinaryUrl(branchData.findStore.logo, 100, 100)}
+                    className="size-[30px] rounded-lg"
+                  />
+                </TouchableOpacity>
               )}
 
               {branchLoading || !branchData ? (
@@ -211,13 +218,13 @@ export default function SelectedBranchScreen() {
                       },
                     });
                   }}
-                  className="flex flex-row items-center gap-2 p-2">
+                  className="flex flex-row items-center">
                   {favorite !== undefined && (
                     <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
                   )}
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={share} className="flex flex-row items-center gap-2 p-2">
+                <TouchableOpacity onPress={share} className="flex flex-row items-center">
                   <Feather name="share" size={20} color="#166534" />
                 </TouchableOpacity>
               </>
