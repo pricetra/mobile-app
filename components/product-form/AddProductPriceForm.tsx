@@ -86,7 +86,7 @@ export default function AddProductPriceForm({
       variables: {
         lat: location.coords.latitude,
         lon: location.coords.longitude,
-        radiusMeters: isRoleAuthorized(UserRole.Admin, user.role) ? 8046 : 500,
+        radiusMeters: isRoleAuthorized(UserRole.Admin, user.role) ? 18_000 : 500,
       },
     });
   }, [location, user]);
