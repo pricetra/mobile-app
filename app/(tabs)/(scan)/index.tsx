@@ -39,7 +39,7 @@ export default function ScanScreen() {
 
   const { getCurrentLocation } = useLocationService();
 
-  const [barcodeScan] = useLazyQuery(BarcodeScanDocument);
+  const [barcodeScan, { loading: processingBarcode }] = useLazyQuery(BarcodeScanDocument);
   const [extractProductFields, { loading: extractingProduct }] = useMutation(
     ExtractAndCreateProductDocument
   );
@@ -226,7 +226,20 @@ export default function ScanScreen() {
         />
       )}
 
-      {renderCameraComponent && <ScannerOverlay />}
+      {renderCameraComponent && (
+        <>
+          {processingBarcode ? (
+            <View className="absolute z-10 flex h-full w-full items-center justify-center">
+              <View className="flex flex-col items-center justify-center rounded-xl bg-black/50 px-10 py-7">
+                <ActivityIndicator color="white" size="large" />
+                <Text className="mt-4 text-white">Processing Barcode</Text>
+              </View>
+            </View>
+          ) : (
+            <ScannerOverlay />
+          )}
+        </>
+      )}
 
       <View className="absolute bottom-0 z-10 w-full rounded-t-3xl bg-black px-5 py-7">
         <View className="flex flex-row items-center justify-between">
