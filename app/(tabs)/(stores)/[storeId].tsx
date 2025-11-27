@@ -181,7 +181,7 @@ export default function SelectedStoreScreen() {
                   onPress={() =>
                     router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`)
                   }>
-                  <BranchProductItem branch={branch as Branch} hideStoreLogo displayBranchName />
+                  <BranchProductItem branch={branch as Branch} cityName />
                 </TouchableOpacity>
               </View>
 
