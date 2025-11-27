@@ -1278,7 +1278,33 @@ export const MY_PRODUCT_VIEW_HISTORY_QUERY = gql(`
           id
           productId
           storeId
+          store {
+            id
+            slug
+            name
+            logo
+          }
           branchId
+          branch {
+            id
+            slug
+            name
+            addressId
+            address {
+              id
+              latitude
+              longitude
+              mapsLink
+              fullAddress
+              street
+              city
+              administrativeDivision
+              countryCode
+              country
+              zipCode
+              distance
+            }
+          }
           latestPriceId
           latestPrice {
             id

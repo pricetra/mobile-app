@@ -33,6 +33,7 @@ import {
   LocationInput,
   Branch,
   Product,
+  Store,
 } from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
@@ -58,12 +59,10 @@ export default function SelectedStoreScreen() {
     longitude: user.address!.longitude,
   });
 
-  async function share() {
-    if (!storeData) return;
-
+  async function share(store: Store) {
     await Share.share({
-      title: `${storeData.findStore.name} on Pricetra`,
-      url: `https://pricetra.com/stores/${storeData.findStore.slug}`,
+      title: `${store.name} on Pricetra`,
+      url: `https://pricetra.com/stores/${store.slug}`,
     });
   }
 
@@ -97,6 +96,7 @@ export default function SelectedStoreScreen() {
   useFocusEffect(
     useCallback(() => {
       if (!storeId) return router.back();
+
       findStore({
         variables: { storeId: +storeId },
       }).then(({ data }) => {
@@ -108,7 +108,7 @@ export default function SelectedStoreScreen() {
               {...props}
               showSearch
               leftNav={
-                <View className="flex flex-row items-center gap-2">
+                <View className="flex flex-1 flex-row items-center gap-2">
                   <Image
                     src={createCloudinaryUrl(data.findStore.logo, 100, 100)}
                     className="size-[30px] rounded-lg"
@@ -122,13 +122,13 @@ export default function SelectedStoreScreen() {
                 <>
                   <TouchableOpacity
                     onPress={() => setOpenModal(true)}
-                    className="flex flex-row items-center gap-2 rounded-full p-2">
+                    className="flex flex-row items-center">
                     <Feather name="plus" size={23} color="#396a12" />
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={share}
-                    className="flex flex-row items-center gap-2 p-2">
+                    onPress={() => share(data.findStore)}
+                    className="flex flex-row items-center">
                     <Feather name="share" size={20} color="#166534" />
                   </TouchableOpacity>
                 </>
@@ -164,9 +164,7 @@ export default function SelectedStoreScreen() {
         </ModalFormMini>
       )}
 
-      {branchesLoading && (
-        <BranchesWithProductsFlatlistLoading showLocationButton={false} style={{ marginTop: 80 }} />
-      )}
+      {branchesLoading && <BranchesWithProductsFlatlistLoading style={{ marginTop: 40 }} />}
 
       {storeData && !branchesLoading && branchesData && (
         <FlatList
@@ -181,7 +179,7 @@ export default function SelectedStoreScreen() {
                   onPress={() =>
                     router.push(`/(tabs)/(stores)/${branch.storeId}/branch/${branch.id}`)
                   }>
-                  <BranchProductItem branch={branch as Branch} hideStoreLogo displayBranchName />
+                  <BranchProductItem branch={branch as Branch} cityName />
                 </TouchableOpacity>
               </View>
 

@@ -305,7 +305,12 @@ export default function ProductForm({
 
               {product && (
                 <Btn
-                  onPress={() => sanitizeProduct({ variables: { id: product.id } })}
+                  onPress={() =>
+                    sanitizeProduct({ variables: { id: product.id } }).then(({ data }) => {
+                      if (!data) return;
+                      onSuccess(data.sanitizeProduct as Product, formik);
+                    })
+                  }
                   loading={sanitizing}
                   className="flex flex-row items-center gap-3 rounded-xl border-[1px] border-blue-300 bg-blue-50 px-5 py-3"
                   icon={<FontAwesome5 name="hand-sparkles" size={17} color="#2563eb" />}

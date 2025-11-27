@@ -69,7 +69,7 @@ export default function TabHeaderItem({
           </View>
 
           <View
-            className="flex flex-[1] flex-row items-center justify-end gap-3"
+            className="ml-2 flex flex-[1] flex-row items-center justify-end gap-5"
             style={{ paddingHorizontal: iconStyles.paddingHorizontal }}>
             {rightNav}
 

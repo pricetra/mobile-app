@@ -207,7 +207,8 @@ export default function HomeScreen() {
     });
   }, [location, address]);
 
-  if (resetting || !branches) return <BranchesWithProductsFlatlistLoading style={style} />;
+  if (resetting || !branches)
+    return <BranchesWithProductsFlatlistLoading style={style} showStores />;
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
-import { useContext, useEffect, useState } from 'react';
-import { Text, Alert } from 'react-native';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { Text, Alert, TextInput } from 'react-native';
 
 import Input from '../ui/Input';
 
@@ -15,14 +15,22 @@ export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
+  const fullNameInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
+
   useEffect(() => {
     if (!data) return;
     setScreen(AuthScreenType.EMAIL_VERIFICATION, email);
   }, [data]);
 
+  async function onSignUp() {
+    createAccount({ variables: { email, password, name } });
+  }
+
   return (
     <AuthFormContainer
       title="Create your account"
+      description="Sign up and start saving today"
       buttonLabel="Sign Up"
       extras={
         <Text className="text-center color-gray-500">
@@ -49,9 +57,7 @@ export default function RegisterScreen() {
           'Sign in with Google is currently not available on the mobile app'
         )
       }
-      onPressSubmit={() => {
-        createAccount({ variables: { email, password, name } });
-      }}>
+      onPressSubmit={onSignUp}>
       <Input
         label="Email"
         onChangeText={setEmail}
@@ -63,9 +69,11 @@ export default function RegisterScreen() {
         autoCorrect
         autoComplete="email"
         editable={!loading}
+        onSubmitEditing={() => fullNameInputRef.current?.focus()}
       />
 
       <Input
+        ref={fullNameInputRef}
         label="Full Name"
         onChangeText={setName}
         value={name}
@@ -76,9 +84,11 @@ export default function RegisterScreen() {
         autoCorrect
         autoComplete="name"
         editable={!loading}
+        onSubmitEditing={() => passwordInputRef.current?.focus()}
       />
 
       <Input
+        ref={passwordInputRef}
         label="Password"
         onChangeText={setPassword}
         value={password}
@@ -89,6 +99,7 @@ export default function RegisterScreen() {
         autoCorrect={false}
         autoComplete="password"
         editable={!loading}
+        onSubmitEditing={() => onSignUp()}
       />
     </AuthFormContainer>
   );

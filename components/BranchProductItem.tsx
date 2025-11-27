@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
@@ -11,15 +12,23 @@ export type BranchProductItemProps = {
   branch: Branch;
   branchTagline?: string;
   hideStoreLogo?: boolean;
-  displayBranchName?: boolean;
+  branchName?: boolean;
+  cityName?: boolean;
 };
 
 export default function BranchProductItem({
   branch,
   branchTagline,
   hideStoreLogo = false,
-  displayBranchName = false,
+  branchName = false,
+  cityName = false,
 }: BranchProductItemProps) {
+  const name = useMemo(() => {
+    if (branchName) return branch.name;
+    if (cityName && branch.address) return branch.address.city;
+    return branch.store?.name ?? branch.name;
+  }, [branch, cityName, branchName]);
+
   return (
     <View>
       <View className="flex flex-row items-center justify-between gap-5">
@@ -37,7 +46,7 @@ export default function BranchProductItem({
 
             <View className="flex w-full flex-row flex-wrap items-center gap-x-3 gap-y-1">
               <Text className="text-md max-w-[80%] font-bold" numberOfLines={1}>
-                {displayBranchName ? branch.name : branch.store?.name}
+                {name}
               </Text>
 
               {branch.address?.distance && (

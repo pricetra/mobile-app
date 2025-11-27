@@ -26,6 +26,7 @@ import AddToGroceryListFab from '@/components/ui/AddToGroceryListFab';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
+import { useHeader } from '@/context/HeaderContext';
 import { useCurrentLocation } from '@/context/LocationContext';
 import { UserAuthContext } from '@/context/UserContext';
 import {
@@ -51,6 +52,7 @@ import { isRoleAuthorized } from '@/lib/roles';
 import { incompleteProductFields } from '@/lib/utils';
 
 export default function ProductScreen() {
+  const { setSubHeader } = useHeader();
   const navigation = useNavigation();
   const { lists, user } = useContext(UserAuthContext);
   const { productId, stockId } = useLocalSearchParams<{ productId: string; stockId?: string }>();
@@ -90,6 +92,8 @@ export default function ProductScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      setSubHeader(undefined);
+
       const parsedProductId = parseInt(productId, 10);
       if (isNaN(parsedProductId)) {
         return router.back();
@@ -241,7 +245,7 @@ export default function ProductScreen() {
                     setOpenWatchModal(true);
                   }}
                   disabled={addToListLoading || removeFromListLoading}
-                  className="flex flex-row items-center gap-2 p-2">
+                  className="flex flex-row items-center px-0.5 py-1">
                   <AntDesign name={watchProductList ? 'eye' : 'eyeo'} size={25} color="#a855f7" />
                 </TouchableOpacity>
               )}
@@ -254,14 +258,14 @@ export default function ProductScreen() {
                   add(ListType.Favorites).then((p) => setFavProductList(p));
                 }}
                 disabled={addToListLoading || removeFromListLoading}
-                className="flex flex-row items-center gap-2 p-2">
+                className="flex flex-row items-center px-0.5 py-1">
                 <AntDesign name={favProductList ? 'heart' : 'hearto'} size={20} color="#e11d48" />
               </TouchableOpacity>
 
               {isRoleAuthorized(UserRole.Contributor, user.role) && (
                 <TouchableOpacity
                   onPress={() => setOpenEditModal(true)}
-                  className="flex flex-row items-center gap-2 p-2">
+                  className="flex flex-row items-center px-0.5 py-1">
                   <Feather name="edit" size={20} color="#3b82f6" />
                 </TouchableOpacity>
               )}
@@ -273,7 +277,7 @@ export default function ProductScreen() {
                 <Text className="text-sm font-bold color-pricetraGreenHeavyDark">Price</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={share} className="flex flex-row items-center gap-2 p-2">
+              <TouchableOpacity onPress={share} className="flex flex-row items-center px-0.5 py-1">
                 <Feather name="share" size={20} color="#166534" />
               </TouchableOpacity>
             </>
