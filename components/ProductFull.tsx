@@ -7,7 +7,7 @@ import ProductMetadataBadge from './ProductMetadataBadge';
 import Image from './ui/Image';
 import { Skeleton } from './ui/Skeleton';
 
-import { Product } from '@/graphql/types/graphql';
+import { Product } from 'graphql-utils';
 import useProductWeightBuilder from '@/hooks/useProductWeightBuilder';
 import { categoriesFromChild } from '@/lib/utils';
 

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { View, Text, Image } from 'react-native';
 
-import { CreatedByUser, UpdatedByUser } from '@/graphql/types/graphql';
+import { CreatedByUser, UpdatedByUser } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export type PriceUserAndTimestampProps = {

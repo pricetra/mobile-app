@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import ProductItem from '@/components/ProductItem';
-import { GetAllProductListsByListIdDocument, Product, Stock } from '@/graphql/types/graphql';
+import { GetAllProductListsByListIdDocument, Product, Stock } from 'graphql-utils';
 
 export type ProductListViewProps = {
   listId: string;

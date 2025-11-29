@@ -1,7 +1,7 @@
 import * as Clipboard from 'expo-clipboard';
 import { View, Text } from 'react-native';
 
-import { Product } from '@/graphql/types/graphql';
+import { Product } from 'graphql-utils';
 
 export type ProductSpecsProps = {
   product: Product;

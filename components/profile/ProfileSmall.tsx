@@ -1,6 +1,6 @@
 import { Pressable, View, Image, Text } from 'react-native';
 
-import { User } from '@/graphql/types/graphql';
+import { User } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export type ProfileSmallProps = {

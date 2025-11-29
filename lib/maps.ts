@@ -1,6 +1,5 @@
+import { AuthDeviceType } from 'graphql-utils';
 import { Platform } from 'react-native';
-
-import { AuthDeviceType } from '@/graphql/types/graphql';
 
 export function getAuthDeviceTypeFromPlatform(): AuthDeviceType {
   switch (Platform.OS) {

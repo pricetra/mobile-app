@@ -1,12 +1,11 @@
 import { type ClassValue, clsx } from 'clsx';
 import convert from 'convert-units';
 import dayjs from 'dayjs';
+import { Category, Price, Product } from 'graphql-utils';
 import { configureReanimatedLogger } from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 
 import { postgresArrayToNumericArray } from './strings';
-
-import { Category, Price, Product } from '@/graphql/types/graphql';
 
 configureReanimatedLogger({
   strict: false,

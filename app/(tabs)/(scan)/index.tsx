@@ -22,7 +22,7 @@ import {
   ExtractAndCreateProductDocument,
   Product,
   UserRole,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import useLocationService from '@/hooks/useLocationService';
 import { isRoleAuthorized } from '@/lib/roles';
 

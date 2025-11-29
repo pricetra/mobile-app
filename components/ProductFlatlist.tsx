@@ -14,12 +14,7 @@ import { FlatGrid } from 'react-native-super-grid';
 import ProductItem, { ProductItemLoading } from './ProductItem';
 import PaginationSimple from './ui/PaginationSimple';
 
-import {
-  AllProductsQuery,
-  Paginator,
-  Product,
-  QueryAllProductsArgs,
-} from '@/graphql/types/graphql';
+import { AllProductsQuery, Paginator, Product, QueryAllProductsArgs } from 'graphql-utils';
 
 const itemDimension = 300;
 

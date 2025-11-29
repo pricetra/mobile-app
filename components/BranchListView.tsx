@@ -5,7 +5,7 @@ import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'rea
 
 import BranchItemWithLogo from './BranchItemWithLogo';
 
-import { Branch, GetAllBranchListsByListIdDocument } from '@/graphql/types/graphql';
+import { Branch, GetAllBranchListsByListIdDocument } from 'graphql-utils';
 
 export type BranchListViewProps = {
   listId: string;

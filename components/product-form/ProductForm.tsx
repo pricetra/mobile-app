@@ -29,7 +29,7 @@ import {
   ProductDocument,
   ExtractProductFieldsDocument,
   SanitizeProductDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import { buildBase64ImageString, titleCase } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
 

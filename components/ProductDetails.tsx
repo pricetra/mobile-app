@@ -29,7 +29,7 @@ import {
   ProductNutrition,
   Stock,
   UpdateProductNutritionDataDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import { cn } from '@/lib/utils';
 
 export type StockWithApproximatePrice = Stock & {

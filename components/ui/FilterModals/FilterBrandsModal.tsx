@@ -5,7 +5,7 @@ import { ActivityIndicator, View, Text, TouchableOpacity } from 'react-native';
 
 import Input from '../Input';
 
-import { AllBrandsDocument, Brand } from '@/graphql/types/graphql';
+import { AllBrandsDocument, Brand } from 'graphql-utils';
 
 export default function FilterBrandsModal({
   value,

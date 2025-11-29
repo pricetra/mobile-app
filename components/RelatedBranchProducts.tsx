@@ -13,7 +13,7 @@ import ProductItemHorizontal from './ProductItemHorizontal';
 
 import { useCurrentLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/UserContext';
-import { Branch, BranchesWithProductsDocument, Product, Stock } from '@/graphql/types/graphql';
+import { Branch, BranchesWithProductsDocument, Product, Stock } from 'graphql-utils';
 
 export type RelatedBranchProductsProps = {
   product: Product;
@@ -56,7 +56,7 @@ export default function RelatedBranchProducts({
 
   if (hideDuringLoading && loading) return <></>;
 
-  if (loading) return <BranchesWithProductsFlatlistLoading showLocationButton={false} />;
+  if (loading) return <BranchesWithProductsFlatlistLoading />;
 
   if (!data || data.branchesWithProducts.paginator.total === 0) return <></>;
 

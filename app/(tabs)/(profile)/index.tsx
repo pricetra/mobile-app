@@ -9,6 +9,7 @@ import {
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import dayjs from 'dayjs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
+import { ListType, UserRole } from 'graphql-utils';
 import { useCallback, useContext, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, Alert, View } from 'react-native';
 
@@ -17,7 +18,6 @@ import ProfileSmall from '@/components/profile/ProfileSmall';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { UserAuthContext } from '@/context/UserContext';
-import { ListType, UserRole } from '@/graphql/types/graphql';
 import { isRoleAuthorized } from '@/lib/roles';
 
 export function ListIconRenderer(type: ListType) {

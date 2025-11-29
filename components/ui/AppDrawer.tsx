@@ -18,7 +18,7 @@ import DrawerMenuItem from './AppDrawer/DrawerMenuItem';
 import ProfileMini from '@/components/profile/ProfileMini';
 import { useDrawer } from '@/context/DrawerContext';
 import { UserAuthContext } from '@/context/UserContext';
-import { UserRole } from '@/graphql/types/graphql';
+import { UserRole } from 'graphql-utils';
 import { isRoleAuthorized } from '@/lib/roles';
 import { cn } from '@/lib/utils';
 

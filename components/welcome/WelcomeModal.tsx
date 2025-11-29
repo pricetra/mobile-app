@@ -26,7 +26,7 @@ import {
   Branch,
   GetAllListsDocument,
   BulkAddBranchesToListDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 

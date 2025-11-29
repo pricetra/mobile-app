@@ -12,7 +12,7 @@ import {
   CountGroceryListItemsDocument,
   DefaultGroceryListItemsDocument,
   GroceryListItemsDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 
 export default function GroceryListItemCreate({ groceryListId }: { groceryListId: number }) {
   const [search, setSearch] = useState('');

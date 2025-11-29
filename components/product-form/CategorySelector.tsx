@@ -8,7 +8,7 @@ import CategoryCombobox, { CategoryComboboxData } from './CategoryCombobox';
 import Input from '../ui/Input';
 
 import Btn from '@/components/ui/Btn';
-import { Category, CategorySearchDocument, GetCategoryDocument } from '@/graphql/types/graphql';
+import { Category, CategorySearchDocument, GetCategoryDocument } from 'graphql-utils';
 import { categoriesFromChild } from '@/lib/utils';
 
 export type CategorySelectorProps = {

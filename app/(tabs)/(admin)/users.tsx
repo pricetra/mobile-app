@@ -2,6 +2,7 @@ import { useLazyQuery } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
+import { GetAllUsersDocument, User, UserFilter, UserRole } from 'graphql-utils';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Alert, Text } from 'react-native';
 
@@ -14,7 +15,6 @@ import PaginationSimple from '@/components/ui/PaginationSimple';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 import { UserAuthContext } from '@/context/UserContext';
-import { GetAllUsersDocument, User, UserFilter, UserRole } from '@/graphql/types/graphql';
 import { isRoleAuthorized } from '@/lib/roles';
 
 export type SearchTypes = 'id' | 'email' | 'name' | 'role';
