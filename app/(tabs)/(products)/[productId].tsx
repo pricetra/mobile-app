@@ -3,6 +3,25 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import {
+  AddToListDocument,
+  BranchListWithPrices,
+  FavoriteBranchesWithPricesDocument,
+  GetAllListsDocument,
+  GetAllProductListsByListIdDocument,
+  GetProductNutritionDataDocument,
+  GetProductStocksDocument,
+  ListType,
+  PaginatedStocks,
+  Product,
+  ProductDocument,
+  ProductList,
+  ProductNutrition,
+  RemoveFromListDocument,
+  Stock,
+  StockDocument,
+  UserRole,
+} from 'graphql-utils';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   View,
@@ -29,25 +48,6 @@ import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useHeader } from '@/context/HeaderContext';
 import { useCurrentLocation } from '@/context/LocationContext';
 import { UserAuthContext } from '@/context/UserContext';
-import {
-  AddToListDocument,
-  BranchListWithPrices,
-  FavoriteBranchesWithPricesDocument,
-  GetAllListsDocument,
-  GetAllProductListsByListIdDocument,
-  GetProductNutritionDataDocument,
-  GetProductStocksDocument,
-  ListType,
-  PaginatedStocks,
-  Product,
-  ProductDocument,
-  ProductList,
-  ProductNutrition,
-  RemoveFromListDocument,
-  Stock,
-  StockDocument,
-  UserRole,
-} from '@/graphql/types/graphql';
 import { isRoleAuthorized } from '@/lib/roles';
 import { incompleteProductFields } from '@/lib/utils';
 

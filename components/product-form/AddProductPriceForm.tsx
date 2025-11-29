@@ -29,7 +29,7 @@ import {
   Stock,
   StockDocument,
   UserRole,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 import { isRoleAuthorized } from '@/lib/roles';

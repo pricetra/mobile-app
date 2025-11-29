@@ -7,11 +7,7 @@ import { View, Image, TouchableOpacity } from 'react-native';
 import Btn from './ui/Btn';
 
 import { Input } from '@/components/ui/Input';
-import {
-  AllStoresDocument,
-  CreateStoreDocument,
-  CreateStoreMutation,
-} from '@/graphql/types/graphql';
+import { AllStoresDocument, CreateStoreDocument, CreateStoreMutation } from 'graphql-utils';
 
 export type CreateStoreFormProps = {
   onSuccess?: (data: CreateStoreMutation) => void;

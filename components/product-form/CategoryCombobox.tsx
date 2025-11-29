@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native';
 import { AutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
 
 import Combobox, { ComboboxItem } from '@/components/ui/Combobox';
-import { Category, CreateCategoryDocument, GetCategoriesDocument } from '@/graphql/types/graphql';
+import { Category, CreateCategoryDocument, GetCategoriesDocument } from 'graphql-utils';
 import { postgresArrayToNumericArray } from '@/lib/strings';
 
 export type CategoryComboboxData = {

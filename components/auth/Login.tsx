@@ -9,7 +9,7 @@ import Input from '../ui/Input';
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
-import { LoginInternalDocument } from '@/graphql/types/graphql';
+import { LoginInternalDocument } from 'graphql-utils';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 
 export default function LoginScreen() {

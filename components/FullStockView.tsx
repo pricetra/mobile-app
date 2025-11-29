@@ -15,7 +15,7 @@ import {
   PriceChangeHistoryDocument,
   PriceHistoryFilter,
   Stock,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 
 export type FullStockViewProps = {
   stock: Stock;

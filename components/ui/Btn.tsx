@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { ClassValue } from 'clsx';
 import { ReactNode } from 'react';
 import {
   ActivityIndicator,
@@ -14,12 +14,12 @@ import { cn } from '@/lib/utils';
 export type BtnProps = TouchableOpacityProps & {
   text?: string;
   textWeight?: 'light' | 'normal' | 'semibold' | 'bold' | 'black';
-  textSize?: clsx.ClassValue;
+  textSize?: ClassValue;
   icon?: ReactNode;
   loading?: boolean;
   disabled?: boolean;
-  bgColor?: clsx.ClassValue;
-  color?: clsx.ClassValue;
+  bgColor?: ClassValue;
+  color?: ClassValue;
   size?: 'xs' | 'sm' | 'md' | 'lg';
   iconColor?: ColorValue;
   rounded?: 'full' | 'xl';

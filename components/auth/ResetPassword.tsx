@@ -18,7 +18,7 @@ import {
   RequestResetPasswordDocument,
   UpdatePasswordWithResetCodeDocument,
   VerifyPasswordResetCodeDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 
 const CELL_COUNT = 6;
 

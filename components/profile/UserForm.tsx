@@ -16,7 +16,7 @@ import {
   UpdateUserFull,
   UserRole,
   UpdateUserByIdDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { enumToNormalizedString } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';

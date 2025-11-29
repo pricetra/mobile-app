@@ -5,7 +5,7 @@ import { ActivityIndicator, View, Text, TouchableOpacity } from 'react-native';
 
 import Input from '../Input';
 
-import { CategorySearchDocument } from '@/graphql/types/graphql';
+import { CategorySearchDocument } from 'graphql-utils';
 
 export default function FilterCategoriesModal({
   value,

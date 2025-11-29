@@ -10,7 +10,7 @@ import ProductListView from '@/components/ProductListView';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useHeader } from '@/context/HeaderContext';
 import { useAuth } from '@/context/UserContext';
-import { List, ListType } from '@/graphql/types/graphql';
+import { List, ListType } from 'graphql-utils';
 import { cn } from '@/lib/utils';
 
 export enum ListScreenTabType {

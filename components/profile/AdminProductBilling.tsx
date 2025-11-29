@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import ProductBillingDataTable from '@/components/ui/ProductBillingDataTable';
-import { ProductBilling, ProductBillingDataByUserIdDocument, User } from '@/graphql/types/graphql';
+import { ProductBilling, ProductBillingDataByUserIdDocument, User } from 'graphql-utils';
 
 const LIMIT = 50;
 

@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 
-import { ProductNutrition } from '@/graphql/types/graphql';
+import { ProductNutrition } from 'graphql-utils';
 import { formatNutrient } from '@/lib/strings';
 
 export default function NutritionFacts({ nutriments, servingSize }: ProductNutrition) {

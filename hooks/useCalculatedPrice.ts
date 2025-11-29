@@ -1,6 +1,5 @@
+import { Maybe, Price } from 'graphql-utils';
 import { useMemo } from 'react';
-
-import { Maybe, Price } from '@/graphql/types/graphql';
 
 export default function useCalculatedPrice({
   latestPrice,

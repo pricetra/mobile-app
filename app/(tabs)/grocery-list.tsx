@@ -13,10 +13,7 @@ import GroceryListItem, {
 import GroceryListItemCreate from '@/components/grocery-list/GroceryListItemCreate';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useAuth } from '@/context/UserContext';
-import {
-  GroceryListItem as GqlGroceryListItem,
-  GroceryListItemsDocument,
-} from '@/graphql/types/graphql';
+import { GroceryListItem as GqlGroceryListItem, GroceryListItemsDocument } from 'graphql-utils';
 
 export default function GroceryList() {
   const flatListRef = useRef<FlatList>(null);

@@ -11,7 +11,7 @@ import {
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
-import { ResendVerificationDocument, VerifyEmailDocument } from '@/graphql/types/graphql';
+import { ResendVerificationDocument, VerifyEmailDocument } from 'graphql-utils';
 
 const CELL_COUNT = 6;
 

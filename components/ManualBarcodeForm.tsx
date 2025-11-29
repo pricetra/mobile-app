@@ -9,7 +9,7 @@ import { HORIZONTAL_PRODUCT_WIDTH } from './BranchesWithProductsFlatlist';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 
 import { Input } from '@/components/ui/Input';
-import { Product, ProductSearchDocument } from '@/graphql/types/graphql';
+import { Product, ProductSearchDocument } from 'graphql-utils';
 
 const LIMIT = 10;
 

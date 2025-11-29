@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import Combobox, { ComboboxItem } from '@/components/ui/Combobox';
-import { Brand } from '@/graphql/types/graphql';
+import { Brand } from 'graphql-utils';
 
 export type BrandSelectorProps = {
   value: string;

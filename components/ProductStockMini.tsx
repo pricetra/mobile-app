@@ -2,7 +2,7 @@ import { Entypo } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
-import { Stock } from '@/graphql/types/graphql';
+import { Stock } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { metersToMiles } from '@/lib/utils';
 
