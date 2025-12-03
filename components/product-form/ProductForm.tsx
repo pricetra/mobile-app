@@ -3,6 +3,19 @@ import { Feather, FontAwesome5, MaterialCommunityIcons, MaterialIcons } from '@e
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik, FormikHelpers, FormikProps } from 'formik';
+import {
+  AllBrandsDocument,
+  AllProductsDocument,
+  Brand,
+  CreateProduct,
+  CreateProductDocument,
+  UpdateProductDocument,
+  Product,
+  Category,
+  ProductDocument,
+  ExtractProductFieldsDocument,
+  SanitizeProductDocument,
+} from 'graphql-utils';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, TouchableOpacity, View } from 'react-native';
 
@@ -17,19 +30,6 @@ import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
 import Text from '@/components/ui/Text';
 import { Textarea } from '@/components/ui/Textarea';
-import {
-  AllBrandsDocument,
-  AllProductsDocument,
-  Brand,
-  CreateProduct,
-  CreateProductDocument,
-  UpdateProductDocument,
-  Product,
-  Category,
-  ProductDocument,
-  ExtractProductFieldsDocument,
-  SanitizeProductDocument,
-} from 'graphql-utils';
 import { buildBase64ImageString, titleCase } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
 
