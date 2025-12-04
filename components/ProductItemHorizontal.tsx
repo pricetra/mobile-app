@@ -1,3 +1,4 @@
+import { Product, ProductSimple } from 'graphql-utils';
 import { View, Text } from 'react-native';
 
 import { ProductItemOptionalProps } from './ProductItem';
@@ -6,7 +7,6 @@ import AddToGroceryListActionButton from './ui/AddToGroceryListActionButton';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
-import { Product, ProductSimple } from 'graphql-utils';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
 import useProductWeightBuilder from '@/hooks/useProductWeightBuilder';
