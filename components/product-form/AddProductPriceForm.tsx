@@ -2,20 +2,6 @@ import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { Formik, FormikErrors, FormikProps, useFormikContext } from 'formik';
-import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
-import CurrencyInput from 'react-native-currency-input';
-
-import ProductItem from '../ProductItem';
-import { Checkbox } from '../ui/Checkbox';
-import Input from '../ui/Input';
-
-import Btn from '@/components/ui/Btn';
-import Button from '@/components/ui/Button';
-import Combobox from '@/components/ui/Combobox';
-import Image from '@/components/ui/Image';
-import Label from '@/components/ui/Label';
-import { useAuth } from '@/context/UserContext';
 import {
   BranchesWithProductsDocument,
   CreatePrice,
@@ -30,6 +16,20 @@ import {
   StockDocument,
   UserRole,
 } from 'graphql-utils';
+import { useEffect, useMemo, useState } from 'react';
+import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
+import CurrencyInput from 'react-native-currency-input';
+
+import ProductItem from '../ProductItem';
+import { Checkbox } from '../ui/Checkbox';
+import Input from '../ui/Input';
+
+import Btn from '@/components/ui/Btn';
+import Button from '@/components/ui/Button';
+import Combobox from '@/components/ui/Combobox';
+import Image from '@/components/ui/Image';
+import Label from '@/components/ui/Label';
+import { useAuth } from '@/context/UserContext';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 import { isRoleAuthorized } from '@/lib/roles';
