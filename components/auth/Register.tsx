@@ -6,7 +6,7 @@ import Input from '../ui/Input';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
-import { CreateAccountDocument } from '@/graphql/types/graphql';
+import { CreateAccountDocument } from 'graphql-utils';
 
 export default function RegisterScreen() {
   const { setScreen } = useContext(AuthModalContext);

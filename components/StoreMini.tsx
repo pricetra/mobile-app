@@ -4,7 +4,7 @@ import { TouchableOpacity, Image, Text, View } from 'react-native';
 
 import { Skeleton } from './ui/Skeleton';
 
-import { Store } from '@/graphql/types/graphql';
+import { Store } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export type StoreMiniProps = {

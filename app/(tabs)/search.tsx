@@ -20,11 +20,7 @@ import ProductItemHorizontal from '@/components/ProductItemHorizontal';
 import TabHeaderContainer, { navConsts } from '@/components/ui/TabHeaderContainer';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import TabHeaderSearchBar from '@/components/ui/TabHeaderSearchBar';
-import {
-  MyProductViewHistoryDocument,
-  MySearchHistoryDocument,
-  Product,
-} from '@/graphql/types/graphql';
+import { MyProductViewHistoryDocument, MySearchHistoryDocument, Product } from 'graphql-utils';
 
 export type SearchRouteParams = {
   query?: string;

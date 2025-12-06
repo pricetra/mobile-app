@@ -4,7 +4,7 @@ import { View, Text } from 'react-native';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
-import { Store } from '@/graphql/types/graphql';
+import { Store } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export default function StoreItem({ name, logo }: Store) {

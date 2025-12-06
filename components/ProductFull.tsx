@@ -1,5 +1,6 @@
 import { Entypo } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { Product } from 'graphql-utils';
 import { Fragment, useState } from 'react';
 import { View, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
 
@@ -7,7 +8,6 @@ import ProductMetadataBadge from './ProductMetadataBadge';
 import Image from './ui/Image';
 import { Skeleton } from './ui/Skeleton';
 
-import { Product } from '@/graphql/types/graphql';
 import useProductWeightBuilder from '@/hooks/useProductWeightBuilder';
 import { categoriesFromChild } from '@/lib/utils';
 
@@ -68,7 +68,7 @@ export default function ProductFull({
             {product.brand && product.brand !== 'N/A' && (
               <Text
                 onPress={() =>
-                  router.push(`/(tabs)/?brand=${product.brand}`, {
+                  router.push(`/(tabs)/?brand=${encodeURIComponent(product.brand)}`, {
                     relativeToDirectory: false,
                   })
                 }>

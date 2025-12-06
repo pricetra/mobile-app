@@ -18,7 +18,7 @@ import {
   PostAuthUserDataDocument,
   RegisterExpoPushTokenDocument,
   User,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import { version } from '@/package.json';
 
 const MINUTE = 1000 * 60;

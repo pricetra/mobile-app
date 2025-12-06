@@ -2,7 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 
-import { Paginator } from '@/graphql/types/graphql';
+import { Paginator } from 'graphql-utils';
 
 type PaginatorProps = {
   paginator: Paginator;

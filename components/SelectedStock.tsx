@@ -4,7 +4,7 @@ import PriceUserAndTimestamp from './PriceUserAndTimestamp';
 import StockFull, { StockFullLoading } from './StockFull';
 import { Skeleton } from './ui/Skeleton';
 
-import { Stock } from '@/graphql/types/graphql';
+import { Stock } from 'graphql-utils';
 
 export type SelectedStockProps = {
   stock: Stock;

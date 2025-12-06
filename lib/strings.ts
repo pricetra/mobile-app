@@ -1,4 +1,4 @@
-import { Price, ProductWeightComponents } from '@/graphql/types/graphql';
+import { Price, ProductWeightComponents } from 'graphql-utils';
 
 export function titleCase(str: string) {
   return str

@@ -23,7 +23,7 @@ import {
   Paginator,
   ProductSearch,
   Store,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import useLocationService from '@/hooks/useLocationService';
 import { getRandomElement } from '@/lib/utils';
 

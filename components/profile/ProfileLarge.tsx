@@ -1,7 +1,7 @@
 import { View, Image, Text } from 'react-native';
 
 import { Skeleton } from '@/components/ui/Skeleton';
-import { User } from '@/graphql/types/graphql';
+import { User } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { enumToNormalizedString } from '@/lib/strings';
 

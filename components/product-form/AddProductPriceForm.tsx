@@ -2,6 +2,20 @@ import { ApolloError, useLazyQuery, useMutation } from '@apollo/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { Formik, FormikErrors, FormikProps, useFormikContext } from 'formik';
+import {
+  BranchesWithProductsDocument,
+  CreatePrice,
+  CreatePriceDocument,
+  FavoriteBranchesWithPricesDocument,
+  FindBranchesByDistanceDocument,
+  GetProductStocksDocument,
+  GetStockFromProductAndBranchIdDocument,
+  Price,
+  Product,
+  Stock,
+  StockDocument,
+  UserRole,
+} from 'graphql-utils';
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
@@ -16,20 +30,6 @@ import Combobox from '@/components/ui/Combobox';
 import Image from '@/components/ui/Image';
 import Label from '@/components/ui/Label';
 import { useAuth } from '@/context/UserContext';
-import {
-  BranchesWithProductsDocument,
-  CreatePrice,
-  CreatePriceDocument,
-  FavoriteBranchesWithPricesDocument,
-  FindBranchesByDistanceDocument,
-  GetProductStocksDocument,
-  GetStockFromProductAndBranchIdDocument,
-  Price,
-  Product,
-  Stock,
-  StockDocument,
-  UserRole,
-} from '@/graphql/types/graphql';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 import { isRoleAuthorized } from '@/lib/roles';

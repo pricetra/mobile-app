@@ -26,7 +26,7 @@ import {
   Paginator,
   QueryBranchesWithProductsArgs,
   Store,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 
 export type BranchesWithProductsFlatlistProps = {
   branches: Branch[];

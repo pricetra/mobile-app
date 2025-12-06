@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/Table';
-import { Paginator, ProductBilling } from '@/graphql/types/graphql';
+import { Paginator, ProductBilling } from 'graphql-utils';
 import { cn } from '@/lib/utils';
 
 const dataLoading = Array(50).fill({} as ProductBilling);
