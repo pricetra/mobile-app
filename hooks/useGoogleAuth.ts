@@ -3,7 +3,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import { useEffect, useState } from 'react';
 
 const CLIENT_ID_DEV = '625150659652-kuui6jjol468n3s63fvfqgbavj2v673h.apps.googleusercontent.com';
-const CLIENT_ID_PROD = '625150659652-kuekq6e382kgs0b99eo2519dk25tuc55.apps.googleusercontent.com';
+const CLIENT_ID_PROD = process.env.EXPO_PUBLIC_GOOGLE_OAUTH_CLIENT_ID;
 const CLIENT_ID = process.env.NODE_ENV !== 'production' ? CLIENT_ID_DEV : CLIENT_ID_PROD;
 
 export function useGoogleAuth() {
