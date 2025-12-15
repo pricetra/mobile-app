@@ -7,8 +7,8 @@ import Input from '../ui/Input';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
-import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
+import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 
 export default function RegisterScreen() {
   const { updateJwt } = useContext(JwtStoreContext);

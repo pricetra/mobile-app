@@ -1,6 +1,15 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Feather, MaterialIcons, Octicons } from '@expo/vector-icons';
 import convert from 'convert-units';
+import {
+  MeDocument,
+  UpdateProfileDocument,
+  Address,
+  FindBranchesByDistanceDocument,
+  Branch,
+  GetAllListsDocument,
+  BulkAddBranchesToListDocument,
+} from 'graphql-utils';
 import { useEffect, useState } from 'react';
 import {
   Modal,
@@ -18,15 +27,6 @@ import Btn from '@/components/ui/Btn';
 import Image from '@/components/ui/Image';
 import Input from '@/components/ui/Input';
 import { useAuth } from '@/context/UserContext';
-import {
-  MeDocument,
-  UpdateProfileDocument,
-  Address,
-  FindBranchesByDistanceDocument,
-  Branch,
-  GetAllListsDocument,
-  BulkAddBranchesToListDocument,
-} from 'graphql-utils';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 
