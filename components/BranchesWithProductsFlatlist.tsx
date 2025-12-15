@@ -55,6 +55,7 @@ export default function BranchesWithProductsFlatlist({
   const [refreshing, setRefreshing] = useState(false);
   const params = useLocalSearchParams<SearchRouteParams>();
   const paramsBuilder = useMemo(() => new URLSearchParams(params), [params]);
+  const paramsString = useMemo(() => paramsBuilder.toString(), [paramsBuilder]);
 
   return (
     <FlatList
@@ -63,7 +64,7 @@ export default function BranchesWithProductsFlatlist({
       indicatorStyle="black"
       ListHeaderComponent={
         <>
-          {paramsBuilder.toString() === '' && (
+          {(paramsString === '' || paramsString === 'query=') && (
             <>
               {stores ? (
                 <FlatGrid
