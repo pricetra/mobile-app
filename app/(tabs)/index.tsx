@@ -2,20 +2,6 @@ import { useLazyQuery, useQuery } from '@apollo/client';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Platform, Text, StyleProp, ViewStyle, TouchableOpacity } from 'react-native';
-
-import { SearchRouteParams } from './search';
-
-import BranchesWithProductsFlatlist, {
-  BranchesWithProductsFlatlistLoading,
-} from '@/components/BranchesWithProductsFlatlist';
-import LocationChangeForm from '@/components/LocationChangeForm';
-import ModalFormMini from '@/components/ui/ModalFormMini';
-import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
-import { useHeader } from '@/context/HeaderContext';
-import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
-import { useAuth } from '@/context/UserContext';
 import {
   AllStoresDocument,
   Branch,
@@ -24,6 +10,18 @@ import {
   ProductSearch,
   Store,
 } from 'graphql-utils';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Platform, Text, StyleProp, ViewStyle, TouchableOpacity } from 'react-native';
+
+import { SearchRouteParams } from './search';
+
+import BranchesWithProductsFlatlist from '@/components/BranchesWithProductsFlatlist';
+import LocationChangeForm from '@/components/LocationChangeForm';
+import ModalFormMini from '@/components/ui/ModalFormMini';
+import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
+import { useHeader } from '@/context/HeaderContext';
+import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
+import { useAuth } from '@/context/UserContext';
 import useLocationService from '@/hooks/useLocationService';
 import { getRandomElement } from '@/lib/utils';
 
@@ -207,9 +205,6 @@ export default function HomeScreen() {
     });
   }, [location, address]);
 
-  if (resetting || !branches)
-    return <BranchesWithProductsFlatlistLoading style={style} showStores />;
-
   return (
     <>
       <ModalFormMini
@@ -257,6 +252,7 @@ export default function HomeScreen() {
         style={style}
         stores={allStoresData?.allStores?.stores as Store[] | undefined}
         loading={loading}
+        resetting={resetting}
       />
     </>
   );

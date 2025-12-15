@@ -1,7 +1,14 @@
 import { QueryResult } from '@apollo/client';
 import { router } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router/build/hooks';
-import { useState } from 'react';
+import {
+  Branch,
+  BranchesWithProductsQuery,
+  Paginator,
+  QueryBranchesWithProductsArgs,
+  Store,
+} from 'graphql-utils';
+import { useMemo, useState } from 'react';
 import {
   FlatList,
   Platform,
@@ -20,16 +27,9 @@ import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductIt
 import StoreMini, { StoreMiniLoading, StoreMiniShowMore } from './StoreMini';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
-import {
-  Branch,
-  BranchesWithProductsQuery,
-  Paginator,
-  QueryBranchesWithProductsArgs,
-  Store,
-} from 'graphql-utils';
 
 export type BranchesWithProductsFlatlistProps = {
-  branches: Branch[];
+  branches?: Branch[];
   paginator?: Paginator;
   handleRefresh: () => Promise<void | QueryResult<
     BranchesWithProductsQuery,
@@ -39,6 +39,7 @@ export type BranchesWithProductsFlatlistProps = {
   style?: StyleProp<ViewStyle>;
   stores?: Store[];
   loading: boolean;
+  resetting?: boolean;
 };
 
 export default function BranchesWithProductsFlatlist({
@@ -49,28 +50,45 @@ export default function BranchesWithProductsFlatlist({
   style,
   stores,
   loading,
+  resetting,
 }: BranchesWithProductsFlatlistProps) {
   const [refreshing, setRefreshing] = useState(false);
   const params = useLocalSearchParams<SearchRouteParams>();
+  const paramsBuilder = useMemo(() => new URLSearchParams(params), [params]);
 
   return (
     <FlatList
-      data={branches}
+      data={resetting ? [] : branches}
       keyExtractor={({ id }, i) => `${id}-${i}`}
       indicatorStyle="black"
       ListHeaderComponent={
         <>
-          {!params.query && !params.categoryId && !params.brand && stores && (
-            <FlatGrid
-              data={[...stores, { id: 0 } as Store]}
-              itemDimension={50}
-              spacing={15}
-              keyExtractor={({ id }) => `store-${id}`}
-              renderItem={({ item }) =>
-                item.id !== 0 ? <StoreMini store={item} /> : <StoreMiniShowMore />
-              }
-              style={{ marginBottom: 15 }}
-            />
+          {paramsBuilder.toString() === '' && (
+            <>
+              {stores ? (
+                <FlatGrid
+                  data={[...stores, { id: 0 } as Store]}
+                  itemDimension={50}
+                  spacing={15}
+                  keyExtractor={({ id }) => `store-${id}`}
+                  renderItem={({ item }) =>
+                    item.id !== 0 ? <StoreMini store={item} /> : <StoreMiniShowMore />
+                  }
+                  style={{ marginBottom: 15 }}
+                />
+              ) : (
+                <FlatGrid
+                  data={Array(10)
+                    .fill(0)
+                    .map((_, i) => i)}
+                  itemDimension={50}
+                  spacing={15}
+                  keyExtractor={(i) => `store-loading-${i}`}
+                  renderItem={() => <StoreMiniLoading />}
+                  style={{ marginBottom: 15 }}
+                />
+              )}
+            </>
           )}
         </>
       }
@@ -97,7 +115,7 @@ export default function BranchesWithProductsFlatlist({
       )}
       ListFooterComponent={
         <View className="mb-20">
-          {branches.length > 0 && paginator?.next && <BranchWithProductsItemLoading />}
+          {(branches?.length ?? 0) > 0 && paginator?.next && <BranchWithProductsItemLoading />}
         </View>
       }
       refreshControl={
@@ -121,11 +139,25 @@ export default function BranchesWithProductsFlatlist({
       onEndReachedThreshold={0.5}
       nestedScrollEnabled
       ListEmptyComponent={
-        !loading ? (
-          <View className="px-5 py-10">
-            <Text className="text-center color-gray-500">No results found</Text>
-          </View>
-        ) : undefined
+        <>
+          {paginator && paginator.total === 0 ? (
+            <View className="px-5 py-10">
+              <Text className="text-center color-gray-500">No results found</Text>
+            </View>
+          ) : (
+            <>
+              {(resetting || !branches) && (
+                <>
+                  {Array(5)
+                    .fill(0)
+                    .map((_, i) => (
+                      <BranchWithProductsItemLoading key={`branch-products-loading-${i}`} />
+                    ))}
+                </>
+              )}
+            </>
+          )}
+        </>
       }
       style={style}
     />
