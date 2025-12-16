@@ -1,6 +1,6 @@
+import { Maybe, Price } from 'graphql-utils';
 import { useMemo } from 'react';
 
-import { Maybe, Price } from '@/graphql/types/graphql';
 import { isSaleExpired } from '@/lib/utils';
 
 export default function useIsSaleExpired(latestPrice?: Maybe<Price>) {

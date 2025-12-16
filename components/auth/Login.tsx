@@ -1,6 +1,7 @@
 import { useLazyQuery } from '@apollo/client';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Network from 'expo-network';
+import { GoogleOAuthDocument, LoginInternalDocument } from 'graphql-utils';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -9,7 +10,7 @@ import Input from '../ui/Input';
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
-import { LoginInternalDocument } from '@/graphql/types/graphql';
+import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 
 export default function LoginScreen() {
@@ -20,6 +21,17 @@ export default function LoginScreen() {
   });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const {
+    signIn: startGoogleAuth,
+    loading: googleAuthLoading,
+    accessToken: googleAccessToken,
+  } = useGoogleAuth();
+  const [googleOauth, { loading: googleOauthLoading }] = useLazyQuery(GoogleOAuthDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const googleAuthInProgress = googleAuthLoading || googleOauthLoading;
+
   const passwordInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
@@ -37,6 +49,21 @@ export default function LoginScreen() {
     }
     updateJwt(token);
   }, [data]);
+
+  useEffect(() => {
+    if (!googleAccessToken) return;
+
+    googleOauth({
+      variables: {
+        accessToken: googleAccessToken,
+      },
+    })
+      .then(({ data }) => {
+        if (!data) return;
+        updateJwt(data.googleOAuth.token);
+      })
+      .catch((err) => Alert.alert('Could not complete Google OAuth', err));
+  }, [googleAccessToken]);
 
   async function onLogin() {
     const ipAddress = await Network.getIpAddressAsync();
@@ -70,12 +97,8 @@ export default function LoginScreen() {
           'Sign in with Apple is currently not available on the mobile app'
         )
       }
-      onPressGoogle={() =>
-        Alert.alert(
-          'Login method not implemented',
-          'Sign in with Google is currently not available on the mobile app'
-        )
-      }
+      googleLoading={googleAuthInProgress}
+      onPressGoogle={startGoogleAuth}
       onPressSubmit={onLogin}>
       {!error && emailVerified && (
         <View className="rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">

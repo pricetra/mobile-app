@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { View, Text, Image } from 'react-native';
 
-import { Price, Stock } from '@/graphql/types/graphql';
+import { Price, Stock } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat } from '@/lib/strings';
 

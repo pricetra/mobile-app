@@ -11,7 +11,7 @@ import {
   CreateBranchFromFullAddressDocument,
   CreateBranchFromFullAddressMutation,
   Store,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 
 export type CreateBranchFormProps = {
   onSuccess?: (data: CreateBranchFromFullAddressMutation) => void;

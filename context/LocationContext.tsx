@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { useAuth } from './UserContext';
 
-import { LocationInput } from '@/graphql/types/graphql';
+import { LocationInput } from 'graphql-utils';
 
 export const DEFAULT_SEARCH_RADIUS = 160_934; // ~100 miles
 

@@ -11,6 +11,7 @@ export type TabHeaderSearchBarProps = {
   iconColor: string;
   iconSize: number;
   updateSearch: (text: string | null) => void;
+  onSearchTextChange?: (newValue: string) => void;
   searchText?: string | null;
   showSearchButton?: boolean;
 };
@@ -23,10 +24,12 @@ export default function TabHeaderSearchBar({
   iconSize,
   padding,
   updateSearch,
+  onSearchTextChange,
   searchText,
   showSearchButton = false,
 }: TabHeaderSearchBarProps) {
   const [text, setText] = useState(searchText ?? '');
+
   useEffect(() => {
     setText(searchText ?? '');
   }, [searchText]);
@@ -47,8 +50,13 @@ export default function TabHeaderSearchBar({
           fontSize: 17,
         }}
         className="flex-1 placeholder:color-slate-400"
-        onEndEditing={() => updateSearch(text)}
-        onChangeText={setText}
+        onSubmitEditing={() => updateSearch(text)}
+        onChangeText={(v) => {
+          setText(v);
+          if (onSearchTextChange) {
+            onSearchTextChange(v);
+          }
+        }}
         value={text}
         inputMode="search"
         returnKeyType="search"

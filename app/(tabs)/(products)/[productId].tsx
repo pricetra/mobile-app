@@ -3,6 +3,19 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import {
+  AddToListDocument,
+  GetAllListsDocument,
+  GetAllProductListsByListIdDocument,
+  ListType,
+  Product,
+  ProductDocument,
+  ProductList,
+  RemoveFromListDocument,
+  Stock,
+  StockDocument,
+  UserRole,
+} from 'graphql-utils';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   View,
@@ -12,9 +25,9 @@ import {
   Platform,
   TouchableOpacity,
   ActivityIndicator,
-  FlatList,
   Share,
 } from 'react-native';
+import { IOFlatList } from 'react-native-intersection-observer';
 
 import FullStockView from '@/components/FullStockView';
 import { ProductDetails } from '@/components/ProductDetails';
@@ -29,25 +42,6 @@ import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useHeader } from '@/context/HeaderContext';
 import { useCurrentLocation } from '@/context/LocationContext';
 import { UserAuthContext } from '@/context/UserContext';
-import {
-  AddToListDocument,
-  BranchListWithPrices,
-  FavoriteBranchesWithPricesDocument,
-  GetAllListsDocument,
-  GetAllProductListsByListIdDocument,
-  GetProductNutritionDataDocument,
-  GetProductStocksDocument,
-  ListType,
-  PaginatedStocks,
-  Product,
-  ProductDocument,
-  ProductList,
-  ProductNutrition,
-  RemoveFromListDocument,
-  Stock,
-  StockDocument,
-  UserRole,
-} from '@/graphql/types/graphql';
 import { isRoleAuthorized } from '@/lib/roles';
 import { incompleteProductFields } from '@/lib/utils';
 
@@ -64,17 +58,7 @@ export default function ProductScreen() {
   const [getStock, { data: stockData, loading: stockLoading }] = useLazyQuery(StockDocument, {
     fetchPolicy: 'no-cache',
   });
-  const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
-    fetchPolicy: 'no-cache',
-  });
-  const [getFavBranchesPrices, { data: favBranchesPriceData }] = useLazyQuery(
-    FavoriteBranchesWithPricesDocument,
-    { fetchPolicy: 'no-cache' }
-  );
-  const [getProductNutritionData, { data: productNutritionData }] = useLazyQuery(
-    GetProductNutritionDataDocument,
-    { fetchPolicy: 'network-only' }
-  );
+
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -123,14 +107,6 @@ export default function ProductScreen() {
         getStock({ variables: { stockId: parsedStockId } });
       }
 
-      fetchProductStocksWithLocation(parsedProductId);
-      getFavBranchesPrices({
-        variables: {
-          productId: parsedProductId,
-        },
-      });
-
-      getProductNutritionData({ variables: { productId: parsedProductId } });
       return () => {
         setFavProductList(undefined);
         setWatchProductList(undefined);
@@ -150,19 +126,6 @@ export default function ProductScreen() {
       router.dismissAll();
     }
   }, [productError]);
-
-  function fetchProductStocksWithLocation(productId: number) {
-    return getProductStocks({
-      variables: {
-        paginator: {
-          page: 1,
-          limit: 10,
-        },
-        productId,
-        location: currentLocation.locationInput,
-      },
-    });
-  }
 
   async function share() {
     if (!productData) return;
@@ -393,7 +356,7 @@ export default function ProductScreen() {
 
       {productData && <AddToGroceryListFab productId={productData.product.id} />}
 
-      <FlatList
+      <IOFlatList
         className="h-full w-full"
         nestedScrollEnabled
         data={[]}
@@ -436,16 +399,8 @@ export default function ProductScreen() {
 
             {productData && (
               <ProductDetails
-                paginatedStocks={stocksData?.getProductStocks as PaginatedStocks | undefined}
-                favBranchesPriceData={
-                  (favBranchesPriceData?.getFavoriteBranchesWithPrices ??
-                    []) as BranchListWithPrices[]
-                }
                 product={productData.product}
-                productNutrition={
-                  productNutritionData?.getProductNutritionData as ProductNutrition | undefined
-                }
-                stock={stockData?.stock as Stock}
+                stock={stockData?.stock as Stock | undefined}
               />
             )}
           </>
@@ -457,7 +412,9 @@ export default function ProductScreen() {
             onRefresh={() => {
               setRefreshing(true);
               setTimeout(() => {
-                fetchProductStocksWithLocation(+productId).finally(() => setRefreshing(false));
+                getProduct({
+                  variables: { productId: +productId },
+                });
               }, 2000);
             }}
             colors={Platform.OS === 'ios' ? ['black'] : ['white']}

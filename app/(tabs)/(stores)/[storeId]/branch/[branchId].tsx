@@ -32,7 +32,7 @@ import {
   Product,
   ProductSearch,
   RemoveBranchFromListDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { extractUndefined, stringToNumber, toBoolean } from '@/lib/utils';
 

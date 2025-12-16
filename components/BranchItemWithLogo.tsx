@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
-import { Branch } from '@/graphql/types/graphql';
+import { Branch } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { metersToMiles } from '@/lib/utils';
 

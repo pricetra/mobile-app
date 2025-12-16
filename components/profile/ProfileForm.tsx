@@ -19,7 +19,7 @@ import {
   UpdateProfileDocument,
   UpdateUser,
   MeDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { diffObjects } from '@/lib/utils';
 

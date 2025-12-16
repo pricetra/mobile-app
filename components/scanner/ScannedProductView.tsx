@@ -1,7 +1,7 @@
 import { TouchableOpacity, View, Text } from 'react-native';
 
 import ProductItem from '@/components/ProductItem';
-import { Product } from '@/graphql/types/graphql';
+import { Product } from 'graphql-utils';
 
 export type ScannedProductViewProps = {
   product: Product;

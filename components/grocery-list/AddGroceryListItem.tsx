@@ -14,7 +14,7 @@ import {
   DefaultGroceryListItemsDocument,
   GroceryListItemsDocument,
   WeightComponentsFromCategoryIdDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import { parseWeight } from '@/lib/strings';
 
 export type AddGroceryListItemProps = {

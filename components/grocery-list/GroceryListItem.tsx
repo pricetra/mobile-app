@@ -17,7 +17,7 @@ import {
   GroceryListItemsDocument,
   MarkGroceryListItemDocument,
   UpdateGroceryListItemDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { cn } from '@/lib/utils';
 

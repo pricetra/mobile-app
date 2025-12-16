@@ -12,7 +12,7 @@ import TabHeaderSearchBar from './TabHeaderSearchBar';
 import { useHeader } from '@/context/HeaderContext';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import { CountGroceryListItemsDocument } from '@/graphql/types/graphql';
+import { CountGroceryListItemsDocument } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 
 export type TabHeaderProps = BottomTabHeaderProps;

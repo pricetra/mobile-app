@@ -11,7 +11,7 @@ import {
   CountGroceryListItemsDocument,
   DefaultGroceryListItemsDocument,
   GroceryListItemsDocument,
-} from '@/graphql/types/graphql';
+} from 'graphql-utils';
 
 export default function AddToGroceryListActionButton({ productId }: AddToGroceryListFabProps) {
   const { allGroceryLists } = useAuth();

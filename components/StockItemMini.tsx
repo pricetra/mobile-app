@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
-import { Stock } from '@/graphql/types/graphql';
+import { Stock } from 'graphql-utils';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
 import { createCloudinaryUrl } from '@/lib/files';

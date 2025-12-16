@@ -1,12 +1,11 @@
 import { type ClassValue, clsx } from 'clsx';
 import convert from 'convert-units';
 import dayjs from 'dayjs';
+import { Category, Price, Product, TimestampRangeBetween } from 'graphql-utils';
 import { configureReanimatedLogger } from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 
 import { postgresArrayToNumericArray } from './strings';
-
-import { Category, Price, Product } from '@/graphql/types/graphql';
 
 configureReanimatedLogger({
   strict: false,
@@ -98,4 +97,11 @@ export function extractUndefined(value?: string): string | undefined {
 export function getRandomElement(arr: any[]) {
   const randomIndex = Math.floor(Math.random() * arr.length);
   return arr[randomIndex];
+}
+
+export function getNextWeekDateRange(): TimestampRangeBetween {
+  return {
+    from: dayjs().subtract(7, 'day'),
+    to: dayjs().add(1, 'day'),
+  };
 }

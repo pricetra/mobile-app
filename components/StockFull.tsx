@@ -4,7 +4,7 @@ import { View, Text } from 'react-native';
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
-import { Stock } from '@/graphql/types/graphql';
+import { Stock } from 'graphql-utils';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
 import { createCloudinaryUrl } from '@/lib/files';

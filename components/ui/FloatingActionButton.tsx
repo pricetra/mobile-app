@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { ClassValue } from 'clsx';
 import { ReactNode } from 'react';
 import { GestureResponderEvent, Platform, TouchableOpacity, View } from 'react-native';
 
@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 
 export type FloatingActionButtonProps = {
   children: ReactNode;
-  className?: clsx.ClassValue;
-  btnClassName?: clsx.ClassValue;
+  className?: ClassValue;
+  btnClassName?: ClassValue;
   onPress?: (event: GestureResponderEvent) => void;
   disabled?: boolean;
 };

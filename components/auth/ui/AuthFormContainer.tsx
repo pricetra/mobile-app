@@ -1,7 +1,15 @@
 import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { ReactNode } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+  ActivityIndicator,
+} from 'react-native';
 
 import Btn from '@/components/ui/Btn';
 
@@ -14,6 +22,8 @@ export type AuthFormContainerProps = {
   disabled?: boolean;
   loading?: boolean;
   extras?: ReactNode;
+  googleLoading?: boolean;
+  appleLoading?: boolean;
   onPressSubmit?: () => void;
   onPressApple?: () => void;
   onPressGoogle?: () => void;
@@ -28,6 +38,8 @@ export default function AuthFormContainer({
   disabled,
   loading,
   extras,
+  googleLoading,
+  appleLoading,
   onPressSubmit,
   onPressApple,
   onPressGoogle,
@@ -83,12 +95,20 @@ export default function AuthFormContainer({
                           <TouchableOpacity
                             onPress={onPressApple}
                             className="flex flex-1 flex-row justify-center rounded-xl border-[1px] border-gray-200 bg-white px-10 py-3">
-                            <AntDesign name="apple1" size={20} color="black" />
+                            {appleLoading ? (
+                              <ActivityIndicator color="#000" />
+                            ) : (
+                              <AntDesign name="apple1" size={20} color="black" />
+                            )}
                           </TouchableOpacity>
                           <TouchableOpacity
                             onPress={onPressGoogle}
                             className="flex flex-1 flex-row justify-center rounded-xl border-[1px] border-gray-200 bg-white px-10 py-3">
-                            <AntDesign name="google" size={20} color="#EA4335" />
+                            {googleLoading ? (
+                              <ActivityIndicator color="#000" />
+                            ) : (
+                              <AntDesign name="google" size={20} color="#EA4335" />
+                            )}
                           </TouchableOpacity>
                         </View>
                       </>

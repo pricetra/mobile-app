@@ -11,7 +11,7 @@ import ModalFormMini from '@/components/ui/ModalFormMini';
 import PaginationSimple from '@/components/ui/PaginationSimple';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
-import { AllStoresDocument } from '@/graphql/types/graphql';
+import { AllStoresDocument } from 'graphql-utils';
 
 export default function CreateStoreScreen() {
   const navigation = useNavigation();

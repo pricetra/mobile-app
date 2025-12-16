@@ -1,15 +1,35 @@
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import convert from 'convert-units';
 import { router } from 'expo-router';
+import {
+  BranchListWithPrices,
+  FavoriteBranchesWithPricesDocument,
+  GetProductNutritionDataDocument,
+  GetProductStocksDocument,
+  Product,
+  ProductNutrition,
+  Stock,
+  UpdateProductNutritionDataDocument,
+} from 'graphql-utils';
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  useWindowDimensions,
+  ActivityIndicator,
+} from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
-import { FlatGrid } from 'react-native-super-grid';
+import { InView } from 'react-native-intersection-observer';
 
 import FullStockView from './FullStockView';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import LocationChangeForm from './LocationChangeForm';
+import MoreFromBrand from './MoreFromBrandSection';
+import MoreFromCategory from './MoreFromCategorySection';
 import NutritionFacts from './NutritionFacts';
 import ProductSpecs from './ProductSpecs';
 import RelatedBranchProducts from './RelatedBranchProducts';
@@ -21,15 +41,6 @@ import ModalFormMini from './ui/ModalFormMini';
 import Btn from '@/components/ui/Btn';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/UserContext';
-import {
-  BranchListWithPrices,
-  GetProductNutritionDataDocument,
-  PaginatedStocks,
-  Product,
-  ProductNutrition,
-  Stock,
-  UpdateProductNutritionDataDocument,
-} from '@/graphql/types/graphql';
 import { cn } from '@/lib/utils';
 
 export type StockWithApproximatePrice = Stock & {
@@ -37,10 +48,7 @@ export type StockWithApproximatePrice = Stock & {
 };
 
 export type ProductDetailsProps = {
-  favBranchesPriceData: BranchListWithPrices[];
   product: Product;
-  paginatedStocks?: PaginatedStocks;
-  productNutrition?: ProductNutrition;
   stock?: Stock;
 };
 
@@ -58,15 +66,23 @@ function stockToApproxMap(data: BranchListWithPrices): StockWithApproximatePrice
   } as StockWithApproximatePrice;
 }
 
-export function ProductDetails({
-  favBranchesPriceData,
-  paginatedStocks,
-  product,
-  productNutrition,
-  stock,
-}: ProductDetailsProps) {
+export function ProductDetails({ product, stock }: ProductDetailsProps) {
+  const { width } = useWindowDimensions();
   const { lists } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
+
+  const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const [getFavBranchesPrices, { data: favBranchesPriceData }] = useLazyQuery(
+    FavoriteBranchesWithPricesDocument,
+    { fetchPolicy: 'no-cache' }
+  );
+  const [
+    getProductNutritionData,
+    { data: productNutritionData, loading: productNutritionLoading, error: productNutritionError },
+  ] = useLazyQuery(GetProductNutritionDataDocument, { fetchPolicy: 'network-only' });
+
   const [activeSections, setActiveSections] = useState<number[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock>();
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
@@ -81,19 +97,49 @@ export function ProductDetails({
   );
 
   const availableFavoriteBranches = useMemo(
-    () => favBranchesPriceData.filter((d) => d.approximatePrice || d.stock?.latestPriceId),
+    () =>
+      favBranchesPriceData?.getFavoriteBranchesWithPrices?.filter(
+        (d) => d.approximatePrice || d.stock?.latestPriceId
+      ) as BranchListWithPrices[] | undefined,
     [favBranchesPriceData]
   );
 
   useEffect(() => {
-    if (availableFavoriteBranches.length === 0) return;
+    getFavBranchesPrices({
+      variables: {
+        productId: product.id,
+      },
+    });
+  }, [product.id]);
+
+  useEffect(() => {
+    getProductStocks({
+      variables: {
+        paginator: {
+          page: 1,
+          limit: 10,
+        },
+        productId: product.id,
+        location: currentLocation.locationInput,
+      },
+    });
+  }, [product.id, currentLocation.locationInput]);
+
+  useEffect(() => {
+    if (!availableFavoriteBranches || availableFavoriteBranches.length === 0) return;
     setActiveSections((prev) => [...prev, 0]);
   }, [availableFavoriteBranches]);
 
   useEffect(() => {
-    if (paginatedStocks?.paginator.total === 0) return;
+    if (stocksData?.getProductStocks && stocksData.getProductStocks.paginator.total === 0) return;
     setActiveSections((prev) => [...prev, 1]);
-  }, [paginatedStocks]);
+  }, [stocksData]);
+
+  useEffect(() => {
+    if (!product.category) return;
+    if (!product.category.path.includes('462')) return;
+    setActiveSections((prev) => [...prev, 2]);
+  }, [product.category]);
 
   return (
     <>
@@ -142,41 +188,51 @@ export function ProductDetails({
         sections={[
           {
             title: 'Favorite Stores',
-            badge: availableFavoriteBranches.length.toString(),
+            badge: availableFavoriteBranches?.length?.toString(),
             noHorizontalPadding: true,
             content: (
               <View>
-                <FlatGrid
-                  nestedScrollEnabled
-                  data={favBranchesPriceData.map(stockToApproxMap)}
-                  itemContainerStyle={{
-                    justifyContent: 'flex-start',
-                  }}
-                  spacing={20}
-                  keyExtractor={(stock, i) => `fav-stock-${stock.branchId}-${stock.id}-${i}`}
-                  renderItem={({ item: { approximatePrice, ...stock } }) => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        if (approximatePrice) {
-                          Alert.alert(
-                            'This is a stock approximation',
-                            'Stock approximations are calculated algorithmically and do not necessarily show the exact price at the location.'
-                          );
-                          return;
-                        }
-                        setSelectedStock(stock);
-                      }}
-                      disabled={stock.id === 0}
-                      style={{ opacity: !approximatePrice && stock.id === 0 ? 0.35 : 1 }}>
-                      <StockItemMini
-                        stock={stock}
-                        approximatePrice={approximatePrice}
-                        quantityValue={product.quantityValue}
-                        quantityType={product.quantityType}
-                      />
-                    </TouchableOpacity>
+                <View className="flex flex-row flex-wrap justify-between gap-x-5 gap-y-8 px-5">
+                  {favBranchesPriceData ? (
+                    <>
+                      {favBranchesPriceData.getFavoriteBranchesWithPrices.map((favBranch, i) => {
+                        const { approximatePrice, ...stock } = stockToApproxMap(
+                          favBranch as BranchListWithPrices
+                        );
+                        return (
+                          <TouchableOpacity
+                            onPress={() => {
+                              if (approximatePrice) {
+                                Alert.alert(
+                                  'This is a stock approximation',
+                                  'Stock approximations are calculated algorithmically and do not necessarily show the exact price at the location.'
+                                );
+                                return;
+                              }
+                              setSelectedStock(stock);
+                            }}
+                            disabled={stock.id === 0}
+                            style={{
+                              opacity: !approximatePrice && stock.id === 0 ? 0.35 : 1,
+                              width: width / 2.5,
+                            }}
+                            key={`fav-stock-${stock.branchId}-${stock.id}-${i}`}>
+                            <StockItemMini
+                              stock={stock}
+                              approximatePrice={approximatePrice}
+                              quantityValue={product.quantityValue}
+                              quantityType={product.quantityType}
+                            />
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <View className="flex items-center justify-center px-5 py-5">
+                      <ActivityIndicator />
+                    </View>
                   )}
-                />
+                </View>
 
                 <View className="mb-5 mt-2 flex flex-row px-5">
                   <Btn
@@ -202,7 +258,7 @@ export function ProductDetails({
           },
           {
             title: 'Available at',
-            badge: paginatedStocks ? paginatedStocks.paginator.total.toString() : undefined,
+            badge: stocksData?.getProductStocks?.paginator?.total,
             noHorizontalPadding: true,
             content: (
               <View>
@@ -210,81 +266,125 @@ export function ProductDetails({
                   <LocationChangeButton onPress={() => setOpenFiltersModal(true)} />
                 </View>
 
-                {paginatedStocks && paginatedStocks.stocks.length > 0 ? (
-                  <FlatGrid
-                    nestedScrollEnabled
-                    data={paginatedStocks.stocks}
-                    itemContainerStyle={{
-                      justifyContent: 'flex-start',
-                    }}
-                    spacing={20}
-                    keyExtractor={({ id }, i) => `${id}-${i}`}
-                    renderItem={({ item: s }) => (
-                      <TouchableOpacity onPress={() => setSelectedStock(s)} key={s.id}>
-                        <StockItemMini
-                          stock={s as Stock}
-                          quantityValue={product.quantityValue}
-                          quantityType={product.quantityType}
-                        />
-                      </TouchableOpacity>
+                {stocksData ? (
+                  <>
+                    {stocksData.getProductStocks.paginator.total !== 0 ? (
+                      <>
+                        <View className="flex flex-row flex-wrap justify-between gap-x-5 gap-y-8 px-5">
+                          {stocksData.getProductStocks.stocks.map((s, i) => (
+                            <TouchableOpacity
+                              onPress={() => setSelectedStock(s as Stock)}
+                              key={`stock-${s.id}-${i}`}
+                              style={{
+                                width: width / 2.5,
+                              }}>
+                              <StockItemMini
+                                stock={s as Stock}
+                                quantityValue={product.quantityValue}
+                                quantityType={product.quantityType}
+                              />
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+
+                        {stocksData.getProductStocks.paginator.next && (
+                          <HorizontalShowMoreButton onPress={() => {}} heightDiv={1} />
+                        )}
+                      </>
+                    ) : (
+                      <Text className="py-5 text-center">
+                        No stocks and prices found for this product.
+                      </Text>
                     )}
-                    ListFooterComponent={() =>
-                      paginatedStocks.paginator.next ? (
-                        <HorizontalShowMoreButton onPress={() => {}} heightDiv={1} />
-                      ) : undefined
-                    }
-                  />
+                  </>
                 ) : (
-                  <Text className="py-5 text-center">
-                    No stocks and prices found for this product.
-                  </Text>
+                  <View className="flex items-center justify-center px-5 py-5">
+                    <ActivityIndicator />
+                  </View>
                 )}
               </View>
             ),
           },
-          productNutrition &&
-            (productNutrition.nutriments || productNutrition.ingredientList) && {
-              title: 'Nutrition Facts',
-              content: (
-                <View>
-                  <View className="mb-10 flex flex-row items-center justify-end gap-2">
-                    <Btn
-                      text="Edit"
-                      size="sm"
-                      rounded="full"
-                      className="bg-gray-700"
-                      icon={<Feather name="edit" size={15} color="white" />}
-                      onPress={() => {
-                        Linking.openURL(
-                          `https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=${product.code}`
-                        );
-                      }}
-                    />
+          {
+            title: 'Nutrition Facts',
+            content: (
+              <InView
+                triggerOnce
+                onChange={(inView) => {
+                  console.log(inView);
+                  if (!inView) return;
 
-                    <Btn
-                      text="Refetch"
-                      size="sm"
-                      rounded="full"
-                      icon={<Ionicons name="refresh" size={17} color="white" />}
-                      onPress={() => updateProductNutrition()}
-                      loading={updatingProductNutrition}
-                    />
-                  </View>
+                  getProductNutritionData({
+                    variables: {
+                      productId: product.id,
+                    },
+                  });
+                }}>
+                <View className="mb-10 flex flex-row items-center justify-end gap-2">
+                  <Btn
+                    text="Edit"
+                    size="sm"
+                    rounded="full"
+                    className="bg-gray-700"
+                    icon={<Feather name="edit" size={15} color="white" />}
+                    onPress={() => {
+                      Linking.openURL(
+                        `https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=${product.code}`
+                      );
+                    }}
+                  />
 
-                  {productNutrition.nutriments && <NutritionFacts {...productNutrition} />}
-
-                  {productNutrition.ingredientList &&
-                    productNutrition.ingredientList.length > 0 && (
-                      <View className="mt-7">
-                        <Text className="mb-1.5 text-lg font-bold">Ingredients</Text>
-                        <Text className="text-sm">
-                          {productNutrition.ingredientList.map((i) => i.toUpperCase()).join(', ')}
-                        </Text>
-                      </View>
-                    )}
+                  <Btn
+                    text="Refetch"
+                    size="sm"
+                    rounded="full"
+                    icon={<Ionicons name="refresh" size={17} color="white" />}
+                    onPress={() => updateProductNutrition()}
+                    loading={updatingProductNutrition}
+                  />
                 </View>
-              ),
-            },
+
+                {productNutritionData ? (
+                  <>
+                    {productNutritionData.getProductNutritionData.nutriments && (
+                      <NutritionFacts
+                        {...(productNutritionData.getProductNutritionData as ProductNutrition)}
+                      />
+                    )}
+
+                    {productNutritionData.getProductNutritionData.ingredientList &&
+                      productNutritionData.getProductNutritionData.ingredientList.length > 0 && (
+                        <View className="mt-7">
+                          <Text className="mb-1.5 text-lg font-bold">Ingredients</Text>
+                          <Text className="text-sm">
+                            {productNutritionData.getProductNutritionData.ingredientList
+                              .map((i) => i.toUpperCase())
+                              .join(', ')}
+                          </Text>
+                        </View>
+                      )}
+                  </>
+                ) : (
+                  <>
+                    {productNutritionLoading ? (
+                      <View className="flex items-center justify-center px-5 py-5">
+                        <ActivityIndicator />
+                      </View>
+                    ) : (
+                      <>
+                        {productNutritionError && (
+                          <Text className="py-5 text-center">
+                            No nutrition information found for this product.{' '}
+                            {productNutritionError.message}
+                          </Text>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+              </InView>
+            ),
+          },
           product.description?.length > 0
             ? {
                 title: 'Description',
@@ -319,9 +419,9 @@ export function ProductDetails({
             <></>
           )
         }
-        renderContent={(section, i) => (
-          <View className={cn('py-3', section?.noHorizontalPadding ? 'px-0' : 'px-5')}>
-            {section?.content}
+        renderContent={(section) => (
+          <View className={cn('py-3', section && section.noHorizontalPadding ? 'px-0' : 'px-5')}>
+            {section ? section.content : <></>}
           </View>
         )}
         keyExtractor={(_props, i) => i}
@@ -333,6 +433,9 @@ export function ProductDetails({
       <View style={{ marginTop: 30 }} />
 
       <RelatedBranchProducts product={product} stock={stock} />
+
+      <MoreFromBrand brand={product.brand} />
+      {product.category && <MoreFromCategory category={product.category} />}
     </>
   );
 }
