@@ -28,6 +28,7 @@ import { InView } from 'react-native-intersection-observer';
 import FullStockView from './FullStockView';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import LocationChangeForm from './LocationChangeForm';
+import MoreFromBrand from './MoreFromBrandSection';
 import NutritionFacts from './NutritionFacts';
 import ProductSpecs from './ProductSpecs';
 import RelatedBranchProducts from './RelatedBranchProducts';
@@ -431,6 +432,8 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
       <View style={{ marginTop: 30 }} />
 
       <RelatedBranchProducts product={product} stock={stock} />
+
+      <MoreFromBrand brand={product.brand} />
     </>
   );
 }
