@@ -2,6 +2,7 @@ import { useLazyQuery } from '@apollo/client';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useNavigation } from 'expo-router';
+import { GroceryListItem as GqlGroceryListItem, GroceryListItemsDocument } from 'graphql-utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, FlatList, RefreshControl, Platform, KeyboardAvoidingView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -13,7 +14,6 @@ import GroceryListItem, {
 import GroceryListItemCreate from '@/components/grocery-list/GroceryListItemCreate';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useAuth } from '@/context/UserContext';
-import { GroceryListItem as GqlGroceryListItem, GroceryListItemsDocument } from 'graphql-utils';
 
 export default function GroceryList() {
   const flatListRef = useRef<FlatList>(null);

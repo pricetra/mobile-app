@@ -1,11 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
-import _ from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import { TextInput, View } from 'react-native';
-
-import Btn from '../ui/Btn';
-
 import {
   AddGroceryListItemDocument,
   CategorySearchDocument,
@@ -13,8 +7,14 @@ import {
   DefaultGroceryListItemsDocument,
   GroceryListItemsDocument,
 } from 'graphql-utils';
+import _ from 'lodash';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { TextInput, TouchableOpacity, View } from 'react-native';
+
+import Btn from '../ui/Btn';
 
 export default function GroceryListItemCreate({ groceryListId }: { groceryListId: number }) {
+  const inputRef = useRef<TextInput>(null);
   const [search, setSearch] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<{
     id: number;
@@ -61,22 +61,40 @@ export default function GroceryListItemCreate({ groceryListId }: { groceryListId
 
   return (
     <View className="flex flex-row border-b-[1px] border-gray-50 bg-white py-2">
-      <View className="px-5 py-2">
+      <TouchableOpacity
+        onPress={() => {
+          inputRef.current?.focus();
+        }}
+        className="px-5 py-2">
         <Feather name="plus-circle" size={25} color="#999" />
-      </View>
+      </TouchableOpacity>
 
       <View className="flex flex-1 flex-col">
         <View className="flex flex-row flex-wrap gap-3 py-3">
           <TextInput
+            ref={inputRef}
             placeholder="Add item"
             value={search}
             onChangeText={setSearch}
+            onSubmitEditing={() => {
+              if (search.trim().length === 0) return;
+
+              addItem({
+                variables: {
+                  groceryListId,
+                  input: {
+                    category: search,
+                  },
+                },
+              });
+              setSearch('');
+            }}
             className="flex-1 color-black placeholder:color-gray-600"
           />
         </View>
 
         <View>
-          {categoriesData && (
+          {search.length > 1 && categoriesData && (
             <View className="my-3 flex flex-row flex-wrap items-center gap-2">
               {categoriesData.categorySearch.map((c, i) => {
                 const selected = c.id === selectedCategoryId?.id;
