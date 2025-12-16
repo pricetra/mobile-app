@@ -29,6 +29,7 @@ import FullStockView from './FullStockView';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import LocationChangeForm from './LocationChangeForm';
 import MoreFromBrand from './MoreFromBrandSection';
+import MoreFromCategory from './MoreFromCategorySection';
 import NutritionFacts from './NutritionFacts';
 import ProductSpecs from './ProductSpecs';
 import RelatedBranchProducts from './RelatedBranchProducts';
@@ -418,7 +419,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
             <></>
           )
         }
-        renderContent={(section, i) => (
+        renderContent={(section) => (
           <View className={cn('py-3', section && section.noHorizontalPadding ? 'px-0' : 'px-5')}>
             {section ? section.content : <></>}
           </View>
@@ -434,6 +435,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
       <RelatedBranchProducts product={product} stock={stock} />
 
       <MoreFromBrand brand={product.brand} />
+      {product.category && <MoreFromCategory category={product.category} />}
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import { router } from 'expo-router';
-import { Product, ProductSearchDocument } from 'graphql-utils';
+import { Category, Product, ProductSearchDocument } from 'graphql-utils';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { InView } from 'react-native-intersection-observer';
 
@@ -9,15 +9,13 @@ import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 
 export type MoreFromBrandProps = {
-  brand: string;
+  category: Category;
 };
 
-export default function MoreFromBrand({ brand }: MoreFromBrandProps) {
+export default function MoreFromCategory({ category }: MoreFromBrandProps) {
   const [getBrandProducts, { data: brandProducts }] = useLazyQuery(ProductSearchDocument, {
     fetchPolicy: 'no-cache',
   });
-
-  if (brand === '' || brand === 'N/A') return <></>;
 
   return (
     <InView
@@ -27,14 +25,14 @@ export default function MoreFromBrand({ brand }: MoreFromBrandProps) {
         getBrandProducts({
           variables: {
             paginator: { limit: 20, page: 1 },
-            filters: { brand },
+            filters: { category: category.name },
           },
         });
       }}>
       <View className="mb-14">
         <View className="mb-7 px-5">
           <Text className="text-xl">
-            More from <Text className="font-bold">{brand}</Text>
+            Similar in category <Text className="font-bold">{category.name}</Text>
           </Text>
         </View>
 
@@ -67,9 +65,12 @@ export default function MoreFromBrand({ brand }: MoreFromBrandProps) {
               brandProducts.productSearch.paginator.next ? (
                 <HorizontalShowMoreButton
                   onPress={() =>
-                    router.push(`/(tabs)/?brand=${brand}`, {
-                      relativeToDirectory: false,
-                    })
+                    router.push(
+                      `/(tabs)/?&categoryId=${category.id}&category=${encodeURIComponent(category.name)}`,
+                      {
+                        relativeToDirectory: false,
+                      }
+                    )
                   }
                   heightDiv={1}
                   width={HORIZONTAL_PRODUCT_WIDTH}
