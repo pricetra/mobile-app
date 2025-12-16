@@ -5,18 +5,12 @@ import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import {
   AddToListDocument,
-  BranchListWithPrices,
-  FavoriteBranchesWithPricesDocument,
   GetAllListsDocument,
   GetAllProductListsByListIdDocument,
-  GetProductNutritionDataDocument,
-  GetProductStocksDocument,
   ListType,
-  PaginatedStocks,
   Product,
   ProductDocument,
   ProductList,
-  ProductNutrition,
   RemoveFromListDocument,
   Stock,
   StockDocument,
@@ -31,9 +25,9 @@ import {
   Platform,
   TouchableOpacity,
   ActivityIndicator,
-  FlatList,
   Share,
 } from 'react-native';
+import { IOFlatList } from 'react-native-intersection-observer';
 
 import FullStockView from '@/components/FullStockView';
 import { ProductDetails } from '@/components/ProductDetails';
@@ -362,7 +356,7 @@ export default function ProductScreen() {
 
       {productData && <AddToGroceryListFab productId={productData.product.id} />}
 
-      <FlatList
+      <IOFlatList
         className="h-full w-full"
         nestedScrollEnabled
         data={[]}

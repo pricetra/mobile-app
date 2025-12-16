@@ -7,16 +7,23 @@ import {
   FavoriteBranchesWithPricesDocument,
   GetProductNutritionDataDocument,
   GetProductStocksDocument,
-  PaginatedStocks,
   Product,
   ProductNutrition,
   Stock,
   UpdateProductNutritionDataDocument,
 } from 'graphql-utils';
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, Linking, useWindowDimensions } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  useWindowDimensions,
+  ActivityIndicator,
+} from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
-import { FlatGrid } from 'react-native-super-grid';
+import { InView } from 'react-native-intersection-observer';
 
 import FullStockView from './FullStockView';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
@@ -69,10 +76,10 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
     FavoriteBranchesWithPricesDocument,
     { fetchPolicy: 'no-cache' }
   );
-  const [getProductNutritionData, { data: productNutritionData }] = useLazyQuery(
-    GetProductNutritionDataDocument,
-    { fetchPolicy: 'network-only' }
-  );
+  const [
+    getProductNutritionData,
+    { data: productNutritionData, loading: productNutritionLoading, error: productNutritionError },
+  ] = useLazyQuery(GetProductNutritionDataDocument, { fetchPolicy: 'network-only' });
 
   const [activeSections, setActiveSections] = useState<number[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock>();
@@ -126,6 +133,12 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
     setActiveSections((prev) => [...prev, 1]);
   }, [stocksData]);
 
+  useEffect(() => {
+    if (!product.category) return;
+    if (!product.category.path.includes('462')) return;
+    setActiveSections((prev) => [...prev, 2]);
+  }, [product.category]);
+
   return (
     <>
       <ModalFormFull
@@ -177,7 +190,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
             noHorizontalPadding: true,
             content: (
               <View>
-                <View className="flex flex-row flex-wrap justify-between gap-5 px-5">
+                <View className="flex flex-row flex-wrap justify-between gap-x-5 gap-y-8 px-5">
                   {favBranchesPriceData ? (
                     <>
                       {favBranchesPriceData.getFavoriteBranchesWithPrices.map((favBranch, i) => {
@@ -213,7 +226,9 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                       })}
                     </>
                   ) : (
-                    <></>
+                    <View className="flex items-center justify-center px-5 py-5">
+                      <ActivityIndicator />
+                    </View>
                   )}
                 </View>
 
@@ -253,7 +268,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                   <>
                     {stocksData.getProductStocks.paginator.total !== 0 ? (
                       <>
-                        <View className="flex flex-row flex-wrap justify-between gap-5 px-5">
+                        <View className="flex flex-row flex-wrap justify-between gap-x-5 gap-y-8 px-5">
                           {stocksData.getProductStocks.stocks.map((s, i) => (
                             <TouchableOpacity
                               onPress={() => setSelectedStock(s as Stock)}
@@ -281,61 +296,93 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                     )}
                   </>
                 ) : (
-                  <></>
+                  <View className="flex items-center justify-center px-5 py-5">
+                    <ActivityIndicator />
+                  </View>
                 )}
               </View>
             ),
           },
-          productNutritionData &&
-            (productNutritionData.getProductNutritionData.nutriments ||
-              productNutritionData.getProductNutritionData.ingredientList) && {
-              title: 'Nutrition Facts',
-              content: (
-                <View>
-                  <View className="mb-10 flex flex-row items-center justify-end gap-2">
-                    <Btn
-                      text="Edit"
-                      size="sm"
-                      rounded="full"
-                      className="bg-gray-700"
-                      icon={<Feather name="edit" size={15} color="white" />}
-                      onPress={() => {
-                        Linking.openURL(
-                          `https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=${product.code}`
-                        );
-                      }}
-                    />
+          {
+            title: 'Nutrition Facts',
+            content: (
+              <InView
+                triggerOnce
+                onChange={(inView) => {
+                  console.log(inView);
+                  if (!inView) return;
 
-                    <Btn
-                      text="Refetch"
-                      size="sm"
-                      rounded="full"
-                      icon={<Ionicons name="refresh" size={17} color="white" />}
-                      onPress={() => updateProductNutrition()}
-                      loading={updatingProductNutrition}
-                    />
-                  </View>
+                  getProductNutritionData({
+                    variables: {
+                      productId: product.id,
+                    },
+                  });
+                }}>
+                <View className="mb-10 flex flex-row items-center justify-end gap-2">
+                  <Btn
+                    text="Edit"
+                    size="sm"
+                    rounded="full"
+                    className="bg-gray-700"
+                    icon={<Feather name="edit" size={15} color="white" />}
+                    onPress={() => {
+                      Linking.openURL(
+                        `https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=${product.code}`
+                      );
+                    }}
+                  />
 
-                  {productNutritionData.getProductNutritionData.nutriments && (
-                    <NutritionFacts
-                      {...(productNutritionData.getProductNutritionData as ProductNutrition)}
-                    />
-                  )}
-
-                  {productNutritionData.getProductNutritionData.ingredientList &&
-                    productNutritionData.getProductNutritionData.ingredientList.length > 0 && (
-                      <View className="mt-7">
-                        <Text className="mb-1.5 text-lg font-bold">Ingredients</Text>
-                        <Text className="text-sm">
-                          {productNutritionData.getProductNutritionData.ingredientList
-                            .map((i) => i.toUpperCase())
-                            .join(', ')}
-                        </Text>
-                      </View>
-                    )}
+                  <Btn
+                    text="Refetch"
+                    size="sm"
+                    rounded="full"
+                    icon={<Ionicons name="refresh" size={17} color="white" />}
+                    onPress={() => updateProductNutrition()}
+                    loading={updatingProductNutrition}
+                  />
                 </View>
-              ),
-            },
+
+                {productNutritionData ? (
+                  <>
+                    {productNutritionData.getProductNutritionData.nutriments && (
+                      <NutritionFacts
+                        {...(productNutritionData.getProductNutritionData as ProductNutrition)}
+                      />
+                    )}
+
+                    {productNutritionData.getProductNutritionData.ingredientList &&
+                      productNutritionData.getProductNutritionData.ingredientList.length > 0 && (
+                        <View className="mt-7">
+                          <Text className="mb-1.5 text-lg font-bold">Ingredients</Text>
+                          <Text className="text-sm">
+                            {productNutritionData.getProductNutritionData.ingredientList
+                              .map((i) => i.toUpperCase())
+                              .join(', ')}
+                          </Text>
+                        </View>
+                      )}
+                  </>
+                ) : (
+                  <>
+                    {productNutritionLoading ? (
+                      <View className="flex items-center justify-center px-5 py-5">
+                        <ActivityIndicator />
+                      </View>
+                    ) : (
+                      <>
+                        {productNutritionError && (
+                          <Text className="py-5 text-center">
+                            No nutrition information found for this product.{' '}
+                            {productNutritionError.message}
+                          </Text>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+              </InView>
+            ),
+          },
           product.description?.length > 0
             ? {
                 title: 'Description',
@@ -371,8 +418,8 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
           )
         }
         renderContent={(section, i) => (
-          <View className={cn('py-3', section?.noHorizontalPadding ? 'px-0' : 'px-5')}>
-            {section?.content}
+          <View className={cn('py-3', section && section.noHorizontalPadding ? 'px-0' : 'px-5')}>
+            {section ? section.content : <></>}
           </View>
         )}
         keyExtractor={(_props, i) => i}
