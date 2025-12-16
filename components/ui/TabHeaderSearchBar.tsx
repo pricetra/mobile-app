@@ -50,7 +50,7 @@ export default function TabHeaderSearchBar({
           fontSize: 17,
         }}
         className="flex-1 placeholder:color-slate-400"
-        onEndEditing={() => updateSearch(text)}
+        onSubmitEditing={() => updateSearch(text)}
         onChangeText={(v) => {
           setText(v);
           if (onSearchTextChange) {
