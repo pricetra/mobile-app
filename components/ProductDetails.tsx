@@ -311,7 +311,6 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
               <InView
                 triggerOnce
                 onChange={(inView) => {
-                  console.log(inView);
                   if (!inView) return;
 
                   getProductNutritionData({
