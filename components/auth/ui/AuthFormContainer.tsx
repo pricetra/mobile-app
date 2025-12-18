@@ -47,7 +47,7 @@ export default function AuthFormContainer({
   return (
     <ScrollView className="h-screen w-screen bg-white p-5 sm:bg-muted md:p-10">
       <SafeAreaView>
-        <View className="mt-10 w-full max-w-sm">
+        <View className="mx-auto mt-10 w-full max-w-sm">
           <View className="my-10 flex flex-col gap-6">
             <View className="mb-0 flex flex-row items-center justify-center sm:mb-2">
               <Image
