@@ -41,6 +41,7 @@ export type UserContextType = {
   token: string;
   updateUser: (updatedUser: User) => void;
   logout: () => void;
+  loggingOut: boolean;
 };
 
 export const UserAuthContext = createContext<UserContextType>({} as UserContextType);
@@ -69,7 +70,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   const [getPostAuthUserData, { data: postAuthUserData }] = useLazyQuery(PostAuthUserDataDocument, {
     fetchPolicy: 'no-cache',
   });
-  const [logout] = useMutation(LogoutDocument);
+  const [logout, { loading: loggingOut }] = useMutation(LogoutDocument);
   const [registerExpoPushToken] = useMutation(RegisterExpoPushTokenDocument, {
     refetchQueries: [MeDocument],
     fetchPolicy: 'no-cache',
@@ -200,6 +201,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
             removeStoredJwtAndRedirect();
           });
         },
+        loggingOut,
       }}>
       {children}
     </UserAuthContext.Provider>

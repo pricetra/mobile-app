@@ -10,14 +10,14 @@ import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import dayjs from 'dayjs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { ListType, UserRole } from 'graphql-utils';
-import { useCallback, useContext, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, Alert, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, Alert, View, ActivityIndicator } from 'react-native';
 
 import ProfileForm from '@/components/profile/ProfileForm';
 import ProfileSmall from '@/components/profile/ProfileSmall';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
-import { UserAuthContext } from '@/context/UserContext';
+import { useAuth } from '@/context/UserContext';
 import { isRoleAuthorized } from '@/lib/roles';
 
 export function ListIconRenderer(type: ListType) {
@@ -33,7 +33,7 @@ export function ListIconRenderer(type: ListType) {
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
-  const { user, lists, logout } = useContext(UserAuthContext);
+  const { user, lists, logout, loggingOut } = useAuth();
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
 
   useFocusEffect(
@@ -139,8 +139,14 @@ export default function ProfileScreen() {
                 },
               ])
             }
-            icon={<Feather name="power" size={20} color="#ef4444" />}
-            text="Logout"
+            icon={
+              loggingOut ? (
+                <ActivityIndicator />
+              ) : (
+                <Feather name="power" size={20} color="#ef4444" />
+              )
+            }
+            text={loggingOut ? 'Logging out' : 'Logout'}
           />
         </View>
       </View>
