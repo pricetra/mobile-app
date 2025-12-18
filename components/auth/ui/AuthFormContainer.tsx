@@ -56,7 +56,7 @@ export default function AuthFormContainer({
               />
             </View>
 
-            <View className="border-0 shadow-none sm:border sm:shadow">
+            <View className="rounded-md border-0 bg-white shadow-none sm:border sm:shadow">
               <View className="px-2 py-6 sm:p-6">
                 <View className="px-3 py-5 md:px-5 md:py-7">
                   <View className="flex flex-col gap-6">
