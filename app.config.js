@@ -65,6 +65,7 @@ export default {
         locationAlwaysAndWhenInUsePermission: 'Allow Pricetra to use your location.',
       },
     ],
+    'expo-asset',
   ],
   experiments: {
     typedRoutes: true,
