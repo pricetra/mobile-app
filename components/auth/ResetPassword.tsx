@@ -1,7 +1,7 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useContext, useEffect, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Ref, useContext, useEffect, useState } from 'react';
+import { Alert, Text, TextInput, View } from 'react-native';
 import {
   CodeField,
   Cursor,
@@ -132,7 +132,7 @@ export default function ResetPassword() {
 
           {!verificationData ? (
             <CodeField
-              ref={codeComponentRef}
+              ref={codeComponentRef as Ref<TextInput>}
               {...codeComponentProps}
               value={code}
               onChangeText={setCode}
