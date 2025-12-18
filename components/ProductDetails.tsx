@@ -441,8 +441,10 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
 
       <RelatedBranchProducts product={product} stock={stock} />
 
-      <MoreFromBrand brand={product.brand} />
-      {product.category && <MoreFromCategory category={product.category} />}
+      <View className="mt-10">
+        <MoreFromBrand brand={product.brand} />
+        {product.category && <MoreFromCategory category={product.category} />}
+      </View>
     </>
   );
 }
