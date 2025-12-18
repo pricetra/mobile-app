@@ -45,19 +45,19 @@ export default function AuthFormContainer({
   onPressGoogle,
 }: AuthFormContainerProps) {
   return (
-    <ScrollView className="flex h-screen w-screen items-center justify-center bg-white p-5 sm:bg-muted md:p-10">
+    <ScrollView className="h-screen w-screen bg-white p-5 sm:bg-gray-100">
       <SafeAreaView>
-        <View className="mt-10 w-full max-w-sm">
-          <View className="my-10 flex flex-col gap-6">
-            <View className="mb-0 flex flex-row items-center justify-center sm:mb-2">
+        <View className="flex min-h-screen w-full items-center justify-center">
+          <View className="my-10 flex max-w-md flex-col gap-6">
+            <View className="mb-0 flex flex-row items-center justify-center sm:mb-5">
               <Image
                 source={require('@/assets/images/logotype_header_black.svg')}
                 style={{ height: 30, width: 155.5 }}
               />
             </View>
 
-            <View className="rounded-md border-0 bg-white shadow-none sm:border sm:shadow">
-              <View className="px-2 py-6 sm:p-6">
+            <View className="rounded-xl border-0 bg-white shadow-none sm:border sm:shadow">
+              <View className="p-6">
                 <View className="px-3 py-5 md:px-5 md:py-7">
                   <View className="flex flex-col gap-6">
                     <View className="mb-3 flex flex-col">
@@ -119,7 +119,7 @@ export default function AuthFormContainer({
                 </View>
               </View>
             </View>
-            <Text className="mt-10 text-balance px-5 text-center text-sm text-gray-500">
+            <Text className="mt-7 text-balance px-5 text-center text-sm text-gray-500">
               By clicking continue, you agree to our{' '}
               <Text
                 onPress={() => Linking.openURL('https://pricetra.com/terms')}
