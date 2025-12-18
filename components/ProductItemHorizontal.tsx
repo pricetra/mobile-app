@@ -78,7 +78,7 @@ export default function ProductItemHorizontal({
               <View>
                 <Image
                   src={createCloudinaryUrl(product.stock.store.logo ?? '', 100, 100)}
-                  className="size-[25px] rounded-sm"
+                  className="size-[25px] rounded-md"
                 />
               </View>
             )}
