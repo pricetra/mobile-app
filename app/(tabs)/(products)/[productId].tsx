@@ -198,7 +198,7 @@ export default function ProductScreen() {
         <TabHeaderItem
           {...props}
           rightNav={
-            <>
+            <View className="flex flex-row items-center justify-end gap-2">
               {stockData && (
                 <TouchableOpacity
                   onPress={() => {
@@ -208,8 +208,8 @@ export default function ProductScreen() {
                     setOpenWatchModal(true);
                   }}
                   disabled={addToListLoading || removeFromListLoading}
-                  className="flex flex-row items-center px-0.5 py-1">
-                  <AntDesign name={watchProductList ? 'eye' : 'eyeo'} size={25} color="#a855f7" />
+                  className="flex flex-row items-center p-2">
+                  <AntDesign name={watchProductList ? 'eye' : 'eyeo'} size={18} color="#a855f7" />
                 </TouchableOpacity>
               )}
 
@@ -221,29 +221,29 @@ export default function ProductScreen() {
                   add(ListType.Favorites).then((p) => setFavProductList(p));
                 }}
                 disabled={addToListLoading || removeFromListLoading}
-                className="flex flex-row items-center px-0.5 py-1">
-                <AntDesign name={favProductList ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                className="flex flex-row items-center p-2">
+                <AntDesign name={favProductList ? 'heart' : 'hearto'} size={15} color="#e11d48" />
               </TouchableOpacity>
 
               {isRoleAuthorized(UserRole.Contributor, user.role) && (
                 <TouchableOpacity
                   onPress={() => setOpenEditModal(true)}
-                  className="flex flex-row items-center px-0.5 py-1">
-                  <Feather name="edit" size={20} color="#3b82f6" />
+                  className="flex flex-row items-center p-2">
+                  <Feather name="edit" size={15} color="#3b82f6" />
                 </TouchableOpacity>
               )}
 
               <TouchableOpacity
                 onPress={() => setOpenPriceModal(true)}
                 className="flex flex-row items-center gap-2 rounded-full bg-green-100 px-4 py-2">
-                <Feather name="plus" size={20} color="#396a12" />
+                <Feather name="plus" size={18} color="#396a12" />
                 <Text className="text-sm font-bold color-pricetraGreenHeavyDark">Price</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={share} className="flex flex-row items-center px-0.5 py-1">
-                <Feather name="share" size={20} color="#166534" />
+              <TouchableOpacity onPress={share} className="flex flex-row items-center p-2">
+                <Feather name="share" size={15} color="#166534" />
               </TouchableOpacity>
-            </>
+            </View>
           }
         />
       ),
