@@ -56,7 +56,7 @@ export default function AuthFormContainer({
               />
             </View>
 
-            <View className="rounded-xl border-0 bg-white shadow-none sm:border sm:shadow">
+            <View className="rounded-xl border-0 bg-white shadow-none sm:border sm:shadow sm:shadow-black/10">
               <View className="p-6">
                 <View className="px-3 py-5 md:px-5 md:py-7">
                   <View className="flex flex-col gap-6">
@@ -107,7 +107,10 @@ export default function AuthFormContainer({
                             {googleLoading ? (
                               <ActivityIndicator color="#000" />
                             ) : (
-                              <AntDesign name="google" size={20} color="#EA4335" />
+                              <Image
+                                source={require('@/assets/images/google-color-icon.svg')}
+                                style={{ width: 20, height: 20 }}
+                              />
                             )}
                           </TouchableOpacity>
                         </View>
