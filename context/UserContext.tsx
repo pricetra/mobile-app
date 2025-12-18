@@ -2,11 +2,6 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { Image } from 'expo-image';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, View } from 'react-native';
-
-import { JwtStoreContext } from './JwtStoreContext';
-
 import {
   AuthDeviceType,
   CheckAppVersionDocument,
@@ -19,6 +14,11 @@ import {
   RegisterExpoPushTokenDocument,
   User,
 } from 'graphql-utils';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Platform, View } from 'react-native';
+
+import { JwtStoreContext } from './JwtStoreContext';
+
 import { version } from '@/package.json';
 
 const MINUTE = 1000 * 60;
