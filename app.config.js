@@ -65,6 +65,7 @@ export default {
         locationAlwaysAndWhenInUsePermission: 'Allow Pricetra to use your location.',
       },
     ],
+    'expo-asset',
   ],
   experiments: {
     typedRoutes: true,
@@ -78,6 +79,7 @@ export default {
   extra: {
     router: {
       origin: false,
+      disableOnboarding: true,
     },
     eas: {
       projectId: '5e02d7a0-8d71-485d-aec0-90390344e35a',

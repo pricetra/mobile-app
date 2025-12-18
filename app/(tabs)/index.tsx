@@ -74,7 +74,10 @@ export default function HomeScreen() {
     () =>
       ({
         query: params.query,
-        location: currentLocation.locationInput,
+        location: {
+          latitude: currentLocation.locationInput.latitude,
+          longitude: currentLocation.locationInput.longitude,
+        },
         categoryId: params?.categoryId ? +params.categoryId : undefined,
         brand: params.brand,
         sortByPrice: params.sortByPrice,
@@ -86,7 +89,8 @@ export default function HomeScreen() {
       params.brand,
       params.sortByPrice,
       params.sale,
-      currentLocation,
+      currentLocation.locationInput.latitude,
+      currentLocation.locationInput.longitude,
     ]
   );
 

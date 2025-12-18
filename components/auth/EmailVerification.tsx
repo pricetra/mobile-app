@@ -1,7 +1,8 @@
 import { useMutation } from '@apollo/client';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useContext, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { ResendVerificationDocument, VerifyEmailDocument } from 'graphql-utils';
+import { Ref, useContext, useEffect, useState } from 'react';
+import { Text, TextInput, View } from 'react-native';
 import {
   CodeField,
   Cursor,
@@ -11,7 +12,6 @@ import {
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
-import { ResendVerificationDocument, VerifyEmailDocument } from 'graphql-utils';
 
 const CELL_COUNT = 6;
 
@@ -93,7 +93,7 @@ export default function EmailVerificationScreen() {
       )}
 
       <CodeField
-        ref={codeComponentRef}
+        ref={codeComponentRef as Ref<TextInput>}
         {...codeComponentProps}
         value={code}
         onChangeText={setCode}

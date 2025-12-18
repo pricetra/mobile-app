@@ -26,7 +26,6 @@ import Accordion from 'react-native-collapsible/Accordion';
 import { InView } from 'react-native-intersection-observer';
 
 import FullStockView from './FullStockView';
-import HorizontalShowMoreButton from './HorizontalShowMoreButton';
 import LocationChangeForm from './LocationChangeForm';
 import MoreFromBrand from './MoreFromBrandSection';
 import MoreFromCategory from './MoreFromCategorySection';
@@ -288,7 +287,16 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                         </View>
 
                         {stocksData.getProductStocks.paginator.next && (
-                          <HorizontalShowMoreButton onPress={() => {}} heightDiv={1} />
+                          <View className="my-5 flex flex-row items-center justify-center px-5 py-8">
+                            <Btn
+                              size="sm"
+                              bgColor="bg-gray-200"
+                              color="text-gray-800"
+                              rounded="full"
+                              onPress={() => {}}
+                              text="Show All"
+                            />
+                          </View>
                         )}
                       </>
                     ) : (
@@ -311,7 +319,6 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
               <InView
                 triggerOnce
                 onChange={(inView) => {
-                  console.log(inView);
                   if (!inView) return;
 
                   getProductNutritionData({

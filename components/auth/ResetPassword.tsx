@@ -1,7 +1,12 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useContext, useEffect, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import {
+  RequestResetPasswordDocument,
+  UpdatePasswordWithResetCodeDocument,
+  VerifyPasswordResetCodeDocument,
+} from 'graphql-utils';
+import { Ref, useContext, useEffect, useState } from 'react';
+import { Alert, Text, TextInput, View } from 'react-native';
 import {
   CodeField,
   Cursor,
@@ -12,13 +17,7 @@ import {
 import Input from '../ui/Input';
 
 import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
-import Btn from '@/components/ui/Btn';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
-import {
-  RequestResetPasswordDocument,
-  UpdatePasswordWithResetCodeDocument,
-  VerifyPasswordResetCodeDocument,
-} from 'graphql-utils';
 
 const CELL_COUNT = 6;
 
@@ -132,7 +131,7 @@ export default function ResetPassword() {
 
           {!verificationData ? (
             <CodeField
-              ref={codeComponentRef}
+              ref={codeComponentRef as Ref<TextInput>}
               {...codeComponentProps}
               value={code}
               onChangeText={setCode}
