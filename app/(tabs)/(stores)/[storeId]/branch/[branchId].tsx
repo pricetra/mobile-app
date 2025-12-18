@@ -2,6 +2,16 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import {
+  AddBranchToListDocument,
+  AllProductsDocument,
+  BranchDocument,
+  GetAllBranchListsByListIdDocument,
+  GetAllListsDocument,
+  Product,
+  ProductSearch,
+  RemoveBranchFromListDocument,
+} from 'graphql-utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
@@ -23,16 +33,6 @@ import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter
 import { LIMIT } from '@/constants/constants';
 import { useHeader } from '@/context/HeaderContext';
 import { useAuth } from '@/context/UserContext';
-import {
-  AddBranchToListDocument,
-  AllProductsDocument,
-  BranchDocument,
-  GetAllBranchListsByListIdDocument,
-  GetAllListsDocument,
-  Product,
-  ProductSearch,
-  RemoveBranchFromListDocument,
-} from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { extractUndefined, stringToNumber, toBoolean } from '@/lib/utils';
 
@@ -194,7 +194,7 @@ export default function SelectedBranchScreen() {
             branchLoading || !branchData ? (
               <></>
             ) : (
-              <>
+              <View className="flex flex-row items-center justify-end gap-1">
                 <TouchableOpacity
                   onPress={() => {
                     if (favorite === undefined) return;
@@ -218,16 +218,16 @@ export default function SelectedBranchScreen() {
                       },
                     });
                   }}
-                  className="flex flex-row items-center">
+                  className="flex flex-row items-center p-2">
                   {favorite !== undefined && (
-                    <AntDesign name={favorite ? 'heart' : 'hearto'} size={20} color="#e11d48" />
+                    <AntDesign name={favorite ? 'heart' : 'hearto'} size={15} color="#e11d48" />
                   )}
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={share} className="flex flex-row items-center">
-                  <Feather name="share" size={20} color="#166534" />
+                <TouchableOpacity onPress={share} className="flex flex-row items-center p-2">
+                  <Feather name="share" size={15} color="#166534" />
                 </TouchableOpacity>
-              </>
+              </View>
             )
           }
         />
