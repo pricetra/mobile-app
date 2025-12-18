@@ -9,7 +9,7 @@ import { View, ScrollView, TouchableOpacity, Text, Alert } from 'react-native';
 import CreateStoreForm from '@/components/CreateStoreForm';
 import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
 import ModalFormMini from '@/components/ui/ModalFormMini';
-import PaginationSimple from '@/components/ui/PaginationSimple';
+import { SmartPagination } from '@/components/ui/SmartPagination';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 
@@ -97,15 +97,14 @@ export default function CreateStoreScreen() {
             </TouchableOpacity>
           ))}
 
-        {allStoresData &&
-          (allStoresData.allStores.paginator.next || allStoresData.allStores.paginator.prev) && (
-            <View>
-              <PaginationSimple
-                paginator={allStoresData?.allStores?.paginator}
-                onPageChange={setPage}
-              />
-            </View>
-          )}
+        {allStoresData?.allStores?.paginator && allStoresData.allStores.paginator.numPages > 1 && (
+          <View>
+            <SmartPagination
+              paginator={allStoresData?.allStores?.paginator}
+              onPageChange={setPage}
+            />
+          </View>
+        )}
       </View>
     </ScrollView>
   );

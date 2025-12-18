@@ -1,14 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import { AntDesign } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
-
-import HistoricPriceItem from './HistoricPriceItem';
-import SelectedStock from './SelectedStock';
-import PaginationSimple from './ui/PaginationSimple';
-
-import Btn from '@/components/ui/Btn';
 import {
   OrderByType,
   Price,
@@ -16,6 +8,14 @@ import {
   PriceHistoryFilter,
   Stock,
 } from 'graphql-utils';
+import { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
+
+import HistoricPriceItem from './HistoricPriceItem';
+import SelectedStock from './SelectedStock';
+import { SmartPagination } from './ui/SmartPagination';
+
+import Btn from '@/components/ui/Btn';
 
 export type FullStockViewProps = {
   stock: Stock;
@@ -90,7 +90,7 @@ export default function FullStockView({ stock, closeModal }: FullStockViewProps)
 
         {priceHistoryData?.priceChangeHistory?.paginator && (
           <View className="mt-5">
-            <PaginationSimple
+            <SmartPagination
               paginator={priceHistoryData.priceChangeHistory.paginator}
               onPageChange={setPage}
             />
