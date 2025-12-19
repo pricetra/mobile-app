@@ -15,6 +15,7 @@ import {
   ProductDocument,
   ExtractProductFieldsDocument,
   SanitizeProductDocument,
+  UserRole,
 } from 'graphql-utils';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, TouchableOpacity, View } from 'react-native';
@@ -32,6 +33,8 @@ import Text from '@/components/ui/Text';
 import { Textarea } from '@/components/ui/Textarea';
 import { buildBase64ImageString, titleCase } from '@/lib/strings';
 import { diffObjects } from '@/lib/utils';
+import { isRoleAuthorized } from '@/lib/roles';
+import { useAuth } from '@/context/UserContext';
 
 export type ProductFormProps = {
   upc?: string;
@@ -48,6 +51,7 @@ export default function ProductForm({
   onSuccess,
   onError,
 }: ProductFormProps) {
+  const { user } = useAuth();
   const [analyzingImage, setAnalyzingImage] = useState(false);
   const [imageUri, setImageUri] = useState<string>();
   const [imageBase64, setImageBase64] = useState<string>();
@@ -303,7 +307,7 @@ export default function ProductForm({
                 textSize="text-sm"
               />
 
-              {product && (
+              {product && isRoleAuthorized(UserRole.Contributor, user.role) && (
                 <Btn
                   onPress={() =>
                     sanitizeProduct({ variables: { id: product.id } }).then(({ data }) => {

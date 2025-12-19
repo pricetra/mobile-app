@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
@@ -12,6 +12,7 @@ import {
   ProductDocument,
   ProductList,
   RemoveFromListDocument,
+  SanitizeProductDocument,
   Stock,
   StockDocument,
   UserRole,
@@ -73,6 +74,10 @@ export default function ProductScreen() {
   const [watchProductList, setWatchProductList] = useState<ProductList>();
   const [openWatchModal, setOpenWatchModal] = useState(false);
   const [selectedStock, setSelectedStock] = useState<Stock>();
+
+  const [sanitizeProduct, { loading: sanitizing }] = useMutation(SanitizeProductDocument, {
+    refetchQueries: [ProductDocument],
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -227,6 +232,20 @@ export default function ProductScreen() {
 
               {isRoleAuthorized(UserRole.Contributor, user.role) && (
                 <TouchableOpacity
+                  onPress={() => {
+                    sanitizeProduct({ variables: { id: +productId } });
+                  }}
+                  className="flex flex-row items-center p-2">
+                  {sanitizing ? (
+                    <ActivityIndicator color="#2563eb" size={15} />
+                  ) : (
+                    <FontAwesome5 name="hand-sparkles" size={15} color="#2563eb" />
+                  )}
+                </TouchableOpacity>
+              )}
+
+              {isRoleAuthorized(UserRole.Contributor, user.role) && (
+                <TouchableOpacity
                   onPress={() => setOpenEditModal(true)}
                   className="flex flex-row items-center p-2">
                   <Feather name="edit" size={15} color="#3b82f6" />
@@ -250,6 +269,8 @@ export default function ProductScreen() {
     });
   }, [
     productLoading,
+    productId,
+    sanitizing,
     favProductList,
     watchProductList,
     addToListLoading,
