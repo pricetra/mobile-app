@@ -4,9 +4,8 @@ import {
   AddGroceryListItemDocument,
   CategorySearchDocument,
   CountGroceryListItemsDocument,
-  DefaultGroceryListItemsDocument,
+  CreateGroceryListItemInput,
   GroceryListItem,
-  GroceryListItemsDocument,
 } from 'graphql-utils';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -33,11 +32,7 @@ export default function GroceryListItemCreate({
     fetchPolicy: 'no-cache',
   });
   const [addItem] = useMutation(AddGroceryListItemDocument, {
-    refetchQueries: [
-      DefaultGroceryListItemsDocument,
-      GroceryListItemsDocument,
-      CountGroceryListItemsDocument,
-    ],
+    refetchQueries: [CountGroceryListItemsDocument],
   });
 
   const debouncedCategorySearch = useCallback(
@@ -50,22 +45,39 @@ export default function GroceryListItemCreate({
     [search]
   );
 
+  function createGroceryListItem(input: CreateGroceryListItemInput) {
+    addItem({
+      variables: {
+        groceryListId,
+        input,
+      },
+    }).then(({ data }) => {
+      if (!data) return;
+
+      const now = Date.now();
+      onCreate({
+        ...data.addGroceryListItem,
+        ...input,
+        groceryListId,
+        quantity: 1,
+        completed: false,
+        createdAt: now,
+        updatedAt: now,
+      });
+    });
+    setSearch('');
+    setSelectedCategoryId(undefined);
+  }
+
   useEffect(() => {
     debouncedCategorySearch(search);
   }, [search]);
 
   useEffect(() => {
     if (!selectedCategoryId) return;
-    addItem({
-      variables: {
-        groceryListId,
-        input: {
-          category: selectedCategoryId.name,
-        },
-      },
+    createGroceryListItem({
+      category: selectedCategoryId.name,
     });
-    setSearch('');
-    setSelectedCategoryId(undefined);
   }, [selectedCategoryId]);
 
   return (
@@ -88,18 +100,9 @@ export default function GroceryListItemCreate({
             onSubmitEditing={() => {
               if (search.trim().length === 0) return;
 
-              addItem({
-                variables: {
-                  groceryListId,
-                  input: {
-                    category: search,
-                  },
-                },
-              }).then(({ data }) => {
-                if (!data) return;
-                onCreate(data.addGroceryListItem as GroceryListItem);
+              createGroceryListItem({
+                category: search,
               });
-              setSearch('');
             }}
             className="flex-1 color-black placeholder:color-gray-600"
           />

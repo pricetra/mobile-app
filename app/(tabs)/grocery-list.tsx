@@ -78,9 +78,7 @@ export default function GroceryList() {
 
   return (
     <View style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="position">
         <FlatList
           ref={flatListRef}
           ListHeaderComponent={
