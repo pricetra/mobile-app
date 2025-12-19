@@ -24,6 +24,7 @@ export default function GroceryList() {
     useLazyQuery(GroceryListItemsDocument, {
       fetchPolicy: 'network-only',
     });
+  const [groceryListItems, setGroceryListItems] = useState<GqlGroceryListItem[]>();
 
   useFocusEffect(
     useCallback(() => {
@@ -65,13 +66,13 @@ export default function GroceryList() {
   }, [selectedGroceryList, flatListRef.current]);
 
   useEffect(() => {
-    if (!groceryListItemsData?.groceryListItems) return;
-    if (groceryListItemsData.groceryListItems.length > 0) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: false });
-      }, 0);
-    }
-  }, [groceryListItemsData?.groceryListItems]);
+    if (!groceryListItemsData) return;
+
+    setGroceryListItems([...(groceryListItemsData.groceryListItems as GqlGroceryListItem[])]);
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: false });
+    }, 100);
+  }, [groceryListItemsData]);
 
   if (!selectedGroceryList) return <></>;
 
@@ -87,18 +88,46 @@ export default function GroceryList() {
               <Text className="text-3xl font-extrabold">{selectedGroceryList.name}</Text>
             </View>
           }
-          data={groceryListItemsData?.groceryListItems}
+          data={groceryListItems}
           keyExtractor={({ id }, i) => `grocery-list-item-${id}-${i}`}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <GestureHandlerRootView>
               <Swipeable
                 containerStyle={{ backgroundColor: '#b91c1c' }}
                 friction={2}
                 rightThreshold={40}
                 renderRightActions={(prog, drag) =>
-                  GroceryListItemDeleteAction({ groceryListItemId: item.id }, prog, drag)
+                  GroceryListItemDeleteAction(
+                    {
+                      groceryListItemId: item.id,
+                      onDelete: () => {
+                        if (!groceryListItems) return;
+                        groceryListItems.splice(index, 1);
+                        setGroceryListItems([...groceryListItems]);
+                      },
+                    },
+                    prog,
+                    drag
+                  )
                 }>
-                <GroceryListItem item={item as GqlGroceryListItem} />
+                <GroceryListItem
+                  item={item as GqlGroceryListItem}
+                  onStatusChange={(item) => {
+                    if (!groceryListItems) return;
+                    groceryListItems[index] = { ...item };
+                    setGroceryListItems([...groceryListItems]);
+                  }}
+                  onDelete={() => {
+                    if (!groceryListItems) return;
+                    groceryListItems.splice(index, 1);
+                    setGroceryListItems([...groceryListItems]);
+                  }}
+                  onUpdate={(item) => {
+                    if (!groceryListItems) return;
+                    groceryListItems[index] = { ...item };
+                    setGroceryListItems([...groceryListItems]);
+                  }}
+                />
               </Swipeable>
             </GestureHandlerRootView>
           )}
@@ -115,7 +144,14 @@ export default function GroceryList() {
           ListFooterComponent={
             <>
               <View>
-                <GroceryListItemCreate groceryListId={selectedGroceryList.id} />
+                <GroceryListItemCreate
+                  groceryListId={selectedGroceryList.id}
+                  onCreate={(item) => {
+                    if (!groceryListItems) return;
+                    groceryListItems.push({ ...item });
+                    setGroceryListItems([...groceryListItems]);
+                  }}
+                />
               </View>
 
               <View style={{ height: 200 }} />

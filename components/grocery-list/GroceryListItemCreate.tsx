@@ -5,6 +5,7 @@ import {
   CategorySearchDocument,
   CountGroceryListItemsDocument,
   DefaultGroceryListItemsDocument,
+  GroceryListItem,
   GroceryListItemsDocument,
 } from 'graphql-utils';
 import _ from 'lodash';
@@ -13,7 +14,15 @@ import { TextInput, TouchableOpacity, View } from 'react-native';
 
 import Btn from '../ui/Btn';
 
-export default function GroceryListItemCreate({ groceryListId }: { groceryListId: number }) {
+type GroceryListItemCreateProps = {
+  groceryListId: number;
+  onCreate: (item: GroceryListItem) => void;
+};
+
+export default function GroceryListItemCreate({
+  groceryListId,
+  onCreate,
+}: GroceryListItemCreateProps) {
   const inputRef = useRef<TextInput>(null);
   const [search, setSearch] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<{
@@ -37,7 +46,7 @@ export default function GroceryListItemCreate({ groceryListId }: { groceryListId
       searchCategories({
         variables: { search: search?.trim(), quickSearchMode: true },
       });
-    }, 500),
+    }, 200),
     [search]
   );
 
@@ -86,6 +95,9 @@ export default function GroceryListItemCreate({ groceryListId }: { groceryListId
                     category: search,
                   },
                 },
+              }).then(({ data }) => {
+                if (!data) return;
+                onCreate(data.addGroceryListItem as GroceryListItem);
               });
               setSearch('');
             }}
