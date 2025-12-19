@@ -82,7 +82,7 @@ export default function GroceryList() {
         <FlatList
           ref={flatListRef}
           ListHeaderComponent={
-            <View className="mb-2 px-5 py-5">
+            <View className="mt-3 mb-2 px-5 py-5">
               <Text className="text-3xl font-extrabold">{selectedGroceryList.name}</Text>
             </View>
           }
