@@ -1,10 +1,9 @@
 import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import { Paginator } from 'graphql-utils';
+import { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 
-import { Paginator } from 'graphql-utils';
-
-type PaginatorProps = {
+export type PaginatorProps = {
   paginator: Paginator;
   onPageChange: (page: number) => void;
 };

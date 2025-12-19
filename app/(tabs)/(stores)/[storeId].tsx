@@ -2,6 +2,14 @@ import { useLazyQuery } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import {
+  BranchesWithProductsDocument,
+  FindStoreDocument,
+  LocationInput,
+  Branch,
+  Product,
+  Store,
+} from 'graphql-utils';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   View,
@@ -23,18 +31,10 @@ import HorizontalShowMoreButton from '@/components/HorizontalShowMoreButton';
 import ProductItemHorizontal from '@/components/ProductItemHorizontal';
 import Image from '@/components/ui/Image';
 import ModalFormMini from '@/components/ui/ModalFormMini';
-import PaginationSimple from '@/components/ui/PaginationSimple';
+import { SmartPagination } from '@/components/ui/SmartPagination';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
 import { useAuth } from '@/context/UserContext';
-import {
-  BranchesWithProductsDocument,
-  FindStoreDocument,
-  LocationInput,
-  Branch,
-  Product,
-  Store,
-} from 'graphql-utils';
 import useLocationService from '@/hooks/useLocationService';
 import { createCloudinaryUrl } from '@/lib/files';
 
@@ -244,12 +244,13 @@ export default function SelectedStoreScreen() {
           }
           ListFooterComponent={
             <View className="px-5 py-5">
-              {branchesData.branchesWithProducts.paginator && (
-                <PaginationSimple
-                  paginator={branchesData.branchesWithProducts.paginator}
-                  onPageChange={setPage}
-                />
-              )}
+              {branchesData.branchesWithProducts.paginator &&
+                branchesData.branchesWithProducts.paginator.numPages > 1 && (
+                  <SmartPagination
+                    paginator={branchesData.branchesWithProducts.paginator}
+                    onPageChange={setPage}
+                  />
+                )}
 
               <View style={{ height: 100 }} />
             </View>

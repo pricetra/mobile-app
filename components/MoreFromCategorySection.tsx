@@ -29,9 +29,9 @@ export default function MoreFromCategory({ category }: MoreFromBrandProps) {
           },
         });
       }}>
-      <View className="mb-14">
+      <View className="mb-16">
         <View className="mb-7 px-5">
-          <Text className="text-xl">
+          <Text className="text-lg">
             Similar in category <Text className="font-bold">{category.name}</Text>
           </Text>
         </View>

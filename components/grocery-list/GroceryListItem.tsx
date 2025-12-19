@@ -1,5 +1,12 @@
 import { useMutation } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
+import {
+  CountGroceryListItemsDocument,
+  DeleteGroceryListItemDocument,
+  GroceryListItem as GqlGroceryListItem,
+  MarkGroceryListItemDocument,
+  UpdateGroceryListItemDocument,
+} from 'graphql-utils';
 import { useState } from 'react';
 import { Pressable, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Reanimated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
@@ -9,45 +16,32 @@ import ItemCounter from './ItemCounter';
 import { Skeleton } from '../ui/Skeleton';
 
 import Image from '@/components/ui/Image';
-import {
-  CountGroceryListItemsDocument,
-  DefaultGroceryListItemsDocument,
-  DeleteGroceryListItemDocument,
-  GroceryListItem as GqlGroceryListItem,
-  GroceryListItemsDocument,
-  MarkGroceryListItemDocument,
-  UpdateGroceryListItemDocument,
-} from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { cn } from '@/lib/utils';
 
 export type GroceryListItemProps = {
   item: GqlGroceryListItem;
+  onStatusChange: (item: GqlGroceryListItem) => void;
+  onDelete: (item: GqlGroceryListItem) => void;
+  onUpdate: (item: GqlGroceryListItem) => void;
 };
 
-export default function GroceryListItem({ item }: GroceryListItemProps) {
+export default function GroceryListItem({
+  item,
+  onStatusChange,
+  onDelete,
+  onUpdate,
+}: GroceryListItemProps) {
   const [completed, setCompleted] = useState(item.completed);
   const [markGroceryListItem] = useMutation(MarkGroceryListItemDocument, {
-    refetchQueries: [
-      DefaultGroceryListItemsDocument,
-      GroceryListItemsDocument,
-      CountGroceryListItemsDocument,
-    ],
+    refetchQueries: [CountGroceryListItemsDocument],
   });
   const [deleteGroceryListItem] = useMutation(DeleteGroceryListItemDocument, {
     variables: { groceryListItemId: item.id },
-    refetchQueries: [
-      DefaultGroceryListItemsDocument,
-      GroceryListItemsDocument,
-      CountGroceryListItemsDocument,
-    ],
+    refetchQueries: [CountGroceryListItemsDocument],
   });
   const [updateGroceryListItem] = useMutation(UpdateGroceryListItemDocument, {
-    refetchQueries: [
-      DefaultGroceryListItemsDocument,
-      GroceryListItemsDocument,
-      CountGroceryListItemsDocument,
-    ],
+    refetchQueries: [CountGroceryListItemsDocument],
   });
   const [quantity, setQuantity] = useState(item.quantity ?? 1);
 
@@ -57,6 +51,7 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
         onPress={() => {
           setCompleted((prev) => {
             const completed = !prev;
+            onStatusChange({ ...item, completed });
             markGroceryListItem({
               variables: {
                 groceryListItemId: item.id,
@@ -113,8 +108,10 @@ export default function GroceryListItem({ item }: GroceryListItemProps) {
               setQuantity(quantity);
               if (quantity < 1) {
                 deleteGroceryListItem();
+                onDelete(item);
                 return;
               }
+              onUpdate({ ...item, quantity });
               updateGroceryListItem({
                 variables: {
                   groceryListItemId: item.id,
@@ -153,19 +150,20 @@ export function GroceryListItemLoading() {
   );
 }
 
+type GroceryListItemDeleteActionProps = {
+  groceryListItemId: number;
+  onDelete: () => void;
+};
+
 export function GroceryListItemDeleteAction(
-  props: { groceryListItemId: number },
+  props: GroceryListItemDeleteActionProps,
   _prog: SharedValue<number>,
   drag: SharedValue<number>
 ) {
   const [deleting, setDeleting] = useState(false);
   const [deleteGroceryListItem] = useMutation(DeleteGroceryListItemDocument, {
     variables: { groceryListItemId: props.groceryListItemId },
-    refetchQueries: [
-      DefaultGroceryListItemsDocument,
-      GroceryListItemsDocument,
-      CountGroceryListItemsDocument,
-    ],
+    refetchQueries: [CountGroceryListItemsDocument],
   });
   const styleAnimation = useAnimatedStyle(() => {
     return {
@@ -179,6 +177,7 @@ export function GroceryListItemDeleteAction(
         onPress={() => {
           setDeleting(true);
           deleteGroceryListItem();
+          props.onDelete();
         }}
         className="flex h-full w-[75px] flex-col items-center justify-center gap-3 bg-red-700">
         {deleting ? (

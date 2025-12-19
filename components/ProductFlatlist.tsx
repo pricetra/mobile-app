@@ -1,5 +1,6 @@
 import { QueryResult } from '@apollo/client';
 import { router } from 'expo-router';
+import { AllProductsQuery, Paginator, Product, QueryAllProductsArgs } from 'graphql-utils';
 import { ReactNode, useState } from 'react';
 import {
   Platform,
@@ -12,9 +13,7 @@ import {
 import { FlatGrid } from 'react-native-super-grid';
 
 import ProductItem, { ProductItemLoading } from './ProductItem';
-import PaginationSimple from './ui/PaginationSimple';
-
-import { AllProductsQuery, Paginator, Product, QueryAllProductsArgs } from 'graphql-utils';
+import { SmartPagination } from './ui/SmartPagination';
 
 const itemDimension = 300;
 
@@ -74,7 +73,9 @@ export default function ProductFlatlist({
       }
       ListFooterComponent={() => (
         <View className="mb-20 mt-5 p-5">
-          {paginator && <PaginationSimple paginator={paginator} onPageChange={setPage} />}
+          {paginator && paginator.numPages > 1 && (
+            <SmartPagination paginator={paginator} onPageChange={setPage} />
+          )}
         </View>
       )}
       contentContainerStyle={style}

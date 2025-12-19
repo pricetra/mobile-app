@@ -31,9 +31,9 @@ export default function MoreFromBrand({ brand }: MoreFromBrandProps) {
           },
         });
       }}>
-      <View className="mb-14">
+      <View className="mb-16">
         <View className="mb-7 px-5">
-          <Text className="text-xl">
+          <Text className="text-lg">
             More from <Text className="font-bold">{brand}</Text>
           </Text>
         </View>

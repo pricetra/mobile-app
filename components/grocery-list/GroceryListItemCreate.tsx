@@ -4,8 +4,8 @@ import {
   AddGroceryListItemDocument,
   CategorySearchDocument,
   CountGroceryListItemsDocument,
-  DefaultGroceryListItemsDocument,
-  GroceryListItemsDocument,
+  CreateGroceryListItemInput,
+  GroceryListItem,
 } from 'graphql-utils';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -13,7 +13,15 @@ import { TextInput, TouchableOpacity, View } from 'react-native';
 
 import Btn from '../ui/Btn';
 
-export default function GroceryListItemCreate({ groceryListId }: { groceryListId: number }) {
+type GroceryListItemCreateProps = {
+  groceryListId: number;
+  onCreate: (item: GroceryListItem) => void;
+};
+
+export default function GroceryListItemCreate({
+  groceryListId,
+  onCreate,
+}: GroceryListItemCreateProps) {
   const inputRef = useRef<TextInput>(null);
   const [search, setSearch] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<{
@@ -24,11 +32,7 @@ export default function GroceryListItemCreate({ groceryListId }: { groceryListId
     fetchPolicy: 'no-cache',
   });
   const [addItem] = useMutation(AddGroceryListItemDocument, {
-    refetchQueries: [
-      DefaultGroceryListItemsDocument,
-      GroceryListItemsDocument,
-      CountGroceryListItemsDocument,
-    ],
+    refetchQueries: [CountGroceryListItemsDocument],
   });
 
   const debouncedCategorySearch = useCallback(
@@ -37,9 +41,33 @@ export default function GroceryListItemCreate({ groceryListId }: { groceryListId
       searchCategories({
         variables: { search: search?.trim(), quickSearchMode: true },
       });
-    }, 500),
+    }, 200),
     [search]
   );
+
+  function createGroceryListItem(input: CreateGroceryListItemInput) {
+    addItem({
+      variables: {
+        groceryListId,
+        input,
+      },
+    }).then(({ data }) => {
+      if (!data) return;
+
+      const now = Date.now();
+      onCreate({
+        ...data.addGroceryListItem,
+        ...input,
+        groceryListId,
+        quantity: 1,
+        completed: false,
+        createdAt: now,
+        updatedAt: now,
+      });
+    });
+    setSearch('');
+    setSelectedCategoryId(undefined);
+  }
 
   useEffect(() => {
     debouncedCategorySearch(search);
@@ -47,16 +75,9 @@ export default function GroceryListItemCreate({ groceryListId }: { groceryListId
 
   useEffect(() => {
     if (!selectedCategoryId) return;
-    addItem({
-      variables: {
-        groceryListId,
-        input: {
-          category: selectedCategoryId.name,
-        },
-      },
+    createGroceryListItem({
+      category: selectedCategoryId.name,
     });
-    setSearch('');
-    setSelectedCategoryId(undefined);
   }, [selectedCategoryId]);
 
   return (
@@ -79,15 +100,9 @@ export default function GroceryListItemCreate({ groceryListId }: { groceryListId
             onSubmitEditing={() => {
               if (search.trim().length === 0) return;
 
-              addItem({
-                variables: {
-                  groceryListId,
-                  input: {
-                    category: search,
-                  },
-                },
+              createGroceryListItem({
+                category: search,
               });
-              setSearch('');
             }}
             className="flex-1 color-black placeholder:color-gray-600"
           />

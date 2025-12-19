@@ -257,7 +257,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
           },
           {
             title: 'Available at',
-            badge: stocksData?.getProductStocks?.paginator?.total,
+            badge: stocksData?.getProductStocks?.paginator?.total ?? 0,
             noHorizontalPadding: true,
             content: (
               <View>
@@ -409,10 +409,12 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
               <View className="flex flex-1 flex-row items-center justify-between gap-3">
                 <Text className="text-lg font-semibold">{section.title}</Text>
 
-                {section.badge && (
+                {section.badge ? (
                   <Text className="size-6 rounded-full bg-pricetraGreenHeavyDark py-1 text-center text-xs font-bold color-white">
                     {section.badge}
                   </Text>
+                ) : (
+                  <></>
                 )}
               </View>
 
@@ -441,8 +443,10 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
 
       <RelatedBranchProducts product={product} stock={stock} />
 
-      <MoreFromBrand brand={product.brand} />
-      {product.category && <MoreFromCategory category={product.category} />}
+      <View className="mt-10">
+        <MoreFromBrand brand={product.brand} />
+        {product.category && <MoreFromCategory category={product.category} />}
+      </View>
     </>
   );
 }

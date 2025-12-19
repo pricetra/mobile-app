@@ -2,16 +2,16 @@ import { useQuery } from '@apollo/client';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
+import { AllStoresDocument } from 'graphql-utils';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Text, Alert } from 'react-native';
 
 import CreateStoreForm from '@/components/CreateStoreForm';
 import StoreItem, { StoreItemLoading } from '@/components/StoreItem';
 import ModalFormMini from '@/components/ui/ModalFormMini';
-import PaginationSimple from '@/components/ui/PaginationSimple';
+import { SmartPagination } from '@/components/ui/SmartPagination';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { SearchContext } from '@/context/SearchContext';
-import { AllStoresDocument } from 'graphql-utils';
 
 export default function CreateStoreScreen() {
   const navigation = useNavigation();
@@ -97,15 +97,14 @@ export default function CreateStoreScreen() {
             </TouchableOpacity>
           ))}
 
-        {allStoresData &&
-          (allStoresData.allStores.paginator.next || allStoresData.allStores.paginator.prev) && (
-            <View>
-              <PaginationSimple
-                paginator={allStoresData?.allStores?.paginator}
-                onPageChange={setPage}
-              />
-            </View>
-          )}
+        {allStoresData?.allStores?.paginator && allStoresData.allStores.paginator.numPages > 1 && (
+          <View>
+            <SmartPagination
+              paginator={allStoresData?.allStores?.paginator}
+              onPageChange={setPage}
+            />
+          </View>
+        )}
       </View>
     </ScrollView>
   );
