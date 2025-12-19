@@ -7,7 +7,7 @@
     "ios": "expo run:ios",
     "start": "APP_VARIANT=development expo start",
     "start:tunnel": "APP_VARIANT=development expo start --tunnel",
-    "prebuild": "expo prebuild",
+    "prebuild": "expo prebuild --clean",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "eas:new-device": "eas device:create",
