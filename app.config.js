@@ -79,7 +79,6 @@ export default {
   extra: {
     router: {
       origin: false,
-      disableOnboarding: true,
     },
     eas: {
       projectId: '5e02d7a0-8d71-485d-aec0-90390344e35a',
