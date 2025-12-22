@@ -1,4 +1,13 @@
-import { Price, ProductWeightComponents } from 'graphql-utils';
+import {
+  Price,
+  Product,
+  ProductReferrer,
+  ProductWeightComponents,
+  Stock,
+  User,
+} from 'graphql-utils';
+
+import { isDateExpired } from '@/lib/utils';
 
 export function titleCase(str: string) {
   return str
@@ -63,4 +72,88 @@ export function parseWeight(rawWeight: string): ProductWeightComponents {
     weightValue: +splitWeight[0],
     weightType: splitWeight.slice(1).join(' '),
   };
+}
+
+export function parseIntOrUndefined(str?: string): number | undefined {
+  if (!str) return undefined;
+
+  const parsedVal = parseInt(str, 10);
+  if (isNaN(parsedVal)) return undefined;
+  return parsedVal;
+}
+
+export function validBrand(brand?: string | null): boolean {
+  if (!brand) return false;
+  if (brand === 'N/A') return false;
+  return brand.length > 0;
+}
+
+export function objectToBase64<T>(ob: T): string {
+  const ob_str = JSON.stringify(ob);
+  return btoa(ob_str);
+}
+
+export function buildProductBaseUrl(product: Product, stock?: Stock): string {
+  return `https://pricetra.com/products/${product.id}${
+    stock?.branch ? `/${stock.branch.slug}` : ''
+  }`;
+}
+
+export type SocialMediaType = 'facebook' | 'whatsapp' | 'x' | 'nextdoor' | 'other';
+
+export function generateProductShareLink(
+  socialMedia: SocialMediaType,
+  product: Product,
+  stock?: Stock,
+  user?: User
+) {
+  const paramBuilder = new URLSearchParams();
+  const referrer: ProductReferrer = {
+    sharedOn: socialMedia,
+    sharedFromPlatform: 'web',
+  };
+  if (user) {
+    referrer.sharedByUser = user.id.toString();
+  }
+  const ref = objectToBase64(referrer);
+  paramBuilder.set('ref', ref);
+
+  return `${buildProductBaseUrl(product, stock)}?${paramBuilder.toString()}`;
+}
+
+export function generateProductShareDescription(
+  product: Product,
+  stock?: Stock,
+  user?: User,
+  showUrl: boolean = false
+): string {
+  let description = '';
+  if (!stock) description = 'Check out ';
+  description += product.name;
+  if (stock?.latestPrice) {
+    const price = stock.latestPrice;
+    const saleExpired = price.sale ? isDateExpired(price.expiresAt) : false;
+    if (price.expiresAt && !saleExpired) {
+      description += ' on sale';
+    }
+    description += ` for ${currencyFormat(
+      saleExpired ? (price.originalPrice ?? price.amount) : price.amount
+    )}`;
+
+    if (price.originalPrice && price.expiresAt && !saleExpired) {
+      description += ` (was ${currencyFormat(price.originalPrice)})`;
+    }
+  }
+  if (stock?.branch) {
+    description += ` at ${stock.branch.name}`;
+    if (stock.branch.address) {
+      description += ` (${stock.branch.address.fullAddress})`;
+    }
+  }
+  description += '. #BeatInflation';
+  if (showUrl) {
+    description += '\n';
+    description += generateProductShareLink('other', product, stock, user);
+  }
+  return description;
 }

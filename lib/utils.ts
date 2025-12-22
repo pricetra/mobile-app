@@ -71,6 +71,10 @@ export function incompleteProductFields(product: Product): string[] {
   return fields;
 }
 
+export function isDateExpired(date: any) {
+  return dayjs(date).isBefore(new Date());
+}
+
 export function isSaleExpired(price: Price) {
   return dayjs(price.expiresAt).isBefore(new Date());
 }

@@ -44,6 +44,7 @@ import { useHeader } from '@/context/HeaderContext';
 import { useCurrentLocation } from '@/context/LocationContext';
 import { UserAuthContext } from '@/context/UserContext';
 import { isRoleAuthorized } from '@/lib/roles';
+import { generateProductShareDescription, generateProductShareLink } from '@/lib/strings';
 import { incompleteProductFields } from '@/lib/utils';
 
 export default function ProductScreen() {
@@ -135,18 +136,17 @@ export default function ProductScreen() {
   async function share() {
     if (!productData) return;
 
-    const urlBuilder = new URLSearchParams();
-    if (stockData) {
-      urlBuilder.append('stockId', String(stockData.stock.id));
-    }
-    urlBuilder.append('sharedBy', String(user.id));
-    urlBuilder.append('sharedFrom', String(user.authDevice));
-
+    const product = productData.product;
+    const stock = (stockData?.stock ?? undefined) as Stock | undefined;
     try {
+      const title = productData.product.name;
+      const url = generateProductShareLink('other', product, stock, user);
+      const message = generateProductShareDescription(product, stock, user, true);
+
       await Share.share({
-        title: `${productData.product.name}`,
-        message: 'Find similar prices on groceries and products on Pricetra (https://pricetra.com)',
-        url: `https://pricetra.com/products/${productData.product.id}?${urlBuilder.toString()}`,
+        title,
+        message,
+        url,
       });
     } catch (error: any) {
       Alert.alert('Could not share', error.message);
