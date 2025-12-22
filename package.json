@@ -1,7 +1,7 @@
 {
   "name": "pricetra-mobile",
   "main": "expo-router/entry",
-  "version": "1.1.15",
+  "version": "1.1.16",
   "scripts": {
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -18,7 +18,7 @@
     "eas:publish:prod:android": "eas build --platform android --auto-submit --profile production",
     "doctor": "expo-doctor",
     "install-check": "expo install --check",
-    "bump-version": "node bumpVersion.js",
+    "bump-version": "node bumpVersion.js && npm i --package-lock-only",
     "bump-version:minor": "node bumpVersion.js minor",
     "bump-version:major": "node bumpVersion.js major"
   },
