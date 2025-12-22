@@ -58,8 +58,13 @@ export default function LoginScreen() {
         accessToken: googleAccessToken,
       },
     })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          Alert.alert('Could not complete Google OAuth', error.message);
+          return;
+        }
         if (!data) return;
+
         updateJwt(data.googleOAuth.token);
       })
       .catch((err) => Alert.alert('Could not complete Google OAuth', err));
