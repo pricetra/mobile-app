@@ -137,7 +137,11 @@ export default function ProductScreen() {
     if (!productData) return;
 
     const product = productData.product;
-    const stock = (stockData?.stock ?? undefined) as Stock | undefined;
+    let stock: Stock | undefined = undefined;
+    if (stockId && stockData) {
+      stock = stockData.stock as Stock;
+    }
+
     try {
       const title = productData.product.name;
       const url = generateProductShareLink('other', product, stock, user);
@@ -275,6 +279,7 @@ export default function ProductScreen() {
     watchProductList,
     addToListLoading,
     removeFromListLoading,
+    stockId,
     stockData,
   ]);
 
