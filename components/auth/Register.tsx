@@ -1,6 +1,7 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Network from 'expo-network';
-import { CreateAccountDocument, GoogleOAuthDocument } from 'graphql-utils';
+import { AppleOAuthDocument, CreateAccountDocument, GoogleOAuthDocument } from 'graphql-utils';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Text, Alert, TextInput } from 'react-native';
 
@@ -29,6 +30,10 @@ export default function RegisterScreen() {
     fetchPolicy: 'no-cache',
   });
   const googleAuthInProgress = googleAuthLoading || googleOauthLoading;
+
+  const [appleOauth, { loading: appleOauthLoading }] = useLazyQuery(AppleOAuthDocument, {
+    fetchPolicy: 'no-cache',
+  });
 
   const fullNameInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
@@ -62,6 +67,58 @@ export default function RegisterScreen() {
     });
   }, [googleAccessToken]);
 
+  async function onAppleLogin() {
+    const isAppleAuthCompatible = await AppleAuthentication.isAvailableAsync();
+    if (!isAppleAuthCompatible) {
+      Alert.alert(
+        'Sign in with Apple is not supported',
+        'Your device does not support Apple OAuth. Please try a different authentication method.'
+      );
+      return;
+    }
+
+    AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    }).then(async ({ identityToken, ...appleExtras }) => {
+      let appleRawUser: string | undefined = undefined;
+      if (appleExtras.fullName) {
+        appleRawUser = JSON.stringify({
+          name: {
+            firstName: appleExtras.fullName.givenName,
+            lastName: appleExtras.fullName.familyName,
+          },
+          email: appleExtras.email,
+        });
+      }
+
+      if (!identityToken) {
+        Alert.alert('Apple identity token not found');
+        return;
+      }
+
+      const ipAddress = await Network.getIpAddressAsync();
+      const device = getAuthDeviceTypeFromPlatform();
+      const { data, error } = await appleOauth({
+        variables: {
+          code: identityToken,
+          appleRawUser,
+          ipAddress,
+          device,
+        },
+      });
+      if (error) {
+        Alert.alert('Could not complete Apple OAuth', error.message);
+        return;
+      }
+      if (!data) return;
+
+      updateJwt(data.appleOAuth.token);
+    });
+  }
+
   return (
     <AuthFormContainer
       title="Create your account"
@@ -80,15 +137,11 @@ export default function RegisterScreen() {
       error={error?.message}
       loading={loading}
       disabled={email.trim().length === 0 || name.trim().length === 0 || password.length === 0}
-      onPressApple={() =>
-        Alert.alert(
-          'Login method not implemented',
-          'Sign in with Apple is currently not available on the mobile app'
-        )
-      }
-      googleLoading={googleAuthInProgress}
+      onPressSubmit={onSignUp}
       onPressGoogle={startGoogleAuth}
-      onPressSubmit={onSignUp}>
+      googleLoading={googleAuthInProgress}
+      onPressApple={onAppleLogin}
+      appleLoading={appleOauthLoading}>
       <Input
         label="Email"
         onChangeText={setEmail}
