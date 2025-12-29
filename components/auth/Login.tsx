@@ -1,7 +1,8 @@
 import { useLazyQuery } from '@apollo/client';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Network from 'expo-network';
-import { GoogleOAuthDocument, LoginInternalDocument } from 'graphql-utils';
+import { AppleOAuthDocument, GoogleOAuthDocument, LoginInternalDocument } from 'graphql-utils';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -30,7 +31,10 @@ export default function LoginScreen() {
   const [googleOauth, { loading: googleOauthLoading }] = useLazyQuery(GoogleOAuthDocument, {
     fetchPolicy: 'no-cache',
   });
-  const googleAuthInProgress = googleAuthLoading || googleOauthLoading;
+  const [appleOauth, { loading: appleOauthLoading }] = useLazyQuery(AppleOAuthDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const googleAuthInProgress = googleAuthLoading || googleOauthLoading || appleOauthLoading;
 
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -53,22 +57,81 @@ export default function LoginScreen() {
   useEffect(() => {
     if (!googleAccessToken) return;
 
-    googleOauth({
-      variables: {
-        accessToken: googleAccessToken,
-      },
-    })
-      .then(({ data, error }) => {
-        if (error) {
-          Alert.alert('Could not complete Google OAuth', error.message);
-          return;
-        }
-        if (!data) return;
-
-        updateJwt(data.googleOAuth.token);
+    Network.getIpAddressAsync().then((ipAddress) => {
+      const device = getAuthDeviceTypeFromPlatform();
+      googleOauth({
+        variables: {
+          accessToken: googleAccessToken,
+          ipAddress,
+          device,
+        },
       })
-      .catch((err) => Alert.alert('Could not complete Google OAuth', err));
+        .then(({ data, error }) => {
+          if (error) {
+            Alert.alert('Could not complete Google OAuth', error.message);
+            return;
+          }
+          if (!data) return;
+
+          updateJwt(data.googleOAuth.token);
+        })
+        .catch((err) => Alert.alert('Could not complete Google OAuth', err));
+    });
   }, [googleAccessToken]);
+
+  async function onAppleLogin() {
+    const isAppleAuthCompatible = await AppleAuthentication.isAvailableAsync();
+    if (!isAppleAuthCompatible) {
+      Alert.alert(
+        'Sign in with Apple is not supported',
+        'Your device does not support Apple OAuth. Please try a different authentication method.'
+      );
+      return;
+    }
+
+    AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    }).then(async ({ identityToken, ...appleExtras }) => {
+      console.log('id token: ', identityToken);
+
+      let appleRawUser: string | undefined = undefined;
+      if (appleExtras.fullName) {
+        appleRawUser = JSON.stringify({
+          name: {
+            firstName: appleExtras.fullName.givenName,
+            lastName: appleExtras.fullName.familyName,
+          },
+          email: appleExtras.email,
+        });
+      }
+
+      if (!identityToken) {
+        Alert.alert('Apple identity token not found');
+        return;
+      }
+
+      const ipAddress = await Network.getIpAddressAsync();
+      const device = getAuthDeviceTypeFromPlatform();
+      const { data, error } = await appleOauth({
+        variables: {
+          code: identityToken,
+          appleRawUser,
+          ipAddress,
+          device,
+        },
+      });
+      if (error) {
+        Alert.alert('Could not complete Apple OAuth', error.message);
+        return;
+      }
+      if (!data) return;
+
+      updateJwt(data.appleOAuth.token);
+    });
+  }
 
   async function onLogin() {
     const ipAddress = await Network.getIpAddressAsync();
@@ -96,12 +159,7 @@ export default function LoginScreen() {
       error={error?.message}
       loading={loading}
       disabled={email.trim().length === 0 || password.length === 0}
-      onPressApple={() =>
-        Alert.alert(
-          'Login method not implemented',
-          'Sign in with Apple is currently not available on the mobile app'
-        )
-      }
+      onPressApple={onAppleLogin}
       googleLoading={googleAuthInProgress}
       onPressGoogle={startGoogleAuth}
       onPressSubmit={onLogin}>
