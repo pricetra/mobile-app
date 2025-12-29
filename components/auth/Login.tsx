@@ -1,7 +1,8 @@
 import { useLazyQuery } from '@apollo/client';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Network from 'expo-network';
-import { GoogleOAuthDocument, LoginInternalDocument } from 'graphql-utils';
+import { AppleOAuthDocument, GoogleOAuthDocument, LoginInternalDocument } from 'graphql-utils';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -16,9 +17,12 @@ import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
   const { setScreen, email: screenEmail, emailVerified } = useContext(AuthModalContext);
-  const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument, {
-    fetchPolicy: 'no-cache',
-  });
+  const [login, { loading: internalLoginLoading, error: internalLoginError }] = useLazyQuery(
+    LoginInternalDocument,
+    {
+      fetchPolicy: 'no-cache',
+    }
+  );
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -28,6 +32,9 @@ export default function LoginScreen() {
     accessToken: googleAccessToken,
   } = useGoogleAuth();
   const [googleOauth, { loading: googleOauthLoading }] = useLazyQuery(GoogleOAuthDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const [appleOauth, { loading: appleOauthLoading }] = useLazyQuery(AppleOAuthDocument, {
     fetchPolicy: 'no-cache',
   });
   const googleAuthInProgress = googleAuthLoading || googleOauthLoading;
@@ -40,34 +47,28 @@ export default function LoginScreen() {
   }, [screenEmail]);
 
   useEffect(() => {
-    if (!data) return;
-
-    const { token, user } = data.login;
-    if (!user.active) {
-      setScreen(AuthScreenType.EMAIL_VERIFICATION, user.email);
-      return;
-    }
-    updateJwt(token);
-  }, [data]);
-
-  useEffect(() => {
     if (!googleAccessToken) return;
 
-    googleOauth({
-      variables: {
-        accessToken: googleAccessToken,
-      },
-    })
-      .then(({ data, error }) => {
-        if (error) {
-          Alert.alert('Could not complete Google OAuth', error.message);
-          return;
-        }
-        if (!data) return;
-
-        updateJwt(data.googleOAuth.token);
+    Network.getIpAddressAsync().then((ipAddress) => {
+      const device = getAuthDeviceTypeFromPlatform();
+      googleOauth({
+        variables: {
+          accessToken: googleAccessToken,
+          ipAddress,
+          device,
+        },
       })
-      .catch((err) => Alert.alert('Could not complete Google OAuth', err));
+        .then(({ data, error }) => {
+          if (error) {
+            Alert.alert('Could not complete Google OAuth', error.message);
+            return;
+          }
+          if (!data) return;
+
+          updateJwt(data.googleOAuth.token);
+        })
+        .catch((err) => Alert.alert('Could not complete Google OAuth', err));
+    });
   }, [googleAccessToken]);
 
   async function onLogin() {
@@ -75,6 +76,71 @@ export default function LoginScreen() {
     const device = getAuthDeviceTypeFromPlatform();
     login({
       variables: { email, password, ipAddress, device },
+    }).then(({ data }) => {
+      if (!data) return;
+
+      const { user, token } = data.login;
+      if (!user.active) {
+        setScreen(AuthScreenType.EMAIL_VERIFICATION, user.email);
+        return;
+      }
+      updateJwt(token);
+    });
+  }
+
+  async function onGoogleLogin() {
+    startGoogleAuth();
+  }
+
+  async function onAppleLogin() {
+    const isAppleAuthCompatible = await AppleAuthentication.isAvailableAsync();
+    if (!isAppleAuthCompatible) {
+      Alert.alert(
+        'Sign in with Apple is not supported',
+        'Your device does not support Apple OAuth. Please try a different authentication method.'
+      );
+      return;
+    }
+
+    AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    }).then(async ({ identityToken, ...appleExtras }) => {
+      let appleRawUser: string | undefined = undefined;
+      if (appleExtras.fullName) {
+        appleRawUser = JSON.stringify({
+          name: {
+            firstName: appleExtras.fullName.givenName,
+            lastName: appleExtras.fullName.familyName,
+          },
+          email: appleExtras.email,
+        });
+      }
+
+      if (!identityToken) {
+        Alert.alert('Apple identity token not found');
+        return;
+      }
+
+      const ipAddress = await Network.getIpAddressAsync();
+      const device = getAuthDeviceTypeFromPlatform();
+      const { data, error } = await appleOauth({
+        variables: {
+          code: identityToken,
+          appleRawUser,
+          ipAddress,
+          device,
+        },
+      });
+      if (error) {
+        Alert.alert('Could not complete Apple OAuth', error.message);
+        return;
+      }
+      if (!data) return;
+
+      updateJwt(data.appleOAuth.token);
     });
   }
 
@@ -93,19 +159,15 @@ export default function LoginScreen() {
           </Text>
         </Text>
       }
-      error={error?.message}
-      loading={loading}
+      error={internalLoginError?.message}
+      loading={internalLoginLoading}
       disabled={email.trim().length === 0 || password.length === 0}
-      onPressApple={() =>
-        Alert.alert(
-          'Login method not implemented',
-          'Sign in with Apple is currently not available on the mobile app'
-        )
-      }
+      onPressApple={onAppleLogin}
+      appleLoading={appleOauthLoading}
       googleLoading={googleAuthInProgress}
-      onPressGoogle={startGoogleAuth}
+      onPressGoogle={onGoogleLogin}
       onPressSubmit={onLogin}>
-      {!error && emailVerified && (
+      {!internalLoginError && emailVerified && (
         <View className="rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">
           <View className="flex flex-row gap-3">
             <MaterialCommunityIcons name="email-check" size={24} color="#396a12" />
@@ -131,7 +193,7 @@ export default function LoginScreen() {
         keyboardType="email-address"
         autoCorrect
         autoComplete="email"
-        editable={!loading}
+        editable={!internalLoginLoading}
         label="Email"
         onSubmitEditing={() => passwordInputRef.current?.focus()}
       />
@@ -147,7 +209,7 @@ export default function LoginScreen() {
           secureTextEntry
           autoCorrect={false}
           autoComplete="password"
-          editable={!loading}
+          editable={!internalLoginLoading}
           label="Password"
           onSubmitEditing={() => onLogin()}
         />

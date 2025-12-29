@@ -1,4 +1,4 @@
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { ReactNode } from 'react';
 import {
@@ -22,11 +22,13 @@ export type AuthFormContainerProps = {
   disabled?: boolean;
   loading?: boolean;
   extras?: ReactNode;
-  googleLoading?: boolean;
   appleLoading?: boolean;
+  googleLoading?: boolean;
+  yahooLoading?: boolean;
   onPressSubmit?: () => void;
   onPressApple?: () => void;
   onPressGoogle?: () => void;
+  onPressYahoo?: () => void;
 };
 
 export default function AuthFormContainer({
@@ -38,11 +40,13 @@ export default function AuthFormContainer({
   disabled,
   loading,
   extras,
-  googleLoading,
   appleLoading,
+  googleLoading,
+  yahooLoading,
   onPressSubmit,
   onPressApple,
   onPressGoogle,
+  onPressYahoo,
 }: AuthFormContainerProps) {
   return (
     <ScrollView className="h-screen w-screen bg-white p-5 sm:bg-gray-100">
@@ -98,7 +102,12 @@ export default function AuthFormContainer({
                             {appleLoading ? (
                               <ActivityIndicator color="#000" />
                             ) : (
-                              <AntDesign name="apple1" size={20} color="black" />
+                              <AntDesign
+                                name="apple1"
+                                size={20}
+                                style={{ width: 20 }}
+                                color="black"
+                              />
                             )}
                           </TouchableOpacity>
                           <TouchableOpacity
@@ -113,6 +122,23 @@ export default function AuthFormContainer({
                               />
                             )}
                           </TouchableOpacity>
+
+                          {onPressYahoo && (
+                            <TouchableOpacity
+                              onPress={onPressYahoo}
+                              className="flex flex-1 flex-row justify-center rounded-xl border-[1px] border-gray-200 bg-white px-10 py-3">
+                              {yahooLoading ? (
+                                <ActivityIndicator color="#000" />
+                              ) : (
+                                <FontAwesome5
+                                  name="yahoo"
+                                  size={20}
+                                  style={{ width: 20 }}
+                                  color="#410093"
+                                />
+                              )}
+                            </TouchableOpacity>
+                          )}
                         </View>
                       </>
                     )}
