@@ -17,6 +17,7 @@ export default {
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
+    usesAppleSignIn: true,
   },
   android: {
     icon: IS_DEV ? './assets/images/adaptive-icon_dev.png' : './assets/images/adaptive-icon.png',
@@ -66,6 +67,7 @@ export default {
       },
     ],
     'expo-asset',
+    'expo-apple-authentication',
   ],
   experiments: {
     typedRoutes: true,
