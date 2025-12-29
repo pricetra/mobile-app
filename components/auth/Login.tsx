@@ -17,9 +17,12 @@ import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 export default function LoginScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
   const { setScreen, email: screenEmail, emailVerified } = useContext(AuthModalContext);
-  const [login, { data, loading, error }] = useLazyQuery(LoginInternalDocument, {
-    fetchPolicy: 'no-cache',
-  });
+  const [login, { loading: internalLoginLoading, error: internalLoginError }] = useLazyQuery(
+    LoginInternalDocument,
+    {
+      fetchPolicy: 'no-cache',
+    }
+  );
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -34,7 +37,7 @@ export default function LoginScreen() {
   const [appleOauth, { loading: appleOauthLoading }] = useLazyQuery(AppleOAuthDocument, {
     fetchPolicy: 'no-cache',
   });
-  const googleAuthInProgress = googleAuthLoading || googleOauthLoading || appleOauthLoading;
+  const googleAuthInProgress = googleAuthLoading || googleOauthLoading;
 
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -42,17 +45,6 @@ export default function LoginScreen() {
     if (!screenEmail) return;
     setEmail(screenEmail);
   }, [screenEmail]);
-
-  useEffect(() => {
-    if (!data) return;
-
-    const { token, user } = data.login;
-    if (!user.active) {
-      setScreen(AuthScreenType.EMAIL_VERIFICATION, user.email);
-      return;
-    }
-    updateJwt(token);
-  }, [data]);
 
   useEffect(() => {
     if (!googleAccessToken) return;
@@ -79,6 +71,27 @@ export default function LoginScreen() {
     });
   }, [googleAccessToken]);
 
+  async function onLogin() {
+    const ipAddress = await Network.getIpAddressAsync();
+    const device = getAuthDeviceTypeFromPlatform();
+    login({
+      variables: { email, password, ipAddress, device },
+    }).then(({ data }) => {
+      if (!data) return;
+
+      const { user, token } = data.login;
+      if (!user.active) {
+        setScreen(AuthScreenType.EMAIL_VERIFICATION, user.email);
+        return;
+      }
+      updateJwt(token);
+    });
+  }
+
+  async function onGoogleLogin() {
+    startGoogleAuth();
+  }
+
   async function onAppleLogin() {
     const isAppleAuthCompatible = await AppleAuthentication.isAvailableAsync();
     if (!isAppleAuthCompatible) {
@@ -95,8 +108,6 @@ export default function LoginScreen() {
         AppleAuthentication.AppleAuthenticationScope.EMAIL,
       ],
     }).then(async ({ identityToken, ...appleExtras }) => {
-      console.log('id token: ', identityToken);
-
       let appleRawUser: string | undefined = undefined;
       if (appleExtras.fullName) {
         appleRawUser = JSON.stringify({
@@ -133,14 +144,6 @@ export default function LoginScreen() {
     });
   }
 
-  async function onLogin() {
-    const ipAddress = await Network.getIpAddressAsync();
-    const device = getAuthDeviceTypeFromPlatform();
-    login({
-      variables: { email, password, ipAddress, device },
-    });
-  }
-
   return (
     <AuthFormContainer
       title="Welcome back"
@@ -156,14 +159,15 @@ export default function LoginScreen() {
           </Text>
         </Text>
       }
-      error={error?.message}
-      loading={loading}
+      error={internalLoginError?.message}
+      loading={internalLoginLoading}
       disabled={email.trim().length === 0 || password.length === 0}
       onPressApple={onAppleLogin}
+      appleLoading={appleOauthLoading}
       googleLoading={googleAuthInProgress}
-      onPressGoogle={startGoogleAuth}
+      onPressGoogle={onGoogleLogin}
       onPressSubmit={onLogin}>
-      {!error && emailVerified && (
+      {!internalLoginError && emailVerified && (
         <View className="rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">
           <View className="flex flex-row gap-3">
             <MaterialCommunityIcons name="email-check" size={24} color="#396a12" />
@@ -189,7 +193,7 @@ export default function LoginScreen() {
         keyboardType="email-address"
         autoCorrect
         autoComplete="email"
-        editable={!loading}
+        editable={!internalLoginLoading}
         label="Email"
         onSubmitEditing={() => passwordInputRef.current?.focus()}
       />
@@ -205,7 +209,7 @@ export default function LoginScreen() {
           secureTextEntry
           autoCorrect={false}
           autoComplete="password"
-          editable={!loading}
+          editable={!internalLoginLoading}
           label="Password"
           onSubmitEditing={() => onLogin()}
         />

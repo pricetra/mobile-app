@@ -1,4 +1,5 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
+import * as Network from 'expo-network';
 import { CreateAccountDocument, GoogleOAuthDocument } from 'graphql-utils';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Text, Alert, TextInput } from 'react-native';
@@ -9,6 +10,7 @@ import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
+import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 
 export default function RegisterScreen() {
   const { updateJwt } = useContext(JwtStoreContext);
@@ -43,16 +45,21 @@ export default function RegisterScreen() {
   useEffect(() => {
     if (!googleAccessToken) return;
 
-    googleOauth({
-      variables: {
-        accessToken: googleAccessToken,
-      },
-    })
-      .then(({ data }) => {
-        if (!data) return;
-        updateJwt(data.googleOAuth.token);
+    const device = getAuthDeviceTypeFromPlatform();
+    Network.getIpAddressAsync().then((ipAddress) => {
+      googleOauth({
+        variables: {
+          accessToken: googleAccessToken,
+          ipAddress,
+          device,
+        },
       })
-      .catch((err) => Alert.alert('Could not complete Google OAuth', err));
+        .then(({ data }) => {
+          if (!data) return;
+          updateJwt(data.googleOAuth.token);
+        })
+        .catch((err) => Alert.alert('Could not complete Google OAuth', err));
+    });
   }, [googleAccessToken]);
 
   return (
