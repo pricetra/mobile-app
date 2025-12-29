@@ -196,8 +196,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         allGroceryLists,
         updateUser: (updatedUser) => setUser(updatedUser),
         logout: () => {
-          logout().then(({ data, errors }) => {
-            if (errors || !data || !data.logout) return;
+          logout().finally(() => {
             removeStoredJwtAndRedirect();
           });
         },
