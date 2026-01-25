@@ -10,8 +10,10 @@ import {
   ListType,
   LogoutDocument,
   MeDocument,
+  MyStoreUserDocument,
   PostAuthUserDataDocument,
   RegisterExpoPushTokenDocument,
+  StoreUser,
   User,
 } from 'graphql-utils';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
@@ -38,6 +40,7 @@ export type UserContextType = {
   user: User;
   lists: UserListsType;
   allGroceryLists?: GroceryListsType;
+  myStoreUsers?: StoreUser[];
   token: string;
   updateUser: (updatedUser: User) => void;
   logout: () => void;
@@ -76,6 +79,11 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     fetchPolicy: 'no-cache',
   });
   const [loading, setLoading] = useState(true);
+
+  const [getMyStoreUsers, { data: myStoreUsersData }] = useLazyQuery(MyStoreUserDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const [myStoreUsers, setMyStoreUsers] = useState<StoreUser[]>();
 
   function removeStoredJwtAndRedirect() {
     removeJwt().finally(() => {
@@ -127,6 +135,13 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   }, [postAuthUserData?.groceryLists]);
 
   useEffect(() => {
+    if (!myStoreUsersData) return;
+    if (myStoreUsersData.myStoreUsers.length === 0) return;
+
+    setMyStoreUsers(myStoreUsersData.myStoreUsers as StoreUser[]);
+  }, [myStoreUsersData]);
+
+  useEffect(() => {
     if (!appVersionCheckData || appVersionCheckData.checkAppVersion) return;
 
     Alert.alert(
@@ -165,6 +180,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
         fetchAndRegisterExpoPushToken(userData.me as User);
         await getPostAuthUserData({ context: { ...ctx } });
+        getMyStoreUsers({ context: { ...ctx } });
       })
       .catch((_e) => removeStoredJwtAndRedirect())
       .finally(() => setLoading(false));
@@ -194,6 +210,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         user,
         lists: userLists ?? { allLists: [], favorites: {} as List, watchList: {} as List },
         allGroceryLists,
+        myStoreUsers,
         updateUser: (updatedUser) => setUser(updatedUser),
         logout: () => {
           logout().finally(() => {
