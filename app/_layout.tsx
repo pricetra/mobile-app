@@ -8,6 +8,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import * as WebBrowser from 'expo-web-browser';
 import { useContext, useEffect } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
@@ -39,6 +40,8 @@ const LIGHT_THEME: Theme = {
   ...DefaultTheme,
   colors: NAV_THEME.light,
 };
+
+WebBrowser.maybeCompleteAuthSession();
 
 function RootStack() {
   const { jwt, loading } = useContext(JwtStoreContext);
