@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
+import { Stock } from 'graphql-utils';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
-import { Stock } from 'graphql-utils';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
 import { createCloudinaryUrl } from '@/lib/files';
@@ -104,7 +104,7 @@ export default function StockItemMini({
         <View className="flex flex-col gap-1">
           {stock.latestPrice?.expiresAt && (
             <Text>
-              <Text className="bg-yellow-200 text-[9px] italic">
+              <Text className="bg-blue-200/50 text-[9px] italic">
                 Valid until{' '}
                 <Text className="font-bold">{dayjs(stock.latestPrice.expiresAt).format('LL')}</Text>
               </Text>
@@ -113,7 +113,7 @@ export default function StockItemMini({
 
           {stock.latestPrice?.condition && (
             <Text>
-              <Text className="bg-yellow-200 text-[9px] italic">
+              <Text className="bg-yellow-200/50 text-[9px] italic">
                 *{stock.latestPrice.condition}
               </Text>
             </Text>
