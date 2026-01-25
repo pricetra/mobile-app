@@ -3,8 +3,22 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
+import {
+  User,
+  GetAllUsersDocument,
+  UpdateProfileDocument,
+  UpdateUser,
+  MeDocument,
+} from 'graphql-utils';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View, Image as NativeImage, Platform } from 'react-native';
+import {
+  TouchableOpacity,
+  View,
+  Image as NativeImage,
+  Platform,
+  Text,
+  Linking,
+} from 'react-native';
 
 import Label from '../ui/Label';
 import Textarea from '../ui/Textarea';
@@ -13,13 +27,6 @@ import Btn from '@/components/ui/Btn';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
-import {
-  User,
-  GetAllUsersDocument,
-  UpdateProfileDocument,
-  UpdateUser,
-  MeDocument,
-} from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { diffObjects } from '@/lib/utils';
 
@@ -196,7 +203,33 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
             </View>
           </View>
 
-          <View className="h-[100px]" />
+          <View className="mt-16" id="danger-zone">
+            <View className="rounded-xl border border-red-600/30 bg-red-100/20 p-5">
+              <Text className="mb-5 text-2xl font-bold text-red-700">Danger Zone</Text>
+
+              <View className="flex flex-col justify-between gap-5">
+                <View className="flex-1">
+                  <Text className="text-lg font-semibold text-black">
+                    Permanently delete my account
+                  </Text>
+                  <Text className="mt-2 text-sm text-gray-800">
+                    This action cannot be undone. All your personal data will be removed, and your
+                    user information will be disassociated from your account.
+                  </Text>
+                </View>
+                <View>
+                  <Btn
+                    onPress={() => Linking.openURL('https://pricetra.com/profile/delete-account')}
+                    bgColor="bg-red-600"
+                    className="float-right"
+                    text="Review and Delete"
+                  />
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View className="h-[200px]" />
         </View>
       )}
     </Formik>
