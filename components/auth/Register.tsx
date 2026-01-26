@@ -1,7 +1,12 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Network from 'expo-network';
-import { AppleOAuthDocument, CreateAccountDocument, GoogleOAuthDocument } from 'graphql-utils';
+import {
+  AppleOAuthDocument,
+  CreateAccountDocument,
+  GoogleOAuthDocument,
+  YahooOAuthDocument,
+} from 'graphql-utils';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Text, Alert, TextInput } from 'react-native';
 
@@ -11,6 +16,7 @@ import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
+import useYahooAuth from '@/hooks/useYahooAuth';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 
 export default function RegisterScreen() {
@@ -30,8 +36,11 @@ export default function RegisterScreen() {
     fetchPolicy: 'no-cache',
   });
   const googleAuthInProgress = googleAuthLoading || googleOauthLoading;
-
   const [appleOauth, { loading: appleOauthLoading }] = useLazyQuery(AppleOAuthDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const { yahooOauthRequest, yahooOauthResponse, initiateYahooPromptAsync } = useYahooAuth();
+  const [yahooOauth, { loading: yahooOauthLoading }] = useLazyQuery(YahooOAuthDocument, {
     fetchPolicy: 'no-cache',
   });
 
@@ -66,6 +75,36 @@ export default function RegisterScreen() {
         .catch((err) => Alert.alert('Could not complete Google OAuth', err));
     });
   }, [googleAccessToken]);
+
+  useEffect(() => {
+    if (!yahooOauthRequest || !yahooOauthResponse) return;
+    if (yahooOauthResponse.type !== 'success') {
+      Alert.alert('Yahoo OAuth failed', 'Could not authenticate with Yahoo.');
+      return;
+    }
+
+    Network.getIpAddressAsync().then((ipAddress) => {
+      const device = getAuthDeviceTypeFromPlatform();
+      yahooOauth({
+        variables: {
+          code: yahooOauthResponse.params.code,
+          codeVerifier: yahooOauthRequest.codeVerifier,
+          ipAddress,
+          device,
+        },
+      })
+        .then(({ data, error }) => {
+          if (error) {
+            Alert.alert('Could not complete Yahoo OAuth', error.message);
+            return;
+          }
+          if (!data) return;
+
+          updateJwt(data.yahooOAuth.token);
+        })
+        .catch((err) => Alert.alert('Could not complete Yahoo OAuth', err));
+    });
+  }, [yahooOauthRequest, yahooOauthResponse]);
 
   async function onAppleLogin() {
     const isAppleAuthCompatible = await AppleAuthentication.isAvailableAsync();
@@ -141,7 +180,9 @@ export default function RegisterScreen() {
       onPressGoogle={startGoogleAuth}
       googleLoading={googleAuthInProgress}
       onPressApple={onAppleLogin}
-      appleLoading={appleOauthLoading}>
+      appleLoading={appleOauthLoading}
+      onPressYahoo={() => initiateYahooPromptAsync()}
+      yahooLoading={yahooOauthLoading}>
       <Input
         label="Email"
         onChangeText={setEmail}
