@@ -1,11 +1,10 @@
 import { useLazyQuery } from '@apollo/client';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-
-import BranchItemWithLogo from './BranchItemWithLogo';
-
 import { Branch, GetAllBranchListsByListIdDocument } from 'graphql-utils';
+import { useEffect } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
+import BranchItemWithLogo, { BranchItemWithLogoLoading } from './BranchItemWithLogo';
 
 export type BranchListViewProps = {
   listId: string;
@@ -23,11 +22,17 @@ export default function BranchListView({ listId }: BranchListViewProps) {
   }, [listId]);
 
   return (
-    <ScrollView className="p-5">
+    <ScrollView className="p-5 pt-10">
       {loading && (
-        <View className="flex h-[100px] items-center justify-center">
-          <ActivityIndicator color="black" />
-        </View>
+        <>
+          {Array(10)
+            .fill(0)
+            .map((_, i) => (
+              <View className="mb-10" key={`branch-loading-${i}`}>
+                <BranchItemWithLogoLoading />
+              </View>
+            ))}
+        </>
       )}
       {error && <Text>{error.message}</Text>}
       {data?.getAllBranchListsByListId.map((bList) => {
