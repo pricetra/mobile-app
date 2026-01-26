@@ -11,18 +11,20 @@ const yahooOAuthRedirectUri = AuthSession.makeRedirectUri({
 });
 
 export default function useYahooAuth() {
-  const [, yahooOAuthResponse, initiateYahooPromptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId: process.env.EXPO_PUBLIC_YAHOO_OAUTH_CLIENT_ID!,
-      redirectUri: yahooOAuthRedirectUri,
-      responseType: AuthSession.ResponseType.Code,
-      scopes: ['openid'],
-    },
-    yahooOAuthDiscovery
-  );
+  const [yahooOauthRequest, yahooOauthResponse, initiateYahooPromptAsync] =
+    AuthSession.useAuthRequest(
+      {
+        clientId: process.env.EXPO_PUBLIC_YAHOO_OAUTH_CLIENT_ID!,
+        redirectUri: yahooOAuthRedirectUri,
+        responseType: AuthSession.ResponseType.Code,
+        scopes: ['openid'],
+      },
+      yahooOAuthDiscovery
+    );
 
   return {
-    yahooOAuthResponse,
+    yahooOauthRequest,
+    yahooOauthResponse,
     initiateYahooPromptAsync,
-  }
+  };
 }
