@@ -23,7 +23,7 @@ export default function AllStocksView({ product, closeModal }: AllStocksViewProp
     variables: {
       paginator: {
         page,
-        limit: 50,
+        limit: 30,
       },
       productId: product.id,
       location: currentLocation.locationInput,
