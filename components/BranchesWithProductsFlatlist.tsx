@@ -23,10 +23,12 @@ import { FlatGrid } from 'react-native-super-grid';
 
 import BranchProductItem, { BranchProductItemLoading } from './BranchProductItem';
 import HorizontalShowMoreButton from './HorizontalShowMoreButton';
+import MyBranchPanel from './MyBranchPanel';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 import StoreMini, { StoreMiniLoading, StoreMiniShowMore } from './StoreMini';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
+import useStoreUser from '@/hooks/useStoreUser';
 
 export type BranchesWithProductsFlatlistProps = {
   branches?: Branch[];
@@ -52,6 +54,7 @@ export default function BranchesWithProductsFlatlist({
   loading,
   resetting,
 }: BranchesWithProductsFlatlistProps) {
+  const myStoreUserBranches = useStoreUser();
   const [refreshing, setRefreshing] = useState(false);
   const params = useLocalSearchParams<SearchRouteParams>();
   const paramsBuilder = useMemo(() => new URLSearchParams(params), [params]);
@@ -88,6 +91,10 @@ export default function BranchesWithProductsFlatlist({
                   renderItem={() => <StoreMiniLoading />}
                   style={{ marginBottom: 15 }}
                 />
+              )}
+
+              {myStoreUserBranches && myStoreUserBranches.length > 0 && (
+                <MyBranchPanel myStoreUserBranches={myStoreUserBranches} />
               )}
             </>
           )}
