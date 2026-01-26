@@ -28,7 +28,8 @@ import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductIt
 import StoreMini, { StoreMiniLoading, StoreMiniShowMore } from './StoreMini';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
-import useStoreUser from '@/hooks/useStoreUser';
+import { useAuth } from '@/context/UserContext';
+import useStoreUserBranches from '@/hooks/useStoreUser';
 
 export type BranchesWithProductsFlatlistProps = {
   branches?: Branch[];
@@ -54,7 +55,7 @@ export default function BranchesWithProductsFlatlist({
   loading,
   resetting,
 }: BranchesWithProductsFlatlistProps) {
-  const myStoreUserBranches = useStoreUser();
+  const { myStoreUsers } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const params = useLocalSearchParams<SearchRouteParams>();
   const paramsBuilder = useMemo(() => new URLSearchParams(params), [params]);
@@ -93,9 +94,7 @@ export default function BranchesWithProductsFlatlist({
                 />
               )}
 
-              {myStoreUserBranches && myStoreUserBranches.length > 0 && (
-                <MyBranchPanel myStoreUserBranches={myStoreUserBranches} />
-              )}
+              {myStoreUsers && <MyBranchPanel />}
             </>
           )}
         </>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { useAuth } from '@/context/UserContext';
 
-export default function useStoreUser() {
+export default function useStoreUserBranches() {
   const { myStoreUsers } = useAuth();
   const [allBranches] = useLazyQuery(AllBranchesDocument, {
     fetchPolicy: 'no-cache',

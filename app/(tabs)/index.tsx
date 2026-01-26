@@ -23,7 +23,7 @@ import { useHeader } from '@/context/HeaderContext';
 import { DEFAULT_SEARCH_RADIUS, useCurrentLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/UserContext';
 import useLocationService from '@/hooks/useLocationService';
-import useStoreUser from '@/hooks/useStoreUser';
+import useStoreUserBranches from '@/hooks/useStoreUser';
 import { getRandomElement } from '@/lib/utils';
 
 const BRANCH_LIMIT = 15;
@@ -39,7 +39,7 @@ const searchTaglines = [
 
 export default function HomeScreen() {
   const { user } = useAuth();
-  const myStoreUserBranches = useStoreUser();
+  const myStoreUserBranches = useStoreUserBranches();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
   const bottomTabBarHeight = 45;
 

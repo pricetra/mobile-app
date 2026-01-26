@@ -1,19 +1,19 @@
-import { Branch } from 'graphql-utils';
 import { View, Text, FlatList } from 'react-native';
 
 import MyBranchPanelItem from './MyBranchPanelItem';
 
+import useStoreUserBranches from '@/hooks/useStoreUser';
 import { cn } from '@/lib/utils';
 
-export type MyBranchPanelProps = {
-  myStoreUserBranches: Branch[];
-};
+export default function MyBranchPanel() {
+  const myStoreUserBranches = useStoreUserBranches();
 
-export default function MyBranchPanel({ myStoreUserBranches }: MyBranchPanelProps) {
+  if (!myStoreUserBranches || myStoreUserBranches.length === 0) return <></>;
+
   return (
     <View className="mb-10">
       <View className="mb-3 px-5">
-        <Text className="text-lg font-bold">My Stores</Text>
+        <Text className="text-lg font-bold">Manage My Stores</Text>
       </View>
 
       <FlatList

@@ -17,7 +17,7 @@ export default function MyBranchPanelItem({ branch }: MyBranchPanelItemProps) {
           relativeToDirectory: false,
         });
       }}
-      className="min-h-28 rounded-lg bg-gray-100 p-5"
+      className="min-h-28 rounded-xl bg-gray-100 p-5"
       style={{ width: 300 }}>
       <View className="flex flex-1 flex-row gap-4">
         <Image
