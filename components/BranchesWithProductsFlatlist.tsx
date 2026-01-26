@@ -29,7 +29,6 @@ import StoreMini, { StoreMiniLoading, StoreMiniShowMore } from './StoreMini';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
 import { useAuth } from '@/context/UserContext';
-import useStoreUserBranches from '@/hooks/useStoreUser';
 
 export type BranchesWithProductsFlatlistProps = {
   branches?: Branch[];
