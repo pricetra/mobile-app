@@ -1,5 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import { Feather } from '@expo/vector-icons';
+import { Category, CategorySearchDocument, GetCategoryDocument } from 'graphql-utils';
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
@@ -8,7 +9,6 @@ import CategoryCombobox, { CategoryComboboxData } from './CategoryCombobox';
 import Input from '../ui/Input';
 
 import Btn from '@/components/ui/Btn';
-import { Category, CategorySearchDocument, GetCategoryDocument } from 'graphql-utils';
 import { categoriesFromChild } from '@/lib/utils';
 
 export type CategorySelectorProps = {

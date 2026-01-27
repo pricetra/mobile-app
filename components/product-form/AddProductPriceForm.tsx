@@ -340,7 +340,7 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
         </View>
       </View>
 
-      <View className='flex-row gap-5 items-center justify-between'>
+      <View className="flex-row items-center justify-between gap-5">
         <Checkbox
           label="Sale"
           checked={formik.values.sale}
