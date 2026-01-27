@@ -282,6 +282,7 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
     formikContext.setValues({
       ...formikContext.values,
       amount: latestPrice.amount,
+      outOfStock: latestPrice.outOfStock,
       sale: latestPrice.sale,
       originalPrice: latestPrice.originalPrice,
       condition: latestPrice.condition,
@@ -339,19 +340,29 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
         </View>
       </View>
 
-      <Checkbox
-        label="Sale"
-        checked={formik.values.sale}
-        onCheckedChange={(c) => {
-          formik.setFieldValue('sale', c);
-          if (!c) {
-            // set sale values to zero
-            formik.setFieldValue('originalPrice', undefined);
-            formik.setFieldValue('condition', undefined);
-            formik.validateForm();
-          }
-        }}
-      />
+      <View className='flex-row gap-5 items-center justify-between'>
+        <Checkbox
+          label="Sale"
+          checked={formik.values.sale}
+          onCheckedChange={(c) => {
+            formik.setFieldValue('sale', c);
+            if (!c) {
+              // set sale values to zero
+              formik.setFieldValue('originalPrice', undefined);
+              formik.setFieldValue('condition', undefined);
+              formik.validateForm();
+            }
+          }}
+        />
+
+        <Checkbox
+          label="Out of stock"
+          checked={formik.values.outOfStock ?? false}
+          onCheckedChange={(c) => {
+            formik.setFieldValue('outOfStock', c);
+          }}
+        />
+      </View>
 
       {formik.values.sale && (
         <View>
