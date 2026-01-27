@@ -101,7 +101,7 @@ export default function StockFull({
       <View>
         <View
           className="flex w-fit flex-col items-end gap-0.5 py-3"
-          style={{ opacity: stock.latestPrice?.outOfStock ? 0.5 : 1 }}>
+          style={{ opacity: stock.latestPrice?.outOfStock || stock.available === false ? 0.5 : 1 }}>
           {stock?.latestPrice?.sale && !isExpired && stock.latestPrice.originalPrice && (
             <Text className="text text-right line-through color-red-700">
               {currencyFormat(stock.latestPrice.originalPrice)}

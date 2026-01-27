@@ -285,7 +285,7 @@ type PriceFormProps = {
 function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
   const formikContext = useFormikContext<CreatePrice>();
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [available, setAvailable] = useState(stock?.available ?? false);
+  const [available, setAvailable] = useState(true);
   const { myStoreUsers } = useAuth();
 
   const isStoreUser = useMemo(() => {
@@ -312,6 +312,12 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
       unitType: latestPrice.unitType,
     });
   }, [latestPrice]);
+
+  useEffect(() => {
+    if (!stock) return;
+
+    setAvailable(stock.available);
+  }, [stock]);
 
   return (
     <>
@@ -389,13 +395,10 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
         {stock && isStoreUser && (
           <Checkbox
             label="Unavailable"
-            checked={available}
+            checked={!available}
             onCheckedChange={(c) => {
-              if (c === available) return;
-
               setAvailable(c);
-              formik.setFieldValue('available', c).then(() => {
-                formik.handleSubmit();
+              formik.setFieldValue('available', !c).then(() => {
                 formik.submitForm();
               });
             }}
