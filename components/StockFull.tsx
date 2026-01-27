@@ -98,34 +98,56 @@ export default function StockFull({
         </View>
       </View>
 
-      <View className="flex w-fit flex-col items-end gap-0.5 py-3">
-        {stock?.latestPrice?.sale && !isExpired && stock.latestPrice.originalPrice && (
-          <Text className="text text-right line-through color-red-700">
-            {currencyFormat(stock.latestPrice.originalPrice)}
-          </Text>
-        )}
+      <View>
+        <View
+          className="flex w-fit flex-col items-end gap-0.5 py-3"
+          style={{ opacity: stock.latestPrice?.outOfStock ? 0.5 : 1 }}>
+          {stock?.latestPrice?.sale && !isExpired && stock.latestPrice.originalPrice && (
+            <Text className="text text-right line-through color-red-700">
+              {currencyFormat(stock.latestPrice.originalPrice)}
+            </Text>
+          )}
 
-        {stock?.latestPrice?.amount && (
-          <View className="flex flex-row items-center justify-start gap-1">
-            <Text className="text-xl font-black">{currencyFormat(calculatedAmount)}</Text>
-            <Text className="text-xs color-gray-500">{getPriceUnitOrEach(stock.latestPrice)}</Text>
+          {stock?.latestPrice?.amount && (
+            <View className="flex flex-row items-center justify-start gap-1">
+              <Text className="text-xl font-black">{currencyFormat(calculatedAmount)}</Text>
+              <Text className="text-xs color-gray-500">
+                {getPriceUnitOrEach(stock.latestPrice)}
+              </Text>
+            </View>
+          )}
+
+          {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
+            <Text className="text-right text-[10px] color-gray-500">
+              {`${currencyFormat(calculatedAmount / quantityValue)}/${quantityType}`}
+            </Text>
+          )}
+
+          {approximatePrice && (
+            <Text className="text-xl">
+              <Text className="text-xl font-black">{currencyFormat(approximatePrice)}</Text>*
+            </Text>
+          )}
+
+          {!stock?.latestPrice?.amount && !approximatePrice && (
+            <Text className="text-xl font-black">--</Text>
+          )}
+        </View>
+
+        {stock.latestPrice?.outOfStock && (
+          <View>
+            <Text className="text-xs font-semibold color-black">
+              <Text className="bg-red-200/50">*Out of Stock</Text>
+            </Text>
           </View>
         )}
 
-        {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
-          <Text className="text-right text-[10px] color-gray-500">
-            {`${currencyFormat(calculatedAmount / quantityValue)}/${quantityType}`}
-          </Text>
-        )}
-
-        {approximatePrice && (
-          <Text className="text-xl">
-            <Text className="text-xl font-black">{currencyFormat(approximatePrice)}</Text>*
-          </Text>
-        )}
-
-        {!stock?.latestPrice?.amount && !approximatePrice && (
-          <Text className="text-xl font-black">--</Text>
+        {stock.available === false && (
+          <View>
+            <Text className="text-xs font-semibold color-black">
+              <Text className="bg-red-200/50">*Unavailable</Text>
+            </Text>
+          </View>
         )}
       </View>
     </View>

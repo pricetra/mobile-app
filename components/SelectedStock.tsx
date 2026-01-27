@@ -1,10 +1,9 @@
+import { Stock } from 'graphql-utils';
 import { View } from 'react-native';
 
 import PriceUserAndTimestamp from './PriceUserAndTimestamp';
 import StockFull, { StockFullLoading } from './StockFull';
 import { Skeleton } from './ui/Skeleton';
-
-import { Stock } from 'graphql-utils';
 
 export type SelectedStockProps = {
   stock: Stock;
@@ -25,6 +24,7 @@ export default function SelectedStock(props: SelectedStockProps) {
           <PriceUserAndTimestamp
             user={stock.updatedBy}
             timestamp={stock.latestPrice?.createdAt ?? stock.updatedAt}
+            verified={stock.latestPrice?.verified}
           />
         </View>
       )}

@@ -83,7 +83,9 @@ export default function ProductItemHorizontal({
               </View>
             )}
 
-            <View className="flex-[1] flex-col">
+            <View
+              className="flex-[1] flex-col"
+              style={{ opacity: product.stock.latestPrice?.outOfStock ? 0.5 : 1 }}>
               {product.stock.latestPrice.sale &&
                 !isExpired &&
                 product.stock.latestPrice.originalPrice && (
@@ -103,6 +105,21 @@ export default function ProductItemHorizontal({
                 </Text>
               )}
             </View>
+          </View>
+        )}
+
+        {product.stock?.latestPrice?.outOfStock && (
+          <View>
+            <Text className="text-xs font-semibold color-black">
+              <Text className="bg-red-200/50">*Out of Stock</Text>
+            </Text>
+          </View>
+        )}
+        {product.stock?.available === false && (
+          <View>
+            <Text className="text-xs font-semibold color-black">
+              <Text className="bg-red-200/50">*Unavailable</Text>
+            </Text>
           </View>
         )}
       </View>

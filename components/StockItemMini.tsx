@@ -65,7 +65,11 @@ export default function StockItemMini({
             {stock.branch.address?.street}, {stock.branch.address?.city}
           </Text>
 
-          <View className="mt-2 flex flex-col gap-0.5">
+          <View
+            className="mt-2 flex flex-col gap-0.5"
+            style={{
+              opacity: stock.latestPrice?.outOfStock || stock.available === false ? 0.5 : 1,
+            }}>
             {stock?.latestPrice?.sale && !isExpired && stock.latestPrice.originalPrice && (
               <Text className="text-xs line-through color-red-700">
                 {currencyFormat(stock.latestPrice.originalPrice)}
@@ -97,6 +101,22 @@ export default function StockItemMini({
               <Text className="text-lg font-black">--</Text>
             )}
           </View>
+
+          {stock.latestPrice?.outOfStock && (
+            <View>
+              <Text className="text-xs font-semibold color-black">
+                <Text className="bg-red-200/50">*Out of Stock</Text>
+              </Text>
+            </View>
+          )}
+
+          {stock.available === false && (
+            <View>
+              <Text className="text-xs font-semibold color-black">
+                <Text className="bg-red-200/50">*Unavailable</Text>
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
