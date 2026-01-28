@@ -3,6 +3,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { Formik, FormikErrors, FormikProps, useFormikContext } from 'formik';
 import {
+  Branch,
   BranchesWithProductsDocument,
   CreatePrice,
   CreatePriceDocument,
@@ -183,7 +184,7 @@ export default function AddProductPriceForm({
         />
       </View>
 
-      {branchId && (
+      {branchId && selectedBranch && (
         <Formik
           validateOnBlur
           validateOnChange
@@ -209,11 +210,13 @@ export default function AddProductPriceForm({
             } as CreatePrice
           }
           onSubmit={(input, formik) => {
+            console.log(input);
             createPrice({
               variables: {
                 input: {
                   ...input,
                   branchId: +branchId,
+                  productId: product.id,
                 },
               },
             })
@@ -225,7 +228,12 @@ export default function AddProductPriceForm({
           }}>
           {(formik) => (
             <View className="flex flex-col gap-5">
-              <PriceForm formik={formik} latestPrice={stock?.latestPrice ?? undefined} />
+              <PriceForm
+                stock={stock}
+                branch={selectedBranch as Branch}
+                formik={formik}
+                latestPrice={stock?.latestPrice ?? undefined}
+              />
 
               <View className="mt-7">
                 {formik.errors && (
@@ -268,13 +276,28 @@ export default function AddProductPriceForm({
 }
 
 type PriceFormProps = {
+  stock?: Stock;
+  branch: Branch;
   formik: FormikProps<CreatePrice>;
   latestPrice?: Price;
 };
 
-function PriceForm({ formik, latestPrice }: PriceFormProps) {
+function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
   const formikContext = useFormikContext<CreatePrice>();
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [available, setAvailable] = useState(true);
+  const { myStoreUsers } = useAuth();
+
+  const isStoreUser = useMemo(() => {
+    const storeUser = myStoreUsers?.find((v) => {
+      if (!v.approved) return false;
+      if (!v.branchId) {
+        return v.storeId === branch.storeId;
+      }
+      return v.branchId === branch.id;
+    });
+    return !!storeUser;
+  }, [myStoreUsers, branch]);
 
   useEffect(() => {
     if (!latestPrice) return;
@@ -282,12 +305,19 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
     formikContext.setValues({
       ...formikContext.values,
       amount: latestPrice.amount,
+      outOfStock: latestPrice.outOfStock,
       sale: latestPrice.sale,
       originalPrice: latestPrice.originalPrice,
       condition: latestPrice.condition,
       unitType: latestPrice.unitType,
     });
   }, [latestPrice]);
+
+  useEffect(() => {
+    if (!stock) return;
+
+    setAvailable(stock.available);
+  }, [stock]);
 
   return (
     <>
@@ -339,19 +369,42 @@ function PriceForm({ formik, latestPrice }: PriceFormProps) {
         </View>
       </View>
 
-      <Checkbox
-        label="Sale"
-        checked={formik.values.sale}
-        onCheckedChange={(c) => {
-          formik.setFieldValue('sale', c);
-          if (!c) {
-            // set sale values to zero
-            formik.setFieldValue('originalPrice', undefined);
-            formik.setFieldValue('condition', undefined);
-            formik.validateForm();
-          }
-        }}
-      />
+      <View className="flex-row items-center gap-5">
+        <Checkbox
+          label="Sale"
+          checked={formik.values.sale}
+          onCheckedChange={(c) => {
+            formik.setFieldValue('sale', c);
+            if (!c) {
+              // set sale values to zero
+              formik.setFieldValue('originalPrice', undefined);
+              formik.setFieldValue('condition', undefined);
+              formik.validateForm();
+            }
+          }}
+        />
+
+        <Checkbox
+          label="Out of stock"
+          checked={formik.values.outOfStock ?? false}
+          onCheckedChange={(c) => {
+            formik.setFieldValue('outOfStock', c);
+          }}
+        />
+
+        {stock && isStoreUser && (
+          <Checkbox
+            label="Unavailable"
+            checked={!available}
+            onCheckedChange={(c) => {
+              setAvailable(c);
+              formik.setFieldValue('available', !c).then(() => {
+                formik.submitForm();
+              });
+            }}
+          />
+        )}
+      </View>
 
       {formik.values.sale && (
         <View>

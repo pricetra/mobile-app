@@ -2,7 +2,12 @@ import { useLazyQuery } from '@apollo/client';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Network from 'expo-network';
-import { AppleOAuthDocument, GoogleOAuthDocument, LoginInternalDocument } from 'graphql-utils';
+import {
+  AppleOAuthDocument,
+  GoogleOAuthDocument,
+  LoginInternalDocument,
+  YahooOAuthDocument,
+} from 'graphql-utils';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -12,6 +17,7 @@ import AuthFormContainer from '@/components/auth/ui/AuthFormContainer';
 import { AuthModalContext, AuthScreenType } from '@/context/AuthModalContext';
 import { JwtStoreContext } from '@/context/JwtStoreContext';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
+import useYahooAuth from '@/hooks/useYahooAuth';
 import { getAuthDeviceTypeFromPlatform } from '@/lib/maps';
 
 export default function LoginScreen() {
@@ -38,7 +44,10 @@ export default function LoginScreen() {
     fetchPolicy: 'no-cache',
   });
   const googleAuthInProgress = googleAuthLoading || googleOauthLoading;
-
+  const { yahooOauthRequest, yahooOauthResponse, initiateYahooPromptAsync } = useYahooAuth();
+  const [yahooOauth, { loading: yahooOauthLoading }] = useLazyQuery(YahooOAuthDocument, {
+    fetchPolicy: 'no-cache',
+  });
   const passwordInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
@@ -70,6 +79,36 @@ export default function LoginScreen() {
         .catch((err) => Alert.alert('Could not complete Google OAuth', err));
     });
   }, [googleAccessToken]);
+
+  useEffect(() => {
+    if (!yahooOauthRequest || !yahooOauthResponse) return;
+    if (yahooOauthResponse.type !== 'success') {
+      Alert.alert('Yahoo OAuth failed', 'Could not authenticate with Yahoo.');
+      return;
+    }
+
+    Network.getIpAddressAsync().then((ipAddress) => {
+      const device = getAuthDeviceTypeFromPlatform();
+      yahooOauth({
+        variables: {
+          code: yahooOauthResponse.params.code,
+          codeVerifier: yahooOauthRequest.codeVerifier,
+          ipAddress,
+          device,
+        },
+      })
+        .then(({ data, error }) => {
+          if (error) {
+            Alert.alert('Could not complete Yahoo OAuth', error.message);
+            return;
+          }
+          if (!data) return;
+
+          updateJwt(data.yahooOAuth.token);
+        })
+        .catch((err) => Alert.alert('Could not complete Yahoo OAuth', err));
+    });
+  }, [yahooOauthRequest, yahooOauthResponse]);
 
   async function onLogin() {
     const ipAddress = await Network.getIpAddressAsync();
@@ -166,6 +205,8 @@ export default function LoginScreen() {
       appleLoading={appleOauthLoading}
       googleLoading={googleAuthInProgress}
       onPressGoogle={onGoogleLogin}
+      onPressYahoo={() => initiateYahooPromptAsync()}
+      yahooLoading={yahooOauthLoading}
       onPressSubmit={onLogin}>
       {!internalLoginError && emailVerified && (
         <View className="rounded-lg border border-pricetraGreenHeavyDark/50 bg-pricetraGreenHeavyDark/5 px-4 py-3">

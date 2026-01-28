@@ -16,6 +16,8 @@ export default {
     bundleIdentifier: IS_DEV ? 'com.pricetra.mobileApp.dev' : 'com.pricetra.mobileApp',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      NSLocationWhenInUseUsageDescription:
+        'Pricetra uses your location to show nearby store branches and to confirm you are within store range when submitting prices.',
     },
     usesAppleSignIn: true,
   },

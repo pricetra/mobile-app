@@ -1,10 +1,10 @@
 import { useLazyQuery } from '@apollo/client';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-
-import ProductItem from '@/components/ProductItem';
 import { GetAllProductListsByListIdDocument, Product, Stock } from 'graphql-utils';
+import { useEffect } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
+import ProductItem, { ProductItemLoading } from '@/components/ProductItem';
 
 export type ProductListViewProps = {
   listId: string;
@@ -22,11 +22,17 @@ export default function ProductListView({ listId }: ProductListViewProps) {
   }, [listId]);
 
   return (
-    <ScrollView className="p-5">
+    <ScrollView className="p-5 pt-10">
       {loading && (
-        <View className="flex h-[100px] items-center justify-center">
-          <ActivityIndicator color="black" />
-        </View>
+        <>
+          {Array(10)
+            .fill(0)
+            .map((_, i) => (
+              <View className="mb-10" key={`product-loading-${i}`}>
+                <ProductItemLoading />
+              </View>
+            ))}
+        </>
       )}
       {error && <Text>{error.message}</Text>}
       {data?.getAllProductListsByListId.map((pList) => {

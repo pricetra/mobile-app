@@ -87,31 +87,48 @@ export default function ProductItem({
               </View>
             )}
 
-            {product.stock.latestPrice && (
-              <View
-                className={cn('flex-[1] flex-col', hideStoreInfo ? 'items-start' : 'items-end')}>
-                {product.stock.latestPrice.sale &&
-                  !isExpired &&
-                  product.stock.latestPrice.originalPrice && (
-                    <Text className="text-right text-xs line-through color-red-700">
-                      {currencyFormat(product.stock.latestPrice.originalPrice)}
-                    </Text>
-                  )}
-                <View className="flex flex-row items-center justify-start gap-1">
-                  <Text className="font-black">{currencyFormat(calculatedAmount)}</Text>
-                  {product.stock.latestPrice.unitType !== 'item' && (
-                    <Text className="text-xs color-gray-500">
-                      {getPriceUnit(product.stock.latestPrice)}
+            <View className={cn('flex-[1] flex-col', hideStoreInfo ? 'items-start' : 'items-end')}>
+              {product.stock.latestPrice && (
+                <View
+                  className={cn('flex-col', hideStoreInfo ? 'items-start' : 'items-end')}
+                  style={{ opacity: product.stock.latestPrice.outOfStock ? 0.5 : 1 }}>
+                  {product.stock.latestPrice.sale &&
+                    !isExpired &&
+                    product.stock.latestPrice.originalPrice && (
+                      <Text className="text-right text-xs line-through color-red-700">
+                        {currencyFormat(product.stock.latestPrice.originalPrice)}
+                      </Text>
+                    )}
+                  <View className="flex flex-row items-center justify-start gap-1">
+                    <Text className="font-black">{currencyFormat(calculatedAmount)}</Text>
+                    {product.stock.latestPrice.unitType !== 'item' && (
+                      <Text className="text-xs color-gray-500">
+                        {getPriceUnit(product.stock.latestPrice)}
+                      </Text>
+                    )}
+                  </View>
+                  {product.quantityValue > 1 && (
+                    <Text className="text-right text-[10px] color-gray-500">
+                      {`${currencyFormat(calculatedAmount / product.quantityValue)}/${product.quantityType}`}
                     </Text>
                   )}
                 </View>
-                {product.quantityValue > 1 && (
-                  <Text className="text-right text-[10px] color-gray-500">
-                    {`${currencyFormat(calculatedAmount / product.quantityValue)}/${product.quantityType}`}
+              )}
+              {product.stock.latestPrice?.outOfStock && (
+                <View>
+                  <Text className="text-xs font-semibold color-black">
+                    <Text className="bg-red-200/50">*Out of Stock</Text>
                   </Text>
-                )}
-              </View>
-            )}
+                </View>
+              )}
+              {product.stock.available === false && (
+                <View>
+                  <Text className="text-xs font-semibold color-black">
+                    <Text className="bg-red-200/50">*Unavailable</Text>
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
         )}
       </View>

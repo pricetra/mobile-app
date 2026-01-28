@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { FetchResult, useLazyQuery, useMutation } from '@apollo/client';
 import { Image } from 'expo-image';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
@@ -9,9 +9,12 @@ import {
   List,
   ListType,
   LogoutDocument,
+  LogoutMutation,
   MeDocument,
+  MyStoreUserDocument,
   PostAuthUserDataDocument,
   RegisterExpoPushTokenDocument,
+  StoreUser,
   User,
 } from 'graphql-utils';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
@@ -38,9 +41,10 @@ export type UserContextType = {
   user: User;
   lists: UserListsType;
   allGroceryLists?: GroceryListsType;
+  myStoreUsers?: StoreUser[];
   token: string;
   updateUser: (updatedUser: User) => void;
-  logout: () => void;
+  logout: () => Promise<FetchResult<LogoutMutation>>;
   loggingOut: boolean;
 };
 
@@ -76,6 +80,11 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
     fetchPolicy: 'no-cache',
   });
   const [loading, setLoading] = useState(true);
+
+  const [getMyStoreUsers, { data: myStoreUsersData }] = useLazyQuery(MyStoreUserDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const [myStoreUsers, setMyStoreUsers] = useState<StoreUser[]>();
 
   function removeStoredJwtAndRedirect() {
     removeJwt().finally(() => {
@@ -127,6 +136,13 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
   }, [postAuthUserData?.groceryLists]);
 
   useEffect(() => {
+    if (!myStoreUsersData) return;
+    if (myStoreUsersData.myStoreUsers.length === 0) return;
+
+    setMyStoreUsers(myStoreUsersData.myStoreUsers as StoreUser[]);
+  }, [myStoreUsersData]);
+
+  useEffect(() => {
     if (!appVersionCheckData || appVersionCheckData.checkAppVersion) return;
 
     Alert.alert(
@@ -165,6 +181,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
         fetchAndRegisterExpoPushToken(userData.me as User);
         await getPostAuthUserData({ context: { ...ctx } });
+        getMyStoreUsers({ context: { ...ctx } });
       })
       .catch((_e) => removeStoredJwtAndRedirect())
       .finally(() => setLoading(false));
@@ -194,10 +211,10 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         user,
         lists: userLists ?? { allLists: [], favorites: {} as List, watchList: {} as List },
         allGroceryLists,
+        myStoreUsers,
         updateUser: (updatedUser) => setUser(updatedUser),
         logout: () => {
-          logout().then(({ data, errors }) => {
-            if (errors || !data || !data.logout) return;
+          return logout().finally(() => {
             removeStoredJwtAndRedirect();
           });
         },

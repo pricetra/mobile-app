@@ -25,6 +25,7 @@ import {
 import Accordion from 'react-native-collapsible/Accordion';
 import { InView } from 'react-native-intersection-observer';
 
+import AllStocksView from './AllStocksView';
 import FullStockView from './FullStockView';
 import LocationChangeForm from './LocationChangeForm';
 import MoreFromBrand from './MoreFromBrandSection';
@@ -84,6 +85,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
 
   const [activeSections, setActiveSections] = useState<number[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock>();
+  const [showAllStocks, setShowAllStocks] = useState(false);
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
   const [updateProductNutrition, { loading: updatingProductNutrition }] = useMutation(
     UpdateProductNutritionDataDocument,
@@ -149,6 +151,13 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
         {selectedStock && (
           <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
         )}
+      </ModalFormFull>
+
+      <ModalFormFull
+        visible={showAllStocks}
+        onRequestClose={() => setShowAllStocks(false)}
+        title="View All Stocks">
+        <AllStocksView product={product} closeModal={() => setShowAllStocks(false)} />
       </ModalFormFull>
 
       <ModalFormMini
@@ -293,7 +302,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                               bgColor="bg-gray-200"
                               color="text-gray-800"
                               rounded="full"
-                              onPress={() => {}}
+                              onPress={() => setShowAllStocks(true)}
                               text="Show All"
                             />
                           </View>

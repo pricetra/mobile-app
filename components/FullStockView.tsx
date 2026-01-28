@@ -88,14 +88,15 @@ export default function FullStockView({ stock, closeModal }: FullStockViewProps)
             <HistoricPriceItem stock={stock} price={p as Price} key={`price-${i}`} />
           ))}
 
-        {priceHistoryData?.priceChangeHistory?.paginator && (
-          <View className="mt-5">
-            <SmartPagination
-              paginator={priceHistoryData.priceChangeHistory.paginator}
-              onPageChange={setPage}
-            />
-          </View>
-        )}
+        {priceHistoryData?.priceChangeHistory?.paginator &&
+          priceHistoryData.priceChangeHistory.paginator.numPages > 1 && (
+            <View className="mt-5">
+              <SmartPagination
+                paginator={priceHistoryData.priceChangeHistory.paginator}
+                onPageChange={setPage}
+              />
+            </View>
+          )}
       </View>
 
       <View className="h-[200px]" />

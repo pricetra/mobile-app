@@ -2,9 +2,18 @@ import { ApolloError, useMutation } from '@apollo/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
 import { Formik } from 'formik';
+import {
+  User,
+  GetAllUsersDocument,
+  UpdateProfileDocument,
+  UpdateUser,
+  MeDocument,
+  DeleteMyAccountDocument,
+} from 'graphql-utils';
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, View, Image as NativeImage, Platform } from 'react-native';
+import { TouchableOpacity, View, Image as NativeImage, Platform, Text, Alert } from 'react-native';
 
 import Label from '../ui/Label';
 import Textarea from '../ui/Textarea';
@@ -13,15 +22,27 @@ import Btn from '@/components/ui/Btn';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
-import {
-  User,
-  GetAllUsersDocument,
-  UpdateProfileDocument,
-  UpdateUser,
-  MeDocument,
-} from 'graphql-utils';
+import { useAuth } from '@/context/UserContext';
 import { createCloudinaryUrl } from '@/lib/files';
 import { diffObjects } from '@/lib/utils';
+
+function deleteAccountPrompt(callback: () => void) {
+  const confirmation = 'PERMANENTLY DELETE MY ACCOUNT';
+  Alert.prompt(
+    'Permanently Delete My Account',
+    `Type "${confirmation}" to confirm account deletion. This action is irreversible.`,
+    (promptText) => {
+      if (promptText === confirmation) {
+        callback();
+      } else {
+        Alert.alert(
+          'Account Deletion Cancelled',
+          'Incorrect confirmation text. Account deletion cancelled.'
+        );
+      }
+    }
+  );
+}
 
 export type ProfileFormProps = {
   user: User;
@@ -34,10 +55,12 @@ const MIN_BIRTH_DATE = dayjs(new Date()).subtract(100, 'year').toDate();
 const MAX_BIRTH_DATE = dayjs(new Date()).subtract(10, 'year').toDate();
 
 export default function ProfileForm({ user, onCancel, onSuccess, onError }: ProfileFormProps) {
+  const { logout } = useAuth();
   const [imageUri, setImageUri] = useState<string>();
   const [imageBase64, setImageBase64] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [permanentlyDeleteMyAccount] = useMutation(DeleteMyAccountDocument);
   const [updateProfile, { loading }] = useMutation(UpdateProfileDocument, {
     refetchQueries: [GetAllUsersDocument, MeDocument],
   });
@@ -196,7 +219,41 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
             </View>
           </View>
 
-          <View className="h-[100px]" />
+          <View className="mt-16" id="danger-zone">
+            <View className="rounded-xl border border-red-600/30 bg-red-100/20 p-5">
+              <Text className="mb-5 text-2xl font-bold text-red-700">Danger Zone</Text>
+
+              <View className="flex flex-col justify-between gap-5">
+                <View className="flex-1">
+                  <Text className="text-lg font-semibold text-black">
+                    Permanently delete my account
+                  </Text>
+                  <Text className="mt-2 text-sm text-gray-800">
+                    This action cannot be undone. All your personal data will be removed, and your
+                    user information will be disassociated from your account.
+                  </Text>
+                </View>
+                <View>
+                  <Btn
+                    onPress={() => {
+                      deleteAccountPrompt(() => {
+                        permanentlyDeleteMyAccount().then(() => {
+                          logout().finally(() => {
+                            router.push('/');
+                          });
+                        });
+                      });
+                    }}
+                    bgColor="bg-red-600"
+                    className="float-right"
+                    text="Review and Delete"
+                  />
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View className="h-[200px]" />
         </View>
       )}
     </Formik>

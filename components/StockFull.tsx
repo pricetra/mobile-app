@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
+import { Stock } from 'graphql-utils';
 import { View, Text } from 'react-native';
 
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
-import { Stock } from 'graphql-utils';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
 import { createCloudinaryUrl } from '@/lib/files';
@@ -78,7 +78,7 @@ export default function StockFull({
           <View className="mt-1 flex flex-col gap-1">
             {stock.latestPrice?.sale && !isExpired && stock.latestPrice?.expiresAt && (
               <Text>
-                <Text className="bg-yellow-200 text-xs italic">
+                <Text className="bg-blue-200/50 text-xs italic">
                   Valid until{' '}
                   <Text className="font-bold">
                     {dayjs(stock.latestPrice.expiresAt).format('LL')}
@@ -89,41 +89,65 @@ export default function StockFull({
 
             {!isExpired && stock.latestPrice?.condition && (
               <Text>
-                <Text className="bg-yellow-200 text-xs italic">*{stock.latestPrice.condition}</Text>
+                <Text className="bg-yellow-200/50 text-xs italic">
+                  *{stock.latestPrice.condition}
+                </Text>
               </Text>
             )}
           </View>
         </View>
       </View>
 
-      <View className="flex w-fit flex-col items-end gap-0.5 py-3">
-        {stock?.latestPrice?.sale && !isExpired && stock.latestPrice.originalPrice && (
-          <Text className="text text-right line-through color-red-700">
-            {currencyFormat(stock.latestPrice.originalPrice)}
-          </Text>
-        )}
+      <View>
+        <View
+          className="flex w-fit flex-col items-end gap-0.5 py-3"
+          style={{ opacity: stock.latestPrice?.outOfStock || stock.available === false ? 0.5 : 1 }}>
+          {stock?.latestPrice?.sale && !isExpired && stock.latestPrice.originalPrice && (
+            <Text className="text text-right line-through color-red-700">
+              {currencyFormat(stock.latestPrice.originalPrice)}
+            </Text>
+          )}
 
-        {stock?.latestPrice?.amount && (
-          <View className="flex flex-row items-center justify-start gap-1">
-            <Text className="text-xl font-black">{currencyFormat(calculatedAmount)}</Text>
-            <Text className="text-xs color-gray-500">{getPriceUnitOrEach(stock.latestPrice)}</Text>
+          {stock?.latestPrice?.amount && (
+            <View className="flex flex-row items-center justify-start gap-1">
+              <Text className="text-xl font-black">{currencyFormat(calculatedAmount)}</Text>
+              <Text className="text-xs color-gray-500">
+                {getPriceUnitOrEach(stock.latestPrice)}
+              </Text>
+            </View>
+          )}
+
+          {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
+            <Text className="text-right text-[10px] color-gray-500">
+              {`${currencyFormat(calculatedAmount / quantityValue)}/${quantityType}`}
+            </Text>
+          )}
+
+          {approximatePrice && (
+            <Text className="text-xl">
+              <Text className="text-xl font-black">{currencyFormat(approximatePrice)}</Text>*
+            </Text>
+          )}
+
+          {!stock?.latestPrice?.amount && !approximatePrice && (
+            <Text className="text-xl font-black">--</Text>
+          )}
+        </View>
+
+        {stock.latestPrice?.outOfStock && (
+          <View>
+            <Text className="text-xs font-semibold color-black">
+              <Text className="bg-red-200/50">*Out of Stock</Text>
+            </Text>
           </View>
         )}
 
-        {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
-          <Text className="text-right text-[10px] color-gray-500">
-            {`${currencyFormat(calculatedAmount / quantityValue)}/${quantityType}`}
-          </Text>
-        )}
-
-        {approximatePrice && (
-          <Text className="text-xl">
-            <Text className="text-xl font-black">{currencyFormat(approximatePrice)}</Text>*
-          </Text>
-        )}
-
-        {!stock?.latestPrice?.amount && !approximatePrice && (
-          <Text className="text-xl font-black">--</Text>
+        {stock.available === false && (
+          <View>
+            <Text className="text-xs font-semibold color-black">
+              <Text className="bg-red-200/50">*Unavailable</Text>
+            </Text>
+          </View>
         )}
       </View>
     </View>

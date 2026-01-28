@@ -71,30 +71,8 @@ export default function AuthFormContainer({
                       )}
                     </View>
 
-                    {children}
-
-                    <View className="mt-2">
-                      {error && (
-                        <View className="mb-5">
-                          <Text className="text-red-700">{error}</Text>
-                        </View>
-                      )}
-
-                      <Btn
-                        text={buttonLabel}
-                        onPress={onPressSubmit}
-                        loading={loading}
-                        disabled={disabled}
-                      />
-                    </View>
-
                     {onPressApple && onPressGoogle && (
                       <>
-                        <View className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                          <Text className="relative z-10 px-2 text-center text-gray-500">
-                            Or continue with
-                          </Text>
-                        </View>
                         <View className="flex flex-row items-center justify-between gap-4">
                           <TouchableOpacity
                             onPress={onPressApple}
@@ -140,8 +118,31 @@ export default function AuthFormContainer({
                             </TouchableOpacity>
                           )}
                         </View>
+
+                        <View className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+                          <Text className="relative z-10 px-2 text-center text-gray-500">
+                            Or continue with
+                          </Text>
+                        </View>
                       </>
                     )}
+
+                    {children}
+
+                    <View className="mt-2">
+                      {error && (
+                        <View className="mb-5">
+                          <Text className="text-red-700">{error}</Text>
+                        </View>
+                      )}
+
+                      <Btn
+                        text={buttonLabel}
+                        onPress={onPressSubmit}
+                        loading={loading}
+                        disabled={disabled}
+                      />
+                    </View>
 
                     {extras && extras}
                   </View>
