@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { FetchResult, useLazyQuery, useMutation } from '@apollo/client';
 import { Image } from 'expo-image';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
@@ -9,6 +9,7 @@ import {
   List,
   ListType,
   LogoutDocument,
+  LogoutMutation,
   MeDocument,
   MyStoreUserDocument,
   PostAuthUserDataDocument,
@@ -43,7 +44,7 @@ export type UserContextType = {
   myStoreUsers?: StoreUser[];
   token: string;
   updateUser: (updatedUser: User) => void;
-  logout: () => void;
+  logout: () => Promise<FetchResult<LogoutMutation>>;
   loggingOut: boolean;
 };
 
@@ -213,7 +214,7 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
         myStoreUsers,
         updateUser: (updatedUser) => setUser(updatedUser),
         logout: () => {
-          logout().finally(() => {
+          return logout().finally(() => {
             removeStoredJwtAndRedirect();
           });
         },

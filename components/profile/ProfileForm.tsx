@@ -2,6 +2,7 @@ import { ApolloError, useMutation } from '@apollo/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
 import { Formik } from 'formik';
 import {
   User,
@@ -9,16 +10,10 @@ import {
   UpdateProfileDocument,
   UpdateUser,
   MeDocument,
+  DeleteMyAccountDocument,
 } from 'graphql-utils';
 import { useEffect, useState } from 'react';
-import {
-  TouchableOpacity,
-  View,
-  Image as NativeImage,
-  Platform,
-  Text,
-  Linking,
-} from 'react-native';
+import { TouchableOpacity, View, Image as NativeImage, Platform, Text, Alert } from 'react-native';
 
 import Label from '../ui/Label';
 import Textarea from '../ui/Textarea';
@@ -27,8 +22,27 @@ import Btn from '@/components/ui/Btn';
 import Button from '@/components/ui/Button';
 import Image from '@/components/ui/Image';
 import { Input } from '@/components/ui/Input';
+import { useAuth } from '@/context/UserContext';
 import { createCloudinaryUrl } from '@/lib/files';
 import { diffObjects } from '@/lib/utils';
+
+function deleteAccountPrompt(callback: () => void) {
+  const confirmation = 'PERMANENTLY DELETE MY ACCOUNT';
+  Alert.prompt(
+    'Permanently Delete My Account',
+    `Type "${confirmation}" to confirm account deletion. This action is irreversible.`,
+    (promptText) => {
+      if (promptText === confirmation) {
+        callback();
+      } else {
+        Alert.alert(
+          'Account Deletion Cancelled',
+          'Incorrect confirmation text. Account deletion cancelled.'
+        );
+      }
+    }
+  );
+}
 
 export type ProfileFormProps = {
   user: User;
@@ -41,10 +55,12 @@ const MIN_BIRTH_DATE = dayjs(new Date()).subtract(100, 'year').toDate();
 const MAX_BIRTH_DATE = dayjs(new Date()).subtract(10, 'year').toDate();
 
 export default function ProfileForm({ user, onCancel, onSuccess, onError }: ProfileFormProps) {
+  const { logout } = useAuth();
   const [imageUri, setImageUri] = useState<string>();
   const [imageBase64, setImageBase64] = useState<string>();
   const [imageUpdated, setImageUpdated] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [permanentlyDeleteMyAccount] = useMutation(DeleteMyAccountDocument);
   const [updateProfile, { loading }] = useMutation(UpdateProfileDocument, {
     refetchQueries: [GetAllUsersDocument, MeDocument],
   });
@@ -219,7 +235,15 @@ export default function ProfileForm({ user, onCancel, onSuccess, onError }: Prof
                 </View>
                 <View>
                   <Btn
-                    onPress={() => Linking.openURL('https://pricetra.com/profile/delete-account')}
+                    onPress={() => {
+                      deleteAccountPrompt(() => {
+                        permanentlyDeleteMyAccount().then(() => {
+                          logout().finally(() => {
+                            router.push('/');
+                          });
+                        });
+                      });
+                    }}
                     bgColor="bg-red-600"
                     className="float-right"
                     text="Review and Delete"
