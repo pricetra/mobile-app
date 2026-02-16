@@ -61,6 +61,8 @@ export default function ProductScreen() {
     fetchPolicy: 'no-cache',
   });
 
+  const [stock, setStock] = useState<Stock>();
+
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -290,6 +292,15 @@ export default function ProductScreen() {
     setOpenEditModal(true);
   }, [productData]);
 
+  useEffect(() => {
+    if (!stockId || !stockData) {
+      setStock(undefined);
+      return;
+    }
+
+    setStock(stockData.stock as Stock);
+  }, [stockData, stockId]);
+
   return (
     <>
       {productData && (
@@ -396,6 +407,7 @@ export default function ProductScreen() {
                   hideDescription
                   hideEditButton
                   onEditButtonPress={() => setOpenEditModal(true)}
+                  stock={stock}
                 />
               ) : (
                 <ProductFullLoading />
@@ -423,12 +435,7 @@ export default function ProductScreen() {
                 </View>
               ))}
 
-            {productData && (
-              <ProductDetails
-                product={productData.product}
-                stock={stockData?.stock as Stock | undefined}
-              />
-            )}
+            {productData && <ProductDetails product={productData.product} stock={stock} />}
           </>
         }
         ListFooterComponent={<View className="h-[100px]" />}
