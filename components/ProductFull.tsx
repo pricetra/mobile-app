@@ -1,8 +1,9 @@
 import { Entypo } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Product, Stock } from 'graphql-utils';
-import { Fragment, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { View, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
+import ImageView from 'react-native-image-viewing';
 
 import ProductMetadataBadge from './ProductMetadataBadge';
 import Image from './ui/Image';
@@ -29,11 +30,19 @@ export default function ProductFull({
   const { width } = useWindowDimensions();
   const [imgAvailable, setImgAvailable] = useState(true);
   const weight = useProductWeightBuilder(product);
+  const [openImage, setOpenImage] = useState(false);
+  const imgDimensions = useMemo(
+    () => ({
+      width: width / 1.5,
+      height: width / 1.5,
+    }),
+    [width]
+  );
 
   return (
     <View className="flex flex-col gap-3">
       {imgAvailable && (
-        <View className="relative mx-auto p-5" style={{ width: width / 1.5, height: width / 1.5 }}>
+        <View className="relative mx-auto p-5" style={{ ...imgDimensions }}>
           {!hideEditButton && onEditButtonPress && (
             <View className="absolute right-7 top-7 z-50">
               <TouchableOpacity onPress={onEditButtonPress}>
@@ -43,11 +52,29 @@ export default function ProductFull({
               </TouchableOpacity>
             </View>
           )}
-          <Image
-            src={product.image}
-            className="size-full rounded-xl"
-            onError={() => setImgAvailable(false)}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              setOpenImage(true);
+            }}>
+            <Image
+              src={product.image}
+              className="size-full rounded-xl"
+              onError={() => setImgAvailable(false)}
+            />
+          </TouchableOpacity>
+          <View>
+            <ImageView
+              images={[
+                {
+                  uri: product.image,
+                },
+              ]}
+              imageIndex={0}
+              visible={openImage}
+              onRequestClose={() => setOpenImage(false)}
+              backgroundColor="#fff"
+            />
+          </View>
         </View>
       )}
 
