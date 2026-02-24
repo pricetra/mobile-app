@@ -28,6 +28,7 @@ import { HORIZONTAL_PRODUCT_WIDTH } from '@/components/BranchesWithProductsFlatl
 import ProductItemHorizontal, {
   ProductLoadingItemHorizontal,
 } from '@/components/ProductItemHorizontal';
+import SearchKeywordItem from '@/components/SearchKeywordItem';
 import Btn from '@/components/ui/Btn';
 import { Skeleton } from '@/components/ui/Skeleton';
 import TabHeaderContainer, { navConsts } from '@/components/ui/TabHeaderContainer';
@@ -232,13 +233,11 @@ export default function SearchScreen() {
                   </View>
 
                   {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
-                    <TouchableOpacity
-                      className="my-1 flex flex-row items-center justify-between gap-2 px-5 py-3"
+                    <SearchKeywordItem
+                      searchTerm={searchTerm}
+                      onPress={() => performSearch(searchTerm)}
                       key={`sh-${id}`}
-                      onPress={() => performSearch(searchTerm)}>
-                      <Text className="font-lg">{searchTerm}</Text>
-                      <Ionicons name="search" size={15} color="#555" />
-                    </TouchableOpacity>
+                    />
                   ))}
                 </>
               )}

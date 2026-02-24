@@ -12,6 +12,7 @@ import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useHeader } from '@/context/HeaderContext';
 import { cn } from '@/lib/utils';
 import ProductHistoryView from '@/components/ProductHistoryView';
+import SearchHistoryView from '@/components/SearchHistoryView';
 
 enum ListScreenTabType {
   Products = 'products',
@@ -85,7 +86,7 @@ export default function HistoryScreen() {
   return (
     <ScrollView>
       {viewState === ListScreenTabType.Products && <ProductHistoryView />}
-      {/* {viewState === ListScreenTabType.Searches && <BranchListView listId={listId} />} */}
+      {viewState === ListScreenTabType.Searches && <SearchHistoryView />}
     </ScrollView>
   );
 }
