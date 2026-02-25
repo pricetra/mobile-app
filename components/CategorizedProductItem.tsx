@@ -1,5 +1,6 @@
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { CategoryWithProducts, Product } from 'graphql-utils';
+import { Category, CategoryWithProducts, Product } from 'graphql-utils';
 import { TouchableOpacity, View, Text, FlatList } from 'react-native';
 
 import { HORIZONTAL_PRODUCT_WIDTH } from './BranchesWithProductsFlatlist';
@@ -9,6 +10,7 @@ import HorizontalShowMoreButton from '@/components/HorizontalShowMoreButton';
 import ProductItemHorizontal, {
   ProductLoadingItemHorizontal,
 } from '@/components/ProductItemHorizontal';
+import { categoriesFromChild } from '@/lib/utils';
 
 export type CategorizedProductItemProps = {
   category: CategoryWithProducts;
@@ -21,6 +23,9 @@ export default function CategorizedProductItem({
   storeId,
   branchId,
 }: CategorizedProductItemProps) {
+  const categories = categoriesFromChild(category as Category);
+  const prevCategory = categories.at(categories.length - 2) ?? category;
+
   return (
     <View className="mb-14">
       <View className="mb-7 px-5">
@@ -30,7 +35,15 @@ export default function CategorizedProductItem({
               `/(tabs)/(stores)/${storeId}/branch/${branchId}?category=${category.name}&categoryId=${category.id}`
             )
           }>
-          <Text className="text-2xl font-bold">{category.name}</Text>
+          <View className="flex flex-row items-center justify-between gap-5">
+            <View className="flex-1">
+              <Text className="text-xl font-bold">{category.name}</Text>
+              <Text className="text-sm">in {prevCategory.name}</Text>
+            </View>
+            <View>
+              <Feather name="chevron-right" size={20} color="black" />
+            </View>
+          </View>
         </TouchableOpacity>
       </View>
 
