@@ -368,15 +368,17 @@ export default function SelectedBranchScreen() {
               ))}
 
               {categorizedProductsData.categoriesWithProducts.paginator.numPages > 1 && (
-                <SmartPagination
-                  paginator={categorizedProductsData.categoriesWithProducts.paginator}
-                  onPageChange={(p) => {
-                    router.setParams({
-                      ...params,
-                      page: String(p),
-                    });
-                  }}
-                />
+                <View className="mt-10">
+                  <SmartPagination
+                    paginator={categorizedProductsData.categoriesWithProducts.paginator}
+                    onPageChange={(p) => {
+                      router.setParams({
+                        ...params,
+                        page: String(p),
+                      });
+                    }}
+                  />
+                </View>
               )}
 
               <View className="h-[10vh]" />

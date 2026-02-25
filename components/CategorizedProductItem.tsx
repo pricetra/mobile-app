@@ -24,7 +24,7 @@ export default function CategorizedProductItem({
   branchId,
 }: CategorizedProductItemProps) {
   const categories = categoriesFromChild(category as Category);
-  const prevCategory = categories.at(categories.length - 2) ?? category;
+  const prevCategory = categories.at(categories.length - 2);
 
   return (
     <View className="mb-14">
@@ -38,7 +38,7 @@ export default function CategorizedProductItem({
           <View className="flex flex-row items-center justify-between gap-5">
             <View className="flex-1">
               <Text className="text-xl font-bold">{category.name}</Text>
-              <Text className="text-sm">in {prevCategory.name}</Text>
+              {prevCategory && <Text className="text-sm">in {prevCategory.name}</Text>}
             </View>
             <View>
               <Feather name="chevron-right" size={20} color="black" />
