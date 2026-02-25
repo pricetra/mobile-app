@@ -48,12 +48,13 @@ export default function useAddProductPrompt() {
         barcode,
         location: locationInput,
       },
-    })
-      .then(({ data }) => {
-        if (!data) return;
-        onSuccess(data);
-      })
-      .catch(onError);
+    }).then(({ data }) => {
+      if (!data) {
+        onError(new Error('barcode was not found'));
+        return;
+      }
+      onSuccess(data);
+    });
   }
 
   async function handleExtractionImage(
@@ -77,13 +78,14 @@ export default function useAddProductPrompt() {
     extractProductFields({
       variables: { barcode: barcode.replaceAll('*', ''), base64Image: pic.base64 },
     })
-      .then(async ({ data }) => {
-        if (!data) return;
+      .then(async ({ data, errors }) => {
+        if (!data) {
+          const err = errors?.at(0);
+          Alert.alert('Error extracting product data', err?.message);
+          onError(new Error(err?.message));
+          return;
+        }
         onSuccess(data);
-      })
-      .catch((err) => {
-        Alert.alert('Error extracting product data', err);
-        onError(err);
       })
       .finally(onFinally);
   }
