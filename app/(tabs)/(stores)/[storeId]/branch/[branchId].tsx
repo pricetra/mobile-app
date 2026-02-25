@@ -11,6 +11,7 @@ import {
   Product,
   RemoveBranchFromListDocument,
   CategoriesWithProductsDocument,
+  CategoryWithProducts,
 } from 'graphql-utils';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -21,17 +22,14 @@ import {
   Platform,
   Linking,
   Share,
-  FlatList,
   ScrollView,
 } from 'react-native';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
-import { HORIZONTAL_PRODUCT_WIDTH } from '@/components/BranchesWithProductsFlatlist';
-import HorizontalShowMoreButton from '@/components/HorizontalShowMoreButton';
+import CategorizedProductItem, {
+  CategorizedProductItemLoading,
+} from '@/components/CategorizedProductItem';
 import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
-import ProductItemHorizontal, {
-  ProductLoadingItemHorizontal,
-} from '@/components/ProductItemHorizontal';
 import Image from '@/components/ui/Image';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { SmartPagination } from '@/components/ui/SmartPagination';
@@ -359,68 +357,25 @@ export default function SelectedBranchScreen() {
               <Text className="text-center">No products found</Text>
             </View>
           ) : (
-            <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+            <ScrollView contentContainerStyle={{ paddingVertical: 30 }}>
               {categorizedProductsData.categoriesWithProducts.categories.map((category, i) => (
-                <View key={`branch-${category.id}`} className="mb-14">
-                  <View className="mb-7 px-5">
-                    <TouchableOpacity
-                      onPress={() =>
-                        router.push(
-                          `/(tabs)/(stores)/${storeId}/branch/${branchId}?category=${category.name}&categoryId=${category.id}`
-                        )
-                      }>
-                      <Text className="text-2xl font-bold">{category.name}</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  <FlatList
-                    horizontal
-                    nestedScrollEnabled
-                    showsHorizontalScrollIndicator={false}
-                    data={category.products}
-                    keyExtractor={({ id }, i) => `${id}-${i}`}
-                    renderItem={({ item }) => (
-                      <TouchableOpacity
-                        onPress={() =>
-                          router.push(`/(tabs)/(products)/${item.id}?stockId=${item.stock?.id}`, {
-                            relativeToDirectory: false,
-                          })
-                        }
-                        style={{
-                          width: HORIZONTAL_PRODUCT_WIDTH,
-                          marginRight: 16,
-                        }}>
-                        <ProductItemHorizontal
-                          product={item as Product}
-                          imgWidth={HORIZONTAL_PRODUCT_WIDTH}
-                        />
-                      </TouchableOpacity>
-                    )}
-                    contentContainerStyle={{ paddingHorizontal: 15 }}
-                    ListFooterComponent={() =>
-                      category.products.length > 10 ? (
-                        <HorizontalShowMoreButton
-                          onPress={() =>
-                            router.push(
-                              `/(tabs)/(stores)/${storeId}/branch/${branchId}?category=${category}`,
-                              {
-                                relativeToDirectory: false,
-                              }
-                            )
-                          }
-                          heightDiv={1}
-                          width={HORIZONTAL_PRODUCT_WIDTH}
-                        />
-                      ) : undefined
-                    }
-                  />
-                </View>
+                <CategorizedProductItem
+                  storeId={storeId}
+                  branchId={branchId}
+                  category={category as CategoryWithProducts}
+                  key={`branch-${category.id}`}
+                />
               ))}
 
               {categorizedProductsData.categoriesWithProducts.paginator.numPages > 1 && (
                 <SmartPagination
                   paginator={categorizedProductsData.categoriesWithProducts.paginator}
-                  onPageChange={(p) => {}}
+                  onPageChange={(p) => {
+                    router.setParams({
+                      ...params,
+                      page: String(p),
+                    });
+                  }}
                 />
               )}
 
@@ -430,24 +385,13 @@ export default function SelectedBranchScreen() {
         </>
       ) : (
         categorizedProductsLoading && (
-          <>
+          <ScrollView contentContainerStyle={{ paddingVertical: 30 }}>
             {Array(10)
               .fill(0)
               .map((_, i) => (
-                <FlatList
-                  horizontal
-                  data={Array(10).fill(0)}
-                  keyExtractor={(_, j) => `product-loading-${i}-${j}`}
-                  key={`product-loading-parent-${i}`}
-                  renderItem={() => (
-                    <View className="mr-4" style={{ width: HORIZONTAL_PRODUCT_WIDTH }}>
-                      <ProductLoadingItemHorizontal imgWidth={HORIZONTAL_PRODUCT_WIDTH} />
-                    </View>
-                  )}
-                  style={{ padding: 15 }}
-                />
+                <CategorizedProductItemLoading key={`product-loading-parent-${i}`} />
               ))}
-          </>
+          </ScrollView>
         )
       )}
     </KeyboardAvoidingView>
