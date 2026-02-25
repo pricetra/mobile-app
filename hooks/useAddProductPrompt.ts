@@ -5,14 +5,18 @@ import {
   ExtractAndCreateProductDocument,
   ExtractAndCreateProductMutation,
   LocationInput,
+  UserRole,
 } from 'graphql-utils';
-import { Alert } from 'react-native';
+import { Alert, AlertButton } from 'react-native';
 
 import useLocationService from './useLocationService';
 
+import { useAuth } from '@/context/UserContext';
 import { selectImageForProductExtraction } from '@/lib/files';
+import { isRoleAuthorized } from '@/lib/roles';
 
 export default function useAddProductPrompt() {
+  const { user } = useAuth();
   const [barcodeScan, { loading: processingBarcode }] = useLazyQuery(BarcodeScanDocument);
   const [extractProductFields, { loading: extractingProduct }] = useMutation(
     ExtractAndCreateProductDocument
@@ -53,7 +57,6 @@ export default function useAddProductPrompt() {
   }
 
   async function handleExtractionImage(
-    file: File,
     barcode: string,
     {
       onSuccess,
@@ -62,7 +65,7 @@ export default function useAddProductPrompt() {
     }: {
       onSuccess: (data: ExtractAndCreateProductMutation) => void;
       onError: (err: Error) => void;
-      onFinally: () => void;
+      onFinally?: () => void;
     }
   ) {
     const pic = await selectImageForProductExtraction(true, 0);
@@ -85,9 +88,42 @@ export default function useAddProductPrompt() {
       .finally(onFinally);
   }
 
+  function extractProductFromImagePrompt({
+    onCancel,
+    onAddManually,
+    onTakePicture,
+  }: {
+    onCancel: () => void;
+    onAddManually: () => void;
+    onTakePicture: () => void;
+  }) {
+    const alertButtons: AlertButton[] = [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+        onPress: onCancel,
+      },
+    ];
+    if (isRoleAuthorized(UserRole.Contributor, user.role)) {
+      alertButtons.push({
+        text: 'Add Manually',
+        style: 'default',
+        onPress: onAddManually,
+      });
+    }
+    alertButtons.push({
+      text: 'Take Picture',
+      style: 'default',
+      isPreferred: true,
+      onPress: onTakePicture,
+    });
+    return alertButtons;
+  }
+
   return {
     handleBarcodeScan,
     handleExtractionImage,
+    extractProductFromImagePrompt,
     processingBarcode,
     extractingProduct,
   };
