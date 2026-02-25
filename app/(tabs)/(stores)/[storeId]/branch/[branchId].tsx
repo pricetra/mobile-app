@@ -133,6 +133,7 @@ export default function SelectedBranchScreen() {
 
   useEffect(() => {
     const sp = { ...params } as any;
+    if (params.query?.length === 0) delete sp.query;
     delete sp.page;
     delete sp.sale;
     delete sp.sortByPrice;
