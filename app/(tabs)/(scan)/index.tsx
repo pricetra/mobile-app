@@ -2,14 +2,18 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
+import {
+  BarcodeScanDocument,
+  ExtractAndCreateProductDocument,
+  Product,
+  UserRole,
+} from 'graphql-utils';
 import { debounce } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, AlertButton, Text, TouchableOpacity, View } from 'react-native';
 
 import ManualBarcodeForm from '@/components/ManualBarcodeForm';
-import ProductForm, {
-  selectImageForProductExtraction,
-} from '@/components/product-form/ProductForm';
+import ProductForm from '@/components/product-form/ProductForm';
 import ScannerOverlay from '@/components/scanner/ScannerOverlay';
 import Btn from '@/components/ui/Btn';
 import Button from '@/components/ui/Button';
@@ -17,13 +21,8 @@ import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { barcodeTypes } from '@/constants/barcodeTypes';
 import { useAuth } from '@/context/UserContext';
-import {
-  BarcodeScanDocument,
-  ExtractAndCreateProductDocument,
-  Product,
-  UserRole,
-} from 'graphql-utils';
 import useLocationService from '@/hooks/useLocationService';
+import { selectImageForProductExtraction } from '@/lib/files';
 import { isRoleAuthorized } from '@/lib/roles';
 
 export default function ScanScreen() {
