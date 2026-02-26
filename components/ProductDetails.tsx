@@ -245,7 +245,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                   )}
                 </View>
 
-                <View className="mb-5 mt-2 flex flex-row px-5">
+                <View className="mb-5 mt-10 flex flex-row items-center justify-center px-5">
                   <Btn
                     text="Manage Favorites"
                     size="xs"
@@ -261,8 +261,6 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                       })
                     }
                   />
-
-                  <View className="flex-1" />
                 </View>
               </View>
             ),
