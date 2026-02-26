@@ -9,6 +9,7 @@ import { Skeleton } from './ui/Skeleton';
 import Image from '@/components/ui/Image';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
+import usePricePerUnit from '@/hooks/usePricePerUnit';
 import useProductWeightBuilder from '@/hooks/useProductWeightBuilder';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnit } from '@/lib/strings';
@@ -36,6 +37,7 @@ export default function ProductItem({
     latestPrice: product.stock?.latestPrice,
   });
   const weight = useProductWeightBuilder(product);
+  const pricePerUnit = usePricePerUnit(calculatedAmount, product);
 
   return (
     <View className="flex max-w-full flex-row gap-2">
@@ -107,9 +109,9 @@ export default function ProductItem({
                       </Text>
                     )}
                   </View>
-                  {product.quantityValue > 1 && (
+                  {pricePerUnit && (
                     <Text className="text-right text-[10px] color-gray-500">
-                      {`${currencyFormat(calculatedAmount / product.quantityValue)}/${product.quantityType}`}
+                      {`${currencyFormat(pricePerUnit.amount)}/${pricePerUnit.unit}`}
                     </Text>
                   )}
                 </View>

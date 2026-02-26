@@ -31,10 +31,11 @@ import { Input } from '@/components/ui/Input';
 import Label from '@/components/ui/Label';
 import Text from '@/components/ui/Text';
 import { Textarea } from '@/components/ui/Textarea';
-import { buildBase64ImageString, titleCase } from '@/lib/strings';
-import { diffObjects } from '@/lib/utils';
-import { isRoleAuthorized } from '@/lib/roles';
 import { useAuth } from '@/context/UserContext';
+import { selectImageForProductExtraction } from '@/lib/files';
+import { isRoleAuthorized } from '@/lib/roles';
+import { titleCase } from '@/lib/strings';
+import { diffObjects } from '@/lib/utils';
 
 export type ProductFormProps = {
   upc?: string;
@@ -471,39 +472,4 @@ export default function ProductForm({
       )}
     </Formik>
   );
-}
-
-export type ExtractionImageSelectionType = {
-  imageUri: string;
-  base64: string;
-  base64EncodingOnly?: string;
-};
-
-export async function selectImageForProductExtraction(
-  useCamera: boolean = false,
-  quality: number = 1
-): Promise<ExtractionImageSelectionType | undefined> {
-  const options: ImagePicker.ImagePickerOptions = {
-    mediaTypes: ['images'],
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality,
-    base64: true,
-    allowsMultipleSelection: false,
-    cameraType: ImagePicker.CameraType.back,
-  };
-  const result = await (useCamera
-    ? ImagePicker.launchCameraAsync(options)
-    : ImagePicker.launchImageLibraryAsync(options));
-
-  if (result.canceled || result.assets.length === 0) return undefined;
-
-  const picture = result.assets.at(0);
-  if (!picture || !picture.base64 || !picture.uri) return undefined;
-
-  return {
-    imageUri: picture.uri,
-    base64: buildBase64ImageString(picture),
-    base64EncodingOnly: picture.base64,
-  };
 }

@@ -10,24 +10,21 @@ import BranchListView from '@/components/BranchListView';
 import ProductListView from '@/components/ProductListView';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useHeader } from '@/context/HeaderContext';
-import { useAuth } from '@/context/UserContext';
 import { cn } from '@/lib/utils';
+import ProductHistoryView from '@/components/ProductHistoryView';
+import SearchHistoryView from '@/components/SearchHistoryView';
 
-export enum ListScreenTabType {
+enum ListScreenTabType {
   Products = 'products',
-  Branches = 'branches',
+  Searches = 'searches',
 }
 
-export default function ListScreen() {
+export default function HistoryScreen() {
   const navigation = useNavigation();
   const { setSubHeader } = useHeader();
-  const { lists } = useAuth();
-  const { listId, tab } = useLocalSearchParams<{
-    listId: string;
-    type?: ListType;
+  const { tab } = useLocalSearchParams<{
     tab?: ListScreenTabType;
   }>();
-  const [, setList] = useState<List>();
   const [viewState, setViewState] = useState(ListScreenTabType.Products);
 
   useEffect(() => {
@@ -37,12 +34,6 @@ export default function ListScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      const list = lists.allLists.find(({ id }) => id.toString() === listId);
-      if (!list) {
-        navigation.goBack();
-        return;
-      }
-      setList(list);
       navigation.setOptions({
         header: (props: BottomTabHeaderProps) => (
           <TabHeaderItem
@@ -50,10 +41,10 @@ export default function ListScreen() {
             leftNav={
               <View className="flex flex-row items-center gap-3">
                 <View className="flex size-[35px] items-center justify-center rounded-full bg-gray-100">
-                  {ListIconRenderer(list.type)}
+                  {ListIconRenderer('history')}
                 </View>
                 <Text className="font-bold" numberOfLines={1}>
-                  {list.name}
+                  History
                 </Text>
               </View>
             }
@@ -73,12 +64,12 @@ export default function ListScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => setViewState(ListScreenTabType.Branches)}
+            onPress={() => setViewState(ListScreenTabType.Searches)}
             className={cn(
               'rounded-lg px-7 py-2',
-              viewState === ListScreenTabType.Branches ? 'bg-gray-100' : 'bg-white'
+              viewState === ListScreenTabType.Searches ? 'bg-gray-100' : 'bg-white'
             )}>
-            <Text>Branches</Text>
+            <Text>Search History</Text>
           </TouchableOpacity>
         </View>
       );
@@ -89,13 +80,13 @@ export default function ListScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [listId, viewState])
+    }, [viewState])
   );
 
   return (
     <ScrollView>
-      {viewState === ListScreenTabType.Products && <ProductListView listId={listId} />}
-      {viewState === ListScreenTabType.Branches && <BranchListView listId={listId} />}
+      {viewState === ListScreenTabType.Products && <ProductHistoryView />}
+      {viewState === ListScreenTabType.Searches && <SearchHistoryView />}
     </ScrollView>
   );
 }

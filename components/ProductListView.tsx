@@ -49,7 +49,9 @@ export default function ProductListView({ listId }: ProductListViewProps) {
             onPress={() => {
               const params = new URLSearchParams();
               if (pList.stockId) params.append('stockId', pList.stockId.toString());
-              router.push(`/(tabs)/(products)/${product.id}?${params.toString()}`);
+              router.push(`/(tabs)/(products)/${product.id}?${params.toString()}`, {
+                relativeToDirectory: false,
+              });
             }}>
             <ProductItem product={product} />
           </TouchableOpacity>

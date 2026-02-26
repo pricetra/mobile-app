@@ -9,7 +9,8 @@ import {
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import dayjs from 'dayjs';
 import { router, useFocusEffect, useNavigation } from 'expo-router';
-import { ListType, UserRole } from 'graphql-utils';
+import { ListType, UserRole, List } from 'graphql-utils';
+import { capitalize } from 'lodash';
 import { useCallback, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, Alert, View, ActivityIndicator } from 'react-native';
 
@@ -20,12 +21,16 @@ import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useAuth } from '@/context/UserContext';
 import { isRoleAuthorized } from '@/lib/roles';
 
-export function ListIconRenderer(type: ListType) {
+export type ModifiedListType = ListType | 'history';
+
+export function ListIconRenderer(type: ModifiedListType) {
   switch (type) {
     case ListType.WatchList:
       return <AntDesign name="eye" size={20} color="#a855f7" />;
     case ListType.Favorites:
       return <AntDesign name="heart" size={15} color="#e11d48" />;
+    case 'history':
+      return <MaterialIcons name="history" size={20} color="#396a12" />;
     default:
       return <MaterialIcons name="bookmark" size={20} color="#396a12" />;
   }
@@ -157,29 +162,9 @@ export default function ProfileScreen() {
         {lists.allLists.length > 0 && (
           <View className="mt-5 flex flex-col gap-2">
             {lists.allLists.map((list) => (
-              <TouchableOpacity
-                key={list.id}
-                onPress={() =>
-                  router.push(`/(tabs)/(profile)/list/${list.id}`, { relativeToDirectory: false })
-                }
-                className="flex flex-row items-center justify-between gap-5 px-0 py-2">
-                <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
-                  <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">
-                    {ListIconRenderer(list.type)}
-                  </View>
-                  <View>
-                    <Text className="text-lg font-bold">{list.name}</Text>
-                    <View className="flex flex-row items-center justify-between gap-1">
-                      <Text className="text-sm">{list.productList?.length} Products</Text>
-                      <Entypo name="dot-single" size={15} color="black" />
-                      <Text className="text-sm">{list.branchList?.length ?? 0} Branches</Text>
-                    </View>
-                  </View>
-                </View>
-
-                <Feather name="chevron-right" size={24} color="black" />
-              </TouchableOpacity>
+              <ListItem type={list.type} list={list} key={list.id} />
             ))}
+            <ListItem type="history" />
           </View>
         )}
       </View>
@@ -208,6 +193,36 @@ function NavigationItem({
         </View>
         <View>
           <Text className="text-lg">{text}</Text>
+        </View>
+      </View>
+
+      <Feather name="chevron-right" size={24} color="black" />
+    </TouchableOpacity>
+  );
+}
+
+function ListItem({ list, type }: { type: ModifiedListType; list?: List }) {
+  return (
+    <TouchableOpacity
+      onPress={() =>
+        router.push(`/(tabs)/(profile)/list/${list ? list.id : type}`, {
+          relativeToDirectory: false,
+        })
+      }
+      className="flex flex-row items-center justify-between gap-5 px-0 py-2">
+      <View className="flex flex-1 flex-row items-center gap-5 px-0 py-2">
+        <View className="flex size-[45px] items-center justify-center rounded-full bg-gray-100">
+          {ListIconRenderer(type)}
+        </View>
+        <View>
+          <Text className="text-lg font-bold">{list ? list.name : capitalize(type)}</Text>
+          {list && (
+            <View className="flex flex-row items-center justify-between gap-1">
+              <Text className="text-sm">{list.productList?.length} Products</Text>
+              <Entypo name="dot-single" size={15} color="black" />
+              <Text className="text-sm">{list.branchList?.length ?? 0} Branches</Text>
+            </View>
+          )}
         </View>
       </View>
 

@@ -1,15 +1,16 @@
 import { useLazyQuery } from '@apollo/client';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { Product, ProductSearchDocument } from 'graphql-utils';
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { formatNumber } from 'react-native-currency-input';
 
 import { HORIZONTAL_PRODUCT_WIDTH } from './BranchesWithProductsFlatlist';
 import ProductItemHorizontal, { ProductLoadingItemHorizontal } from './ProductItemHorizontal';
 
 import { Input } from '@/components/ui/Input';
-import { Product, ProductSearchDocument } from 'graphql-utils';
+import useAddProductPrompt from '@/hooks/useAddProductPrompt';
 
 const LIMIT = 10;
 
@@ -20,6 +21,13 @@ export default function ManualBarcodeForm({ onDismiss }: ManualBarcodeFormProps)
   const [productSearch, { data: searchResults, loading }] = useLazyQuery(ProductSearchDocument, {
     fetchPolicy: 'no-cache',
   });
+  const {
+    handleBarcodeScan,
+    handleExtractionImage,
+    extractProductFromImagePrompt,
+    processingBarcode,
+    extractingProduct,
+  } = useAddProductPrompt();
 
   function fetchProducts(page = 1) {
     productSearch({
@@ -111,7 +119,63 @@ export default function ManualBarcodeForm({ onDismiss }: ManualBarcodeFormProps)
               />
             </View>
           ) : (
-            <Text className="text-center">No results found</Text>
+            <Text className="text-center">
+              No results found.{' '}
+              <Text
+                onPress={() => {
+                  if (extractingProduct || processingBarcode) return;
+                  if (text.length < 4) return;
+
+                  handleBarcodeScan(text, {
+                    onSuccess: (data) => {
+                      const params = new URLSearchParams();
+                      if (data.barcodeScan.stock) {
+                        params.set('stockId', String(data.barcodeScan.stock.id));
+                      }
+                      router.push(
+                        `/(tabs)/(products)/${data.barcodeScan.id}${params.size > 0 ? `?${params.toString()}` : ''}`,
+                        { relativeToDirectory: false }
+                      );
+                      onDismiss();
+                    },
+                    onError: () => {
+                      Alert.alert(
+                        `${text} does not exist in our database`,
+                        'You can help us record and track prices for this product by taking a picture',
+                        extractProductFromImagePrompt({
+                          onTakePicture: () => {
+                            handleExtractionImage(text, {
+                              onSuccess: (data) => {
+                                router.push(
+                                  `/(tabs)/(products)/${data.extractAndCreateProduct.id}`
+                                );
+                                onDismiss();
+                              },
+                              onError: () => {
+                                Alert.alert(
+                                  'Error extracting product data',
+                                  'Please try again or add the product manually'
+                                );
+                              },
+                            });
+                          },
+                          onAddManually: () => {},
+                          onCancel: () => {},
+                        })
+                      );
+                    },
+                  });
+                }}
+                className="text-blue-500">
+                {processingBarcode || extractingProduct ? (
+                  <>
+                    <ActivityIndicator /> Adding product
+                  </>
+                ) : (
+                  <>Add product</>
+                )}
+              </Text>
+            </Text>
           )}
         </>
       )}

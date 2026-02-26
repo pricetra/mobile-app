@@ -61,6 +61,8 @@ export default function ProductScreen() {
     fetchPolicy: 'no-cache',
   });
 
+  const [stock, setStock] = useState<Stock>();
+
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -290,6 +292,15 @@ export default function ProductScreen() {
     setOpenEditModal(true);
   }, [productData]);
 
+  useEffect(() => {
+    if (!stockId || !stockData) {
+      setStock(undefined);
+      return;
+    }
+
+    setStock(stockData.stock as Stock);
+  }, [stockData, stockId]);
+
   return (
     <>
       {productData && (
@@ -375,8 +386,12 @@ export default function ProductScreen() {
         visible={selectedStock !== undefined}
         onRequestClose={() => setSelectedStock(undefined)}
         title="Stock">
-        {selectedStock && (
-          <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
+        {selectedStock && productData && (
+          <FullStockView
+            stock={selectedStock}
+            product={productData.product}
+            closeModal={() => setSelectedStock(undefined)}
+          />
         )}
       </ModalFormFull>
 
@@ -396,6 +411,7 @@ export default function ProductScreen() {
                   hideDescription
                   hideEditButton
                   onEditButtonPress={() => setOpenEditModal(true)}
+                  stock={stock}
                 />
               ) : (
                 <ProductFullLoading />
@@ -408,11 +424,7 @@ export default function ProductScreen() {
                   <TouchableOpacity
                     className="rounded-xl bg-gray-50 p-5"
                     onPress={() => setSelectedStock(stockData.stock as Stock)}>
-                    <SelectedStock
-                      stock={stockData.stock as Stock}
-                      quantityValue={productData.product.quantityValue}
-                      quantityType={productData.product.quantityType}
-                    />
+                    <SelectedStock stock={stockData.stock as Stock} product={productData.product} />
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -423,12 +435,7 @@ export default function ProductScreen() {
                 </View>
               ))}
 
-            {productData && (
-              <ProductDetails
-                product={productData.product}
-                stock={stockData?.stock as Stock | undefined}
-              />
-            )}
+            {productData && <ProductDetails product={productData.product} stock={stock} />}
           </>
         }
         ListFooterComponent={<View className="h-[100px]" />}

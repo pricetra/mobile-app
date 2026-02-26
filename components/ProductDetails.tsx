@@ -149,7 +149,11 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
         onRequestClose={() => setSelectedStock(undefined)}
         title="Stock">
         {selectedStock && (
-          <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
+          <FullStockView
+            stock={selectedStock}
+            product={product}
+            closeModal={() => setSelectedStock(undefined)}
+          />
         )}
       </ModalFormFull>
 
@@ -226,10 +230,9 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                             }}
                             key={`fav-stock-${stock.branchId}-${stock.id}-${i}`}>
                             <StockItemMini
+                              product={product}
                               stock={stock}
                               approximatePrice={approximatePrice}
-                              quantityValue={product.quantityValue}
-                              quantityType={product.quantityType}
                             />
                           </TouchableOpacity>
                         );
@@ -242,7 +245,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                   )}
                 </View>
 
-                <View className="mb-5 mt-2 flex flex-row px-5">
+                <View className="mb-5 mt-10 flex flex-row items-center justify-center px-5">
                   <Btn
                     text="Manage Favorites"
                     size="xs"
@@ -258,8 +261,6 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                       })
                     }
                   />
-
-                  <View className="flex-1" />
                 </View>
               </View>
             ),
@@ -286,11 +287,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                               style={{
                                 width: width / 2.5,
                               }}>
-                              <StockItemMini
-                                stock={s as Stock}
-                                quantityValue={product.quantityValue}
-                                quantityType={product.quantityType}
-                              />
+                              <StockItemMini product={product} stock={s as Stock} />
                             </TouchableOpacity>
                           ))}
                         </View>

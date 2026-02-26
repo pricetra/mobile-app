@@ -9,10 +9,11 @@ import {
   GetAllBranchListsByListIdDocument,
   GetAllListsDocument,
   Product,
-  ProductSearch,
   RemoveBranchFromListDocument,
+  CategoriesWithProductsDocument,
+  CategoryWithProducts,
 } from 'graphql-utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -21,12 +22,17 @@ import {
   Platform,
   Linking,
   Share,
+  ScrollView,
 } from 'react-native';
 
 import { SearchRouteParams } from '@/app/(tabs)/search';
+import CategorizedProductItem, {
+  CategorizedProductItemLoading,
+} from '@/components/CategorizedProductItem';
 import ProductFlatlist, { ProductFlatlistLoading } from '@/components/ProductFlatlist';
 import Image from '@/components/ui/Image';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { SmartPagination } from '@/components/ui/SmartPagination';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import TabHeaderItemSearchBar from '@/components/ui/TabHeaderItemSearchBar';
 import TabSubHeaderProductFilter from '@/components/ui/TabSubHeaderProductFilter';
@@ -46,21 +52,19 @@ export default function SelectedBranchScreen() {
   const navigation = useNavigation();
   const { lists } = useAuth();
   const params = useLocalSearchParams<BranchQueryParams>();
-  const {
-    storeId,
-    branchId,
-    query,
-    categoryId,
-    category,
-    page = String(1),
-    sale,
-    sortByPrice,
-    brand,
-  } = params;
   const [fetchBranch, { data: branchData, loading: branchLoading }] = useLazyQuery(BranchDocument, {
     fetchPolicy: 'network-only',
   });
+  const branchId = +params.branchId;
+  const storeId = +params.storeId;
+  const [filteredParamsSize, setFilteredParamsSize] = useState(0);
   const [favorite, setFavorite] = useState<boolean>();
+  const [
+    getCategorizedProducts,
+    { data: categorizedProductsData, loading: categorizedProductsLoading },
+  ] = useLazyQuery(CategoriesWithProductsDocument, {
+    fetchPolicy: 'no-cache',
+  });
   const [getAllProducts, { data: productsData, loading: productsLoading }] = useLazyQuery(
     AllProductsDocument,
     { fetchPolicy: 'no-cache' }
@@ -72,21 +76,6 @@ export default function SelectedBranchScreen() {
     refetchQueries: [GetAllListsDocument, GetAllBranchListsByListIdDocument],
   });
   const { setSubHeader } = useHeader();
-
-  const searchVariables = useMemo(
-    () =>
-      ({
-        query: extractUndefined(query),
-        brand,
-        category,
-        categoryId: stringToNumber(categoryId),
-        branchId: +branchId,
-        storeId: +storeId,
-        sale: sale ? toBoolean(sale) : undefined,
-        sortByPrice,
-      }) as ProductSearch,
-    [query, category, categoryId, branchId, storeId, sale, sortByPrice, brand]
-  );
 
   function handleSearch(s?: string) {
     router.setParams({
@@ -105,17 +94,74 @@ export default function SelectedBranchScreen() {
     });
   }
 
-  useEffect(() => {
-    getAllProducts({
+  function fetchAllProducts(params: BranchQueryParams) {
+    const page = +(params.page ?? 1);
+    return getAllProducts({
       variables: {
-        paginator: { limit: LIMIT, page: +page },
-        search: { ...searchVariables },
+        paginator: { limit: LIMIT, page },
+        search: {
+          query: extractUndefined(params.query),
+          brand: params.brand,
+          category: params.category,
+          categoryId: stringToNumber(params.categoryId),
+          branchId: +params.branchId,
+          storeId: +params.storeId,
+          sale: params.sale ? toBoolean(params.sale) : undefined,
+          sortByPrice: params.sortByPrice,
+        },
       },
     });
-  }, [searchVariables, page]);
+  }
+
+  function fetchCategorizedProducts(params: BranchQueryParams) {
+    const page = +(params.page ?? 1);
+    getCategorizedProducts({
+      variables: {
+        paginator: {
+          page,
+          limit: 10,
+        },
+        productLimit: 20,
+        filters: {
+          branchId: +params.branchId,
+          sortByPrice: params.sortByPrice,
+          sale: params.sale ? toBoolean(params.sale) : undefined,
+        },
+      },
+    });
+  }
+
+  useEffect(() => {
+    const sp = { ...params } as any;
+    if (params.query?.length === 0) delete sp.query;
+    delete sp.page;
+    delete sp.sale;
+    delete sp.sortByPrice;
+    delete sp.branchId;
+    delete sp.storeId;
+    const filtersSize = Object.entries(sp).length;
+    setFilteredParamsSize(filtersSize);
+
+    if (filtersSize > 0) {
+      fetchAllProducts(params);
+    } else {
+      fetchCategorizedProducts(params);
+    }
+  }, [
+    params.page,
+    params.storeId,
+    params.branchId,
+    params.query,
+    params.brand,
+    params.category,
+    params.categoryId,
+    params.sale,
+    params.sortByPrice,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
+      const { storeId, branchId } = params;
       if (!storeId || !branchId) return router.back();
 
       fetchBranch({
@@ -134,7 +180,7 @@ export default function SelectedBranchScreen() {
           header: (props: BottomTabHeaderProps) => <TabHeaderItem {...props} />,
         });
       };
-    }, [storeId, branchId])
+    }, [params.storeId, params.branchId, lists.favorites])
   );
 
   useEffect(() => {
@@ -212,7 +258,7 @@ export default function SelectedBranchScreen() {
                     removeBranchFromList({
                       variables: {
                         branchListId: lists.favorites.branchList?.find(
-                          (b) => b.branchId.toString() === branchId
+                          (b) => b.branchId === branchId
                         )?.id!,
                         listId: lists.favorites.id,
                       },
@@ -241,7 +287,7 @@ export default function SelectedBranchScreen() {
             <TabHeaderItemSearchBar
               handleSearch={handleSearch}
               branchName={branchData ? branchData.findBranch.name : ''}
-              query={query}
+              query={params.query}
             />
           </View>
 
@@ -266,52 +312,91 @@ export default function SelectedBranchScreen() {
     branchLoading,
     lists,
     favorite,
-    query,
-    brand,
-    category,
-    categoryId,
-    sale,
-    sortByPrice,
+    params.query,
+    params.brand,
+    params.category,
+    params.categoryId,
+    params.sale,
+    params.sortByPrice,
   ]);
-
-  if (productsLoading) {
-    return <ProductFlatlistLoading count={LIMIT} style={{ paddingVertical: 10 }} />;
-  }
-
-  if (productsData && productsData.allProducts.products.length === 0) {
-    return (
-      <View className="flex items-center justify-center px-5 py-36">
-        <Text className="text-center">No products found</Text>
-      </View>
-    );
-  }
-
-  if (!productsData) return <></>;
-
   const products = (productsData?.allProducts.products as Product[]) || [];
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1">
-      <ProductFlatlist
-        products={products}
-        paginator={productsData?.allProducts.paginator}
-        handleRefresh={async () => {
-          return getAllProducts({
-            variables: {
-              paginator: { limit: LIMIT, page: +page },
-              search: { ...searchVariables },
-            },
-          });
-        }}
-        setPage={(p) => {
-          router.setParams({
-            ...params,
-            page: String(p),
-          });
-        }}
-        style={{ paddingVertical: 10 }}
-      />
+      {filteredParamsSize > 0 && productsData ? (
+        <>
+          {productsData.allProducts.products.length === 0 ? (
+            <View className="flex items-center justify-center px-5 py-36">
+              <Text className="text-center">No products found</Text>
+            </View>
+          ) : (
+            <ProductFlatlist
+              products={products}
+              paginator={productsData?.allProducts.paginator}
+              handleRefresh={async () => {
+                return fetchAllProducts(params);
+              }}
+              setPage={(p) => {
+                router.setParams({
+                  ...params,
+                  page: String(p),
+                });
+              }}
+              style={{ paddingVertical: 10 }}
+            />
+          )}
+        </>
+      ) : (
+        productsLoading && <ProductFlatlistLoading count={LIMIT} style={{ paddingVertical: 10 }} />
+      )}
+
+      {filteredParamsSize === 0 && categorizedProductsData ? (
+        <>
+          {categorizedProductsData.categoriesWithProducts.categories.length === 0 ? (
+            <View className="flex items-center justify-center px-5 py-36">
+              <Text className="text-center">No products found</Text>
+            </View>
+          ) : (
+            <ScrollView contentContainerStyle={{ paddingVertical: 30 }}>
+              {categorizedProductsData.categoriesWithProducts.categories.map((category, i) => (
+                <CategorizedProductItem
+                  storeId={storeId}
+                  branchId={branchId}
+                  category={category as CategoryWithProducts}
+                  key={`branch-${category.id}`}
+                />
+              ))}
+
+              {categorizedProductsData.categoriesWithProducts.paginator.numPages > 1 && (
+                <View className="mt-10">
+                  <SmartPagination
+                    paginator={categorizedProductsData.categoriesWithProducts.paginator}
+                    onPageChange={(p) => {
+                      router.setParams({
+                        ...params,
+                        page: String(p),
+                      });
+                    }}
+                  />
+                </View>
+              )}
+
+              <View className="h-[10vh]" />
+            </ScrollView>
+          )}
+        </>
+      ) : (
+        categorizedProductsLoading && (
+          <ScrollView contentContainerStyle={{ paddingVertical: 30 }}>
+            {Array(10)
+              .fill(0)
+              .map((_, i) => (
+                <CategorizedProductItemLoading key={`product-loading-parent-${i}`} />
+              ))}
+          </ScrollView>
+        )
+      )}
     </KeyboardAvoidingView>
   );
 }

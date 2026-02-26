@@ -1,48 +1,36 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { Product } from 'graphql-utils';
 import { debounce } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, AlertButton, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native';
 
 import ManualBarcodeForm from '@/components/ManualBarcodeForm';
-import ProductForm, {
-  selectImageForProductExtraction,
-} from '@/components/product-form/ProductForm';
+import ProductForm from '@/components/product-form/ProductForm';
 import ScannerOverlay from '@/components/scanner/ScannerOverlay';
 import Btn from '@/components/ui/Btn';
 import Button from '@/components/ui/Button';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import { barcodeTypes } from '@/constants/barcodeTypes';
-import { useAuth } from '@/context/UserContext';
-import {
-  BarcodeScanDocument,
-  ExtractAndCreateProductDocument,
-  Product,
-  UserRole,
-} from 'graphql-utils';
-import useLocationService from '@/hooks/useLocationService';
-import { isRoleAuthorized } from '@/lib/roles';
+import useAddProductPrompt from '@/hooks/useAddProductPrompt';
 
 export default function ScanScreen() {
-  const { user } = useAuth();
   const router = useRouter();
-
+  const {
+    handleBarcodeScan,
+    extractingProduct,
+    processingBarcode,
+    handleExtractionImage,
+    extractProductFromImagePrompt,
+  } = useAddProductPrompt();
   const [renderCameraComponent, setRenderCameraComponent] = useState(false);
   const [, setCamera] = useState<CameraView | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const [scannedCode, setScannedCode] = useState<string>();
   const [openManualBarcodeModal, setOpenManualBarcodeModal] = useState(false);
   const [openCreateProductModal, setOpenCreateProductModal] = useState(false);
-
-  const { getCurrentLocation } = useLocationService();
-
-  const [barcodeScan, { loading: processingBarcode }] = useLazyQuery(BarcodeScanDocument);
-  const [extractProductFields, { loading: extractingProduct }] = useMutation(
-    ExtractAndCreateProductDocument
-  );
 
   const debouncedHandleBarcodeScan = useMemo(
     () => debounce(_handleBarcodeScan, 1000, { leading: true, trailing: false }),
@@ -78,76 +66,38 @@ export default function ScanScreen() {
   }
 
   async function _handleBarcodeScan(barcode: string, searchMode?: boolean) {
-    const coords = await getCurrentLocation({});
-    const location = {
-      latitude: coords.coords.latitude,
-      longitude: coords.coords.longitude,
-      radiusMeters: 6000, // ~3.7 miles
-    };
-
     setScannedCode(barcode);
 
-    barcodeScan({
-      variables: { barcode, searchMode, location },
-    }).then(({ error, data }) => {
-      if (!error && data) {
-        return toProductPage(data.barcodeScan.id, data.barcodeScan.stock?.id);
-      }
-
-      setRenderCameraComponent(false);
-      const alertButtons: AlertButton[] = [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-          onPress: () => {
-            setRenderCameraComponent(true);
-          },
-        },
-      ];
-      if (isRoleAuthorized(UserRole.Contributor, user.role)) {
-        alertButtons.push({
-          text: 'Add Manually',
-          style: 'default',
-          onPress: () => {
-            setOpenCreateProductModal(true);
-          },
-        });
-      }
-      alertButtons.push({
-        text: 'Take Picture',
-        style: 'default',
-        isPreferred: true,
-        onPress: async () => {
-          const pic = await selectImageForProductExtraction(true, 0);
-          if (!pic) {
-            setRenderCameraComponent(true);
-            return;
-          }
-
-          extractProductFields({
-            variables: { barcode: barcode.replaceAll('*', ''), base64Image: pic.base64 },
-          })
-            .then(async ({ data }) => {
-              if (!data) throw new Error('could not extract data');
-
-              toProductPage(data.extractAndCreateProduct.id);
-            })
-            .catch((_err) => {
-              setRenderCameraComponent(true);
-              Alert.alert(
-                'Error extracting product data',
-                'Please try again or add the product manually'
-              );
+    handleBarcodeScan(barcode, {
+      onSuccess: (data) => toProductPage(data.barcodeScan.id, data.barcodeScan.stock?.id),
+      onError: () => {
+        setRenderCameraComponent(false);
+        Alert.alert(
+          `${barcode} does not exist in our database`,
+          'You can help us record and track prices for this product by taking a picture',
+          extractProductFromImagePrompt({
+            onTakePicture: () => {
+              handleExtractionImage(barcode, {
+                onSuccess: (data) => toProductPage(data.extractAndCreateProduct.id),
+                onError: () => {
+                  setRenderCameraComponent(true);
+                  Alert.alert(
+                    'Error extracting product data',
+                    'Please try again or add the product manually'
+                  );
+                  setOpenCreateProductModal(true);
+                },
+              });
+            },
+            onAddManually: () => {
               setOpenCreateProductModal(true);
-            });
-        },
-      });
-
-      Alert.alert(
-        'The barcode you scanned does not exist in our database',
-        'You can help us record and track prices for this product by taking a picture',
-        alertButtons
-      );
+            },
+            onCancel: () => {
+              setRenderCameraComponent(true);
+            },
+          })
+        );
+      },
     });
   }
 

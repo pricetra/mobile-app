@@ -157,6 +157,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="(profile)/list/history"
+        options={{
+          href: null,
+          animation: 'shift',
+          header: (props) => <TabHeaderItem {...props} />,
+          title: 'My List',
+          tabBarShowLabel: false,
+          tabBarStyle: { display: 'none' },
+        }}
+      />
+      <Tabs.Screen
         name="(profile)/my-scan-data"
         options={{
           href: null,
