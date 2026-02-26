@@ -96,7 +96,7 @@ export default function useAddProductPrompt() {
     onTakePicture,
   }: {
     onCancel: () => void;
-    onAddManually: () => void;
+    onAddManually?: () => void;
     onTakePicture: () => void;
   }) {
     const alertButtons: AlertButton[] = [
@@ -106,7 +106,7 @@ export default function useAddProductPrompt() {
         onPress: onCancel,
       },
     ];
-    if (isRoleAuthorized(UserRole.Contributor, user.role)) {
+    if (onAddManually && isRoleAuthorized(UserRole.Contributor, user.role)) {
       alertButtons.push({
         text: 'Add Manually',
         style: 'default',

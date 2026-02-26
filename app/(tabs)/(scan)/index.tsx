@@ -73,7 +73,7 @@ export default function ScanScreen() {
       onError: () => {
         setRenderCameraComponent(false);
         Alert.alert(
-          'The barcode you scanned does not exist in our database',
+          `${barcode} does not exist in our database`,
           'You can help us record and track prices for this product by taking a picture',
           extractProductFromImagePrompt({
             onTakePicture: () => {
