@@ -136,6 +136,7 @@ export default function ManualBarcodeForm({ onDismiss }: ManualBarcodeFormProps)
                         `/(tabs)/(products)/${data.barcodeScan.id}${params.size > 0 ? `?${params.toString()}` : ''}`,
                         { relativeToDirectory: false }
                       );
+                      onDismiss();
                     },
                     onError: () => {
                       Alert.alert(
@@ -144,10 +145,12 @@ export default function ManualBarcodeForm({ onDismiss }: ManualBarcodeFormProps)
                         extractProductFromImagePrompt({
                           onTakePicture: () => {
                             handleExtractionImage(text, {
-                              onSuccess: (data) =>
+                              onSuccess: (data) => {
                                 router.push(
                                   `/(tabs)/(products)/${data.extractAndCreateProduct.id}`
-                                ),
+                                );
+                                onDismiss();
+                              },
                               onError: () => {
                                 Alert.alert(
                                   'Error extracting product data',
