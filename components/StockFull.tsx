@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Stock } from 'graphql-utils';
+import { Product, Stock } from 'graphql-utils';
 import { View, Text } from 'react-native';
 
 import { Skeleton } from './ui/Skeleton';
@@ -7,23 +7,18 @@ import { Skeleton } from './ui/Skeleton';
 import Image from '@/components/ui/Image';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
+import usePricePerUnit from '@/hooks/usePricePerUnit';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
 import { metersToMiles } from '@/lib/utils';
 
 export type StockFullProps = {
+  product: Product;
   stock: Stock;
   approximatePrice?: number;
-  quantityValue?: number;
-  quantityType?: string;
 };
 
-export default function StockFull({
-  stock,
-  approximatePrice,
-  quantityValue,
-  quantityType,
-}: StockFullProps) {
+export default function StockFull({ stock, product, approximatePrice }: StockFullProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
 
   const isExpired = useIsSaleExpired(stock.latestPrice);
@@ -31,6 +26,7 @@ export default function StockFull({
     isExpired,
     latestPrice: stock.latestPrice,
   });
+  const pricePerUnit = usePricePerUnit(calculatedAmount, product);
 
   return (
     <View className="flex flex-row justify-between gap-5">
@@ -117,9 +113,9 @@ export default function StockFull({
             </View>
           )}
 
-          {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
+          {stock.latestPrice?.amount && pricePerUnit && (
             <Text className="text-right text-[10px] color-gray-500">
-              {`${currencyFormat(calculatedAmount / quantityValue)}/${quantityType}`}
+              {`${currencyFormat(pricePerUnit.amount)}/${pricePerUnit.unit}`}
             </Text>
           )}
 

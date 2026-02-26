@@ -58,11 +58,7 @@ export default function AllStocksView({ product, closeModal }: AllStocksViewProp
                 style={{
                   width: width / 2.5,
                 }}>
-                <StockItemMini
-                  stock={s as Stock}
-                  quantityValue={product.quantityValue}
-                  quantityType={product.quantityType}
-                />
+                <StockItemMini product={product} stock={s as Stock} />
               </TouchableOpacity>
             ))}
         </View>

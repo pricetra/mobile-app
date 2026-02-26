@@ -6,6 +6,7 @@ import {
   Price,
   PriceChangeHistoryDocument,
   PriceHistoryFilter,
+  Product,
   Stock,
 } from 'graphql-utils';
 import { useEffect, useState } from 'react';
@@ -19,10 +20,11 @@ import Btn from '@/components/ui/Btn';
 
 export type FullStockViewProps = {
   stock: Stock;
+  product: Product;
   closeModal: () => void;
 };
 
-export default function FullStockView({ stock, closeModal }: FullStockViewProps) {
+export default function FullStockView({ stock, product, closeModal }: FullStockViewProps) {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<PriceHistoryFilter | undefined>({
     orderBy: OrderByType.Desc,
@@ -48,7 +50,7 @@ export default function FullStockView({ stock, closeModal }: FullStockViewProps)
   return (
     <View>
       <View className="rounded-xl bg-gray-50 p-5">
-        <SelectedStock stock={stock} />
+        <SelectedStock stock={stock} product={product} />
       </View>
 
       <View className="mt-5 flex flex-row justify-between gap-3">

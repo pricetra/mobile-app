@@ -386,8 +386,12 @@ export default function ProductScreen() {
         visible={selectedStock !== undefined}
         onRequestClose={() => setSelectedStock(undefined)}
         title="Stock">
-        {selectedStock && (
-          <FullStockView stock={selectedStock} closeModal={() => setSelectedStock(undefined)} />
+        {selectedStock && productData && (
+          <FullStockView
+            stock={selectedStock}
+            product={productData.product}
+            closeModal={() => setSelectedStock(undefined)}
+          />
         )}
       </ModalFormFull>
 
@@ -420,11 +424,7 @@ export default function ProductScreen() {
                   <TouchableOpacity
                     className="rounded-xl bg-gray-50 p-5"
                     onPress={() => setSelectedStock(stockData.stock as Stock)}>
-                    <SelectedStock
-                      stock={stockData.stock as Stock}
-                      quantityValue={productData.product.quantityValue}
-                      quantityType={productData.product.quantityType}
-                    />
+                    <SelectedStock stock={stockData.stock as Stock} product={productData.product} />
                   </TouchableOpacity>
                 </View>
               ) : (

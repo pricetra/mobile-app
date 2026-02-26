@@ -1,4 +1,4 @@
-import { Stock } from 'graphql-utils';
+import { Product, Stock } from 'graphql-utils';
 import { View } from 'react-native';
 
 import PriceUserAndTimestamp from './PriceUserAndTimestamp';
@@ -7,8 +7,7 @@ import { Skeleton } from './ui/Skeleton';
 
 export type SelectedStockProps = {
   stock: Stock;
-  quantityValue?: number;
-  quantityType?: string;
+  product: Product;
 };
 
 export default function SelectedStock(props: SelectedStockProps) {

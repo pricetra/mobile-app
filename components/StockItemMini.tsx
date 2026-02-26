@@ -1,27 +1,26 @@
 import dayjs from 'dayjs';
-import { Stock } from 'graphql-utils';
+import { Product, Stock } from 'graphql-utils';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
 import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
+import usePricePerUnit from '@/hooks/usePricePerUnit';
 import { createCloudinaryUrl } from '@/lib/files';
 import { currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
 import { cn, metersToMiles } from '@/lib/utils';
 
 export type StockItemMiniProps = {
+  product: Product;
   stock: Stock;
   approximatePrice?: number;
-  quantityValue?: number;
-  quantityType?: string;
   stackLogo?: boolean;
 };
 
 export default function StockItemMini({
+  product,
   stock,
   approximatePrice,
-  quantityValue,
-  quantityType,
   stackLogo = false,
 }: StockItemMiniProps) {
   if (!stock.store || !stock.branch) throw new Error('stock has no store or branch objects');
@@ -31,6 +30,7 @@ export default function StockItemMini({
     isExpired,
     latestPrice: stock.latestPrice,
   });
+  const pricePerUnit = usePricePerUnit(calculatedAmount, product);
 
   return (
     <View className="flex flex-col gap-2">
@@ -85,9 +85,9 @@ export default function StockItemMini({
               </View>
             )}
 
-            {stock.latestPrice?.amount && quantityValue && quantityValue > 1 && (
+            {stock.latestPrice?.amount && pricePerUnit && (
               <Text className="text-[10px] color-gray-500">
-                {`${currencyFormat(calculatedAmount / quantityValue)}/${quantityType}`}
+                {`${currencyFormat(pricePerUnit.amount)}/${pricePerUnit.unit}`}
               </Text>
             )}
 
