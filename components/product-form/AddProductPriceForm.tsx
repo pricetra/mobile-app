@@ -210,7 +210,6 @@ export default function AddProductPriceForm({
             } as CreatePrice
           }
           onSubmit={(input, formik) => {
-            console.log(input);
             createPrice({
               variables: {
                 input: {

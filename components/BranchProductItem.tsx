@@ -1,11 +1,12 @@
 import { Feather } from '@expo/vector-icons';
+import { Branch } from 'graphql-utils';
 import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { Branch } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
+import { cleanUrl } from '@/lib/strings';
 import { metersToMiles } from '@/lib/utils';
 
 export type BranchProductItemProps = {
@@ -28,6 +29,10 @@ export default function BranchProductItem({
     if (cityName && branch.address) return branch.address.city;
     return branch.store?.name ?? branch.name;
   }, [branch, cityName, branchName]);
+  const storeUrl = useMemo(
+    () => (branch?.onlineAddress ? cleanUrl(branch.onlineAddress.url) : undefined),
+    [branch?.onlineAddress]
+  );
 
   return (
     <View>
@@ -56,12 +61,22 @@ export default function BranchProductItem({
                   </Text>
                 </View>
               )}
+
+              {branch.onlineAddress && (
+                <View className="rounded-full bg-pricetraGreenDark/10 px-2 py-0.5">
+                  <Text className="text-xs color-pricetraGreenHeavyDark">Online</Text>
+                </View>
+              )}
             </View>
 
             <View className="w-full">
-              <Text className="text-xs">
-                {branch.address?.street}, {branch.address?.city}
-              </Text>
+              {branch.address && (
+                <Text className="text-xs">
+                  {branch.address.street}, {branch.address.city}
+                </Text>
+              )}
+
+              {branch.onlineAddress && storeUrl && <Text className="text-xs">{storeUrl}</Text>}
             </View>
           </View>
         </View>

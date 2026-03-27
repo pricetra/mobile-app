@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { Product, Stock } from 'graphql-utils';
+import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
@@ -7,7 +8,7 @@ import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
 import usePricePerUnit from '@/hooks/usePricePerUnit';
 import { createCloudinaryUrl } from '@/lib/files';
-import { currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
+import { cleanUrl, currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
 import { cn, metersToMiles } from '@/lib/utils';
 
 export type StockItemMiniProps = {
@@ -31,6 +32,10 @@ export default function StockItemMini({
     latestPrice: stock.latestPrice,
   });
   const pricePerUnit = usePricePerUnit(calculatedAmount, product);
+  const storeUrl = useMemo(
+    () => (stock.branch?.onlineAddress ? cleanUrl(stock.branch.onlineAddress.url) : undefined),
+    [stock.branch?.onlineAddress]
+  );
 
   return (
     <View className="flex flex-col gap-2">
@@ -55,15 +60,29 @@ export default function StockItemMini({
                 </Text>
               </View>
             )}
+
+            {stock.branch.onlineAddress && (
+              <View className="mb-1 rounded-full bg-pricetraGreenDark/10 px-1.5 py-0.5">
+                <Text className="text-[8px] color-pricetraGreenHeavyDark">Online</Text>
+              </View>
+            )}
           </View>
 
           <Text className="text-[13px]" numberOfLines={2}>
             {stock.store.name}
           </Text>
 
-          <Text className="text-[9px]" numberOfLines={2}>
-            {stock.branch.address?.street}, {stock.branch.address?.city}
-          </Text>
+          {stock.branch.address && (
+            <Text className="text-[9px]" numberOfLines={2}>
+              {stock.branch.address.street}, {stock.branch.address.city}
+            </Text>
+          )}
+
+          {stock.branch.onlineAddress && storeUrl && (
+            <Text className="text-[9px]" numberOfLines={2}>
+              {storeUrl}
+            </Text>
+          )}
 
           <View
             className="mt-2 flex flex-col gap-0.5"
