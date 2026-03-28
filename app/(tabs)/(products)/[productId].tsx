@@ -42,6 +42,7 @@ import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useHeader } from '@/context/HeaderContext';
 import { useCurrentLocation } from '@/context/LocationContext';
+import { useRouteHistory } from '@/context/RouteHistory';
 import { UserAuthContext } from '@/context/UserContext';
 import { isRoleAuthorized } from '@/lib/roles';
 import { generateProductShareDescription, generateProductShareLink } from '@/lib/strings';
@@ -52,6 +53,7 @@ export default function ProductScreen() {
   const navigation = useNavigation();
   const { lists, user } = useContext(UserAuthContext);
   const { productId, stockId } = useLocalSearchParams<{ productId: string; stockId?: string }>();
+  const { prevRoute } = useRouteHistory();
   const { currentLocation } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
     useLazyQuery(ProductDocument, {
@@ -97,7 +99,7 @@ export default function ProductScreen() {
           productId: parsedProductId,
           viewerTrail: {
             stockId: !isNaN(parsedStockId) ? parsedStockId : undefined,
-            // TODO: Add origin history is not supported so that will also need to be implemented
+            origin: prevRoute,
           },
         },
       }).then(({ data }) => {

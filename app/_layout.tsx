@@ -23,11 +23,13 @@ import { DrawerProvider } from '@/context/DrawerContext';
 import { HeaderProvider } from '@/context/HeaderContext';
 import JwtStoreProvider, { JwtStoreContext } from '@/context/JwtStoreContext';
 import LocationContextProvider from '@/context/LocationContext';
+import RouteHistoryContextProvider from '@/context/RouteHistory';
 import SearchContextProvider from '@/context/SearchContext';
 import { UserContextProvider } from '@/context/UserContext';
 import ApolloWrapper from '@/graphql/ApolloWrapper';
 import { NotificationHandler } from '@/hooks/useNotificationObserver';
 import { NAV_THEME } from '@/lib/constants';
+import RouteChange from '@/components/ui/RouteChange';
 
 dayjs.extend(LocalizedFormat);
 dayjs.extend(relativeTime);
@@ -66,28 +68,31 @@ function RootStack() {
       </ApolloWrapper>
 
       {jwt && (
-        <ApolloWrapper jwt={jwt}>
-          <UserContextProvider jwt={jwt}>
-            <NotificationHandler>
-              <DrawerProvider>
-                <SearchContextProvider>
-                  <AutocompleteDropdownContextProvider>
-                    <AppDrawer />
-                    <WelcomeModal />
-                    <LocationContextProvider>
-                      <HeaderProvider>
-                        <Stack>
-                          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                          <Stack.Screen name="+not-found" />
-                        </Stack>
-                      </HeaderProvider>
-                    </LocationContextProvider>
-                  </AutocompleteDropdownContextProvider>
-                </SearchContextProvider>
-              </DrawerProvider>
-            </NotificationHandler>
-          </UserContextProvider>
-        </ApolloWrapper>
+        <RouteHistoryContextProvider>
+          <ApolloWrapper jwt={jwt}>
+            <UserContextProvider jwt={jwt}>
+              <NotificationHandler>
+                <DrawerProvider>
+                  <SearchContextProvider>
+                    <AutocompleteDropdownContextProvider>
+                      <AppDrawer />
+                      <WelcomeModal />
+                      <RouteChange />
+                      <LocationContextProvider>
+                        <HeaderProvider>
+                          <Stack>
+                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                            <Stack.Screen name="+not-found" />
+                          </Stack>
+                        </HeaderProvider>
+                      </LocationContextProvider>
+                    </AutocompleteDropdownContextProvider>
+                  </SearchContextProvider>
+                </DrawerProvider>
+              </NotificationHandler>
+            </UserContextProvider>
+          </ApolloWrapper>
+        </RouteHistoryContextProvider>
       )}
     </>
   );
