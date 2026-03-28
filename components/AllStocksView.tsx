@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client';
 import { router } from 'expo-router';
-import { GetProductStocksDocument, Product, Stock } from 'graphql-utils';
-import { useState } from 'react';
+import { BranchType, GetProductStocksDocument, Product, Stock } from 'graphql-utils';
+import { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, useWindowDimensions, ActivityIndicator } from 'react-native';
 
 import ProductItem from './ProductItem';
@@ -12,10 +12,15 @@ import { useCurrentLocation } from '@/context/LocationContext';
 
 export type AllStocksViewProps = {
   product: Product;
+  branchType?: BranchType;
   closeModal: () => void;
 };
 
-export default function AllStocksView({ product, closeModal }: AllStocksViewProps) {
+export default function AllStocksView({
+  product,
+  branchType = BranchType.Physical,
+  closeModal,
+}: AllStocksViewProps) {
   const { width } = useWindowDimensions();
   const [page, setPage] = useState(1);
   const { currentLocation } = useCurrentLocation();
@@ -27,9 +32,20 @@ export default function AllStocksView({ product, closeModal }: AllStocksViewProp
       },
       productId: product.id,
       location: currentLocation.locationInput,
+      branchType,
     },
     fetchPolicy: 'no-cache',
   });
+  const branchTypeReadable = useMemo(() => {
+    switch (branchType) {
+      case BranchType.Online:
+        return 'online';
+      case BranchType.Physical:
+        return 'in-store';
+      default:
+        return 'in-store';
+    }
+  }, [branchType]);
 
   return (
     <View>
@@ -39,7 +55,7 @@ export default function AllStocksView({ product, closeModal }: AllStocksViewProp
 
       <View className="mb-5 mt-10 border-b-[1px] border-gray-100" />
 
-      <Text className="text-xl font-black">Available stocks</Text>
+      <Text className="text-xl font-black">Available {branchTypeReadable} stocks</Text>
 
       <View className="mt-7">
         {loading && (
