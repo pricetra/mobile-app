@@ -16,6 +16,8 @@ import {
   Stock,
   StockDocument,
   UserRole,
+  AllBranchesDocument,
+  BranchType,
 } from 'graphql-utils';
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
@@ -32,6 +34,7 @@ import Image from '@/components/ui/Image';
 import Label from '@/components/ui/Label';
 import { useAuth } from '@/context/UserContext';
 import useLocationService from '@/hooks/useLocationService';
+import useStoreUser from '@/hooks/useStoreUser';
 import { createCloudinaryUrl } from '@/lib/files';
 import { isRoleAuthorized } from '@/lib/roles';
 
@@ -49,10 +52,13 @@ export default function AddProductPriceForm({
   onError,
 }: AddProductPriceFormProps) {
   const { user } = useAuth();
-  const [findBranchesByDistance, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
+  const [findBranchesByDistance, { loading: branchesLoading }] = useLazyQuery(
     FindBranchesByDistanceDocument,
     { fetchPolicy: 'no-cache' }
   );
+  const [getOnlineBranches] = useLazyQuery(AllBranchesDocument, {
+    fetchPolicy: 'no-cache',
+  });
   const [getStock, { data: stockData }] = useLazyQuery(GetStockFromProductAndBranchIdDocument, {
     fetchPolicy: 'no-cache',
   });
@@ -64,19 +70,24 @@ export default function AddProductPriceForm({
       BranchesWithProductsDocument,
     ],
   });
+  const myBranches = useStoreUser();
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [branchId, setBranchId] = useState<string>();
   const selectedBranch = useMemo(
-    () =>
-      branchId
-        ? branchesData?.findBranchesByDistance?.find(({ id }) => branchId === String(id))
-        : undefined,
-    [branchId, branchesData]
+    () => (branchId ? branches.find(({ id }) => branchId === String(id)) : undefined),
+    [branchId, branches]
   );
   const { location, getCurrentLocation } = useLocationService();
 
   const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
 
   const stock = stockData?.getStockFromProductAndBranchId as Stock | undefined;
+
+  useEffect(() => {
+    if (!myBranches || myBranches.length === 0) return;
+
+    setBranches((prev) => [...myBranches, ...prev]);
+  }, [myBranches]);
 
   useEffect(() => {
     if (!location) {
@@ -89,13 +100,27 @@ export default function AddProductPriceForm({
         lon: location.coords.longitude,
         radiusMeters: isRoleAuthorized(UserRole.Admin, user.role) ? 18_000 : 500,
       },
+    }).then(({ data }) => {
+      if (!data) return;
+
+      const b = data.findBranchesByDistance as Branch[];
+      setBranches((prev) => [...prev, ...b]);
+      setBranchId(b.at(0)?.id?.toString());
+    });
+
+    getOnlineBranches({
+      variables: {
+        paginator: {
+          page: 1,
+          limit: 50,
+        },
+        branchType: BranchType.Online,
+      },
+    }).then(({ data }) => {
+      if (!data) return;
+      setBranches((prev) => [...prev, ...(data.allBranches.branches as Branch[])]);
     });
   }, [location, user]);
-
-  useEffect(() => {
-    if (!branchesData) return;
-    setBranchId(branchesData.findBranchesByDistance.at(0)?.id?.toString());
-  }, [branchesData]);
 
   useEffect(() => {
     if (!branchId) return;
@@ -123,7 +148,7 @@ export default function AddProductPriceForm({
     );
   }
 
-  if (!branchesData || branchesData.findBranchesByDistance.length === 0) {
+  if (branches.length === 0) {
     return (
       <View className="flex h-40 items-center justify-center gap-5 py-10">
         <Text className="text-lg font-bold">No branches found near you</Text>
@@ -153,10 +178,10 @@ export default function AddProductPriceForm({
 
         <Combobox
           initialValue={branchId}
-          dataSet={branchesData.findBranchesByDistance.map((b) => ({
+          dataSet={branches.map((b) => ({
             id: b.id.toString(),
             title: b.name,
-            description: b.address?.fullAddress,
+            description: b.address?.fullAddress ?? b.onlineAddress?.url,
             logo: b.store?.logo,
           }))}
           onSelectItem={(data) => {
@@ -165,8 +190,7 @@ export default function AddProductPriceForm({
           }}
           textInputProps={{
             placeholder: 'Select Branch',
-            value: branchesData.findBranchesByDistance?.find(({ id }) => id.toString() === branchId)
-              ?.name,
+            value: branches.find(({ id }) => id.toString() === branchId)?.name,
           }}
           renderItem={(item: any) => (
             <View className="flex flex-row items-center gap-2 p-3">
