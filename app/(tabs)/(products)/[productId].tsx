@@ -1,6 +1,7 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import * as Application from 'expo-application';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
@@ -100,7 +101,7 @@ export default function ProductScreen() {
           productId: parsedProductId,
           viewerTrail: {
             stockId: !isNaN(parsedStockId) ? parsedStockId : undefined,
-            origin: prevRoute,
+            origin: `${Application.applicationId}${prevRoute}`,
             metadata: {
               device: `${Device.brand} ${Device.modelName} (${Device.osName} ${Device.osVersion})`,
             },
