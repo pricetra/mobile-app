@@ -309,7 +309,7 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
   const formikContext = useFormikContext<CreatePrice>();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [available, setAvailable] = useState(true);
-  const { myStoreUsers } = useAuth();
+  const { user, myStoreUsers } = useAuth();
 
   const isStoreUser = useMemo(() => {
     const storeUser = myStoreUsers?.find((v) => {
@@ -333,6 +333,12 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
       originalPrice: latestPrice.originalPrice,
       condition: latestPrice.condition,
       unitType: latestPrice.unitType,
+      onlineItem: stock?.onlineItem
+        ? {
+            url: stock.onlineItem.url,
+            itemId: stock.onlineItem.itemId,
+          }
+        : undefined,
     });
   }, [latestPrice]);
 
@@ -486,6 +492,45 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
                 maximumDate={dayjs(new Date()).add(1, 'year').toDate()}
               />
             )}
+          </View>
+        </View>
+      )}
+
+      {user && isRoleAuthorized(UserRole.Admin, user.role) && (
+        <View className="mt-10">
+          <Text className="mb-5 font-bold">Online Product Details</Text>
+
+          <View className='flex flex-col gap-3'>
+            <Input
+              placeholder="Online product URL"
+              value={formikContext.values.onlineItem?.url ?? ''}
+              onChangeText={formikContext.handleChange('onlineItem.url')}
+            />
+
+            <Input
+              placeholder="Online product item ID"
+              value={formikContext.values.onlineItem?.itemId ?? ''}
+              onChangeText={(value) => {
+                formikContext.setFieldValue('onlineItem.itemId', value);
+
+                if (branch.onlineAddress?.itemUrlTemplate) {
+                  let generatedUrl = branch.onlineAddress.itemUrlTemplate.replaceAll(
+                    '[PRODUCT_ID]',
+                    value
+                  );
+
+                  if (branch.onlineAddress.referralCode) {
+                    generatedUrl = generatedUrl.replace(
+                      '[REFERRAL_CODE]',
+                      branch.onlineAddress.referralCode
+                    );
+                    formikContext.setFieldValue('onlineItem.url', generatedUrl);
+                  }
+
+                  formikContext.setFieldValue('onlineItem.url', generatedUrl);
+                }
+              }}
+            />
           </View>
         </View>
       )}
