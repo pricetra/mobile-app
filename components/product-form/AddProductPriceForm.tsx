@@ -109,7 +109,8 @@ export default function AddProductPriceForm({
 
       const b = data.findBranchesByDistance as Branch[];
       setBranches((prev) => [...prev, ...b]);
-      setBranchId(b.at(0)?.id?.toString());
+      const closestBranchId = b.at(0)?.id;
+      if (closestBranchId) setBranchId(closestBranchId.toString());
     });
 
     getOnlineBranches({
