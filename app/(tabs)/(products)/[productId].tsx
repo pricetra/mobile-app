@@ -295,7 +295,7 @@ export default function ProductScreen() {
     <>
       {openShareModal && productData && (
         <ModalFormFull
-          title="Share Product"
+          title="Share"
           visible={openShareModal}
           onRequestClose={() => setOpenShareModal(false)}>
           <ShareProductForm

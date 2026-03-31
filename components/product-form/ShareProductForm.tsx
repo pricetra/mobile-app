@@ -147,21 +147,20 @@ export default function ShareProductForm({
         <SocialButton
           title="More"
           border
-          icon={<Feather name="more-horizontal" color="black" size={18} />}
+          icon={<Feather name="more-horizontal" color="black" size={22} />}
           onPress={share}
         />
       </View>
 
       <View className="mt-2">
         <Textarea
-          label="Share message"
           value={shareDescriptionText}
           onChangeText={setShareDescriptionText}
           placeholder="Enter your message"
           className="min-h-[105px]"
         />
 
-        <View className="mt-3 flex flex-row justify-end">
+        <View className="mt-3 flex flex-row items-center">
           <Btn
             text="Copy"
             icon={<FontAwesome6 name="copy" size={14} color="white" />}
