@@ -1,8 +1,8 @@
 import { Entypo } from '@expo/vector-icons';
+import { Stock } from 'graphql-utils';
 import { View, Text } from 'react-native';
 
 import Image from '@/components/ui/Image';
-import { Stock } from 'graphql-utils';
 import { createCloudinaryUrl } from '@/lib/files';
 import { metersToMiles } from '@/lib/utils';
 
@@ -35,6 +35,13 @@ export default function ProductStockMini({ stock }: ProductStockMiniProps) {
                 </Text>
               </>
             )}
+          </View>
+        )}
+        {stock.branch?.onlineAddress && (
+          <View className="flex flex-row flex-wrap items-center gap-[1px]">
+            <Text className="max-w-[70%] text-[9px]" numberOfLines={1}>
+              Online
+            </Text>
           </View>
         )}
       </View>

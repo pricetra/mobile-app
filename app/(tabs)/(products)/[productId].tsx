@@ -1,6 +1,8 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
+import * as Application from 'expo-application';
+import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
 import {
@@ -26,7 +28,6 @@ import {
   Platform,
   TouchableOpacity,
   ActivityIndicator,
-  Share,
 } from 'react-native';
 import { IOFlatList } from 'react-native-intersection-observer';
 
@@ -36,15 +37,16 @@ import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import SelectedStock, { SelectedStockLoading } from '@/components/SelectedStock';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
+import ShareProductForm from '@/components/product-form/ShareProductForm';
 import AddToGroceryListFab from '@/components/ui/AddToGroceryListFab';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useHeader } from '@/context/HeaderContext';
 import { useCurrentLocation } from '@/context/LocationContext';
+import { useRouteHistory } from '@/context/RouteHistory';
 import { UserAuthContext } from '@/context/UserContext';
 import { isRoleAuthorized } from '@/lib/roles';
-import { generateProductShareDescription, generateProductShareLink } from '@/lib/strings';
 import { incompleteProductFields } from '@/lib/utils';
 
 export default function ProductScreen() {
@@ -52,6 +54,7 @@ export default function ProductScreen() {
   const navigation = useNavigation();
   const { lists, user } = useContext(UserAuthContext);
   const { productId, stockId } = useLocalSearchParams<{ productId: string; stockId?: string }>();
+  const { prevRoute } = useRouteHistory();
   const { currentLocation } = useCurrentLocation();
   const [getProduct, { data: productData, loading: productLoading, error: productError }] =
     useLazyQuery(ProductDocument, {
@@ -62,6 +65,8 @@ export default function ProductScreen() {
   });
 
   const [stock, setStock] = useState<Stock>();
+
+  const [openShareModal, setOpenShareModal] = useState(false);
 
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
@@ -97,7 +102,10 @@ export default function ProductScreen() {
           productId: parsedProductId,
           viewerTrail: {
             stockId: !isNaN(parsedStockId) ? parsedStockId : undefined,
-            // TODO: Add origin history is not supported so that will also need to be implemented
+            origin: `${Application.applicationId}${prevRoute}`,
+            metadata: {
+              device: `${Device.brand} ${Device.modelName} (${Device.osName} ${Device.osVersion})`,
+            },
           },
         },
       }).then(({ data }) => {
@@ -138,25 +146,7 @@ export default function ProductScreen() {
   async function share() {
     if (!productData) return;
 
-    const product = productData.product;
-    let stock: Stock | undefined = undefined;
-    if (stockId && stockData) {
-      stock = stockData.stock as Stock;
-    }
-
-    try {
-      const title = productData.product.name;
-      const url = generateProductShareLink('other', product, stock, user);
-      const message = generateProductShareDescription(product, stock, user, true);
-
-      await Share.share({
-        title,
-        message,
-        url,
-      });
-    } catch (error: any) {
-      Alert.alert('Could not share', error.message);
-    }
+    setOpenShareModal(true);
   }
 
   async function add(type: ListType.WatchList | ListType.Favorites): Promise<ProductList> {
@@ -303,6 +293,20 @@ export default function ProductScreen() {
 
   return (
     <>
+      {openShareModal && productData && (
+        <ModalFormFull
+          title="Share"
+          visible={openShareModal}
+          onRequestClose={() => setOpenShareModal(false)}>
+          <ShareProductForm
+            product={productData.product}
+            stock={stockData?.stock as Stock | undefined}
+            onCancel={() => setOpenShareModal(false)}
+            onSuccess={() => setOpenShareModal(false)}
+          />
+        </ModalFormFull>
+      )}
+
       {productData && (
         <ModalFormFull
           title="Add Price"

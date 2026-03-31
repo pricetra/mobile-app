@@ -1,18 +1,15 @@
 import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
-import { List, ListType } from 'graphql-utils';
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 
 import { ListIconRenderer } from '../index';
 
-import BranchListView from '@/components/BranchListView';
-import ProductListView from '@/components/ProductListView';
+import ProductHistoryView from '@/components/ProductHistoryView';
+import SearchHistoryView from '@/components/SearchHistoryView';
 import TabHeaderItem from '@/components/ui/TabHeaderItem';
 import { useHeader } from '@/context/HeaderContext';
 import { cn } from '@/lib/utils';
-import ProductHistoryView from '@/components/ProductHistoryView';
-import SearchHistoryView from '@/components/SearchHistoryView';
 
 enum ListScreenTabType {
   Products = 'products',

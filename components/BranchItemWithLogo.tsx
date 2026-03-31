@@ -1,10 +1,12 @@
 import { Branch } from 'graphql-utils';
+import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
 import { Skeleton } from './ui/Skeleton';
 
 import Image from '@/components/ui/Image';
 import { createCloudinaryUrl } from '@/lib/files';
+import { cleanUrl } from '@/lib/strings';
 import { metersToMiles } from '@/lib/utils';
 
 export type BranchItemWithLogoProps = {
@@ -12,6 +14,11 @@ export type BranchItemWithLogoProps = {
 };
 
 export default function BranchItemWithLogo({ branch }: BranchItemWithLogoProps) {
+  const storeUrl = useMemo(
+    () => (branch?.onlineAddress ? cleanUrl(branch.onlineAddress.url) : undefined),
+    [branch?.onlineAddress]
+  );
+
   return (
     <View className="flex flex-row justify-between gap-5">
       <View className="flex flex-1 flex-row gap-4">
@@ -32,7 +39,8 @@ export default function BranchItemWithLogo({ branch }: BranchItemWithLogoProps) 
           </View>
 
           <View className="w-full">
-            <Text className="text-xs">{branch.address?.fullAddress}</Text>
+            {branch.address && <Text className="text-xs">{branch.address.fullAddress}</Text>}
+            {branch.onlineAddress && storeUrl && <Text className="text-xs">{storeUrl}</Text>}
 
             {branch.address?.distance && (
               <Text className="mt-1 text-xs">{metersToMiles(branch.address.distance)} mi</Text>

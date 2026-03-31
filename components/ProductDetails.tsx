@@ -4,6 +4,7 @@ import convert from 'convert-units';
 import { router } from 'expo-router';
 import {
   BranchListWithPrices,
+  BranchType,
   FavoriteBranchesWithPricesDocument,
   GetProductNutritionDataDocument,
   GetProductStocksDocument,
@@ -71,7 +72,10 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
   const { lists } = useAuth();
   const { currentLocation, setCurrentLocation } = useCurrentLocation();
 
-  const [getProductStocks, { data: stocksData }] = useLazyQuery(GetProductStocksDocument, {
+  const [getInStoreStocks, { data: inStoreStocksData }] = useLazyQuery(GetProductStocksDocument, {
+    fetchPolicy: 'no-cache',
+  });
+  const [getOnlineStocks, { data: onlineStocksData }] = useLazyQuery(GetProductStocksDocument, {
     fetchPolicy: 'no-cache',
   });
   const [getFavBranchesPrices, { data: favBranchesPriceData }] = useLazyQuery(
@@ -85,7 +89,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
 
   const [activeSections, setActiveSections] = useState<number[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock>();
-  const [showAllStocks, setShowAllStocks] = useState(false);
+  const [showAllStocks, setShowAllStocks] = useState<BranchType>();
   const [openFiltersModal, setOpenFiltersModal] = useState(false);
   const [updateProductNutrition, { loading: updatingProductNutrition }] = useMutation(
     UpdateProductNutritionDataDocument,
@@ -114,7 +118,7 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
   }, [product.id]);
 
   useEffect(() => {
-    getProductStocks({
+    getInStoreStocks({
       variables: {
         paginator: {
           page: 1,
@@ -122,9 +126,23 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
         },
         productId: product.id,
         location: currentLocation.locationInput,
+        branchType: BranchType.Physical,
       },
     });
   }, [product.id, currentLocation.locationInput]);
+
+  useEffect(() => {
+    getOnlineStocks({
+      variables: {
+        paginator: {
+          page: 1,
+          limit: 10,
+        },
+        productId: product.id,
+        branchType: BranchType.Online,
+      },
+    });
+  }, [product.id]);
 
   useEffect(() => {
     if (!availableFavoriteBranches || availableFavoriteBranches.length === 0) return;
@@ -132,14 +150,27 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
   }, [availableFavoriteBranches]);
 
   useEffect(() => {
-    if (stocksData?.getProductStocks && stocksData.getProductStocks.paginator.total === 0) return;
+    if (
+      inStoreStocksData?.getProductStocks &&
+      inStoreStocksData.getProductStocks.paginator.total === 0
+    )
+      return;
     setActiveSections((prev) => [...prev, 1]);
-  }, [stocksData]);
+  }, [inStoreStocksData]);
+
+  useEffect(() => {
+    if (
+      onlineStocksData?.getProductStocks &&
+      onlineStocksData.getProductStocks.paginator.total === 0
+    )
+      return;
+    setActiveSections((prev) => [...prev, 2]);
+  }, [onlineStocksData]);
 
   useEffect(() => {
     if (!product.category) return;
     if (!product.category.path.includes('462')) return;
-    setActiveSections((prev) => [...prev, 2]);
+    setActiveSections((prev) => [...prev, 3]);
   }, [product.category]);
 
   return (
@@ -158,10 +189,14 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
       </ModalFormFull>
 
       <ModalFormFull
-        visible={showAllStocks}
-        onRequestClose={() => setShowAllStocks(false)}
+        visible={!!showAllStocks}
+        onRequestClose={() => setShowAllStocks(undefined)}
         title="View All Stocks">
-        <AllStocksView product={product} closeModal={() => setShowAllStocks(false)} />
+        <AllStocksView
+          product={product}
+          branchType={showAllStocks}
+          closeModal={() => setShowAllStocks(undefined)}
+        />
       </ModalFormFull>
 
       <ModalFormMini
@@ -266,8 +301,8 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
             ),
           },
           {
-            title: 'Available at',
-            badge: stocksData?.getProductStocks?.paginator?.total ?? 0,
+            title: 'Available in Stores',
+            badge: inStoreStocksData?.getProductStocks?.paginator?.total ?? 0,
             noHorizontalPadding: true,
             content: (
               <View>
@@ -275,12 +310,12 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                   <LocationChangeButton onPress={() => setOpenFiltersModal(true)} />
                 </View>
 
-                {stocksData ? (
+                {inStoreStocksData ? (
                   <>
-                    {stocksData.getProductStocks.paginator.total !== 0 ? (
+                    {inStoreStocksData.getProductStocks.paginator.total !== 0 ? (
                       <>
                         <View className="flex flex-row flex-wrap justify-between gap-x-5 gap-y-8 px-5">
-                          {stocksData.getProductStocks.stocks.map((s, i) => (
+                          {inStoreStocksData.getProductStocks.stocks.map((s, i) => (
                             <TouchableOpacity
                               onPress={() => setSelectedStock(s as Stock)}
                               key={`stock-${s.id}-${i}`}
@@ -292,14 +327,14 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                           ))}
                         </View>
 
-                        {stocksData.getProductStocks.paginator.next && (
+                        {inStoreStocksData.getProductStocks.paginator.next && (
                           <View className="my-5 flex flex-row items-center justify-center px-5 py-8">
                             <Btn
                               size="sm"
                               bgColor="bg-gray-200"
                               color="text-gray-800"
                               rounded="full"
-                              onPress={() => setShowAllStocks(true)}
+                              onPress={() => setShowAllStocks(BranchType.Physical)}
                               text="Show All"
                             />
                           </View>
@@ -307,7 +342,57 @@ export function ProductDetails({ product, stock }: ProductDetailsProps) {
                       </>
                     ) : (
                       <Text className="py-5 text-center">
-                        No stocks and prices found for this product.
+                        No in-store stocks available for this product
+                      </Text>
+                    )}
+                  </>
+                ) : (
+                  <View className="flex items-center justify-center px-5 py-5">
+                    <ActivityIndicator />
+                  </View>
+                )}
+              </View>
+            ),
+          },
+          {
+            title: 'Available Online',
+            badge: onlineStocksData?.getProductStocks?.paginator?.total ?? 0,
+            noHorizontalPadding: true,
+            content: (
+              <View>
+                {onlineStocksData ? (
+                  <>
+                    {onlineStocksData.getProductStocks.paginator.total !== 0 ? (
+                      <>
+                        <View className="flex flex-row flex-wrap justify-between gap-x-5 gap-y-8 px-5">
+                          {onlineStocksData.getProductStocks.stocks.map((s, i) => (
+                            <TouchableOpacity
+                              onPress={() => setSelectedStock(s as Stock)}
+                              key={`stock-${s.id}-${i}`}
+                              style={{
+                                width: width / 2.5,
+                              }}>
+                              <StockItemMini product={product} stock={s as Stock} />
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+
+                        {onlineStocksData.getProductStocks.paginator.next && (
+                          <View className="my-5 flex flex-row items-center justify-center px-5 py-8">
+                            <Btn
+                              size="sm"
+                              bgColor="bg-gray-200"
+                              color="text-gray-800"
+                              rounded="full"
+                              onPress={() => setShowAllStocks(BranchType.Online)}
+                              text="Show All"
+                            />
+                          </View>
+                        )}
+                      </>
+                    ) : (
+                      <Text className="py-5 text-center">
+                        No online stocks available for this product
                       </Text>
                     )}
                   </>

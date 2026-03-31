@@ -16,6 +16,8 @@ import {
   Stock,
   StockDocument,
   UserRole,
+  AllBranchesDocument,
+  BranchType,
 } from 'graphql-utils';
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
@@ -32,6 +34,7 @@ import Image from '@/components/ui/Image';
 import Label from '@/components/ui/Label';
 import { useAuth } from '@/context/UserContext';
 import useLocationService from '@/hooks/useLocationService';
+import useStoreUser from '@/hooks/useStoreUser';
 import { createCloudinaryUrl } from '@/lib/files';
 import { isRoleAuthorized } from '@/lib/roles';
 
@@ -49,10 +52,13 @@ export default function AddProductPriceForm({
   onError,
 }: AddProductPriceFormProps) {
   const { user } = useAuth();
-  const [findBranchesByDistance, { data: branchesData, loading: branchesLoading }] = useLazyQuery(
+  const [findBranchesByDistance, { loading: branchesLoading }] = useLazyQuery(
     FindBranchesByDistanceDocument,
     { fetchPolicy: 'no-cache' }
   );
+  const [getOnlineBranches] = useLazyQuery(AllBranchesDocument, {
+    fetchPolicy: 'no-cache',
+  });
   const [getStock, { data: stockData }] = useLazyQuery(GetStockFromProductAndBranchIdDocument, {
     fetchPolicy: 'no-cache',
   });
@@ -64,13 +70,12 @@ export default function AddProductPriceForm({
       BranchesWithProductsDocument,
     ],
   });
+  const myBranches = useStoreUser();
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [branchId, setBranchId] = useState<string>();
   const selectedBranch = useMemo(
-    () =>
-      branchId
-        ? branchesData?.findBranchesByDistance?.find(({ id }) => branchId === String(id))
-        : undefined,
-    [branchId, branchesData]
+    () => (branchId ? branches.find(({ id }) => branchId === String(id)) : undefined),
+    [branchId, branches]
   );
   const { location, getCurrentLocation } = useLocationService();
 
@@ -79,6 +84,16 @@ export default function AddProductPriceForm({
   const stock = stockData?.getStockFromProductAndBranchId as Stock | undefined;
 
   useEffect(() => {
+    if (!myBranches || myBranches.length === 0) return;
+
+    setBranches((prev) => [...myBranches, ...prev]);
+  }, [myBranches]);
+
+  useEffect(() => {
+    if (myBranches && myBranches.length > 0) {
+      setBranches([...(myBranches as Branch[])]);
+    }
+
     if (!location) {
       getCurrentLocation({});
       return;
@@ -89,13 +104,27 @@ export default function AddProductPriceForm({
         lon: location.coords.longitude,
         radiusMeters: isRoleAuthorized(UserRole.Admin, user.role) ? 18_000 : 500,
       },
-    });
-  }, [location, user]);
+    }).then(({ data }) => {
+      if (!data) return;
 
-  useEffect(() => {
-    if (!branchesData) return;
-    setBranchId(branchesData.findBranchesByDistance.at(0)?.id?.toString());
-  }, [branchesData]);
+      const b = data.findBranchesByDistance as Branch[];
+      setBranches((prev) => [...prev, ...b]);
+      setBranchId(b.at(0)?.id?.toString());
+    });
+
+    getOnlineBranches({
+      variables: {
+        paginator: {
+          page: 1,
+          limit: 50,
+        },
+        branchType: BranchType.Online,
+      },
+    }).then(({ data }) => {
+      if (!data) return;
+      setBranches((prev) => [...prev, ...(data.allBranches.branches as Branch[])]);
+    });
+  }, [myBranches, location, user]);
 
   useEffect(() => {
     if (!branchId) return;
@@ -123,7 +152,7 @@ export default function AddProductPriceForm({
     );
   }
 
-  if (!branchesData || branchesData.findBranchesByDistance.length === 0) {
+  if (branches.length === 0) {
     return (
       <View className="flex h-40 items-center justify-center gap-5 py-10">
         <Text className="text-lg font-bold">No branches found near you</Text>
@@ -153,10 +182,10 @@ export default function AddProductPriceForm({
 
         <Combobox
           initialValue={branchId}
-          dataSet={branchesData.findBranchesByDistance.map((b) => ({
+          dataSet={branches.map((b) => ({
             id: b.id.toString(),
             title: b.name,
-            description: b.address?.fullAddress,
+            description: b.address?.fullAddress ?? b.onlineAddress?.url,
             logo: b.store?.logo,
           }))}
           onSelectItem={(data) => {
@@ -165,8 +194,6 @@ export default function AddProductPriceForm({
           }}
           textInputProps={{
             placeholder: 'Select Branch',
-            value: branchesData.findBranchesByDistance?.find(({ id }) => id.toString() === branchId)
-              ?.name,
           }}
           renderItem={(item: any) => (
             <View className="flex flex-row items-center gap-2 p-3">
@@ -210,7 +237,6 @@ export default function AddProductPriceForm({
             } as CreatePrice
           }
           onSubmit={(input, formik) => {
-            console.log(input);
             createPrice({
               variables: {
                 input: {
@@ -267,6 +293,8 @@ export default function AddProductPriceForm({
                   </View>
                 </View>
               </View>
+
+              <View style={{ height: 50 }} />
             </View>
           )}
         </Formik>
@@ -284,9 +312,18 @@ type PriceFormProps = {
 
 function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
   const formikContext = useFormikContext<CreatePrice>();
+  const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [available, setAvailable] = useState(true);
-  const { myStoreUsers } = useAuth();
+  const { user, myStoreUsers } = useAuth();
+  const basePriceInput = {
+    productId: formikContext.values.productId,
+    branchId: formikContext.values.branchId,
+    amount: 0,
+    unitType: 'item',
+    sale: false,
+    expiresAt: nextWeek,
+  } as CreatePrice;
 
   const isStoreUser = useMemo(() => {
     const storeUser = myStoreUsers?.find((v) => {
@@ -300,7 +337,18 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
   }, [myStoreUsers, branch]);
 
   useEffect(() => {
-    if (!latestPrice) return;
+    if (!latestPrice) {
+      formikContext.setValues({
+        ...basePriceInput,
+        onlineItem: stock?.onlineItem
+          ? {
+              url: stock.onlineItem.url,
+              itemId: stock.onlineItem.itemId,
+            }
+          : undefined,
+      } as CreatePrice);
+      return;
+    }
 
     formikContext.setValues({
       ...formikContext.values,
@@ -310,6 +358,12 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
       originalPrice: latestPrice.originalPrice,
       condition: latestPrice.condition,
       unitType: latestPrice.unitType,
+      onlineItem: stock?.onlineItem
+        ? {
+            url: stock.onlineItem.url,
+            itemId: stock.onlineItem.itemId,
+          }
+        : undefined,
     });
   }, [latestPrice]);
 
@@ -463,6 +517,45 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
                 maximumDate={dayjs(new Date()).add(1, 'year').toDate()}
               />
             )}
+          </View>
+        </View>
+      )}
+
+      {user && isRoleAuthorized(UserRole.Admin, user.role) && (
+        <View className="mt-10">
+          <Text className="mb-5 font-bold">Online Product Details</Text>
+
+          <View className="flex flex-col gap-3">
+            <Input
+              placeholder="Online product URL"
+              value={formikContext.values.onlineItem?.url ?? ''}
+              onChangeText={formikContext.handleChange('onlineItem.url')}
+            />
+
+            <Input
+              placeholder="Online product item ID"
+              value={formikContext.values.onlineItem?.itemId ?? ''}
+              onChangeText={(value) => {
+                formikContext.setFieldValue('onlineItem.itemId', value);
+
+                if (branch.onlineAddress?.itemUrlTemplate) {
+                  let generatedUrl = branch.onlineAddress.itemUrlTemplate.replaceAll(
+                    '[PRODUCT_ID]',
+                    value
+                  );
+
+                  if (branch.onlineAddress.referralCode) {
+                    generatedUrl = generatedUrl.replace(
+                      '[REFERRAL_CODE]',
+                      branch.onlineAddress.referralCode
+                    );
+                    formikContext.setFieldValue('onlineItem.url', generatedUrl);
+                  }
+
+                  formikContext.setFieldValue('onlineItem.url', generatedUrl);
+                }
+              }}
+            />
           </View>
         </View>
       )}

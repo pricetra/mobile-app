@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { Product, Stock } from 'graphql-utils';
+import { useMemo } from 'react';
 import { View, Text } from 'react-native';
 
 import { Skeleton } from './ui/Skeleton';
@@ -9,7 +10,7 @@ import useCalculatedPrice from '@/hooks/useCalculatedPrice';
 import useIsSaleExpired from '@/hooks/useIsSaleExpired';
 import usePricePerUnit from '@/hooks/usePricePerUnit';
 import { createCloudinaryUrl } from '@/lib/files';
-import { currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
+import { cleanUrl, currencyFormat, getPriceUnitOrEach } from '@/lib/strings';
 import { metersToMiles } from '@/lib/utils';
 
 export type StockFullProps = {
@@ -27,6 +28,10 @@ export default function StockFull({ stock, product, approximatePrice }: StockFul
     latestPrice: stock.latestPrice,
   });
   const pricePerUnit = usePricePerUnit(calculatedAmount, product);
+  const storeUrl = useMemo(
+    () => (stock.branch?.onlineAddress ? cleanUrl(stock.branch.onlineAddress.url) : undefined),
+    [stock.branch?.onlineAddress]
+  );
 
   return (
     <View className="flex flex-row justify-between gap-5">
@@ -63,12 +68,22 @@ export default function StockFull({ stock, product, approximatePrice }: StockFul
                 </Text>
               </View>
             )}
+
+            {stock.branch.onlineAddress && (
+              <View className="rounded-full bg-pricetraGreenDark/10 px-2 py-0.5">
+                <Text className="text-xs color-pricetraGreenHeavyDark">Online</Text>
+              </View>
+            )}
           </View>
 
           <View className="w-full">
-            <Text className="text-xs">
-              {stock.branch.address?.street}, {stock.branch.address?.city}
-            </Text>
+            {stock.branch.address && (
+              <Text className="text-xs">
+                {stock.branch.address.street}, {stock.branch.address.city}
+              </Text>
+            )}
+
+            {stock.branch.onlineAddress && storeUrl && <Text className="text-xs">{storeUrl}</Text>}
           </View>
 
           <View className="mt-1 flex flex-col gap-1">
