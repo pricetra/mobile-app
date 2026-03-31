@@ -19,8 +19,9 @@ import {
   AllBranchesDocument,
   BranchType,
 } from 'graphql-utils';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
+import { IAutocompleteDropdownRef } from 'react-native-autocomplete-dropdown';
 import CurrencyInput from 'react-native-currency-input';
 
 import ProductItem from '../ProductItem';
@@ -77,7 +78,7 @@ export default function AddProductPriceForm({
     () => (branchId ? branches.find(({ id }) => branchId === String(id)) : undefined),
     [branchId, branches]
   );
-  const [branchInput, setBranchInput] = useState('');
+  const branchComboboxController = useRef<IAutocompleteDropdownRef | null>(null);
   const { location, getCurrentLocation } = useLocationService();
 
   const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
@@ -114,7 +115,10 @@ export default function AddProductPriceForm({
       const closestBranch = b.at(0);
       if (closestBranch) {
         setBranchId(String(closestBranch.id));
-        setBranchInput(closestBranch.name);
+        branchComboboxController.current?.setItem({
+          id: String(closestBranch.id),
+          title: closestBranch.name,
+        });
       }
     });
 
@@ -187,6 +191,7 @@ export default function AddProductPriceForm({
         )}
 
         <Combobox
+          controller={branchComboboxController}
           initialValue={branchId}
           dataSet={branches.map((b) => ({
             id: b.id.toString(),
@@ -200,8 +205,6 @@ export default function AddProductPriceForm({
           }}
           textInputProps={{
             placeholder: 'Select Branch',
-            value: branchInput,
-            onChangeText: setBranchInput,
           }}
           renderItem={(item: any) => (
             <View className="flex flex-row items-center gap-2 p-3">
