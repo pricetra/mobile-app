@@ -187,8 +187,14 @@ export default function SearchScreen() {
             <View className="mb-5">
               {productViewHistory && (
                 <>
-                  <View className="p-5">
-                    <Text className="text-2xl font-bold">Recently viewed</Text>
+                  <View className="flex flex-row items-center justify-between gap-5 p-5">
+                    <Text className="flex-1 text-2xl font-bold">Recently viewed</Text>
+
+                    <Text
+                      onPress={() => router.push('/(tabs)/(profile)/list/history?tab=products')}
+                      className="p-2">
+                      View all
+                    </Text>
                   </View>
 
                   <FlatList
@@ -228,8 +234,14 @@ export default function SearchScreen() {
             <View className="border-b border-gray-200 pb-10">
               {searchHistoryData && (
                 <>
-                  <View className="p-5">
-                    <Text className="text-2xl font-bold">Recent searches</Text>
+                  <View className="flex flex-row items-center gap-5 p-5">
+                    <Text className="flex-1 text-2xl font-bold">Recent searches</Text>
+
+                    <Text
+                      onPress={() => router.push('/(tabs)/(profile)/list/history?tab=searches')}
+                      className="p-2">
+                      View all
+                    </Text>
                   </View>
 
                   {searchHistoryData?.mySearchHistory?.searches?.map(({ id, searchTerm }) => (
