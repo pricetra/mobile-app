@@ -28,7 +28,6 @@ import {
   Platform,
   TouchableOpacity,
   ActivityIndicator,
-  Share,
 } from 'react-native';
 import { IOFlatList } from 'react-native-intersection-observer';
 
@@ -38,6 +37,7 @@ import ProductFull, { ProductFullLoading } from '@/components/ProductFull';
 import SelectedStock, { SelectedStockLoading } from '@/components/SelectedStock';
 import AddProductPriceForm from '@/components/product-form/AddProductPriceForm';
 import ProductForm from '@/components/product-form/ProductForm';
+import ShareProductForm from '@/components/product-form/ShareProductForm';
 import AddToGroceryListFab from '@/components/ui/AddToGroceryListFab';
 import ModalFormFull from '@/components/ui/ModalFormFull';
 import ModalFormMini from '@/components/ui/ModalFormMini';
@@ -47,7 +47,6 @@ import { useCurrentLocation } from '@/context/LocationContext';
 import { useRouteHistory } from '@/context/RouteHistory';
 import { UserAuthContext } from '@/context/UserContext';
 import { isRoleAuthorized } from '@/lib/roles';
-import { generateProductShareDescription, generateProductShareLink } from '@/lib/strings';
 import { incompleteProductFields } from '@/lib/utils';
 
 export default function ProductScreen() {
@@ -66,6 +65,8 @@ export default function ProductScreen() {
   });
 
   const [stock, setStock] = useState<Stock>();
+
+  const [openShareModal, setOpenShareModal] = useState(false);
 
   const [openPriceModal, setOpenPriceModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
@@ -145,25 +146,7 @@ export default function ProductScreen() {
   async function share() {
     if (!productData) return;
 
-    const product = productData.product;
-    let stock: Stock | undefined = undefined;
-    if (stockId && stockData) {
-      stock = stockData.stock as Stock;
-    }
-
-    try {
-      const title = productData.product.name;
-      const url = generateProductShareLink('other', product, stock, user);
-      const message = generateProductShareDescription(product, stock, user, true);
-
-      await Share.share({
-        title,
-        message,
-        url,
-      });
-    } catch (error: any) {
-      Alert.alert('Could not share', error.message);
-    }
+    setOpenShareModal(true);
   }
 
   async function add(type: ListType.WatchList | ListType.Favorites): Promise<ProductList> {
@@ -310,6 +293,20 @@ export default function ProductScreen() {
 
   return (
     <>
+      {openShareModal && productData && (
+        <ModalFormFull
+          title="Share Product"
+          visible={openShareModal}
+          onRequestClose={() => setOpenShareModal(false)}>
+          <ShareProductForm
+            product={productData.product}
+            stock={stockData?.stock as Stock | undefined}
+            onCancel={() => setOpenShareModal(false)}
+            onSuccess={() => setOpenShareModal(false)}
+          />
+        </ModalFormFull>
+      )}
+
       {productData && (
         <ModalFormFull
           title="Add Price"
