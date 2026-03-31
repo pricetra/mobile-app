@@ -90,6 +90,10 @@ export default function AddProductPriceForm({
   }, [myBranches]);
 
   useEffect(() => {
+    if (myBranches && myBranches.length > 0) {
+      setBranches([...(myBranches as Branch[])]);
+    }
+
     if (!location) {
       getCurrentLocation({});
       return;
@@ -120,7 +124,7 @@ export default function AddProductPriceForm({
       if (!data) return;
       setBranches((prev) => [...prev, ...(data.allBranches.branches as Branch[])]);
     });
-  }, [location, user]);
+  }, [myBranches, location, user]);
 
   useEffect(() => {
     if (!branchId) return;
@@ -190,7 +194,6 @@ export default function AddProductPriceForm({
           }}
           textInputProps={{
             placeholder: 'Select Branch',
-            value: branches.find(({ id }) => id.toString() === branchId)?.name,
           }}
           renderItem={(item: any) => (
             <View className="flex flex-row items-center gap-2 p-3">
@@ -290,6 +293,8 @@ export default function AddProductPriceForm({
                   </View>
                 </View>
               </View>
+
+              <View style={{ height: 50 }} />
             </View>
           )}
         </Formik>
@@ -307,9 +312,18 @@ type PriceFormProps = {
 
 function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
   const formikContext = useFormikContext<CreatePrice>();
+  const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [available, setAvailable] = useState(true);
   const { user, myStoreUsers } = useAuth();
+  const basePriceInput = {
+    productId: formikContext.values.productId,
+    branchId: formikContext.values.branchId,
+    amount: 0,
+    unitType: 'item',
+    sale: false,
+    expiresAt: nextWeek,
+  } as CreatePrice;
 
   const isStoreUser = useMemo(() => {
     const storeUser = myStoreUsers?.find((v) => {
@@ -323,7 +337,18 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
   }, [myStoreUsers, branch]);
 
   useEffect(() => {
-    if (!latestPrice) return;
+    if (!latestPrice) {
+      formikContext.setValues({
+        ...basePriceInput,
+        onlineItem: stock?.onlineItem
+          ? {
+              url: stock.onlineItem.url,
+              itemId: stock.onlineItem.itemId,
+            }
+          : undefined,
+      } as CreatePrice);
+      return;
+    }
 
     formikContext.setValues({
       ...formikContext.values,
@@ -500,7 +525,7 @@ function PriceForm({ stock, branch, formik, latestPrice }: PriceFormProps) {
         <View className="mt-10">
           <Text className="mb-5 font-bold">Online Product Details</Text>
 
-          <View className='flex flex-col gap-3'>
+          <View className="flex flex-col gap-3">
             <Input
               placeholder="Online product URL"
               value={formikContext.values.onlineItem?.url ?? ''}
