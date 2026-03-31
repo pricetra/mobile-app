@@ -19,8 +19,9 @@ import {
   AllBranchesDocument,
   BranchType,
 } from 'graphql-utils';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, TextInput, Platform, ActivityIndicator } from 'react-native';
+import { IAutocompleteDropdownRef } from 'react-native-autocomplete-dropdown';
 import CurrencyInput from 'react-native-currency-input';
 
 import ProductItem from '../ProductItem';
@@ -77,6 +78,7 @@ export default function AddProductPriceForm({
     () => (branchId ? branches.find(({ id }) => branchId === String(id)) : undefined),
     [branchId, branches]
   );
+  const branchComboboxController = useRef<IAutocompleteDropdownRef | null>(null);
   const { location, getCurrentLocation } = useLocationService();
 
   const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
@@ -109,7 +111,15 @@ export default function AddProductPriceForm({
 
       const b = data.findBranchesByDistance as Branch[];
       setBranches((prev) => [...prev, ...b]);
-      setBranchId(b.at(0)?.id?.toString());
+
+      const closestBranch = b.at(0);
+      if (closestBranch) {
+        setBranchId(String(closestBranch.id));
+        branchComboboxController.current?.setItem({
+          id: String(closestBranch.id),
+          title: closestBranch.name,
+        });
+      }
     });
 
     getOnlineBranches({
@@ -181,6 +191,7 @@ export default function AddProductPriceForm({
         )}
 
         <Combobox
+          controller={branchComboboxController}
           initialValue={branchId}
           dataSet={branches.map((b) => ({
             id: b.id.toString(),

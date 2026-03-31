@@ -162,10 +162,12 @@ export function UserContextProvider({ children, jwt }: UserContextProviderProps)
 
   useEffect(() => {
     checkAppVersion();
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       checkAppVersion();
     }, MINUTE * 30);
-  }, []);
+
+    return () => clearInterval(intervalId);
+  }, [checkAppVersion]);
 
   useEffect(() => {
     if (!jwt || !appVersionCheckData?.checkAppVersion) return;

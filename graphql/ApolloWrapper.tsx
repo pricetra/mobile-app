@@ -2,7 +2,7 @@ import { ApolloClient, ApolloLink, ApolloProvider, InMemoryCache } from '@apollo
 import { setContext } from '@apollo/client/link/context';
 import { RetryLink } from '@apollo/client/link/retry';
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 export const uri = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/graphql';
 
@@ -45,5 +45,7 @@ function newClient(jwt?: string) {
 type ApolloWrapperProps = { jwt?: string; children: ReactNode };
 
 export default function ApolloWrapper({ jwt, children }: ApolloWrapperProps) {
-  return <ApolloProvider client={newClient(jwt)}>{children}</ApolloProvider>;
+  const client = useMemo(() => newClient(jwt), [jwt]);
+
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 }
