@@ -77,6 +77,7 @@ export default function AddProductPriceForm({
     () => (branchId ? branches.find(({ id }) => branchId === String(id)) : undefined),
     [branchId, branches]
   );
+  const [branchInput, setBranchInput] = useState('');
   const { location, getCurrentLocation } = useLocationService();
 
   const nextWeek = dayjs(new Date()).add(7, 'day').toDate();
@@ -109,8 +110,12 @@ export default function AddProductPriceForm({
 
       const b = data.findBranchesByDistance as Branch[];
       setBranches((prev) => [...prev, ...b]);
-      const closestBranchId = b.at(0)?.id;
-      if (closestBranchId) setBranchId(closestBranchId.toString());
+
+      const closestBranch = b.at(0);
+      if (closestBranch) {
+        setBranchId(String(closestBranch.id));
+        setBranchInput(closestBranch.name);
+      }
     });
 
     getOnlineBranches({
@@ -195,6 +200,8 @@ export default function AddProductPriceForm({
           }}
           textInputProps={{
             placeholder: 'Select Branch',
+            value: branchInput,
+            onChangeText: setBranchInput,
           }}
           renderItem={(item: any) => (
             <View className="flex flex-row items-center gap-2 p-3">
